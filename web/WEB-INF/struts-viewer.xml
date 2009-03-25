@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<struts-config>
+    <form-beans>
+        <form-bean name="edituserForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="username" type="java.lang.String"/>
+            <form-property name="volledigenaam" type="java.lang.String"/>
+            <form-property name="email" type="java.lang.String"/>
+            <form-property name="telefoon" type="java.lang.String"/>
+            <form-property name="positie" type="java.lang.String"/>
+            <form-property name="wachtwoord" type="java.lang.String"/>
+            <form-property name="gemeente" type="java.lang.String"/>
+            <form-property name="regio" type="java.lang.String"/>
+            <form-property name="provincie" type="java.lang.String"/>
+        </form-bean>
+        <form-bean name="karpuntForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="id" type="java.lang.String"/>
+            <form-property name="thegeom" type="java.lang.String"/>
+            <form-property name="description" type="java.lang.String"/>
+        </form-bean>
+    </form-beans>
+    <global-forwards>
+        <forward name="success" path="index.do"/>
+        <forward name="failure" path="site.failure"/>
+    </global-forwards>
+    <action-mappings>
+    	<action path="/viewer" type="nl.b3p.kar.struts.ViewerAction" scope="request" validate="false">
+            <forward name="success" path="site.viewer"/>
+        </action>
+        <action path="/edituser" name="edituserForm" type="nl.b3p.kar.struts.EditUserAction" scope="request" validate="false">
+            <forward name="success" path="site.edituser"/>
+            <forward name="failure" path="site.edituser"/>
+        </action>
+        <action path="/karpunt" name="karpuntForm" type="nl.b3p.kar.struts.KarPuntAction" scope="request" validate="false">
+            <forward name="success" path="site.karpunt"/>
+            <forward name="failure" path="site.karpunt"/>
+        </action>
+
+    </action-mappings>
+
+    <message-resources parameter="nl/b3p/pzh/rwbp/ApplicationResources"/>
+
+    <plug-in className="org.apache.struts.tiles.TilesPlugin" >
+        <set-property property="definitions-config" value="/WEB-INF/tiles-common.xml,/WEB-INF/tiles-viewer.xml" />
+        <set-property property="moduleAware" value="true" />
+    </plug-in>
+
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation-viewer.xml"/>
+    </plug-in>
+</struts-config>

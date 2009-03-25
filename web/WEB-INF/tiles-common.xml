@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+ <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+<tiles-definitions>
+    <!-- tiles met herbruikbare onderdelen die in de content pagina's kunnen worden ge-insert  -->
+    <definition name="infoblock" path="/WEB-INF/jsp/inserts/infoblock.jsp"/>
+    <definition name="headerinfo" path="/WEB-INF/jsp/inserts/headerinfo.jsp"/>
+    <definition name="empty" path="/WEB-INF/jsp/inserts/empty.jsp"/>
+    <definition name="setFocus" path="/WEB-INF/jsp/inserts/setFocus.jsp"/>
+
+    <definition name="site.failure" extends="siteBase">
+        <put name="content" value="/WEB-INF/jsp/commons/failurepage.jsp"/>
+    </definition>
+
+</tiles-definitions>

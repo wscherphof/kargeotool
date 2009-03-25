@@ -1,0 +1,229 @@
+MAP
+
+NAME transmodel_connexxion
+STATUS ON
+UNITS METERS
+IMAGECOLOR 255 255 255
+FONTSET "fonts/fonts.list"
+
+WEB
+  METADATA
+    "wms_title"				"Transmodel Connexxion"
+    "wfs_title"				"Transmodel Connexxion"
+    "wms_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion"
+    "wfs_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion"
+    "wms_srs"				"EPSG:28992"
+    "wfs_srs"				"EPSG:28992"
+  END
+END
+
+PROJECTION
+  "init=epsg:28992" 
+END
+
+OUTPUTFORMAT
+	NAME png
+	DRIVER "GD/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGBA
+	EXTENSION "png"
+	TRANSPARENT ON
+END
+
+LEGEND
+	STATUS ON
+	POSITION LR
+	TRANSPARENT TRUE
+END
+
+SYMBOL
+	NAME 'circle'
+	TYPE ELLIPSE
+	FILLED TRUE
+	POINTS 1 1 
+	END
+END
+
+LAYER
+  NAME puntjes
+  METADATA
+    "wms_title" "puntjes"
+    "gml_include_items" "all"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom from point where name is null and description is null) as bla using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  TYPE POINT   
+  CLASS 
+    NAME ""
+    STYLE      
+	COLOR 255 255 102
+	SYMBOL "circle"
+	SIZE 2
+    END
+  END		
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME bushaltes
+  METADATA
+    "wms_title" "bushaltes"
+    "gml_include_items" "all"        
+    "wfs_title" "bushaltes"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "oid"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla  
+  TOLERANCE 6
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  LABELITEM "name"  
+  TYPE POINT   
+  CLASS 
+    NAME ""
+    STYLE      
+      SYMBOL "bushalte.gif"      
+    END 
+  END
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME bushaltes_labels
+  METADATA
+    "wms_title" "bushaltes_labels"
+    "gml_include_items" "all"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  MAXSCALE 13000
+  LABELITEM "name"  
+  TYPE POINT   
+  CLASS 
+    STYLE
+    end
+    LABEL
+        TYPE truetype
+        FONT "arial"
+        antialias true
+        SIZE 8
+        COLOR 2 2 2
+        outlinecolor 255 255 255
+        buffer 2
+	fORCE true
+	position auto
+    END  
+  END
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME kar_punten
+  METADATA
+    "wms_title" "kar_punten"
+    "gml_include_items" "all"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla
+  TOLERANCE 10  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom,description from point where description is not null) as bla using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  CLASSITEM "description"  
+  TYPE POINT   
+  CLASS 
+    NAME "Aanmeldpunt"
+    EXPRESSION /Aanmeldpunt/    
+    STYLE      
+      SYMBOL "radio_blauw.gif"      
+    END 
+  END
+  CLASS 
+    NAME "Uitmeldpunt"
+    EXPRESSION /Uitmeldpunt/    
+    STYLE      
+      SYMBOL "radio_zwart.gif"      
+    END 
+  END  
+  CLASS 
+    NAME "Stopstreep"
+    EXPRESSION /Stopstreep/    
+    STYLE      
+      SYMBOL "radio_rood.gif"      
+    END 
+  END    
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME kar_punten_gemaakt
+  METADATA
+    "wms_title" "kar_punten_gemaakt"
+    "gml_include_items" "all"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla  
+  TOLERANCE 10
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=kar_gis password=kar_gis port=5432 user=kar_gis"
+  data "the_geom from (select id,the_geom,description from karpunt where description is not null) as bla using unique id using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  CLASSITEM "description"  
+  TYPE POINT   
+  CLASS 
+    NAME "Aanmeldpunt"
+    EXPRESSION /Aanmeldpunt/    
+    STYLE      
+      SYMBOL "radio_blauw.gif"      
+    END 
+  END
+  CLASS 
+    NAME "Uitmeldpunt"
+    EXPRESSION /Uitmeldpunt/    
+    STYLE      
+      SYMBOL "radio_zwart.gif"      
+    END 
+  END  
+  CLASS 
+    NAME "Stopstreep"
+    EXPRESSION /Stopstreep/    
+    STYLE      
+      SYMBOL "radio_rood.gif"      
+    END 
+  END    
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+END

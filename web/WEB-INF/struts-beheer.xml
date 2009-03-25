@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<struts-config>
+    <form-beans>
+        <form-bean name="gebruikersForm" type="org.apache.struts.validator.DynaValidatorForm">
+			<!-- hidden property voor JavaScript submit -->
+            <form-property name="confirmAction" type="java.lang.String"/>
+
+            <form-property name="id" type="java.lang.Integer"/>
+
+            <form-property name="username" type="java.lang.String"/>
+            <form-property name="fullName" type="java.lang.String"/>
+            <form-property name="email" type="java.lang.String"/>
+            <form-property name="phone" type="java.lang.String"/>
+            <form-property name="password" type="java.lang.String"/>
+            <form-property name="role" type="java.lang.String"/>
+            <form-property name="loc" type="java.lang.String"/>
+            <form-property name="roles" type="java.lang.Integer[]"/>
+        </form-bean>
+    </form-beans>
+    <global-forwards>
+        <forward name="success" path="index.do"/>
+        <forward name="failure" path="/WEB-INF/jsp/commons/failurepage.jsp"/>
+    </global-forwards>
+    <action-mappings>
+        <action path="/index" forward="beheer.index"/>        
+        <action path="/gebruikers" type="nl.b3p.kar.struts.GebruikersAction" name="gebruikersForm" scope="request" validate="false">
+            <forward name="form" path="beheer.gebruikers"/>
+        </action>
+    </action-mappings>
+
+    <message-resources parameter="nl/b3p/kar/ApplicationResources"/>
+
+    <plug-in className="org.apache.struts.tiles.TilesPlugin" >
+        <set-property property="definitions-config" value="/WEB-INF/tiles-common.xml,/WEB-INF/tiles-beheer.xml" />
+        <set-property property="moduleAware" value="true" />
+    </plug-in>
+
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation-beheer.xml"/>
+    </plug-in>
+</struts-config>

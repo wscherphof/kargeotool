@@ -1,0 +1,7 @@
+<ToolRedlining>
+	<string id="tooltip" nl="Redlining" en="Redlining"/>
+        <cursor id="cursor" url="fmc/ToolRedlining.swf" linkageid="redlining_cursor"/>
+        <cursor id="click"  url="fmc/ToolRedlining.swf" linkageid="redlining_cursor"/>
+        <cursor id="busy" url="fmc/CursorsMap.swf" linkageid="busy" />
+</ToolRedlining>
+

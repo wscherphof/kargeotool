@@ -1,0 +1,89 @@
+<FLAMINGO xmlns:fmc="fmc" xmlns:tpc="tpc" id="flamingo" lang="nl" languages="en,nl" tooltipdelay="300" commtojava="true" preloadtitle="Prototypemap" useexternalinterface="true">
+	<style id=".tooltip" font-family="arial, sans-serif" font-size="11" color="#880000" display="block"/>
+	<fmc:Container left="0" top="0" height="100%" width="80%">
+		<fmc:MonitorLayer id="monitorl" left="37%" top="50%" width="50%" listento="map">
+			<string id="waiting" en="Making... [layer] [percentage]%..." nl="Kaart aan het maken..."/>
+			<string id="loading" en="Making... [layer] [percentage]%..." nl="Kaart aan het laden. [percentage]%"/>
+		</fmc:MonitorLayer>
+		<!--fmc:Container backgroundcolor="#E8F3EB" left="0" top="0" height="6%" width="100%"-->
+		<fmc:ToolGroup tool="zoom" listento="map" width="100%" height="100" left="10" top="10">
+			<fmc:ToolZoomin id="zoom" skin="f2"/>
+			<fmc:ToolZoomout left="30" skin="f2"/>
+			<fmc:ToolPan left="60" skin="f2"/>
+			<fmc:ToolMeasure left="90" skin="f2"/>
+			<fmc:ToolIdentify left="120" skin="f2"/>
+			<fmc:ButtonFull left="150" listento="map"/>
+			<fmc:ButtonPrev left="180" listento="map"/>
+             		<fmc:ButtonNext left="210" listento="map"/>
+                    <tpc:DrawTool id="drawTool" left="240" top="2" listento="drawMap"/>
+		</fmc:ToolGroup>
+
+		<!--/fmc:Container-->
+		<fmc:Container borderwidth="1" bordercolor="#606060" left="0" top="0%" height="100%" width="100%">
+			<fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
+            <tpc:EditMap id="drawMap" listento="map" left="0" top="0%" height="100%" width="100%" bottom="bottom">
+                <tpc:GIS>
+                        <tpc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point">
+                        <tpc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
+                    </tpc:Layer>
+                </tpc:GIS>
+            </tpc:EditMap>
+			<fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
+				<fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?Service=WMS" srs="EPSG:28992" layers="puntjes,bushaltes,kar_punten,kar_punten_gemaakt,bushaltes_labels" showerrors="true" query_layers="kar_punten,kar_punten_gemaakt,bushaltes"/>
+				<fmc:LayerIdentifyIcon id="identifyicon"/>
+				<fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
+				<fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
+			</fmc:Map>
+		</fmc:Container>
+	</fmc:Container>
+	<fmc:Container left="80%" height="100%" width="20%">
+		<fmc:Legend id="legend" top="0" height="50%" width="98%" left="2%" listento="map">
+			<group label="Transmodel">
+			<item label="Bushaltes" canhide="true" listento="bushaltes.bushaltes">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
+			</item>
+			<item label="KAR punten" canhide="true" listento="bushaltes.kar_punten">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=kar_punten&amp;format=image/png"/>
+			</item>
+			<item label="Puntjes" canhide="true" listento="bushaltes.puntjes">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=puntjes&amp;format=image/png"/>
+			</item>
+			<item label="Bushaltes labels" canhide="true" listento="bushaltes.bushaltes_labels"/>
+			</group>
+			<group label="Achtergrond" open="false">
+				<item label="Openstreetmap" canhide="true" listento="osm"/>
+				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
+			</group>
+		</fmc:Legend>
+		<fmc:LocationFinder id="locationfinder" top="50%" width="100%" left="0%" height="50%" listento="map" controls="true">
+			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+<string id="output" nl="[gm_naam]" en="[gm_naam]" />
+<string id="label" nl="Zoek een plaats" en="Search for town" />
+</LOCATIONS>
+
+		<fmc:Coordinates listento="map" left="0" top="95%" decimals="2">
+			<style id=".xy" font-family="arial, sans-serif" font-size="11"/>
+			<string id="xy" nl="X: [x]     Y: [y]"/>
+		</fmc:Coordinates>
+		</fmc:LocationFinder>
+	</fmc:Container>
+	<fmc:Window title="info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
+		<string id="title" nl="Informatie" en="Information"/>
+		<fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
+			<!--<fmc:IdentifyResults  width="100%" height="100%" visible="true" listento="map">
+
+            </fmc:IdentifyResults>-->
+			<fmc:IdentifyResults id="info" width="100%" height="100%" visible="true" listento="map">
+				<style id=".field" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="bold"/>
+				<style id=".value" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="normal"/>
+				<style id=".maplayer" font-family="verdana" font-size="13px" color="#000000" display="block" font-weight="normal"/>
+				<style id=".layer" font-family="verdana" font-size="12px" color="#000000" display="block" font-weight="normal"/>
+				<string id="startidentify" en="Loading" nl="Info wordt opgehaald"/>
+				<string id="identify" en="[progress]%" nl="[progress]%"/>
+				<string id="finishidentify" en="Information" nl="Informatie"/>
+				<string id="seperator" en=":" nl=":"/>
+				<style id="a" font-family="arial" font-size="10px" color="#333399" display="block" font-weight="normal" text-decoration="underline"/>
+			</fmc:IdentifyResults>
+		</fmc:Container>
+	</fmc:Window>
+</FLAMINGO>

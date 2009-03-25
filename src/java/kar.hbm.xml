@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="nl.b3p.kar.hibernate.Gebruiker" table="gebruiker">
+    <id name="id">
+      <column name="id" sql-type="serial"/>
+      <generator class="native">
+        <param name="sequence">gebruiker_id_seq</param>
+      </generator>
+    </id>
+    <property name="username"/>
+    <property name="passwordsalt"/>
+    <property name="passwordhash"/>
+    <property name="fullname"/>
+    <property name="email"/>
+    <property name="phone"/>
+    <property name="position"/>
+    <set lazy="false" name="roles">
+      <key column="gebruiker"/>
+      <many-to-many class="nl.b3p.kar.hibernate.Role" column="role" lazy="false"/>
+    </set>
+  </class>
+  <class name="nl.b3p.kar.hibernate.Role" table="role">
+    <id name="id">
+      <column name="id" sql-type="serial"/>
+      <generator class="native">
+        <param name="sequence">role_id_seq</param>
+      </generator>
+    </id>
+    <property name="role"/>
+  </class>
+  <class name="nl.b3p.kar.hibernate.KarPunt" table="karpunt">
+    <id name="id">
+      <column name="id" sql-type="serial"/>
+      <generator class="native">
+        <param name="sequence">karpunt_id_seq</param>
+      </generator>
+    </id>
+    <property name="description"/>
+    <property column="the_geom" name="geom" type="org.hibernatespatial.GeometryUserType">
+    </property>
+  </class>
+</hibernate-mapping>

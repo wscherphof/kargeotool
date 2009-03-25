@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>Invoeren Woningbouwplan</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<link rel="stylesheet" href="main.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="kar-gis.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<div id="container">
+			<div id="kaart">
+				<img src="kaart.jpg" alt="Kaart" />
+			</div>
+			<div id="invoervelden">
+				<table>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="aanduiding" class="verplicht">Aanduiding</label></td>
+						<td class="veldcontent">
+							<select name="aanduiding" id="aanduiding">
+								<option value="Normaal">Normaal</option>
+								<option value="Globaal">Globaal</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="plannaam" class="verplicht">Plannaam</label></td>
+						<td class="veldcontent">
+							<input type="text" name="plannaam" id="plannaam" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="plannummer">Plannummer</label></td>
+						<td class="veldcontent">
+							<input type="text" name="plannummer" id="plannummer" readonly="readonly" class="rdonly" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="refnummer">Referentienummer</label></td>
+						<td class="veldcontent">
+							<input type="text" name="refnummer" id="refnummer" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="gemnaam">Gemeentenaam</label></td>
+						<td class="veldcontent">
+							<input type="text" name="gemnaam" id="gemnaam" readonly="readonly" class="rdonly" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="regio">Regio</label></td>
+						<td class="veldcontent">
+							<input type="text" name="regio" id="regio" readonly="readonly" class="rdonly" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="status" class="verplicht">Status</label></td>
+						<td class="veldcontent">
+							<input type="text" name="status" id="status" />
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="ontwikkelaar" class="verplicht">Ontwikkelaar</label></td>
+						<td class="veldcontent">
+							<select name="ontwikkelaar" id="ontwikkelaar" onchange="showNamelijk(this);">
+								<option value="Onbekend">Onbekend</option>
+								<option value="Gemeente">Gemeente</option>
+								<option value="Woningbouwcorporatie">Woningbouwcorporatie</option>
+								<option value="Projectontwikkelaar">Projectontwikkelaar</option>
+								<option value="Particulieren">Particulieren</option>
+								<option value="Anders">Anders</option>
+							</select>
+							<div id="ontwikkelaar_namelijk" class="namelijk">
+								namelijk: <input type="text" name="ontwikkelaar_namelijk" style="width: 180px;" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="woonmilieu">Beoogd woonmilieu</label></td>
+						<td class="veldcontent">
+							<select name="woonmilieu" id="woonmilieu">
+								<option value="Onbekend">Onbekend</option>
+								<option value="Centrum-stedelijk plus">Centrum-stedelijk plus</option>
+								<option value="Centrum-stedelijk">Centrum-stedelijk</option>
+								<option value="Stedelijk vooroorlogs">Stedelijk vooroorlogs</option>
+								<option value="Stedelijk naoorlogs compact">Stedelijk naoorlogs compact</option>
+								<option value="Stedelijk naoorlogs grondgebonden">Stedelijk naoorlogs grondgebonden</option>
+								<option value="Groen stedelijk">Groen stedelijk</option>
+								<option value="Centrum kleinstedelijk">Centrum kleinstedelijk</option>
+								<option value="Kleinstedelijk">Kleinstedelijk</option>
+								<option value="Groen kleinstedelijk">Groen kleinstedelijk</option>
+								<option value="Centrum dorps">Centrum dorps</option>
+								<option value="Dorp">Dorps</option>
+								<option value="Landelijk bereikbaar">Landelijk bereikbaar</option>
+								<option value="Landelijk perifeer">Landelijk perifeer</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="planuitval">Planuitval</label></td>
+						<td class="veldcontent">
+							<select name="planuitval" id="planuitval" onchange="showNamelijk(this);">
+								<option value="Geen">Geen</option>
+								<option value="Stagnatie verkoop">Stagnatie verkoop</option>
+								<option value="Problemen financiering">Problemen financiering</option>
+								<option value="Gronduitgifte vertraagd">Gronduitgifte vertraagd</option>
+								<option value="Procedures">Procedures</option>
+								<option value="Onvoorziene bezwaren">Onvoorziene bezwaren</option>
+								<option value="Herhuisvesting">Herhuisvesting</option>
+								<option value="Geen opdrachtgever">Geen opdrachtgever</option>
+								<option value="Stagnatie bouw">Stagnatie bouw</option>
+								<option value="Onjuiste planning">Onjuiste planning</option>
+								<option value="Anders">Anders</option>
+								<option value="Onbekend">Onbekend</option>
+							</select>
+							<div id="planuitval_namelijk" class="namelijk">
+								namelijk: <input type="text" name="planuitval_namelijk" style="width: 180px;" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="opmerkingen">Opmerkingen</label></td>
+						<td class="veldcontent">
+							<textarea name="opmerkingen" id="opmerkingen" rows="3" cols="20"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td class="veldlabel" valign="top"><label for="gebruikgegevens" class="verplicht">Gebruik gegevens</label></td>
+						<td class="veldcontent">
+							<input type="radio" name="gebruikgegevens" id="gebruikgegevens" value="Openbaar" style="background-color: transparent; border: 0px none; width: 15px;" /> Openbaar<br />
+							<input type="radio" name="gebruikgegevens" value="Afgeschermd" style="background-color: transparent; border: 0px none; width: 15px;" /> Afgeschermd<br />
+							<input type="radio" name="gebruikgegevens" value="Onzichtbaar" style="background-color: transparent; border: 0px none; width: 15px;" /> Onzichtbaar
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">* Vetgedrukte velden zijn verplicht</td>
+					</tr>
+				</table>
+			</div>
+			
+			<div id="knoppen">
+				<input type="submit" value="Opslaan" class="knop" /><br />
+				<input type="button" value="Annuleren" class="knop" /><br />
+				<input type="button" value="Afdrukken" class="knop" /><br />
+				<input type="button" value="Exporteren naar Excel" class="knop" /><br />
+				<input type="button" value="Hulp" class="knop" /><br />
+			</div>
+			
+			<div id="tabs">
+				<div id="tab-planning-header" class="tabknop">
+					<a href="#tab-planning-content" onclick="return switchTab('planning');">Planning</a>
+				</div>
+				<div id="tab-realisatie-header" class="tabknop">
+					<a href="#tab-realisatie-content" onclick="return switchTab('realisatie');">Realisatie</a>
+				</div>
+				<div id="tab-planning-content" class="tabcontent">
+					<div style="width: 600px;">
+						&nbsp;
+					</div>
+					<div id="planning-woningen" class="woningen">
+						<label class="verplicht">Planning (Totaal: <span id="totaal-planning-woningen">0</span>)</label><br /><br />
+						<table>
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th>Aantal woningen</th>
+									<th>Sloop</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr><th>Totaal</th><td><input type="text" name="planning_aw_totaal" id="planning_aw_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="planning_sloop_totaal" id="planning_sloop_totaal" readonly="readonly" class="rdonly" /></td></tr>
+							</tfoot>
+							<tbody>
+								<tr><th>2008</th><td><input type="text" name="planning_aw_2008" /></td><td><input type="text" name="planning_sloop_2008" /></td></tr>
+								<tr><th>2009</th><td><input type="text" name="planning_aw_2009" /></td><td><input type="text" name="planning_sloop_2009" /></td></tr>
+								<tr><th>2010</th><td><input type="text" name="planning_aw_2010" /></td><td><input type="text" name="planning_sloop_2010" /></td></tr>
+								<tr><th>2011</th><td><input type="text" name="planning_aw_2011" /></td><td><input type="text" name="planning_sloop_2011" /></td></tr>
+								<tr><th>2012</th><td><input type="text" name="planning_aw_2012" /></td><td><input type="text" name="planning_sloop_2012" /></td></tr>
+								<tr><th>2013</th><td><input type="text" name="planning_aw_2013" /></td><td><input type="text" name="planning_sloop_2013" /></td></tr>
+								<tr><th>2014</th><td><input type="text" name="planning_aw_2014" /></td><td><input type="text" name="planning_sloop_2014" /></td></tr>
+								<tr><th>2015</th><td><input type="text" name="planning_aw_2015" /></td><td><input type="text" name="planning_sloop_2015" /></td></tr>
+								<tr><th>2016</th><td><input type="text" name="planning_aw_2016" /></td><td><input type="text" name="planning_sloop_2016" /></td></tr>
+								<tr><th>2017</th><td><input type="text" name="planning_aw_2017" /></td><td><input type="text" name="planning_sloop_2017" /></td></tr>
+								<tr><th>2018</th><td><input type="text" name="planning_aw_2018" /></td><td><input type="text" name="planning_sloop_2018" /></td></tr>
+								<tr><th>2019</th><td><input type="text" name="planning_aw_2019" /></td><td><input type="text" name="planning_sloop_2019" /></td></tr>
+								<tr><th>2020</th><td><input type="text" name="planning_aw_2020" /></td><td><input type="text" name="planning_sloop_2020" /></td></tr>
+								<tr><th>2020 &gt;</th><td><input type="text" name="planning_aw_2020_gt" /></td><td><input type="text" name="planning_sloop_2020_gt" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="planning_aw_Onbekend" /></td><td><input type="text" name="planning_sloop_Onbekend" /></td></tr>
+							</tbody>
+						</table>
+					</div>
+					
+					<div id="planning-type" class="type">
+						<label class="verplicht">Type en financieringsklasse (Totaal: <span id="totaal-planning-type">0</span>)</label><br /><br />
+						<table>
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th>Eengezins</th>
+									<th>Meergezins</th>
+									<th>Onbekend</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><th>Huur</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>&lt; 343,49</th><td><input type="text" name="planning_eengezin_huur_lt_34349" /></td><td><input type="text" name="planning_meergezin_huur_lt_34349" /></td><td><input type="text" name="planning_onbekend_huur_lt_34349" /></td></tr>
+								<tr><th>343,49 - 526,89</th><td><input type="text" name="planning_eengezin_huur_3434952689" /></td><td><input type="text" name="planning_meergezin_huur_3434952689" /></td><td><input type="text" name="planning_onbekend_huur_3434952689" /></td></tr>
+								<tr><th>526,89 &gt;</th><td><input type="text" name="planning_eengezin_gt_huur_52689" /></td><td><input type="text" name="planning_meergezin_huur_gt_52689" /></td><td><input type="text" name="planning_onbekend_huur_gt_52689" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="planning_eengezin_huur_onbekend" /></td><td><input type="text" name="planning_meergezin_huur_onbekend" /></td><td><input type="text" name="planning_onbekend_huur_onbekend" /></td></tr>
+								
+								<tr><th>Koop</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>&lt; 168.000</th><td><input type="text" name="planning_eengezin_koop_lt_168000" /></td><td><input type="text" name="planning_meergezin_koop_lt_168000" /></td><td><input type="text" name="planning_onbekend_koop_lt_168000" /></td></tr>
+								<tr><th>168.000 &gt;</th><td><input type="text" name="planning_eengezin_koop_gt_168000" /></td><td><input type="text" name="planning_meergezin_koop_gt_168000" /></td><td><input type="text" name="planning_onbekend_koop_gt_168000" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="planning_eengezin_koop_onbekend" /></td><td><input type="text" name="planning_meergezin_koop_onbekend" /></td><td><input type="text" name="planning_onbekend_koop_onbekend" /></td></tr>
+								
+								<tr><th></th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>Totaal</th><td><input type="text" name="planning_eengezin_totaal" id="planning_eengezin_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="planning_meergezin_totaal" id="planning_meergezin_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="planning_onbekend_totaal" id="planning_onbekend_totaal" readonly="readonly" class="rdonly" /></td></tr>
+								
+								<tr><th></th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th colspan="3">Type en financieringsklasse onbekend</th><td><input type="text" name="planning_type_financiering_onbekend" /></td></tr>
+								<tr><th colspan="3">Nultreden woningen</th><td><input type="text" name="planning_nultreden_woningen" /></td></tr>
+							</tbody>
+						</table>
+					</div>
+					<div style="width: 600px;">
+						&nbsp;
+					</div>
+				</div>
+				<div id="tab-realisatie-content" class="tabcontent">
+					<div style="width: 600px;">
+						&nbsp;
+					</div>
+					<div id="realisatie-woningen" class="woningen">
+						<label class="verplicht">Realisatie (Totaal: <span id="totaal-realisatie-woningen">0</span>)</label><br /><br />
+						<table>
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th>Aantal woningen</th>
+									<th>Sloop</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr><th>Totaal</th><td><input type="text" name="realisatie_aw_totaal" id="realisatie_aw_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="realisatie_sloop_totaal" id="realisatie_sloop_totaal" readonly="readonly" class="rdonly" /></td></tr>
+							</tfoot>
+							<tbody>
+								<tr><th>2008</th><td><input type="text" name="realisatie_aw_2008" /></td><td><input type="text" name="realisatie_sloop_2008" /></td></tr>
+								<tr><th>2009</th><td><input type="text" name="realisatie_aw_2009" /></td><td><input type="text" name="realisatie_sloop_2009" /></td></tr>
+								<tr><th>2010</th><td><input type="text" name="realisatie_aw_2010" /></td><td><input type="text" name="realisatie_sloop_2010" /></td></tr>
+								<tr><th>2011</th><td><input type="text" name="realisatie_aw_2011" /></td><td><input type="text" name="realisatie_sloop_2011" /></td></tr>
+								<tr><th>2012</th><td><input type="text" name="realisatie_aw_2012" /></td><td><input type="text" name="realisatie_sloop_2012" /></td></tr>
+								<tr><th>2013</th><td><input type="text" name="realisatie_aw_2013" /></td><td><input type="text" name="realisatie_sloop_2013" /></td></tr>
+								<tr><th>2014</th><td><input type="text" name="realisatie_aw_2014" /></td><td><input type="text" name="realisatie_sloop_2014" /></td></tr>
+								<tr><th>2015</th><td><input type="text" name="realisatie_aw_2015" /></td><td><input type="text" name="realisatie_sloop_2015" /></td></tr>
+								<tr><th>2016</th><td><input type="text" name="realisatie_aw_2016" /></td><td><input type="text" name="realisatie_sloop_2016" /></td></tr>
+								<tr><th>2017</th><td><input type="text" name="realisatie_aw_2017" /></td><td><input type="text" name="realisatie_sloop_2017" /></td></tr>
+								<tr><th>2018</th><td><input type="text" name="realisatie_aw_2018" /></td><td><input type="text" name="realisatie_sloop_2018" /></td></tr>
+								<tr><th>2019</th><td><input type="text" name="realisatie_aw_2019" /></td><td><input type="text" name="realisatie_sloop_2019" /></td></tr>
+								<tr><th>2020</th><td><input type="text" name="realisatie_aw_2020" /></td><td><input type="text" name="realisatie_sloop_2020" /></td></tr>
+								<tr><th>2020 &gt;</th><td><input type="text" name="realisatie_aw_2020_gt" /></td><td><input type="text" name="realisatie_sloop_2020_gt" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="realisatie_aw_Onbekend" /></td><td><input type="text" name="realisatie_sloop_Onbekend" /></td></tr>
+							</tbody>
+						</table>
+					</div>
+					
+					<div id="realisatie-type" class="type">
+						<label class="verplicht">Type en financieringsklasse (Totaal: <span id="totaal-realisatie-type">0</span>)</label><br /><br />
+						<table>
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th>Eengezins</th>
+									<th>Meergezins</th>
+									<th>Onbekend</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><th>Huur</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>&lt; 343,49</th><td><input type="text" name="realisatie_eengezin_huur_lt_34349" /></td><td><input type="text" name="realisatie_meergezin_huur_lt_34349" /></td><td><input type="text" name="realisatie_onbekend_huur_lt_34349" /></td></tr>
+								<tr><th>343,49 - 526,89</th><td><input type="text" name="realisatie_eengezin_huur_3434952689" /></td><td><input type="text" name="realisatie_meergezin_huur_3434952689" /></td><td><input type="text" name="realisatie_onbekend_huur_3434952689" /></td></tr>
+								<tr><th>526,89 &gt;</th><td><input type="text" name="realisatie_eengezin_gt_huur_52689" /></td><td><input type="text" name="realisatie_meergezin_huur_gt_52689" /></td><td><input type="text" name="realisatie_onbekend_huur_gt_52689" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="realisatie_eengezin_huur_onbekend" /></td><td><input type="text" name="realisatie_meergezin_huur_onbekend" /></td><td><input type="text" name="realisatie_onbekend_huur_onbekend" /></td></tr>
+								
+								<tr><th>Koop</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>&lt; 168.000</th><td><input type="text" name="realisatie_eengezin_koop_lt_168000" /></td><td><input type="text" name="realisatie_meergezin_koop_lt_168000" /></td><td><input type="text" name="realisatie_onbekend_koop_lt_168000" /></td></tr>
+								<tr><th>168.000 &gt;</th><td><input type="text" name="realisatie_eengezin_koop_gt_168000" /></td><td><input type="text" name="realisatie_meergezin_koop_gt_168000" /></td><td><input type="text" name="realisatie_onbekend_koop_gt_168000" /></td></tr>
+								<tr><th>Onbekend</th><td><input type="text" name="realisatie_eengezin_koop_onbekend" /></td><td><input type="text" name="realisatie_meergezin_koop_onbekend" /></td><td><input type="text" name="realisatie_onbekend_koop_onbekend" /></td></tr>
+								
+								<tr><th></th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th>Totaal</th><td><input type="text" name="realisatie_eengezin_totaal" id="realisatie_eengezin_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="realisatie_meergezin_totaal" id="realisatie_meergezin_totaal" readonly="readonly" class="rdonly" /></td><td><input type="text" name="realisatie_onbekend_totaal" id="realisatie_onbekend_totaal" readonly="readonly" class="rdonly" /></td></tr>
+								
+								<tr><th></th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr><th colspan="3">Type en financieringsklasse onbekend</th><td><input type="text" name="realisatie_type_financiering_onbekend" /></td></tr>
+								<tr><th colspan="3">Nultreden woningen</th><td><input type="text" name="realisatie_nultreden_woningen" /></td></tr>
+							</tbody>
+						</table>
+					</div>
+					<div style="width: 600px;">
+						&nbsp;
+					</div>
+				</div>
+			</div>
+			<div style="width: 600px;">
+				&nbsp;
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <!-- Localization context voor o.a. de <fmt:message> JSTL tag -->
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>nl.b3p.kar.ApplicationResources</param-value>
+    </context-param>
+    <!-- NL locale voor formatten van getallen: 1.234.567,89 -->
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.locale</param-name>
+        <param-value>nl</param-value>
+    </context-param>
+    <filter>
+        <filter-name>Security Filter</filter-name>
+        <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/securityfilter-config.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>validate</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>HttpInfoMDCLogger</filter-name>
+        <filter-class>nl.b3p.commons.services.HttpInfoMDCLoggerFilter</filter-class>
+        <init-param>
+            <param-name>createSession</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>HttpInfoMDCLogger</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- map all requests to the SecurityFilter, control what it does with configuration settings -->
+    <filter-mapping>
+        <filter-name>Security Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Init ManagedPersistence to get a hibernate EntityManagerFactory -->
+    <servlet>
+        <servlet-name>managedpersistence</servlet-name>
+        <servlet-class>nl.b3p.kar.MyEMFDatabase</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>action</servlet-name>
+        <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/struts-root.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>config/viewer</param-name>
+            <param-value>/WEB-INF/struts-viewer.xml</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>config/beheer</param-name>
+            <param-value>/WEB-INF/struts-beheer.xml</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>action</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>    
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>login.do</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/loginError.do</location>
+    </error-page>
+</web-app>
