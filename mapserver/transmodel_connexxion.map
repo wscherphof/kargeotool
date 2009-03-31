@@ -60,13 +60,37 @@ LAYER
   PROJECTION
     "init=epsg:28992"
   END
-  TYPE POINT   
   CLASS 
     NAME ""
     STYLE      
 	COLOR 255 255 102
 	SYMBOL "circle"
 	SIZE 2
+    END
+  END		
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME buslijnen
+  METADATA
+    "wms_title" "buslijnen"
+    "gml_include_items" "all"
+  END
+  TYPE LINE
+  DUMP true
+  TEMPLATE bla  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "the_geom from (select oid,lineplanningnumber,code,destinationcode,direction,the_geom from jopa) as bla using srid=28992"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  CLASS 
+    NAME ""
+    STYLE      
+	COLOR 255 0 0
     END
   END		
   PROCESSING "CLOSE_CONNECTION=DEFER"
@@ -93,7 +117,6 @@ LAYER
     "init=epsg:28992"
   END
   LABELITEM "name"  
-  TYPE POINT   
   CLASS 
     NAME ""
     STYLE      
@@ -120,8 +143,7 @@ LAYER
     "init=epsg:28992"
   END
   MAXSCALE 13000
-  LABELITEM "name"  
-  TYPE POINT   
+  LABELITEM "name"    
   CLASS 
     STYLE
     end
@@ -158,7 +180,6 @@ LAYER
     "init=epsg:28992"
   END
   CLASSITEM "description"  
-  TYPE POINT   
   CLASS 
     NAME "Aanmeldpunt"
     EXPRESSION /Aanmeldpunt/    
@@ -201,7 +222,6 @@ LAYER
     "init=epsg:28992"
   END
   CLASSITEM "description"  
-  TYPE POINT   
   CLASS 
     NAME "Aanmeldpunt"
     EXPRESSION /Aanmeldpunt/    
