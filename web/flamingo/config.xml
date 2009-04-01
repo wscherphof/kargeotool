@@ -29,7 +29,7 @@
                 </tpc:GIS>
             </tpc:EditMap>
 			<fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
-				<fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?Service=WMS" srs="EPSG:28992" layers="puntjes,bushaltes,kar_punten,kar_punten_gemaakt,bushaltes_labels" showerrors="true" query_layers="kar_punten,kar_punten_gemaakt,bushaltes"/>
+				<fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,kar_punten,kar_punten_gemaakt,bushaltes_labels" showerrors="true" query_layers="kar_punten,kar_punten_gemaakt,bushaltes"/>
 				<fmc:LayerIdentifyIcon id="identifyicon"/>
 				<fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
 				<fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
@@ -45,8 +45,8 @@
 			<item label="KAR punten" canhide="true" listento="bushaltes.kar_punten">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=kar_punten&amp;format=image/png"/>
 			</item>
-			<item label="Puntjes" canhide="true" listento="bushaltes.puntjes">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=puntjes&amp;format=image/png"/>
+			<item label="Buslijnen" canhide="true" listento="bushaltes.buslijnen">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
 			</item>
 			<item label="Bushaltes labels" canhide="true" listento="bushaltes.bushaltes_labels"/>
 			</group>
