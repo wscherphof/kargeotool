@@ -2,6 +2,7 @@ MAP
 
 NAME transmodel_connexxion
 STATUS ON
+EXTENT 12000 304000 280000 620000
 UNITS METERS
 IMAGECOLOR 255 255 255
 FONTSET "fonts/fonts.list"
@@ -14,6 +15,8 @@ WEB
     "wfs_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion"
     "wms_srs"				"EPSG:28992"
     "wfs_srs"				"EPSG:28992"
+    "wfs_extent"			"12000 304000 280000 620000"
+    "ows_schemas_location"		"http://schemas.opengeospatial.net"
   END
 END
 
@@ -83,7 +86,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
-  data "the_geom from (select oid,lineplanningnumber,code,destinationcode,direction,the_geom from jopa) as bla using srid=28992"
+  data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
   END
