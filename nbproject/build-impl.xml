@@ -354,13 +354,11 @@ exists or setup the property manually. For example like this:
                 COMPILATION SECTION
             -->
     <target depends="init" if="no.dist.ear.dir" name="deps-module-jar" unless="no.deps">
-        <ant antfile="${project.b3p-combineImageTool}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.b3p-commons-core}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.b3p-commons-hibernate}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="jar"/>
     </target>
     <target depends="init" if="dist.ear.dir" name="deps-ear-jar" unless="no.deps">
-        <ant antfile="${project.b3p-combineImageTool}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.b3p-commons-core}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.b3p-commons-hibernate}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="jar"/>
@@ -514,10 +512,10 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.B3pGeotoolsCommonLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsCommonLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsPostgisLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pGeotoolsShapeLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsShapeLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${reference.b3p-combineImageTool.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.reference.b3p-combineImageTool.jar" todir="${dist.ear.dir}"/>
+        <copyfiles files="${libs.Servlet24.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.Servlet24.classpath" todir="${dist.ear.dir}"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.B3pGeotoolsCommonLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} ${manifest.libs.B3pGeotoolsShapeLib.classpath} ${manifest.reference.b3p-combineImageTool.jar} "/>
+            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.B3pGeotoolsCommonLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} ${manifest.libs.B3pGeotoolsShapeLib.classpath} ${manifest.libs.Servlet24.classpath} "/>
         </manifest>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
@@ -534,7 +532,7 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.B3pGeotoolsCommonLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pGeotoolsShapeLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.b3p-combineImageTool.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.Servlet24.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>
@@ -808,7 +806,6 @@ exists or setup the property manually. For example like this:
                 CLEANUP SECTION
             -->
     <target depends="init" if="no.dist.ear.dir" name="deps-clean" unless="no.deps">
-        <ant antfile="${project.b3p-combineImageTool}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.b3p-commons-core}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.b3p-commons-hibernate}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="clean"/>
