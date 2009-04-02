@@ -20,45 +20,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
 
-/**
- * Deze klasse verwerkt de enqueteformulieren voor de woningbouwplannen. Elk
- * bouwplan heeft een een aantal standaard gegevens welke in het Bouwplan object
- * worden opgeslagen. Daarnaast heeft een Bouwplan object opmerkingen en een
- * aantal Facts (aantallen van bepaalde soorten bouw).
- * <p>
- * Opmerkingen is nog niet uitgewerkt. Zie Moscow lijst. Opmerkingen moeten
- * prive per ingelogt persoon en algemeen publiekelijk toegankelijk kunnen worden
- * opgeslagem.
- * <p>
- * Facts bestaan in 2 type:
- * <li> Fact met periode: een feit dat aan een jaartal voor een bouwplan hangt
- * <li> Fact zonder periode: feit dat voor een bouwplan geldt
- * Beide worden apart opgeslagen om later afzonderlijk gerapport te kunnen worden.
- * Zie hiervoor ook de klasse BouwplanFactsTotaal, dat nu nog niet gebruikt
- * wordt.
- * <p>
- * Elk Fact wordt gekoppeld aan een FactSoort, welke weer hierarchisch gecategoriseerd
- * is via FactGroup en FactSubgroup. Deze laatse categorisering wordt later
- * gebruikt voor de rapportage.
- * <p>
- * De strategie voor het ophalen en opslaan van de Facts is als volgt. Alle Facts
- * worden volgens een precies te volgen strategie op volgorde uit de database
- * gehaald en in een array geplaatst. Als er geen Fact in de database staat wordt
- * een element met default waarde ingevoegd. Na ombouw naar een dto array voor gebruik
- * in een struts formulier wordt het webformulier gevuld. Na save komt de de array
- * weer in precies de zelfde volgorde binnen. Hiermee is dus bekend welke Fact
- * bij elk dto element in de array hoort. Tenslotte wordt elk element weer terug
- * geschreven naar de database. Indien een Fact al bestaat voor het bouwplan, 
- * wordt het Fact overschreven.
- * <p>
- * Nog niet uitgewerkt is de noodzaak verandering in een log op te nemen via de
- * de klasse TableFieldToTrack en GebruikersLog.
- * <p>
- * Nog niet uitgewerkt is de security met rollen en rechten. Er bestaan al wel
- * enige klassen AccessLevel, Gebruiker en GebruikerAccess.
- * <p>
- * @author Chris
- */
 public final class KarPuntAction extends BaseDatabaseAction {
 
     protected Log log = LogFactory.getLog(this.getClass());
