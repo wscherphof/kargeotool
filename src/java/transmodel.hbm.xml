@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="nl.b3p.transmodel.RoadsideEquipment">
+        <id name="id">
+            <column name="id" sql-type="serial"/>
+            <generator class="native">
+                <param name="sequence">roadside_equipment_id_seq</param>
+            </generator>
+        </id>
+        <natural-id>
+            <many-to-one name="dataOwner" not-null="false"/>
+            <property name="unitNumber" not-null="false"/>
+            <property name="validFrom" not-null="false"/>
+        </natural-id>
+        <property name="type" not-null="true"/>
+        <property name="radioAddress"/>
+        <property name="description" type="text"/>
+        <property name="supplier"/>
+        <property name="location" type="org.hibernatespatial.GeometryUserType"/>
+    </class>
+
+    <class name="nl.b3p.transmodel.ActivationGroup">
+        <id name="id">
+            <column name="id" sql-type="serial"/>
+            <generator class="native">
+                <param name="sequence">activation_group_id_seq</param>
+            </generator>
+        </id>
+        <natural-id>
+            <many-to-one name="roadsideEquipment" not-null="true"/>
+            <property name="karSignalGroup" not-null="true"/>
+            <property name="validFrom" not-null="true"/>
+        </natural-id>
+        <property name="type" not-null="true"/>
+        <property name="directionAtIntersection" not-null="true"/>
+        <property name="metersBeforeRoadsideEquipmentLocation"/>
+        <property name="inactiveFrom"/>
+        <property name="angleToNorth"/>
+        <property name="followDirection"/>
+        <property name="description" type="text"/>
+        <property name="stopLineLocation" type="org.hibernatespatial.GeometryUserType"/>
+        <property name="updater"/>
+        <property name="updateTime"/>
+        <property name="validator"/>
+        <property name="validationTime"/>
+
+        <list name="activations" inverse="true" cascade="all-delete-orphan" >
+            <key column="activation_group" not-null="true"/>
+            <list-index column="index"/>
+            <one-to-many class="nl.b3p.transmodel.Activation"/>
+        </list>
+    </class>
+
+    <class name="nl.b3p.transmodel.Activation">
+		<id name="id">
+			<column name="id" sql-type="serial"/>
+			<generator class="native">
+				<param name="sequence">activation_id_seq</param>
+			</generator>
+		</id>
+
+        <natural-id>
+			<many-to-one name="activationGroup" column="activation_group" not-null="true"/>
+			<property name="index" not-null="true"/>
+            <property name="validFrom" not-null="false"/>
+        </natural-id>
+
+        <property name="karUsageType" not-null="true"/>
+        <property name="type" not-null="true"/>
+        <property name="karDistanceTillStopLine"/>
+        <property name="karTimeTillStopLine"/>
+        <property name="karRadioPower"/>
+        <property name="metersBeforeRoadsideEquipmentLocation"/>
+        <property name="angleToNorth"/>
+        <property name="location" type="org.hibernatespatial.GeometryUserType"/>
+        <property name="updater"/>
+        <property name="updateTime"/>
+        <property name="validator"/>
+        <property name="validationTime"/>
+
+        <!-- koppeling met OV-netwerk... -->
+
+        <!-- hoe exact deze koppeling in elkaar zit zal misschien nog veranderen
+             en mogelijk verschillen per concession holder -->
+        <property name="concessionHolderLink"/>
+    </class>
+
+    <class name="nl.b3p.transmodel.DataOwner">
+        <id name="code">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="type" not-null="true"/>
+        <property name="name" not-null="true"/>
+        <property name="description"/>
+    </class>
+
+</hibernate-mapping>
