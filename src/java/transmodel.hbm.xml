@@ -68,6 +68,7 @@
 
         <property name="karUsageType" not-null="true"/>
         <property name="type" not-null="true"/>
+        <property name="commandType" not-null="true"/>
         <property name="karDistanceTillStopLine"/>
         <property name="karTimeTillStopLine"/>
         <property name="karRadioPower"/>
@@ -78,12 +79,6 @@
         <property name="updateTime"/>
         <property name="validator"/>
         <property name="validationTime"/>
-
-        <!-- koppeling met OV-netwerk... -->
-
-        <!-- hoe exact deze koppeling in elkaar zit zal misschien nog veranderen
-             en mogelijk verschillen per concession holder -->
-        <property name="concessionHolderLink"/>
     </class>
 
     <class name="nl.b3p.transmodel.DataOwner">

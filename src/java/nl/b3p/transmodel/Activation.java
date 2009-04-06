@@ -28,12 +28,20 @@ public class Activation {
     /* "All Categories" */
     public static final String KAR_USAGE_TYPE_ALL = "ALL";
 
+    /* Inmelding */
+    public static final int COMMAND_TYPE_ENTERING_ANNOUNCEMENT = 1;
+    /* Uitmelding */
+    public static final int COMMAND_TYPE_LEAVE_ANNOUNCEMENT = 2;
+    /* Vooraanmelding */
+    public static final int COMMAND_TYPE_PRE_ANNOUNCEMENT = 3;
+
     private Integer id;
     private ActivationGroup activationGroup;
     private Integer index;
     private Date validFrom;
     private String karUsageType;
     private String type;
+    private int commandType;
     private Double karDistanceTillStopLine;
     private Double karTimeTillStopLine;
     private Double karRadioPower;
@@ -93,6 +101,14 @@ public class Activation {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(int commandType) {
+        this.commandType = commandType;
     }
 
     public Double getKarDistanceTillStopLine() {

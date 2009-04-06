@@ -6,6 +6,7 @@
         valid_from timestamp,
         kar_usage_type varchar(255) not null,
         type varchar(255) not null,
+        command_type int4 not null,
         kar_distance_till_stop_line float8,
         kar_time_till_stop_line float8,
         kar_radio_power float8,
@@ -15,7 +16,6 @@
         update_time timestamp,
         validator varchar(255),
         validation_time timestamp,
-        concession_holder_link varchar(255),
         primary key (id),
         unique (activation_group, index, valid_from)
     );
