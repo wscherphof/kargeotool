@@ -503,19 +503,16 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.b3p-commons-hibernate.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.reference.b3p-commons-hibernate.jar" todir="${dist.ear.dir}"/>
         <copyfiles files="${reference.securityfilter-b3p.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.reference.securityfilter-b3p.jar" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.jstl11.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.jstl11.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.B3pHibernateEntityManagerLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateEntityManagerLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.B3pHibernateLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pCommonsLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pCommonsLib.classpath" todir="${dist.ear.dir}"/>
+        <copyfiles files="${libs.B3pHibernateLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateLib.classpath" todir="${dist.ear.dir}"/>
+        <copyfiles files="${libs.B3pHibernateEntityManagerLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateEntityManagerLib.classpath" todir="${dist.ear.dir}"/>
+        <copyfiles files="${libs.B3pHibernateSpatialLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateSpatialLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.struts.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.struts.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pSpatialLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pSpatialLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.B3pHibernateSpatialLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pHibernateSpatialLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.B3pGeotoolsCommonLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsCommonLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsPostgisLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.B3pGeotoolsShapeLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsShapeLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.Servlet24.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.Servlet24.classpath" todir="${dist.ear.dir}"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.B3pGeotoolsCommonLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} ${manifest.libs.B3pGeotoolsShapeLib.classpath} ${manifest.libs.Servlet24.classpath} "/>
+            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} "/>
         </manifest>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
@@ -523,16 +520,13 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.b3p-commons-hibernate.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.securityfilter-b3p.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.jstl11.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.B3pHibernateEntityManagerLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.B3pHibernateLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pCommonsLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.B3pHibernateLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.B3pHibernateEntityManagerLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.B3pHibernateSpatialLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.struts.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pSpatialLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.B3pHibernateSpatialLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.B3pGeotoolsCommonLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.B3pGeotoolsShapeLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.Servlet24.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>

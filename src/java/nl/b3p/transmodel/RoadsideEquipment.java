@@ -5,9 +5,9 @@ import java.util.Date;
 
 public class RoadsideEquipment {
     /* Waardes voor type property */
-    public static final String TYPE_CROSS = "CROSS";
-    public static final String TYPE_CLOSE = "CLOSE";
-    public static final String TYPE_PIU = "PIU";
+    public static final String TYPE_CROSS = "CROSS"; /* VRI */
+    public static final String TYPE_CLOSE = "CLOSE"; /* afsluiting/poller/slagboom */
+    public static final String TYPE_PIU = "PIU";     /* Passenger Information Unit (halteprocessor) */
 
     private Integer id;
     private DataOwner dataOwner;

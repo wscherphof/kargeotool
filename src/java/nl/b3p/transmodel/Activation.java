@@ -53,8 +53,6 @@ public class Activation {
     private String validator;
     private Date validationTime;
     
-    private String concessionHolderLink;
-
     public Integer getId() {
         return id;
     }
@@ -191,17 +189,4 @@ public class Activation {
         this.validationTime = validationTime;
     }
 
-    /**
-     * @return the concessionHolderLink
-     */
-    public String getConcessionHolderLink() {
-        return concessionHolderLink;
-    }
-
-    /**
-     * @param concessionHolderLink the concessionHolderLink to set
-     */
-    public void setConcessionHolderLink(String concessionHolderLink) {
-        this.concessionHolderLink = concessionHolderLink;
-    }
 }
