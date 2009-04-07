@@ -46,6 +46,14 @@ SYMBOL
 	POINTS 1 1 
 	END
 END
+SYMBOL
+  NAME "pijl"
+  TYPE TRUETYPE
+  FONT "arial"
+  CHARACTER ">"
+  ANTIALIAS TRUE
+  GAP -50
+END
 
 LAYER
   NAME puntjes
@@ -96,7 +104,12 @@ LAYER
     STYLE      
 	COLOR 255 0 0
 	SYMBOL "circle"
-	SIZE 4
+	SIZE 3
+    END
+    STYLE
+    	COLOR 255 0 0
+       SYMBOl "pijl"
+       SIZE 20
     END
     LABEL
         TYPE truetype
