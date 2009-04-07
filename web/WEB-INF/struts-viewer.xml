@@ -16,10 +16,24 @@
             <form-property name="regio" type="java.lang.String"/>
             <form-property name="provincie" type="java.lang.String"/>
         </form-bean>
-        <form-bean name="karpuntForm" type="org.apache.struts.validator.DynaValidatorForm">
+        <form-bean name="activationForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="id" type="java.lang.String"/>
-            <form-property name="thegeom" type="java.lang.String"/>
-            <form-property name="description" type="java.lang.String"/>
+            <form-property name="location" type="java.lang.String"/>            
+            <form-property name="activationGroup" type="java.lang.String"/>
+            <form-property name="index" type="java.lang.String"/>
+            <form-property name="validFrom" type="java.lang.String"/>
+            <form-property name="karUsageType" type="java.lang.String"/>
+            <form-property name="type" type="java.lang.String"/>
+            <form-property name="commandType" type="java.lang.String"/>
+            <form-property name="karDistanceTillStopLine" type="java.lang.String"/>
+            <form-property name="karTimeTillStopLine" type="java.lang.String"/>
+            <form-property name="karRadioPower" type="java.lang.String"/>
+            <form-property name="metersBeforeRoadsSideEquipmentLocation" type="java.lang.String"/>
+            <form-property name="angleToNorth" type="java.lang.String"/>
+            <form-property name="updater" type="java.lang.String"/>
+            <form-property name="updateTime" type="java.lang.String"/>
+            <form-property name="validator" type="java.lang.String"/>
+            <form-property name="validationTime" type="java.lang.String"/>
         </form-bean>
     </form-beans>
     <global-forwards>
@@ -34,9 +48,9 @@
             <forward name="success" path="site.edituser"/>
             <forward name="failure" path="site.edituser"/>
         </action>
-        <action path="/karpunt" name="karpuntForm" type="nl.b3p.kar.struts.KarPuntAction" scope="request" validate="false">
-            <forward name="success" path="site.karpunt"/>
-            <forward name="failure" path="site.karpunt"/>
+        <action path="/activation" name="activationForm" type="nl.b3p.kar.struts.ActivationAction" scope="request" validate="false">
+            <forward name="success" path="site.activation"/>
+            <forward name="failure" path="site.activation"/>
         </action>
 
     </action-mappings>

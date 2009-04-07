@@ -13,7 +13,7 @@
     var flamingo = document.getElementById("flamingoo");    
 </script>
 <script type="text/javascript" src="<html:rewrite module="" page="/js/viewer.js"/>"></script>
-<form action="karpunt.do" method="post" id="karpuntForm" target="_blank">
+<form action="activation.do" method="post" id="activationForm" target="_blank">
     <input type="hidden" id="wktgeomfield" name="newWktgeom" value=""/>
     <input type="hidden" id="idfield" name="id" value=""/>
 </form>

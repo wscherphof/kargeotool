@@ -25,7 +25,7 @@ function flamingo_map_onIdentifyData(map,layer,data,identifyextent,nridentified,
 function flamingo_drawMap_onGeometryDrawFinished(comp,wktGeom){
     document.getElementById("wktgeomfield").value=wktGeom;
     document.getElementById("idfield").value="";
-    document.getElementById("karpuntForm").submit();
+    document.getElementById("activationForm").submit();
 }
 function flamingo_map_onIdentify(map,extent){
     if (isGemeente){

@@ -14,6 +14,34 @@
         end example-->
     </global>
     <formset>
-        
+        <form name="activationForm">
+            <field property="karDistanceTillStopLine" depends="double">
+                <arg0 key="activation.karDistanceTillStopLine"/>
+            </field>
+            <field property="karTimeTillStopLine" depends="double">
+                <arg0 key="activation.karTimeTillStopLine"/>
+            </field>
+            <field property="karRadioPower" depends="double">
+                <arg0 key="activation.karRadioPower"/>
+            </field>
+            <field property="metersBeforeRoadsideEquipmentLocation" depends="double">
+                <arg0 key="activation.metersBeforeRoadsideEquipmentLocation"/>
+            </field>
+            <field property="angleToNorth" depends="double">
+                <arg0 key="activation.angleToNorth"/>
+            </field>
+            <field property="validFrom" depends="date">
+                <arg0 key="activation.validFrom"/>
+                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+            </field>
+            <field property="updateTime" depends="date">
+                <arg0 key="activation.updateTime"/>
+                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+            </field>
+            <field property="validationTime" depends="date">
+                <arg0 key="activation.validationTime"/>
+                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+            </field>
+        </form>
     </formset>
 </form-validation>

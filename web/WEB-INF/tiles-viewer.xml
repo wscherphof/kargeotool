@@ -20,7 +20,7 @@
     <definition name="site.edituser" extends="siteBase">
         <put name="content" value="/WEB-INF/jsp/website/edituser.jsp"/>
     </definition>
-    <definition name="site.karpunt" extends="siteBase2">
-        <put name="content" value="/WEB-INF/jsp/viewer/editkarpunt.jsp"/>
+    <definition name="site.activation" extends="siteBase2">
+        <put name="content" value="/WEB-INF/jsp/viewer/editactivation.jsp"/>
     </definition>
 </tiles-definitions>
