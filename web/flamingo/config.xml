@@ -19,7 +19,7 @@
                     <tpc:DrawTool id="drawTool" left="270" top="2" listento="drawMap"/>
                     <!--tpc:EditGeometryBar id="editGeometryBar" left="300" top="2" listento="drawMap"/-->
 		</fmc:ToolGroup>
-        <fmc:Text id="saveButton" visible="true" left="400" top="">
+        <fmc:Text id="saveButton" visible="true" left="410" top="">
             <string id="text">
                 <nl>
       <![CDATA[
@@ -30,7 +30,7 @@
         </fmc:Text>
 
 		<!--/fmc:Container-->
-		<fmc:Container borderwidth="1" bordercolor="#606060" left="0" top="0%" height="100%" width="100%">
+		<fmc:Container borderwidth="1" bordercolor="#606060" left="0" top="5%" height="90%" width="100%">
 			<fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
             <tpc:EditMap id="drawMap" listento="map" left="0" top="0%" height="100%" width="100%" bottom="bottom">
                 <tpc:GIS>                        
@@ -48,7 +48,7 @@
 		</fmc:Container>
 	</fmc:Container>
 	<fmc:Container left="80%" height="100%" width="20%">
-		<fmc:Legend id="legend" top="0" height="50%" width="98%" left="2%" listento="map">
+		<fmc:Legend id="legend" top="0" height="40%" width="98%" left="2%" listento="map">
 			<group label="Transmodel">
 			<item label="Bushaltes" canhide="true" listento="bushaltes.bushaltes">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
@@ -66,7 +66,8 @@
 				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
 			</group>
 		</fmc:Legend>
-		<fmc:LocationFinder id="locationfinder" top="50%" width="100%" left="0%" height="50%" listento="map" controls="true">
+        <tpc:EditInfoPanel id="editInfoPanel" left="2%" top="40%" height="20%" listento="drawMap"/>
+		<fmc:LocationFinder id="locationfinder" top="60%" width="100%" left="0%" height="40%" listento="map" controls="true">
 			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
                 <string id="label" nl="Zoek een plaats" en="Search for town" />
