@@ -2,25 +2,7 @@ var wktgeom="";
 var enabledToolId="";
 var selectExtent;
 function flamingo_map_onIdentifyData(map,layer,data,identifyextent,nridentified,total){    
-    if (enabledToolId!="tool_drag_export"){
-        if (data ){
-            for (var l in data){
-                if (l.toLowerCase().indexOf("bouwplan")==0){
-                    var bouwplanid=data[l][0]["id"];
-                    document.getElementById("plannummerfield").value=bouwplanid;
-                    document.getElementById("wktgeomfield").value="";
-                    document.getElementById("enqueteForm").submit();
-                    return;
-                }
-            }
-        }
-    }else{        
-        if (isGemeente){
-            enableDelete();
-        }
-        enableExport();
-        selectExtent=identifyextent;        
-    }
+    
 }
 function flamingo_drawMap_onGeometryDrawFinished(comp,wktGeom){
     document.getElementById("wktgeomfield").value=wktGeom;
@@ -38,35 +20,12 @@ function flamingo_toolgroup_onSetTool(toolgroup,toolid){
     enabledToolId=toolid;
 }
 function flamingo_map_onInit(){    
-    setLayers(layers, gebied);
-    //bij init van map_layerBouwplan (als map_layerBouwplan is aangemaakt. Dan bepaalde layers default uit zetten.
-    //Dit dus maar 1 keer doen (bij ophalen van de pagina) daarna functie overschrijven.
-    //bouwplan_label_openbaar,bouwplan_label_gemeente,bouwplan_label_regio,bouwplan_label_provincie
-    flamingo_map_layerBouwplan_onInit= function(){
-        flamingo.call('map_layerBouwplan','setLayerProperty','grens_woningbouwregios,bouwplan_label_openbaar,bouwplan_label_gemeente,bouwplan_label_regio,bouwplan_label_provincie','visible',false);
-        flamingo.call('map_layerBouwplan','update', 0 , true);
-        flamingo_map_layerBouwplan_onInit= function(){
-            return
-        };
-    };
-    if (bbox!=undefined){
-        var ext= new Object();
-        var minx=bbox.split(",")[0];
-        var miny=bbox.split(",")[1];
-        var maxx=bbox.split(",")[2];
-        var maxy=bbox.split(",")[3];
-        flamingo.callMethod("map", "moveToExtent", {
-            minx:minx,
-            miny:miny,
-            maxx:maxx,
-            maxy:maxy
-        },0);
-    }
+    
 }
 /*Save the selected geom.*/
 function saveActiveGeom(){
     document.getElementById("wktgeomfield").value="";
-    document.getElementById("plannummerfield").value="";
+    document.getElementById("idfield").value="";
     var activeFeature=flamingo.call("drawMap",'getActiveFeature');
     if (activeFeature!=undefined){
         document.getElementById("wktgeomfield").value=activeFeature["wktgeom"];
@@ -77,9 +36,9 @@ function saveActiveGeom(){
             }
         }
         if (!isNaN(featureId)){
-            document.getElementById("plannummerfield").value=featureId;
+            document.getElementById("idfield").value=featureId;
         }        
-        document.getElementById("enqueteForm").submit();
+        document.getElementById("activationForm").submit();
         removeDrawing();
     }else{
         alert("Selecteer eerst een bouwplan door met de bouwplanselectietool \n op een bouwplan te klikken of teken een nieuw bouwplan.");
@@ -93,7 +52,7 @@ function createInputField(name,id){
     inputElement.setAttribute("type","hidden");
     inputElement.setAttribute("name",name);
     inputElement.setAttribute("id",id);
-    document.getElementById("enqueteForm").appendChild(inputElement);
+    document.getElementById("activationForm").appendChild(inputElement);
 }
 function useSelection(aktie){
     if (selectExtent==undefined){

@@ -47,7 +47,7 @@ public final class ActivationAction extends BaseDatabaseAction {
         Activation activation = getActivation(dynaForm, request, true);
 
         if (activation == null) {
-            addAlternateMessage(mapping, request, "Niet gevonden");
+            addAlternateMessage(mapping, request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }        
         createLists(activation, dynaForm, request);

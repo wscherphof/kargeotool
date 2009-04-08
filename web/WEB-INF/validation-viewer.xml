@@ -42,6 +42,18 @@
                 <arg0 key="activation.validationTime"/>
                 <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
             </field>
+            <field property="activationGroup" depends="required">
+				<arg0 key="activation.activationGroup"/>
+            </field>
+            <field property="index" depends="required">
+				<arg0 key="activation.index"/>
+            </field>
+            <field property="karUsageType" depends="required">
+				<arg0 key="activation.karUsageType"/>
+            </field>
+            <field property="type" depends="required">
+				<arg0 key="activation.type"/>
+            </field>
         </form>
     </formset>
 </form-validation>

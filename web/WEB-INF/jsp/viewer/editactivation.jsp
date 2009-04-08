@@ -3,7 +3,7 @@
 <c:set var="form" value="${activationForm.map}"/>
 <script type="text/javascript">
     //temp oplossing!!!!!! Dit moet nog worden veranderd
-    if ("${form.description}".length !=0){
+    if ("${form.activationGroup}".length !=0){
         if (window.opener){
             window.opener.removeDrawing();
             window.opener.refreshFlamingo();
@@ -11,6 +11,7 @@
         window.close();
     }
 </script>
+<tiles:insert definition="infoblock"/>
 <html:javascript formName="activationForm" staticJavascript="false"/>
 <html:form styleId="activationForm" action="/activation" focus="commandType" onsubmit="return validateActivationForm(this)">
     <h1><fmt:message key="activation.title"/></h1>
@@ -20,9 +21,8 @@
         <tr><td><fmt:message key="activation.commandType"/></td>
             <td>
                 <html:select styleId="commandType" property="commandType">
-                    <html:option value="0">Aanmeldpunt</html:option>
-                    <html:option value="1">Uitmeldpunt</html:option>
-                    <html:option value="2">Stopstreep</html:option>
+                    <html:option value="1">Aanmeldpunt</html:option>
+                    <html:option value="4">Stopstreep</html:option>
                 </html:select>
             </td>
         </tr>
