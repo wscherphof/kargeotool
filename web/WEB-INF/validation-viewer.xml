@@ -32,15 +32,15 @@
             </field>
             <field property="validFrom" depends="date">
                 <arg0 key="activation.validFrom"/>
-                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
             </field>
             <field property="updateTime" depends="date">
                 <arg0 key="activation.updateTime"/>
-                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
             </field>
             <field property="validationTime" depends="date">
                 <arg0 key="activation.validationTime"/>
-                <var><var-name>datePattern</var-name><var-value>dd/MM/yyyy</var-value></var>
+                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
             </field>
         </form>
     </formset>

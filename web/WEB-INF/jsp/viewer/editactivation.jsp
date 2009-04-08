@@ -11,7 +11,8 @@
         window.close();
     }
 </script>
-<html:form styleId="activationForm" action="/activation" focus="description">
+<html:javascript formName="activationForm" staticJavascript="false"/>
+<html:form styleId="activationForm" action="/activation" focus="commandType" onsubmit="return validateActivationForm(this)">
     <h1><fmt:message key="activation.title"/></h1>
     <table>
         <tr><td></td><td><c:out value="${form.id}"/></td></tr>
