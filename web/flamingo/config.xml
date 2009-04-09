@@ -41,8 +41,8 @@
                 </tpc:GIS>
             </tpc:EditMap>
 			<fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
-				<!--fmc:LayerOGWMS id="bushaltes" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map&amp;Service=WMS" srs="EPSG:28992" layers="buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
-                <fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?Service=WMS" srs="EPSG:28992" layers="buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/>
+				<!--fmc:LayerOGWMS id="bushaltes" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map&amp;Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
+                <fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/>
 				<fmc:LayerIdentifyIcon id="identifyicon"/>
 				<fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
 				<fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>

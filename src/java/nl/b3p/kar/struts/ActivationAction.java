@@ -72,14 +72,14 @@ public final class ActivationAction extends BaseDatabaseAction {
         }
         populateObject(activation, dynaForm, request, mapping);
         try{
-        if (activation.getLocation()!=null){
-            if (activation.getId() == null) {
-                em.persist(activation);
-            } else {
-                em.merge(activation);
+            if (activation.getLocation()!=null){
+                if (activation.getId() == null) {
+                    em.persist(activation);
+                } else {
+                    em.merge(activation);
+                }
+                em.flush();
             }
-            em.flush();
-        }
         }catch(Exception e){
             createLists(activation, dynaForm, request);
             throw e;

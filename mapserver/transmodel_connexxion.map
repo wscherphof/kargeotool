@@ -93,7 +93,7 @@ LAYER
   TEMPLATE bla  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  connection "host=localhost dbname=transmodel password=japikola port=5432 user=postgres"
   data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
@@ -131,7 +131,8 @@ LAYER
   NAME bushaltes
   METADATA
     "wms_title" "bushaltes"
-    "gml_include_items" "all"        
+    "gml_include_items" "all"
+    "gml_exclude_items" "oid"        
     "wfs_title" "bushaltes"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "oid"
@@ -143,7 +144,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
+  data "point_geom from (select oid,point_geom,validfrom,dataowner,code,name from point where name is not null) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
   END
@@ -197,7 +198,10 @@ LAYER
   NAME kar_punten
   METADATA
     "wms_title" "kar_punten"
-    "gml_include_items" "all"
+    "gml_include_items" "all"     
+    "wfs_title" "kar_punten"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "id"
   END
   TYPE POINT
   DUMP true
@@ -205,71 +209,22 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,description from point where description is not null) as bla using srid=28992"
-  PROJECTION
-    "init=epsg:28992"
-  END
-  CLASSITEM "description"  
-  CLASS 
-    NAME "Aanmeldpunt"
-    EXPRESSION /Aanmeldpunt/    
-    STYLE      
-      SYMBOL "radio_blauw.gif"      
-    END 
-  END
-  CLASS 
-    NAME "Uitmeldpunt"
-    EXPRESSION /Uitmeldpunt/    
-    STYLE      
-      SYMBOL "radio_zwart.gif"      
-    END 
-  END  
-  CLASS 
-    NAME "Stopstreep"
-    EXPRESSION /Stopstreep/    
-    STYLE      
-      SYMBOL "radio_rood.gif"      
-    END 
-  END    
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
-
-LAYER
-  NAME kar_punten_gemaakt
-  METADATA
-    "wms_title" "kar_punten_gemaakt"
-    "gml_include_items" "all"
-  END
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla  
-  TOLERANCE 10
-  status off
-  connectiontype postgis
   connection "host=localhost dbname=kar_gis password=kar_gis port=5432 user=kar_gis"
-  data "the_geom from (select id,the_geom,description from karpunt where description is not null) as bla using unique id using srid=28992"
+  data "location from (select id,location,command_type from activation) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
-  CLASSITEM "description"  
+  CLASSITEM "command_type"  
   CLASS 
     NAME "Aanmeldpunt"
-    EXPRESSION /Aanmeldpunt/    
+    EXPRESSION "1"    
     STYLE      
       SYMBOL "radio_blauw.gif"      
     END 
   END
   CLASS 
-    NAME "Uitmeldpunt"
-    EXPRESSION /Uitmeldpunt/    
-    STYLE      
-      SYMBOL "radio_zwart.gif"      
-    END 
-  END  
-  CLASS 
     NAME "Stopstreep"
-    EXPRESSION /Stopstreep/    
+    EXPRESSION "4"    
     STYLE      
       SYMBOL "radio_rood.gif"      
     END 
