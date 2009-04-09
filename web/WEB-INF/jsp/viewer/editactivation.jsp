@@ -3,7 +3,7 @@
 <c:set var="form" value="${activationForm.map}"/>
 <script type="text/javascript">
     //temp oplossing!!!!!! Dit moet nog worden veranderd
-    if ("${form.activationGroup}".length !=0){
+    if (${closeWindow}){
         if (window.opener){
             window.opener.removeDrawing();
             window.opener.refreshFlamingo();
@@ -16,7 +16,7 @@
 <html:form styleId="activationForm" action="/activation" focus="commandType" onsubmit="return validateActivationForm(this)">
     <h1><fmt:message key="activation.title"/></h1>
     <table>
-        <tr><td></td><td><c:out value="${form.id}"/></td></tr>
+        <tr><td></td><td><html:hidden property="id"/><c:out value="${form.id}"/></td></tr>
         <tr><td></td><td><html:hidden property="location" styleId="thegeom" /></td></tr>
         <tr><td><fmt:message key="activation.commandType"/></td>
             <td>
@@ -46,11 +46,30 @@
         </tr>
         <tr>
             <td><fmt:message key="activation.karUsageType"/></td>
-            <td><html:text property="karUsageType"/></td>
+            <td><html:select property="karUsageType">
+                    <html:option value="PT">PT</html:option>
+                    <html:option value="ESWA">ESWA</html:option>
+                    <html:option value="ES">ES</html:option>
+                    <html:option value="DS">DS</html:option>
+                    <html:option value="ESPT">ESPT</html:option>
+                    <html:option value="ESWAPT">ESWAPT</html:option>
+                    <html:option value="ALL">ALL</html:option>
+                </html:select>
+            </td>
         </tr>
         <tr>
             <td><fmt:message key="activation.type"/></td>
-            <td><html:text property="type"/></td>
+            <td><html:select property="type">
+                    <html:option value="PRQA">PRQA</html:option>
+                    <html:option value="PRQM">PRQM</html:option>
+                    <html:option value="SDCAS">SDCAS</html:option>
+                    <html:option value="PRQAA">PRQAA</html:option>
+                    <html:option value="PRQI">PRQI</html:option>
+                    <html:option value="SHNJ">SHNJ</html:option>
+                    <html:option value="SSED">SSED</html:option>
+                    <html:option value="AABS">AABS</html:option>
+                </html:select>
+            </td>
         </tr>
         <tr>
             <td><fmt:message key="activation.karDistanceTillStopLine"/></td>

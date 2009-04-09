@@ -27,7 +27,7 @@
       </generator>
     </id>
     <natural-id>
-      <many-to-one name="RoadsideEquipment" not-null="true"/>
+      <many-to-one name="RoadsideEquipment" not-null="true" lazy="false"/>
       <property name="karSignalGroup" not-null="true"/>
       <property name="validFrom" not-null="true"/>
     </natural-id>

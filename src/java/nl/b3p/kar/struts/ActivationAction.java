@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -27,7 +28,8 @@ public final class ActivationAction extends BaseDatabaseAction {
     protected static final String VIEWER = "viewer";
     protected static final String SAVE = "save";
     protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
-    
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
     protected Map getActionMethodPropertiesMap() {
         Map map = new HashMap();
         ExtendedMethodProperties hibProp = null;
@@ -69,6 +71,7 @@ public final class ActivationAction extends BaseDatabaseAction {
             return mapping.findForward(SUCCESS);
         }
         populateObject(activation, dynaForm, request, mapping);
+        createLists(activation, dynaForm, request);
         if (activation.getLocation()!=null){
             if (activation.getId() == null) {
                 em.persist(activation);
@@ -77,8 +80,8 @@ public final class ActivationAction extends BaseDatabaseAction {
             }
             em.flush();
         }
-        createLists(activation, dynaForm, request);
         addDefaultMessage(mapping, request);
+        request.setAttribute("closeWindow",true);
         return getDefaultForward(mapping, request);
     }
     protected Activation getActivation(DynaValidatorForm dynaForm, HttpServletRequest request, boolean createNew) throws Exception {
@@ -100,28 +103,36 @@ public final class ActivationAction extends BaseDatabaseAction {
     }
 
     protected void populateForm(Activation a, DynaValidatorForm dynaForm, HttpServletRequest request) throws Exception {
-        dynaForm.set("id",a.getId());
+        if (a.getId()!=null)
+            dynaForm.set("id",a.getId().toString());
         if (a.getActivationGroup()!=null)
-            dynaForm.set("activationGroup",a.getActivationGroup().getId());
-        dynaForm.set("index",a.getIndex());
+            dynaForm.set("activationGroup",a.getActivationGroup().getId().toString());
+        if (a.getIndex()!=null)
+            dynaForm.set("index",a.getIndex().toString());
         if (a.getValidFrom()!=null){
-            dynaForm.set("validFrom",FormUtils.DateToFormString(a.getValidFrom(),request.getLocale()));
+            dynaForm.set("validFrom",sdf.format(a.getValidFrom()));
         }
         dynaForm.set("karUsageType",a.getKarUsageType());
-        dynaForm.set("type",a.getType());
+        if (a.getType()!=null)
+            dynaForm.set("type",a.getType().toString());
         dynaForm.set("commandType",""+a.getCommandType());
-        dynaForm.set("karDistanceTillStopLine",a.getKarDistanceTillStopLine());
-        dynaForm.set("karTimeTillStopLine",a.getKarTimeTillStopLine());
-        dynaForm.set("karRadioPower",a.getKarRadioPower());
-        dynaForm.set("metersBeforeRoadsSideEquipmentLocation",a.getMetersBeforeRoadsideEquipmentLocation());
-        dynaForm.set("angleToNorth",a.getAngleToNorth());
+        if (a.getKarDistanceTillStopLine()!=null)
+            dynaForm.set("karDistanceTillStopLine",a.getKarDistanceTillStopLine().toString());
+        if (a.getKarTimeTillStopLine()!=null)
+            dynaForm.set("karTimeTillStopLine",a.getKarTimeTillStopLine().toString());
+        if (a.getKarRadioPower()!=null)
+            dynaForm.set("karRadioPower",a.getKarRadioPower().toString());
+        if (a.getMetersBeforeRoadsideEquipmentLocation()!=null)
+            dynaForm.set("metersBeforeRoadsSideEquipmentLocation",a.getMetersBeforeRoadsideEquipmentLocation().toString());
+        if (a.getAngleToNorth()!=null)
+            dynaForm.set("angleToNorth",a.getAngleToNorth().toString());
         dynaForm.set("updater",a.getUpdater());
         if (a.getUpdateTime()!=null){
-            dynaForm.set("updateTime",FormUtils.DateToFormString(a.getUpdateTime(),request.getLocale()));
+            dynaForm.set("updateTime",sdf.format(a.getUpdateTime()));
         }
         dynaForm.set("validator",a.getValidator());
         if (a.getValidationTime()!=null)
-            dynaForm.set("validationTime",FormUtils.DateToFormString(a.getValidationTime(),request.getLocale()));
+            dynaForm.set("validationTime",sdf.format(a.getValidationTime()));
         dynaForm.set("location",null);
     }   
 

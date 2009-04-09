@@ -163,4 +163,13 @@ public class ActivationGroup {
     public void setActivations(List activations) {
         this.activations = activations;
     }
+    public String toString(){
+        String returnValue="";
+        returnValue+=this.getType();
+        if (this.getRoadsideEquipment()!=null){
+            returnValue+=" "+this.getRoadsideEquipment().getDescription();
+        }
+        returnValue+="(KAR-signal: "+this.getKarSignalGroup()+")";
+        return returnValue;
+    }
 }
