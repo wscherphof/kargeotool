@@ -191,8 +191,7 @@ public class GebruikersAction extends BaseDatabaseAction {
 	public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
-		if(!"delete".equals(form.get("confirmAction"))) {
-            /* TODO: dependants lijstje maken! bouwplan, opmerkingen... wat ermee te doen? */
+		if(!"delete".equals(form.get("confirmAction"))) {           
 			addMessage(request, "gebruiker.delete.confirm");
 			form.set("confirmAction", "delete");
 			edit(mapping, form, request, response);

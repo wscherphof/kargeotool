@@ -71,7 +71,7 @@ public final class ActivationAction extends BaseDatabaseAction {
             return mapping.findForward(SUCCESS);
         }
         populateObject(activation, dynaForm, request, mapping);
-        createLists(activation, dynaForm, request);
+        try{
         if (activation.getLocation()!=null){
             if (activation.getId() == null) {
                 em.persist(activation);
@@ -79,6 +79,10 @@ public final class ActivationAction extends BaseDatabaseAction {
                 em.merge(activation);
             }
             em.flush();
+        }
+        }catch(Exception e){
+            createLists(activation, dynaForm, request);
+            throw e;
         }
         addDefaultMessage(mapping, request);
         request.setAttribute("closeWindow",true);

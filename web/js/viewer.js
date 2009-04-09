@@ -5,9 +5,9 @@ function flamingo_map_onIdentifyData(map,layer,data,identifyextent,nridentified,
     
 }
 function flamingo_drawMap_onGeometryDrawFinished(comp,wktGeom){
-    document.getElementById("wktgeomfield").value=wktGeom;
+    /*document.getElementById("wktgeomfield").value=wktGeom;
     document.getElementById("idfield").value="";
-    document.getElementById("activationForm").submit();
+    document.getElementById("activationForm").submit();*/
 }
 function flamingo_map_onIdentify(map,extent){
     if (isGemeente){
@@ -41,7 +41,7 @@ function saveActiveGeom(){
         document.getElementById("activationForm").submit();
         removeDrawing();
     }else{
-        alert("Selecteer eerst een bouwplan door met de bouwplanselectietool \n op een bouwplan te klikken of teken een nieuw bouwplan.");
+        alert("Selecteer of teken eerst een punt die u wilt opslaan");
     }
 }
 function removeDrawing(){
@@ -53,31 +53,6 @@ function createInputField(name,id){
     inputElement.setAttribute("name",name);
     inputElement.setAttribute("id",id);
     document.getElementById("activationForm").appendChild(inputElement);
-}
-function useSelection(aktie){
-    if (selectExtent==undefined){
-        alert("Er is geen selectie gemaakt");
-        return;
-    }
-    window.open('selectBouwplan.do?aktie='+aktie+'&selectionBbox='+
-        selectExtent.minx+
-        ","+selectExtent.miny+
-        ","+selectExtent.maxx+
-        ","+selectExtent.maxy, '', 'width='+screen.width+', height='+screen.height+', left=0, top=0, scrollbars=yes, menubar=yes, status=yes, resizable=yes');
-    flamingo.callMethod("map","clearDrawings");
-    selectExtent=undefined;
-    disableExportDelete();
-}
-function setLayers(layers,httpRequestParams){
-    if (layers!=null && layers!=undefined){
-        flamingo.call('map','removeLayer','layerBouwplan');
-        if (httpRequestParams==undefined){
-            httpRequestParams="";
-        }
-        var newLayer='<fmc:LayerOGWMS xmlns:fmc="fmc" id="layerBouwplan" url="'+wmsUrl+'Styles=&amp;Service=WMS&amp;'+httpRequestParams+'" srs="EPSG:28992" layers="grens_woningbouwregios,'+layers+'" query_layers="'+layers+'">'+
-        '</fmc:LayerOGWMS>';
-        flamingo.call('map','addLayer',newLayer);
-    }
 }
 function refreshFlamingo(){
     flamingo.call('map','update', 0 , true);
