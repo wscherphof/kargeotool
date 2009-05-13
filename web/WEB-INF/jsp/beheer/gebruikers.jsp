@@ -1,4 +1,4 @@
-<%@include file="/WEB-INF/taglibs.jsp" %>
+<%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
 
 <h1>Gebruikersbeheer</h1>
@@ -7,13 +7,12 @@
 
 <html:javascript formName="gebruikersForm" staticJavascript="false"/>
 <script type="text/javascript" src="<html:rewrite module="" page="/js/table.js"/>"></script>
-<tiles:insert definition="infoblock"/>
 
-<html:form action="gebruikers" method="POST" onsubmit="return validateGebruikersForm(this)">
+<html:form action="/beheer/gebruikers" method="POST" onsubmit="return validateGebruikersForm(this)">
 
     <html:hidden property="id"/>
     <c:if test="${form.id != -1}">
-        <html:hidden property="role"/>
+        <html:hidden property="rol"/>
         <html:hidden property="loc"/>
     </c:if>
 
@@ -32,7 +31,7 @@
         </thead>
         <tbody>
             <c:forEach var="g" varStatus="status" items="${gebruikers}">
-                <c:set var="editLink"><html:rewrite page="/gebruikers.do?edit=t&amp;id=${g.id}"/></c:set>
+                <c:set var="editLink"><html:rewrite page="/beheer/gebruikers.do?edit=t&amp;id=${g.id}"/></c:set>
                 <c:set var="col" value=""/>
                 <c:if test="${g.id == form.id}">
                     <c:set var="col" value="#cccccc"/>
@@ -45,7 +44,7 @@
                     <td>
                         <%-- niet gebruiker zichzelf laten verwijderen --%>
                         <c:if test="${g.username != pageContext.request.userPrincipal.username}">
-                            <html:link page="/gebruikers.do?delete=t&amp;id=${g.id}">
+                            <html:link page="/beheer/gebruikers.do?delete=t&amp;id=${g.id}">
                                 <html:img page="/images/delete.gif" altKey="button.remove" module="" border="0" vspace="2"/>
                             </html:link>
                         </c:if>
@@ -109,7 +108,7 @@
                 <td style="vertical-align: top"><fmt:message key="gebruiker.role"/></td>
                 <td>
                     <c:forEach var="r" items="${availableRoles}">
-                        <html:multibox property="roles" value="${r.id}"/><c:out value="${r.role}"/><br>
+                        <html:multibox property="rollen" value="${r.id}"/><c:out value="${r.rol}"/><br>
                     </c:forEach>
                 </td>
 
