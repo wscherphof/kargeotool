@@ -11,8 +11,8 @@ WEB
   METADATA
     "wms_title"				"Transmodel Connexxion"
     "wfs_title"				"Transmodel Connexxion"
-    "wms_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion"
-    "wfs_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion"
+    "wms_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit"
+    "wfs_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit"
     "wms_srs"				"EPSG:28992"
     "wfs_srs"				"EPSG:28992"
     "wfs_extent"			"12000 304000 280000 620000"
@@ -209,26 +209,17 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "location from (select id,location,command_type from activation) as bla using srid=28992 using unique id"
+  connection "host=localhost dbname=kar_gis_edit password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  data "geom from (select id,type,geom from karpunt where type = 'ACTIVATION') as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
-  CLASSITEM "command_type"  
   CLASS 
     NAME "Aanmeldpunt"
-    EXPRESSION "1"    
     STYLE      
       SYMBOL "radio_blauw.gif"      
     END 
   END
-  CLASS 
-    NAME "Stopstreep"
-    EXPRESSION "4"    
-    STYLE      
-      SYMBOL "radio_rood.gif"      
-    END 
-  END    
   PROCESSING "CLOSE_CONNECTION=DEFER"
 END
 
