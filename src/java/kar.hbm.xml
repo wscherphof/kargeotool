@@ -36,7 +36,7 @@
         <param name="sequence">karpunt_id_seq</param>
       </generator>
     </id>
-    <property name="description"/>
-    <property column="the_geom" name="geom" type="org.hibernatespatial.GeometryUserType"/>
+    <property name="type"/>
+    <property name="geom" type="org.hibernatespatial.GeometryUserType"/>
   </class>
 </hibernate-mapping>

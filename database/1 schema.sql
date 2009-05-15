@@ -6,18 +6,18 @@
         valid_from timestamp,
         kar_usage_type varchar(255) not null,
         type varchar(255) not null,
-        command_type int4 not null,
+        command_type int4,
         kar_distance_till_stop_line float8,
         kar_time_till_stop_line float8,
         kar_radio_power float8,
         meters_before_roadside_equipment_location float8,
         angle_to_north float8,
+        point int4,
         updater varchar(255),
         update_time timestamp,
         validator varchar(255),
         validation_time timestamp,
-        primary key (id),
-        unique (activation_group, index, valid_from)
+        primary key (id)
     );
 
     create table activation_group (
@@ -28,10 +28,12 @@
         type varchar(255) not null,
         direction_at_intersection int4 not null,
         meters_before_roadside_equipment_location int4,
+        meters_after_roadside_equipment_location int4,
         inactive_from timestamp,
         angle_to_north float8,
         follow_direction bool,
         description text,
+        point int4,
         updater varchar(255),
         update_time timestamp,
         validator varchar(255),
@@ -45,6 +47,7 @@
         type varchar(255) not null,
         name varchar(255) not null,
         description varchar(255),
+        validation_required bool not null,
         primary key (code)
     );
 
@@ -68,7 +71,7 @@
 
     create table karpunt (
         id serial not null,
-        description varchar(255),
+        type varchar(255),
         primary key (id)
     );
 
@@ -81,6 +84,12 @@
         radio_address varchar(255),
         description text,
         supplier varchar(255),
+        selective_detection_loop bool not null,
+        point int4,
+        updater varchar(255),
+        update_time timestamp,
+        validator varchar(255),
+        validation_time timestamp,
         primary key (id),
         unique (data_owner, unit_number, valid_from)
     );
@@ -92,9 +101,19 @@
     );
 
     alter table activation 
+        add constraint FK79AA8116261C486A 
+        foreign key (point) 
+        references karpunt;
+
+    alter table activation 
         add constraint FK79AA811687EE0591 
         foreign key (activation_group) 
         references activation_group;
+
+    alter table activation_group 
+        add constraint FK49CC3216261C486A 
+        foreign key (point) 
+        references karpunt;
 
     alter table activation_group 
         add constraint FK49CC3216C584CE8F 
@@ -110,6 +129,11 @@
         add constraint FK693FF394D9339979 
         foreign key (role) 
         references role;
+
+    alter table roadside_equipment 
+        add constraint FK5FFC3C6261C486A 
+        foreign key (point) 
+        references karpunt;
 
     alter table roadside_equipment 
         add constraint FK5FFC3C6686F78F9 

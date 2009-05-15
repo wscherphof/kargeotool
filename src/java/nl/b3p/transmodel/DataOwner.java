@@ -5,6 +5,20 @@ public class DataOwner {
     private String type;
     private String name;
     private String description;
+    private boolean validationRequired;
+
+    /**
+     * Waarde voor type indien data owner een <b>wegbeheerder</b> is.
+     */
+    public static final String TYPE_ROOW = "ROOW";
+    /**
+     * Waarde voor type indien data owner een <b>vervoerder</b> is.
+     */
+    public static final String TYPE_PUCO = "PUCO";
+    /**
+     * Waarde voor type indien data owner een <b>concessieverlener</b> is.
+     */
+    public static final String TYPE_COPR = "COPR";
 
     public String getCode() {
         return code;
@@ -36,5 +50,13 @@ public class DataOwner {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isValidationRequired() {
+        return validationRequired;
+    }
+
+    public void setValidationRequired(boolean validationRequired) {
+        this.validationRequired = validationRequired;
     }
 }

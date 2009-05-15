@@ -1,11 +1,15 @@
 package nl.b3p.transmodel;
 
-import com.vividsolutions.jts.geom.Point;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import nl.b3p.kar.hibernate.KarPunt;
+import nl.b3p.kar.struts.EditorTreeObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class ActivationGroup {
+public class ActivationGroup implements EditorTreeObject {
     /* "Priority ReQuest Automatic" */
     public static final String TYPE_PRQA = "PRQA";
 
@@ -16,11 +20,12 @@ public class ActivationGroup {
     private String type;
     private int directionAtIntersection;
     private Integer metersBeforeRoadsideEquipmentLocation;
+    private Integer metersAfterRoadsideEquipmentLocation;
     private Date inactiveFrom;
     private Double angleToNorth;
-    private Boolean followDirection;
+    private boolean followDirection;
     private String description;
-    private Point stopLineLocation;
+    private KarPunt point; /* locatie van stopstreep */
     private String updater;
     private Date updateTime;
     private String validator;
@@ -84,6 +89,14 @@ public class ActivationGroup {
         this.metersBeforeRoadsideEquipmentLocation = metersBeforeRoadsideEquipmentLocation;
     }
 
+    public Integer getMetersAfterRoadsideEquipmentLocation() {
+        return metersAfterRoadsideEquipmentLocation;
+    }
+
+    public void setMetersAfterRoadsideEquipmentLocation(Integer metersAfterRoadsideEquipmentLocation) {
+        this.metersAfterRoadsideEquipmentLocation = metersAfterRoadsideEquipmentLocation;
+    }
+
     public Date getInactiveFrom() {
         return inactiveFrom;
     }
@@ -100,11 +113,11 @@ public class ActivationGroup {
         this.angleToNorth = angleToNorth;
     }
 
-    public Boolean getFollowDirection() {
+    public boolean isFollowDirection() {
         return followDirection;
     }
 
-    public void setFollowDirection(Boolean followDirection) {
+    public void setFollowDirection(boolean followDirection) {
         this.followDirection = followDirection;
     }
 
@@ -116,12 +129,12 @@ public class ActivationGroup {
         this.description = description;
     }
 
-    public Point getStopLineLocation() {
-        return stopLineLocation;
+    public KarPunt getPoint() {
+        return point;
     }
 
-    public void setStopLineLocation(Point stopLineLocation) {
-        this.stopLineLocation = stopLineLocation;
+    public void setPoint(KarPunt point) {
+        this.point = point;
     }
 
     public String getUpdater() {
@@ -171,5 +184,22 @@ public class ActivationGroup {
         }
         returnValue+="(KAR-signal: "+this.getKarSignalGroup()+")";
         return returnValue;
+    }
+
+    public JSONObject serializeToJson() throws Exception {
+        JSONObject j = new JSONObject();
+        j.put("type", "ag");
+        j.put("id", "ag:" + getId());
+        j.put("description", getDescription());
+        j.put("name", getKarSignalGroup() + " " + (getDescription() == null ? "" : getDescription()));
+        j.put("point", getPoint() == null ? null : getPoint().toString());
+        if(!getActivations().isEmpty()) {
+            JSONArray children = new JSONArray();
+            j.put("children", children);
+            for(Iterator it = getActivations().iterator(); it.hasNext();) {
+                children.put( ((Activation)it.next()).serializeToJson() );
+            }
+        }
+        return j;
     }
 }

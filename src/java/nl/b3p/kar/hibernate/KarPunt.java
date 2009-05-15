@@ -1,61 +1,60 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
-/**
- *
- * @author Roy
- */
 public class KarPunt {
     private Integer id;
     private Point geom;
-    private String description;
+    private String type;
 
     /**
-     * @return the code
+     * Waarde voor type indien punt een <b>inmeldpunt</b> is.
      */
+    public static final String TYPE_ACTIVATION = "ACTIVATION";
+    /**
+     * Waarde voor type indien punt een <b>signaalgroep</b> is.
+     */
+    public static final String TYPE_ACTIVATION_GROUP = "ACTIVATIONGROUP";
+    /**
+     * Waarde voor type indien punt <b>walapparatuur</b> is.
+     */
+    public static final String TYPE_ROADSIDE_EQUIPMENT = "RoadSideEQuipment";
+    /**
+     * XXX Geen idee waarvoor dit type moet worden gebruikt
+     */
+    public static final String TYPE_POINT_ON_LINK = "Point On Link";
+    
     public Integer getId() {
         return id;
     }
 
-    /**
-     * @param code the code to set
-     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    /**
-     * @return the geom
-     */
     public Point getGeom() {
         return geom;
     }
 
-    /**
-     * @param geom the geom to set
-     */
     public void setGeom(Point geom) {
         this.geom = geom;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
+    public String getType() {
+        return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 
+    @Override
+    public String toString() {
+        NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+        nf.setGroupingUsed(false);
+        return nf.format(geom.getCoordinate().x) + ", " + nf.format(geom.getCoordinate().y);
+    }
 }

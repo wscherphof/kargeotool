@@ -1,17 +1,22 @@
 package nl.b3p.transmodel;
 
-import com.vividsolutions.jts.geom.Point;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
+import nl.b3p.kar.hibernate.KarPunt;
+import nl.b3p.kar.struts.EditorTreeObject;
+import org.json.JSONObject;
 
-public class Activation {
-    public static final String TYPE_PRQA = "PRQA";
-    public static final String TYPE_PRQM = "PRQM";
-    public static final String TYPE_SDCAS = "SDCAS";
-    public static final String TYPE_PRQAA = "PRQAA";
-    public static final String TYPE_PRQI = "PRQI";
-    public static final String TYPE_SHNJ = "SHNJ";
-    public static final String TYPE_SSED = "SSED";
-    public static final String TYPE_AABS = "AABS";
+public class Activation implements EditorTreeObject {
+    public static final String TYPE_PRQA = "PRQA"; /* automatisch */
+    public static final String TYPE_PRQM = "PRQM"; /* halteknop */
+    public static final String TYPE_SDCAS = "SDCAS"; /* start deur sluiten */
+    public static final String TYPE_PRQAA = "PRQAA"; /* altijd automatisch */
+    public static final String TYPE_PRQI = "PRQI"; /* via koppelkabel */
+    //public static final String TYPE_SHNJ = "SHNJ";
+    //public static final String TYPE_SSED = "SSED";
+    //public static final String TYPE_AABS = "AABS";
 
     /* "Emergency Services (Alarm)" */
     public static final String KAR_USAGE_TYPE_ES = "ES";
@@ -20,20 +25,20 @@ public class Activation {
     /* "Emergency Services Without Alarm" */
     public static final String KAR_USAGE_TYPE_ESWA = "ESWA";
     /* "Demand response Service" */
-    public static final String KAR_USAGE_TYPE_DS = "DS";
+    //public static final String KAR_USAGE_TYPE_DS = "DS";
     /* "Emergency Services and Public Transport" */
-    public static final String KAR_USAGE_TYPE_ESPT = "ESPT";
+    //public static final String KAR_USAGE_TYPE_ESPT = "ESPT";
     /* "Emergency Services with and without Alarm AND Public Transport" */
-    public static final String KAR_USAGE_TYPE_ESWAPT = "ESWAPT";
+    //public static final String KAR_USAGE_TYPE_ESWAPT = "ESWAPT";
     /* "All Categories" */
     public static final String KAR_USAGE_TYPE_ALL = "ALL";
 
     /* Inmelding */
-    public static final int COMMAND_TYPE_ENTERING_ANNOUNCEMENT = 1;
+    //public static final Integer COMMAND_TYPE_ENTERING_ANNOUNCEMENT = 1;
     /* Uitmelding */
-    public static final int COMMAND_TYPE_LEAVE_ANNOUNCEMENT = 2;
+    //public static final Integer COMMAND_TYPE_LEAVE_ANNOUNCEMENT = 2;
     /* Vooraanmelding */
-    public static final int COMMAND_TYPE_PRE_ANNOUNCEMENT = 3;
+    //public static final Integer COMMAND_TYPE_PRE_ANNOUNCEMENT = 3;
 
     private Integer id;
     private ActivationGroup activationGroup;
@@ -41,13 +46,13 @@ public class Activation {
     private Date validFrom;
     private String karUsageType;
     private String type;
-    private int commandType;
+    private Integer commandType;
     private Double karDistanceTillStopLine;
     private Double karTimeTillStopLine;
     private Double karRadioPower;
     private Double metersBeforeRoadsideEquipmentLocation;
     private Double angleToNorth;
-    private Point location;
+    private KarPunt point;
     private String updater;
     private Date updateTime;
     private String validator;
@@ -101,11 +106,11 @@ public class Activation {
         this.type = type;
     }
 
-    public int getCommandType() {
+    public Integer getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(int commandType) {
+    public void setCommandType(Integer commandType) {
         this.commandType = commandType;
     }
 
@@ -149,12 +154,12 @@ public class Activation {
         this.angleToNorth = angleToNorth;
     }
 
-    public Point getLocation() {
-        return location;
+    public KarPunt getPoint() {
+        return point;
     }
 
-    public void setLocation(Point location) {
-        this.location = location;
+    public void setPoint(KarPunt point) {
+        this.point = point;
     }
 
     public String getUpdater() {
@@ -187,6 +192,21 @@ public class Activation {
 
     public void setValidationTime(Date validationTime) {
         this.validationTime = validationTime;
+    }
+
+    public JSONObject serializeToJson() throws Exception {
+        JSONObject j = new JSONObject();
+        j.put("type", "a");
+        j.put("id", "a:" + getId());
+        NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+        nf.setGroupingUsed(false);
+        j.put("name", getIndex()
+                + (getMetersBeforeRoadsideEquipmentLocation() == null ? ""
+                : " - " + nf.format(getMetersBeforeRoadsideEquipmentLocation()) + " meter"));
+        j.put("index", getIndex());
+        j.put("meters_before_roadside_equipment_location", getMetersBeforeRoadsideEquipmentLocation());
+        j.put("point", getPoint() == null ? null : getPoint().toString());
+        return j;
     }
 
 }

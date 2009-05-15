@@ -1,9 +1,16 @@
 package nl.b3p.transmodel;
 
-import com.vividsolutions.jts.geom.Point;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import javax.persistence.EntityManager;
+import nl.b3p.kar.hibernate.KarPunt;
+import nl.b3p.kar.persistence.MyEMFDatabase;
+import nl.b3p.kar.struts.EditorTreeObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class RoadsideEquipment {
+public class RoadsideEquipment implements EditorTreeObject {
     /* Waardes voor type property */
     public static final String TYPE_CROSS = "CROSS"; /* VRI */
     public static final String TYPE_CLOSE = "CLOSE"; /* afsluiting/poller/slagboom */
@@ -17,7 +24,12 @@ public class RoadsideEquipment {
     private String radioAddress;
     private String description;
     private String supplier;
-    private Point location;
+    private boolean selectiveDetectionLoop;
+    private KarPunt point; /* algemene locatie van VRI */
+    private String updater;
+    private Date updateTime;
+    private String validator;
+    private Date validationTime;
 
     public Integer getId() {
         return id;
@@ -83,11 +95,72 @@ public class RoadsideEquipment {
         this.supplier = supplier;
     }
 
-    public Point getLocation() {
-        return location;
+    public boolean isSelectiveDetectionLoop() {
+        return selectiveDetectionLoop;
     }
 
-    public void setLocation(Point location) {
-        this.location = location;
+    public void setSelectiveDetectionLoop(boolean selectiveDetectionLoop) {
+        this.selectiveDetectionLoop = selectiveDetectionLoop;
+    }
+
+    public KarPunt getPoint() {
+        return point;
+    }
+
+    public void setPoint(KarPunt point) {
+        this.point = point;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getValidator() {
+        return validator;
+    }
+
+    public void setValidator(String validator) {
+        this.validator = validator;
+    }
+
+    public Date getValidationTime() {
+        return validationTime;
+    }
+
+    public void setValidationTime(Date validationTime) {
+        this.validationTime = validationTime;
+    }
+
+    public JSONObject serializeToJson() throws Exception {
+        JSONObject j = new JSONObject();
+        j.put("type", "rseq");
+        j.put("id", "rseq:" + getId());
+        j.put("description", getDescription());
+        j.put("name", getUnitNumber() + " " + getType() + ": " + getDescription());
+        j.put("point", getPoint() == null ? null : getPoint().toString());
+        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
+        List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
+                .setParameter("this", this)
+                .getResultList();
+        if(!groups.isEmpty()) {
+            JSONArray children = new JSONArray();
+            j.put("children", children);
+            for(Iterator it = groups.iterator(); it.hasNext();) {
+                children.put( ((ActivationGroup)it.next()).serializeToJson() );
+            }
+        }
+        return j;
     }
 }
