@@ -14,13 +14,21 @@
         <put name="columnleft" value="/WEB-INF/jsp/inserts/empty.jsp"/>
         <put name="columnright" value="/WEB-INF/jsp/inserts/empty.jsp"/>
     </definition>
+    <definition name="formFrameBase" path="/WEB-INF/jsp/commons/formFrameTemplate.jsp"/>
     <definition name="site.viewer" extends="siteBase">
         <put name="content" value="/WEB-INF/jsp/viewer/viewer.jsp"/>
 	</definition>
+    <definition name="site.editor" path="/WEB-INF/jsp/viewer/editor.jsp"/>
     <definition name="site.edituser" extends="siteBase">
         <put name="content" value="/WEB-INF/jsp/website/edituser.jsp"/>
     </definition>
-    <definition name="site.activation" extends="siteBase2">
+    <definition name="site.activation" extends="formFrameBase">
         <put name="content" value="/WEB-INF/jsp/viewer/editactivation.jsp"/>
+    </definition>
+    <definition name="site.activationGroup" extends="formFrameBase">
+        <put name="content" value="/WEB-INF/jsp/viewer/editactivationgroup.jsp"/>
+    </definition>
+    <definition name="site.roadsideEquipment" extends="formFrameBase">
+        <put name="content" value="/WEB-INF/jsp/viewer/editroadsideequipment.jsp"/>
     </definition>
 </tiles-definitions>

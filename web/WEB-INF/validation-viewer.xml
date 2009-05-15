@@ -4,55 +4,33 @@
           "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
           "http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
 <form-validation>
-    <global>
-
-        <!-- An example global constant
-        <constant>
-            <constant-name>postalCode</constant-name>
-            <constant-value>^\d{5}\d*$</constant-value>
-        </constant>
-        end example-->
-    </global>
     <formset>
         <form name="activationForm">
             <field property="karDistanceTillStopLine" depends="double">
-                <arg0 key="activation.karDistanceTillStopLine"/>
+                <arg0 key="a.karDistanceTillStopLine"/>
             </field>
             <field property="karTimeTillStopLine" depends="double">
-                <arg0 key="activation.karTimeTillStopLine"/>
-            </field>
-            <field property="karRadioPower" depends="double">
-                <arg0 key="activation.karRadioPower"/>
-            </field>
-            <field property="metersBeforeRoadsideEquipmentLocation" depends="double">
-                <arg0 key="activation.metersBeforeRoadsideEquipmentLocation"/>
-            </field>
-            <field property="angleToNorth" depends="double">
-                <arg0 key="activation.angleToNorth"/>
-            </field>
-            <field property="validFrom" depends="date">
-                <arg0 key="activation.validFrom"/>
-                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
-            </field>
-            <field property="updateTime" depends="date">
-                <arg0 key="activation.updateTime"/>
-                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
-            </field>
-            <field property="validationTime" depends="date">
-                <arg0 key="activation.validationTime"/>
-                <var><var-name>datePattern</var-name><var-value>dd-MM-yyyy</var-value></var>
-            </field>
-            <field property="activationGroup" depends="required">
-				<arg0 key="activation.activationGroup"/>
-            </field>
-            <field property="index" depends="required">
-				<arg0 key="activation.index"/>
+                <arg0 key="a.karTimeTillStopLine"/>
             </field>
             <field property="karUsageType" depends="required">
-				<arg0 key="activation.karUsageType"/>
+				<arg0 key="a.karUsageType"/>
             </field>
             <field property="type" depends="required">
-				<arg0 key="activation.type"/>
+				<arg0 key="a.type"/>
+            </field>
+        </form>
+    </formset>
+    <formset>
+        <form name="activationGroupForm">
+            <field property="karSignalGroup" depends="required">
+                <arg0 key="ag.karSignalGroup"/>
+            </field>
+        </form>
+    </formset>
+    <formset>
+        <form name="roadsideEquipmentForm">
+            <field property="unitNumber" depends="required">
+                <arg0 key="rseq.unitNumber"/>
             </field>
         </form>
     </formset>

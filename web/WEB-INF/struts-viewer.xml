@@ -18,22 +18,28 @@
         </form-bean>
         <form-bean name="activationForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="id" type="java.lang.String"/>
-            <form-property name="location" type="java.lang.String"/>            
-            <form-property name="activationGroup" type="java.lang.String"/>
-            <form-property name="index" type="java.lang.String"/>
-            <form-property name="validFrom" type="java.lang.String"/>
             <form-property name="karUsageType" type="java.lang.String"/>
             <form-property name="type" type="java.lang.String"/>
-            <form-property name="commandType" type="java.lang.String"/>
             <form-property name="karDistanceTillStopLine" type="java.lang.String"/>
             <form-property name="karTimeTillStopLine" type="java.lang.String"/>
-            <form-property name="karRadioPower" type="java.lang.String"/>
-            <form-property name="metersBeforeRoadsSideEquipmentLocation" type="java.lang.String"/>
-            <form-property name="angleToNorth" type="java.lang.String"/>
-            <form-property name="updater" type="java.lang.String"/>
-            <form-property name="updateTime" type="java.lang.String"/>
-            <form-property name="validator" type="java.lang.String"/>
-            <form-property name="validationTime" type="java.lang.String"/>
+            <form-property name="metersBeforeRoadsideEquipmentLocation" type="java.lang.String"/>
+        </form-bean>
+        <form-bean name="activationGroupForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="id" type="java.lang.String"/>
+            <form-property name="karSignalGroup" type="java.lang.String"/>
+            <form-property name="directionAtIntersection" type="java.lang.String"/>
+            <form-property name="metersAfterRoadsideEquipmentLocation" type="java.lang.String"/>
+            <form-property name="followDirection" type="java.lang.String"/>
+            <form-property name="description" type="java.lang.String"/>
+        </form-bean>
+        <form-bean name="roadsideEquipmentForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="id" type="java.lang.String"/>
+            <form-property name="dataOwner" type="java.lang.String"/>
+            <form-property name="unitNumber" type="java.lang.String"/>
+            <form-property name="type" type="java.lang.String"/>
+            <form-property name="radioAddress" type="java.lang.String"/>
+            <form-property name="description" type="java.lang.String"/>
+            <form-property name="selectiveDetectionLoop" type="java.lang.String"/>
         </form-bean>
     </form-beans>
     <global-forwards>
@@ -44,6 +50,9 @@
     	<action path="/viewer" type="nl.b3p.kar.struts.ViewerAction" scope="request" validate="false">
             <forward name="success" path="site.viewer"/>
         </action>
+        <action path="/editor" type="nl.b3p.kar.struts.EditorAction">
+            <forward name="editor" path="site.editor"/>
+        </action>
         <action path="/edituser" name="edituserForm" type="nl.b3p.kar.struts.EditUserAction" scope="request" validate="false">
             <forward name="success" path="site.edituser"/>
             <forward name="failure" path="site.edituser"/>
@@ -51,6 +60,14 @@
         <action path="/activation" name="activationForm" type="nl.b3p.kar.struts.ActivationAction" scope="request" validate="false">
             <forward name="success" path="site.activation"/>
             <forward name="failure" path="site.activation"/>
+        </action>
+        <action path="/activationGroup" name="activationGroupForm" type="nl.b3p.kar.struts.ActivationGroupAction" scope="request" validate="false">
+            <forward name="success" path="site.activationGroup"/>
+            <forward name="failure" path="site.activationGroup"/>
+        </action>
+        <action path="/roadsideEquipment" name="roadsideEquipmentForm" type="nl.b3p.kar.struts.RoadsideEquipmentAction" scope="request" validate="false">
+            <forward name="success" path="site.roadsideEquipment"/>
+            <forward name="failure" path="site.roadsideEquipment"/>
         </action>
 
     </action-mappings>

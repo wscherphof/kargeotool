@@ -1,12 +1,11 @@
 package nl.b3p.kar.struts;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.Activation;
-import nl.b3p.transmodel.ActivationGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForward;
@@ -63,29 +61,27 @@ public final class ActivationAction extends BaseDatabaseAction {
         return mapping.findForward(SUCCESS);
     }
 
-    public ActionForward save(ActionMapping mapping, DynaValidatorForm dynaForm, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
-        Activation activation = getActivation(dynaForm, request, true);
+        Activation activation = getActivation(form, request, true);
         if (activation == null) {
             addAlternateMessage(mapping, request, "Niet gevonden");
             return mapping.findForward(SUCCESS);
         }
-        populateObject(activation, dynaForm, request, mapping);
-        try{
-            if (activation.getLocation()!=null){
-                if (activation.getId() == null) {
-                    em.persist(activation);
-                } else {
-                    em.merge(activation);
-                }
-                em.flush();
-            }
-        }catch(Exception e){
-            createLists(activation, dynaForm, request);
-            throw e;
+        createLists(activation, form, request);
+        
+        /* XXX Check validation */
+
+        populateObject(activation, form, request, mapping);
+
+        if(activation.getId() == null) {
+            em.persist(activation);
         }
+        em.flush();
+
+        populateForm(activation, form, request);
+
         addDefaultMessage(mapping, request);
-        request.setAttribute("closeWindow",true);
         return getDefaultForward(mapping, request);
     }
     protected Activation getActivation(DynaValidatorForm dynaForm, HttpServletRequest request, boolean createNew) throws Exception {
@@ -103,74 +99,55 @@ public final class ActivationAction extends BaseDatabaseAction {
 
     protected void createLists(Activation activation, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         EntityManager em = getEntityManager();
-        request.setAttribute("activationGroupList", em.createQuery("from ActivationGroup order by id").getResultList());
+        request.setAttribute("activation", activation);
+        if(activation.getPoint() != null) {
+            activation.getPoint().getGeom();
+        }
+        if(activation.getActivationGroup() != null) {
+            if(activation.getActivationGroup().getRoadsideEquipment() != null) {
+                activation.getActivationGroup().getRoadsideEquipment().getDataOwner().getName();
+            }
+        }
     }
 
-    protected void populateForm(Activation a, DynaValidatorForm dynaForm, HttpServletRequest request) throws Exception {
-        if (a.getId()!=null)
-            dynaForm.set("id",a.getId().toString());
-        if (a.getActivationGroup()!=null)
-            dynaForm.set("activationGroup",a.getActivationGroup().getId().toString());
-        if (a.getIndex()!=null)
-            dynaForm.set("index",a.getIndex().toString());
-        if (a.getValidFrom()!=null){
-            dynaForm.set("validFrom",sdf.format(a.getValidFrom()));
-        }
-        dynaForm.set("karUsageType",a.getKarUsageType());
-        if (a.getType()!=null)
-            dynaForm.set("type",a.getType().toString());
-        dynaForm.set("commandType",""+a.getCommandType());
-        if (a.getKarDistanceTillStopLine()!=null)
-            dynaForm.set("karDistanceTillStopLine",a.getKarDistanceTillStopLine().toString());
-        if (a.getKarTimeTillStopLine()!=null)
-            dynaForm.set("karTimeTillStopLine",a.getKarTimeTillStopLine().toString());
-        if (a.getKarRadioPower()!=null)
-            dynaForm.set("karRadioPower",a.getKarRadioPower().toString());
-        if (a.getMetersBeforeRoadsideEquipmentLocation()!=null)
-            dynaForm.set("metersBeforeRoadsSideEquipmentLocation",a.getMetersBeforeRoadsideEquipmentLocation().toString());
-        if (a.getAngleToNorth()!=null)
-            dynaForm.set("angleToNorth",a.getAngleToNorth().toString());
-        dynaForm.set("updater",a.getUpdater());
-        if (a.getUpdateTime()!=null){
-            dynaForm.set("updateTime",sdf.format(a.getUpdateTime()));
-        }
-        dynaForm.set("validator",a.getValidator());
-        if (a.getValidationTime()!=null)
-            dynaForm.set("validationTime",sdf.format(a.getValidationTime()));
-        dynaForm.set("location",null);
+    protected void populateForm(Activation a, DynaValidatorForm form, HttpServletRequest request) throws Exception {
+        form.set("id", a.getId() + "");
+
+        form.set("karUsageType", a.getKarUsageType());
+        form.set("type", a.getType() == null ? null : a.getType() + "");
+
+        NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+        nf.setGroupingUsed(false);
+        
+        form.set("karDistanceTillStopLine", a.getKarDistanceTillStopLine() == null ? null : nf.format( a.getKarDistanceTillStopLine()));
+        form.set("karTimeTillStopLine", a.getKarTimeTillStopLine() == null ? null : nf.format(a.getKarTimeTillStopLine()));
+        form.set("metersBeforeRoadsideEquipmentLocation", a.getMetersBeforeRoadsideEquipmentLocation() == null ? null : nf.format(a.getMetersBeforeRoadsideEquipmentLocation()));
     }   
 
-    protected void populateObject(Activation a, DynaValidatorForm dynaForm, HttpServletRequest request, ActionMapping mapping) throws Exception {
+    protected void populateObject(Activation a, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
         EntityManager em = getEntityManager();
-        if (FormUtils.nullIfEmpty(dynaForm.getString("location"))!=null){
-            String wktGeom=dynaForm.getString("location");
-            WKTReader wktreader = new WKTReader(new GeometryFactory(new PrecisionModel(), 28992));
-            Point geom = null;
-            try {
-                geom = (Point) wktreader.read(wktGeom);
 
-            } catch (ParseException p) {
-                addAlternateMessage(mapping, request, WKTGEOM_NOTVALID_ERROR_KEY);
-            }
-            a.setLocation(geom);
+        a.setKarUsageType(form.getString("karUsageType"));
+        a.setType(form.getString("type"));
+        String val = FormUtils.nullIfEmpty(form.getString("karDistanceTillStopLine"));
+        if(val == null) {
+            a.setKarDistanceTillStopLine(null);
+        } else {
+            a.setKarDistanceTillStopLine(Double.parseDouble(val));
         }
-        if (FormUtils.nullIfEmpty(dynaForm.getString("activationGroup"))!=null){
-            ActivationGroup ag=em.find(ActivationGroup.class, FormUtils.StringToInteger(dynaForm.getString("activationGroup")));
-            a.setActivationGroup(ag);
+        val = FormUtils.nullIfEmpty(form.getString("karTimeTillStopLine"));
+        if(val == null) {
+            a.setKarTimeTillStopLine(null);
+        } else {
+            a.setKarTimeTillStopLine(Double.parseDouble(val));
         }
-        a.setIndex(FormUtils.StringToInteger(dynaForm.getString("activationGroup")));
-        a.setValidFrom(FormUtils.StringToDate(dynaForm.getString("validFrom"), request.getLocale()));
-        a.setKarUsageType(dynaForm.getString("karUsageType"));
-        a.setType(dynaForm.getString("type"));
-        a.setCommandType(FormUtils.StringToInt(dynaForm.getString("commandType")));
-        a.setKarDistanceTillStopLine(FormUtils.StringToDouble(dynaForm.getString("karDistanceTillStopLine")));
-        a.setKarTimeTillStopLine(FormUtils.StringToDouble(dynaForm.getString("karTimeTillStopLine")));
-        a.setKarRadioPower(FormUtils.StringToDouble(dynaForm.getString("karRadioPower")));
-        a.setMetersBeforeRoadsideEquipmentLocation(FormUtils.StringToDouble(dynaForm.getString("metersBeforeRoadsSideEquipmentLocation")));
-        a.setAngleToNorth(FormUtils.StringToDouble(dynaForm.getString("angleToNorth")));
-        a.setUpdater(dynaForm.getString("updater"));
-        a.setUpdateTime(FormUtils.StringToDate(dynaForm.getString("updateTime"), request.getLocale()));
-        a.setValidator(dynaForm.getString("validator"));
-        a.setValidationTime(FormUtils.StringToDate(dynaForm.getString("validationTime"), request.getLocale()));    }
-
+        val = FormUtils.nullIfEmpty(form.getString("metersBeforeRoadsideEquipmentLocation"));
+        if(val == null) {
+            a.setMetersBeforeRoadsideEquipmentLocation(null);
+        } else {
+            a.setMetersBeforeRoadsideEquipmentLocation(Double.parseDouble(val));
+        }
+        a.setUpdater(request.getRemoteUser());
+        a.setUpdateTime(new Date());
+    }
 }

@@ -1,1 +1,54 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+}
 
+body.editor {
+    margin: 5px;
+    padding: 0px;
+}
+
+body.form {
+    margin: 0px;
+    padding: 0px;
+    font-size: 9pt;
+}
+
+#header{
+    height: 20px;
+}
+
+#headerTitle{
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+#objectTree {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+    overflow: auto;
+}
+
+#objectTree .node {
+    margin: 2px;
+}
+
+#objectTree .selected {
+    margin: 1px;
+    font-weight: bold;
+}
+
+table.form {
+    margin-left: 3px;
+    margin-top: 3px;
+    border-collapse: collapse;
+}
+
+.number {
+    text-align: right;
+}
+
+td.disabled {
+    background-color: rgb(215,209,197);
+}
