@@ -31,12 +31,12 @@
         </auth-constraint>
     </security-constraint>
     <login-config>
-        <auth-method>FORM</auth-method>
-        <form-login-config>
+        <auth-method>BASIC</auth-method>
+        <!--form-login-config>
             <form-login-page>/login.do</form-login-page>
             <form-error-page>/loginError.do</form-error-page>
             <form-default-page>/viewer/viewer.do</form-default-page>
-        </form-login-config>
+        </form-login-config-->
     </login-config>
 
     <realm className="nl.b3p.kar.SecurityRealm"/>

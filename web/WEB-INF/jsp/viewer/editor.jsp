@@ -10,6 +10,7 @@
         <title>KAR in GIS</title>
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis.css" module=""/>" type="text/css" media="screen" />
+        <script type="text/javascript" src="<html:rewrite page="/js/json2.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
@@ -85,7 +86,7 @@
         treeview_create({
             "id": "objectTree",
             "root": tree,
-            "rootChildrenAsRoots": false,
+            "rootChildrenAsRoots": true,
             "itemLabelCreatorFunction": createLabel,
             "toggleImages": {
                 "collapsed": "<html:rewrite page="/images/treeview/plus.gif" module=""/>",
@@ -99,6 +100,7 @@
     }
 
     function dwr_objectInfoReceived(info) {
+        if(console) console.log("dwr_objectInfoReceived", info);
         if(info.toLowerCase().indexOf("error") == 0) {
             alert(info);
             return;
@@ -107,14 +109,21 @@
         var obj = eval("(" + info + ")");
         tree = eval("(" + obj.tree + ")");
         createTreeview();
-        setStatus("tree", "Tree gevuld adv object " + obj.object);
+        if(tree.object != undefined) {
+            setStatus("tree", "Object op locatie geselecteerd");
 
-        var object = treeview_findItem(tree, obj.object);
-        tree_selectObject(object);
-        form_editObject(object);
-        if(document.getElementById("autoZoom").checked) {
-            options_zoomToObject();
+            var object = treeview_findItem(tree, obj.object);
+            tree_selectObject(object);
+            form_editObject(object);
+            if(document.getElementById("autoZoom").checked) {
+                options_zoomToObject();
+            }
+        } else {
+            // TODO deselect object
+
+            setStatus("tree", "Meerdere objecten op locatie");
         }
+        zoomToEnvelope(eval("(" + obj.envelope + ")"));
     }
 
     function tree_selectObject(object) {
@@ -146,11 +155,11 @@
 
     function flamingo_moveToExtent(minx, miny, maxx, maxy){
         flamingo.callMethod("map", "moveToExtent", {
-        minx: minx,
-        miny: miny,
-        maxx: maxx,
-        maxy: maxy
-        }, 0);
+                minx: minx,
+                miny: miny,
+                maxx: maxx,
+                maxy: maxy}
+        , 0);
     }
 
 
@@ -177,8 +186,22 @@
             if(selectedObject.point) {
                 var xy = selectedObject.point.split(", ");
                 var x = parseInt(xy[0]); var y = parseInt(xy[1]);
-                console.log("moving flamingo extent",x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
                 flamingo_moveToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
+            }
+        }
+    }
+
+    function zoomToEnvelope(envelope) {
+        flamingo_moveToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
+    }
+
+    function flamingo_map_onIdentifyData(map, layer, data, identifyextent,nridentified, total) {
+        if(console) console.log("onIdentifyData", map, layer, data, identifyextent, nridentified, total);
+
+        if("map_kar_punten" == layer) {
+            var features = data["kar_punten"];
+            if(features != undefined) {
+                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
             }
         }
     }
@@ -210,20 +233,15 @@
     <input type="button" value="Event: nieuw punt getekend" onclick="alert('Nog niet geimplementeerd');"><br>
     <input type="button" value="Event: object geselecteerd" onclick="alert('Nog niet geimplementeerd');"><br>
     --%>
+    <div id="flashcontent" style="width: 100%; height: 100%;"></div>
+    
 <script type="text/javascript">
 
-    setOnload(loadFlamingo);
-
-    var flamingo;
-
-    function loadFlamingo() {
-        var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingoo", "100%", "100%", "8", "#FFFFFF");
-        so.write("flamingo");
-        flamingo = document.getElementById("flamingoo");
-    }
+var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
+so.write("flashcontent");
+var flamingo = document.getElementById("flamingo");
 </script>
 
-    <div id="flamingo" style="width: 100%; height: 100%;"></div>
 </div>
 
 <div id="form" style="margin: 5px; padding: 3px;  border: 1px solid blue; width: 800px; height: 340px; clear: left">

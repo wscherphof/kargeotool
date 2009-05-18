@@ -16,10 +16,13 @@
             <fmc:ButtonFull left="150" listento="map"/>
             <fmc:ButtonPrev left="180" listento="map"/>
             <fmc:ButtonNext left="210" listento="map"/>
+            <!--
             <tpc:EditBar id="editBar" left="240" top="2" listento="drawMap" enabledbuttons="selectgeometrybutton"/>
             <tpc:DrawTool id="drawTool" left="270" top="2" listento="drawMap"/>
+            -->
                     <!--tpc:EditGeometryBar id="editGeometryBar" left="300" top="2" listento="drawMap"/-->
         </fmc:ToolGroup>
+        <!--
         <fmc:Text id="saveButton" visible="true" left="410" top="">
             <string id="text">
                 <nl>
@@ -29,7 +32,7 @@
                 </nl>
             </string>
         </fmc:Text>
-
+-->
 		<!--/fmc:Container-->
         <fmc:Container borderwidth="0" bordercolor="#606060" left="0" top="33" height="285" width="100%">
             <fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
@@ -50,6 +53,7 @@
             </fmc:Map>
         </fmc:Container>
     </fmc:Container>
+    <!--
     <fmc:Window title="info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
         <string id="title" nl="Informatie" en="Information"/>
         <fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
@@ -70,4 +74,5 @@
             </fmc:IdentifyResultsHTML>
         </fmc:Container>
     </fmc:Window>
+    -->
 </FLAMINGO>

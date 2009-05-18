@@ -6,6 +6,7 @@
             <param name="class" value="nl.b3p.kar.struts.EditorAction"/>
             <include method="getObjectInfo"/>
             <include method="getKarPuntInfo"/>
+            <include method="getMultipleKarPuntInfo"/>
         </create>
     </allow>
 </dwr>
