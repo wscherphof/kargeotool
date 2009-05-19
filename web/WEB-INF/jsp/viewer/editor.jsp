@@ -179,7 +179,7 @@
         window.frames["form"].location = url;
     }
 
-    var zoomBorder = 50;
+    var zoomBorder = 80;
 
     function options_zoomToObject() {
         if(selectedObject != undefined && selectedObject != null) {
@@ -227,7 +227,7 @@
     <div id="form" style="margin: 5px; padding: 3px;  border: 1px inset black; width: 100%; height: 405px;">
 
         <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-        <iframe name="form" style="border: 0; width: 100%; height: 100%">    </iframe>
+        <iframe frameborder="0" name="form" style="border: 0; width: 100%; height: 100%">    </iframe>
 
     </div>
 
