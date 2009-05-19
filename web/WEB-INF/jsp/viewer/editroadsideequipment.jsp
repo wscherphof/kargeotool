@@ -12,14 +12,39 @@
     <html:submit property="save">Opslaan</html:submit>
     <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
-    <table cellpadding="2">
-        <tr><td>
-            <b>Eigenschappen walapparatuur</b><br>
 
-    <table class="form" border="1" cellspacing="0" cellpadding="1">
+<div style="margin-top: 4px; height: 60px">
+    <b>Locatie</b><br>
+    <br>
+    <c:choose>
+        <c:when test="${empty activationGroup.point}">
+            <b>Nog geen locatie. </b>
+            <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
+            <br>
+        </c:when>
+        <c:otherwise>
+            <b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${roadsideEquipment.point}"/></span>
+            <input type="button" value="Locatie wijzigen in kaart" onclick="alert('Nog niet geimplementeerd');">
+            <br>
+            <%--<br>
+            In de kaart kan het punt worden versleept om de locatie te wijzigen.
+            <br><br>
+            Op dit punt zijn [nnn]/[geen] andere signaalgroepen aanwezig. Bij het
+            wijzigen van de locatie worden deze ook verplaatst.
+            --%>
+        </c:otherwise>
+    </c:choose>
+    <br>
+</div>
+
+<div>
+    <b>Eigenschappen walapparatuur</b><br>
+    <br>
+    <div class="formTableContainer">
+    <table class="form" style="width: 98%" border="1" cellspacing="0" cellpadding="2">
         <tr>
-            <td style="width: 180px"><fmt:message key="rseq.dataOwner"/></td>
-            <td style="width: 300px">
+            <td style="width: 130px"><fmt:message key="rseq.dataOwner"/></td>
+            <td>
                 <html:select property="dataOwner" style="width: 100%">
                     <c:if test="${empty form.id}">
                         <html:option value=""/>
@@ -43,7 +68,7 @@
         <tr>
             <td><fmt:message key="rseq.unitNumber"/></td>
             <td>
-                <html:text property="unitNumber" style="border: none; width: 100%"/>
+                <html:text property="unitNumber" style="border: none; width: 98%"/>
             </td>
         </tr>
         <tr>
@@ -61,14 +86,14 @@
         </tr>
         <tr>
             <td><fmt:message key="rseq.radioAddress"/></td>
-            <td class="number">
-                <html:text property="radioAddress" style="border: none; text-align: right; width: 100%"/>
+            <td>
+                <html:text property="radioAddress" style="border: none; width: 98%"/>
             </td>
         </tr>
         <tr>
             <td style="vertical-align: top"><fmt:message key="rseq.description"/></td>
             <td class="number">
-                <html:textarea rows="5" style="width: 100%; border: none; font: arial, helvetica, sans-serif; font-size: 8pt" property="description"/>
+                <html:textarea rows="2" style="width: 100%; border: none; font-family: tahoma, sans-serif; font-size: 8pt" property="description"/>
             </td>
         </tr>
         <tr>
@@ -99,27 +124,7 @@
             </td>
         </tr>
     </table>
+    </div>
+</div>
 
-        </td>
-        <td style="vertical-align: top; width: 50%">
-
-<b>Locatie</b><br>
-<br>
-<c:choose>
-    <c:when test="${empty activationGroup.point}">
-        <b>Nog geen locatie. </b>
-        <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
-    </c:when>
-    <c:otherwise>
-<b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${roadsideEquipment.point}"/></span><br>
-<%--<br>
-In de kaart kan het punt worden versleept om de locatie te wijzigen.
-<br><br>
-Op dit punt zijn [nnn]/[geen] andere signaalgroepen aanwezig. Bij het
-wijzigen van de locatie worden deze ook verplaatst.
---%>
-    </c:otherwise>
-</c:choose>
-        </td></tr>
-    </table>
 </html:form>

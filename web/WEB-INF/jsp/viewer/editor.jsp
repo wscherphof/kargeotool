@@ -17,11 +17,10 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
     </head>
-    <body class="editor">
+    <body class="editor" style="width: 1270px">
         <div id="header">
             <div id="headerTitle">KAR in GIS</div>
         </div>
-        <div id="content" style="border: 1px solid green">
 
 <script type="text/javascript">
     function testSelecteerObject() {
@@ -100,7 +99,6 @@
     }
 
     function dwr_objectInfoReceived(info) {
-        if(console) console.log("dwr_objectInfoReceived", info);
         if(info.toLowerCase().indexOf("error") == 0) {
             alert(info);
             return;
@@ -123,7 +121,9 @@
 
             setStatus("tree", "Meerdere objecten op locatie");
         }
-        zoomToEnvelope(eval("(" + obj.envelope + ")"));
+        if(obj.envelope != undefined) {
+            zoomToEnvelope(eval("(" + obj.envelope + ")"));
+        }
     }
 
     function tree_selectObject(object) {
@@ -196,8 +196,6 @@
     }
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent,nridentified, total) {
-        if(console) console.log("onIdentifyData", map, layer, data, identifyextent, nridentified, total);
-
         if("map_kar_punten" == layer) {
             var features = data["kar_punten"];
             if(features != undefined) {
@@ -208,53 +206,45 @@
 
 </script>
 
-<div id="tree" style="margin: 5px; padding: 3px; border: 1px solid black; width: 300px; height: 320px; float: left; clear: left">
+<div id="leftbar" style="margin-right: 15px; width: 360px; float: left">
 
-    Objectenboom
-    <p>
-    Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span>
-    <p>
-    <input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
-    <div id="objectTree" style="width: 293px; height: 160px; margin: 0px; border: 1px dashed green"></div>
-    <div id="options" style="width: 293px; height: 50px; margin: 0px; border: 1px dashed red">
-        <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
-        <input type="button" value="Nieuw object" onclick="alert('Nog niet geimplementeerd');">
-        <input type="button" value="Kopieëren" onclick="alert('Nog niet geimplementeerd');">
-        <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
+    <div id="tree" style="margin: 5px; padding: 3px; border: 1px inset black; width: 100%; height: 392px;">
+
+        Objectenboom
+        <p>
+        Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span>
+        <p>
+        <input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
+        <div id="objectTree" style="width: 100%; height: 248px; border: 1px inset black;"></div>
+        <div id="options" style="margin-top: 5px; width: 100%; height: 30px; border: none">
+            <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
+            <input type="button" value="Nieuw object" onclick="alert('Nog niet geimplementeerd');">
+            <input type="button" value="Kopieëren" onclick="alert('Nog niet geimplementeerd');">
+            <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
+        </div>
     </div>
+
+    <div id="form" style="margin: 5px; padding: 3px;  border: 1px inset black; width: 100%; height: 405px;">
+
+        <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
+        <iframe name="form" style="border: 0; width: 100%; height: 100%">    </iframe>
+
+    </div>
+
 </div>
 
-<div id="kaart" style="margin: 5px; padding: 3px; border: 1px solid black; width: 620px; height: 320px; float: left; clear: right">
+<div id="kaart" style="margin: 5px 0px 5px 5px; padding: 3px; border: 1px solid black; width: 865px; height: 810px; float: left; clear: right">
 
-    <%--Kaartbeeld
-    <p>
-    Status: <span id="kaartStatus" style="font-weight: bold">Toon beginextent</span>
-    <p>
-    <input type="button" value="Event: nieuw punt getekend" onclick="alert('Nog niet geimplementeerd');"><br>
-    <input type="button" value="Event: object geselecteerd" onclick="alert('Nog niet geimplementeerd');"><br>
-    --%>
     <div id="flashcontent" style="width: 100%; height: 100%;"></div>
-    
-<script type="text/javascript">
 
-var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
-so.write("flashcontent");
-var flamingo = document.getElementById("flamingo");
+<script type="text/javascript">
+    var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
+    so.write("flashcontent");
+    var flamingo = document.getElementById("flamingo");
 </script>
 
 </div>
 
-<div id="form" style="margin: 5px; padding: 3px;  border: 1px solid blue; width: 800px; height: 340px; clear: left">
-
-    <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-    <iframe name="form" style="margin-left: 3px; border: 1px dashed green; width: 786px; height: 325px">    </iframe>
-
-</div>
-<%--div id="legend" style="margin: auto; padding: 3px;  border: 1px solid black; float: left">
-    Legend/zoeker
-</div--%>
-
-        </div>
     </body>
 </html:html>
 

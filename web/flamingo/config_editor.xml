@@ -34,7 +34,7 @@
         </fmc:Text>
 -->
 		<!--/fmc:Container-->
-        <fmc:Container borderwidth="0" bordercolor="#606060" left="0" top="33" height="285" width="100%">
+        <fmc:Container borderwidth="0" bordercolor="#606060" left="0" top="33" height="776" width="82%">
             <fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
             <tpc:EditMap id="drawMap" listento="map" left="0" top="0%" height="100%" width="100%" bottom="bottom">
                 <tpc:GIS>
@@ -53,26 +53,39 @@
             </fmc:Map>
         </fmc:Container>
     </fmc:Container>
-    <!--
-    <fmc:Window title="info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
-        <string id="title" nl="Informatie" en="Information"/>
-        <fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
-            <fmc:IdentifyResultsHTML id="info_html" listento="map" width="100%" height="100%">
-                <style id=".bold" font-family="verdana" font-size="11px" color="#333333" display="block" font-weight="bold"/>
-                <style id=".normal" font-family="verdana" font-size="11px" color="#333333" display="block" font-weight="normal"/>
-                <style id="a" font-family="verdana" font-size="11px" color="#0033cc" display="block" font-weight="normal" text-decoration="underline"/>
-                <string id="kar_punten.kar_punten" stripdatabase="true">
-                    <nl><![CDATA[<span class='normal'><span class='bold'>Kar punten</span>
-            <textformat tabstops='[20,150,100]'>
-            Type\t[type]
-            Link\t<a href="javascript: flamingo_karPuntSelected('[type]','[id]')">[id]</a>
-            </textformat>
-            </span>
-            ]]>
-                    </nl>
-                </string>
-            </fmc:IdentifyResultsHTML>
-        </fmc:Container>
-    </fmc:Window>
-    -->
+	<fmc:Container left="82%" height="776" width="18%" top="33">
+		<fmc:Legend id="legend" top="0" height="40%" width="98%" left="2%" listento="map">
+			<group label="Transmodel">
+			<item label="Bushaltes" canhide="true" listento="kar_punten.bushaltes">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
+			</item>
+			<item label="KAR punten" canhide="true" listento="kar_punten.kar_punten">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=kar_punten&amp;format=image/png"/>
+			</item>
+			<item label="Buslijnen" canhide="true" listento="kar_punten.buslijnen">
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
+			</item>
+			<item label="Bushaltes labels" canhide="true" listento="kar_punten.bushaltes_labels"/>
+			</group>
+			<group label="Achtergrond" open="true">
+				<item label="Openstreetmap" canhide="true" listento="osm"/>
+				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
+			</group>
+		</fmc:Legend>
+        <tpc:EditInfoPanel id="editInfoPanel" left="2%" top="40%" height="20%" listento="drawMap"/>
+		<fmc:LocationFinder id="locationfinder" top="60%" width="100%" left="0%" height="40%" listento="map" controls="true">
+			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+                <string id="output" nl="[gm_naam]" en="[gm_naam]" />
+                <string id="label" nl="Zoek een plaats" en="Search for town" />
+            </LOCATIONS>
+            <LOCATIONS id="buslijnen" server="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion" layerid="buslijnen" searchfield="publicnumber" outputfields="publicnumber,name" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+                <string id="output" nl="[publicnumber]:[name]" en="[publicnumber]:[name]" />
+                <string id="label" nl="Zoek een buslijn" en="Search for busline" />
+            </LOCATIONS>
+		</fmc:LocationFinder>
+        <fmc:Coordinates listento="map" left="0" top="98%" decimals="2">
+			<style id=".xy" font-family="arial, sans-serif" font-size="11"/>
+			<string id="xy" nl="X: [x]     Y: [y]"/>
+		</fmc:Coordinates>
+	</fmc:Container>
 </FLAMINGO>

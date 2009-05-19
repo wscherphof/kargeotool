@@ -12,19 +12,43 @@
     <html:submit property="save">Opslaan</html:submit>
     <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
-    <table cellpadding="2">
-        <tr><td>
-            <b>Eigenschappen</b><br>
 
-    <table class="form" border="1" cellspacing="0" cellpadding="1">
+<div style="margin-top: 4px; height: 60px">
+    <b>Locatie</b><br>
+    <br>
+    <c:choose>
+        <c:when test="${empty activation.point}">
+            <b>Nog geen locatie. </b>
+            <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
+            <br>
+        </c:when>
+        <c:otherwise>
+            <b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${activation.point}"/></span>
+            <input type="button" value="Locatie wijzigen in kaart" onclick="alert('Nog niet geimplementeerd');">
+            <br>
+            <%--In de kaart kan het punt worden versleept om de locatie te wijzigen.
+            <br><br>
+            Op dit punt zijn [nnn]/[geen] andere inmeldpunten aanwezig. Bij het
+            wijzigen van de locatie worden deze ook verplaatst.
+            --%>
+        </c:otherwise>
+    </c:choose>
+    <br>
+</div>
+
+<div>
+    <b>Eigenschappen</b><br>
+    <br>
+    <div class="formTableContainer">
+    <table class="form" style="width: 98%" border="1" cellspacing="0" cellpadding="2">
         <c:set var="dataOwner" value="${activation.activationGroup.roadsideEquipment.dataOwner}"/>
         <tr>
-            <td style="width: 220px">Naam wegbeheerder</td>
-            <td style="width: 300px" class="number disabled"><c:out value="${dataOwner.name} (${dataOwner.type})"/></td>
+            <td style="width: 130px">Naam wegbeheerder</td>
+            <td class="disabled"><c:out value="${dataOwner.name} (${dataOwner.type})"/></td>
         </tr>
-        <tr><td>Nummer walapparaat</td><td class="number disabled"><c:out value="${activation.activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
-        <tr><td><fmt:message key="a.index"/></td><td class="number disabled"><c:out value="${activation.index}"/></td></tr>
-        <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="number disabled"><c:out value="${activation.activationGroup.karSignalGroup}"/></td></tr>
+        <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${activation.activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
+        <tr><td><fmt:message key="a.index"/></td><td class="disabled"><c:out value="${activation.index}"/></td></tr>
+        <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="disabled"><c:out value="${activation.activationGroup.karSignalGroup}"/></td></tr>
         <tr>
             <td><fmt:message key="a.karUsageType"/></td>
             <td><html:select property="karUsageType">
@@ -48,15 +72,15 @@
         </tr>
         <tr>
             <td><fmt:message key="a.karDistanceTillStopLine"/></td>
-            <td><html:text style="border: none; text-align: right; width: 100%" property="karDistanceTillStopLine"/></td>
+            <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine"/></td>
         </tr>
         <tr>
             <td><fmt:message key="a.metersBeforeRoadsideEquipmentLocation"/></td>
-            <td><html:text style="border: none; text-align: right; width: 100%" property="metersBeforeRoadsideEquipmentLocation"/></td>
+            <td><html:text style="border: none; width: 98%" property="metersBeforeRoadsideEquipmentLocation"/></td>
         </tr>
         <tr>
             <td><fmt:message key="a.karTimeTillStopLine"/></td>
-            <td><html:text style="border: none; text-align: right; width: 100%" property="karTimeTillStopLine"/></td>
+            <td><html:text style="border: none; width: 98%" property="karTimeTillStopLine"/></td>
         </tr>
         <tr>
             <td><fmt:message key="updater"/></td>
@@ -77,28 +101,7 @@
             </td>
         </tr>
     </table>
+    </div>
 
-        </td>
-        <td style="vertical-align: top; width: 50%">
-
-<b>Locatie</b><br>
-<br>
-<c:choose>
-    <c:when test="${empty activation.point}">
-        <b>Nog geen locatie. </b>
-        <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
-    </c:when>
-    <c:otherwise>
-        <b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${activation.point}"/></span><br>
-        <br>
-<%--In de kaart kan het punt worden versleept om de locatie te wijzigen.
-<br><br>
-Op dit punt zijn [nnn]/[geen] andere inmeldpunten aanwezig. Bij het
-wijzigen van de locatie worden deze ook verplaatst.
---%>
-    </c:otherwise>
-</c:choose>
-
-        </td></tr>
-    </table>
+</div>
 </html:form>

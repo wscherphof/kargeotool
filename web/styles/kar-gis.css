@@ -1,6 +1,16 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11pt;
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+input {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+}
+
+select {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
 }
 
 body.editor {
@@ -11,7 +21,8 @@ body.editor {
 body.form {
     margin: 0px;
     padding: 0px;
-    font-size: 9pt;
+    font-size: 8pt;
+    font-family: tahoma, helvetica, sans-serif;
 }
 
 #header{
@@ -51,4 +62,9 @@ table.form {
 
 td.disabled {
     background-color: rgb(215,209,197);
+}
+
+.formTableContainer {
+    height: 290px;
+    overflow: auto;
 }
