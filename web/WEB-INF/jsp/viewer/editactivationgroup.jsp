@@ -58,19 +58,33 @@
             <td style="vertical-align: top"><fmt:message key="ag.directionAtIntersection"/></td>
             <td>
 <script type="text/javascript">
-    function clearAnderen() {
-        document.getElementById("rechtdoor").checked = false;
-        document.getElementById("linksaf").checked = false;
-        document.getElementById("rechtsaf").checked = false;
+    function onbekendChanged() {
+        if(document.getElementById("onbekend").checked) {
+            document.getElementById("rechtdoor").checked = false;
+            document.getElementById("linksaf").checked = false;
+            document.getElementById("rechtsaf").checked = false;
+        } else {
+            if(!(document.getElementById("rechtdoor").checked
+            || document.getElementById("linksaf").checked
+            || document.getElementById("rechtsaf").checked)) {
+                document.getElementById("onbekend").checked = true;
+            }
+        }
     }
 
-    function clearOnbekend() {
-        document.getElementById("onbekend").checked = false;
+    function richtingChanged() {
+        if(document.getElementById("rechtdoor").checked
+        || document.getElementById("linksaf").checked
+        || document.getElementById("rechtsaf").checked) {
+            document.getElementById("onbekend").checked = false;
+        } else {
+            document.getElementById("onbekend").checked = true;
+        }
     }
 </script>
                 <table cellspacing="0" cellpadding="0">
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onchange="clearAnderen()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onchange="onbekendChanged()"/></td>
                         <td>
                             <label for="onbekend">
                                 Onbekend (complexe kruising, handmatig bepalen)
@@ -78,15 +92,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="rechtdoor" property="directionAtIntersection" value="rechtdoor" onchange="clearOnbekend()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="rechtdoor" property="directionAtIntersection" value="rechtdoor" onchange="richtingChanged()"/></td>
                         <td><label for="rechtdoor">Rechtdoor</label></td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="linksaf" property="directionAtIntersection" value="linksaf" onchange="clearOnbekend()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="linksaf" property="directionAtIntersection" value="linksaf" onchange="richtingChanged()"/></td>
                         <td><label for="linksaf">Linksaf</label></td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onchange="clearOnbekend()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onchange="richtingChanged()"/></td>
                         <td><label for="rechtsaf">Rechtsaf</label></td>
                     </tr>
                 </table>
