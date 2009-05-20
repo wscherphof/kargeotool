@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.ActivationGroup;
+import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
@@ -36,6 +37,8 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
         hibProp.setAlternateForwardName(FAILURE);
         hibProp.setAlternateMessageKey("error.crud.savefailed");
         map.put(SAVE, hibProp);
+
+        map.put("new", new ExtendedMethodProperties("create"));
         return map;
     }
 
@@ -61,6 +64,20 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
         return mapping.findForward(SUCCESS);
     }
 
+    public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        createLists(null, form, request);
+        return mapping.findForward(SUCCESS);
+    }
+
+    private RoadsideEquipment getRseq(DynaValidatorForm form, HttpServletRequest request) throws Exception {
+        Integer rseqId = FormUtils.StringToInteger(form.getString("rseqId"));
+        RoadsideEquipment rseq = null;
+        if(rseqId != null) {
+            rseq = getEntityManager().find(RoadsideEquipment.class, rseqId);
+        }
+        return rseq;
+    }
+    
     public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
         ActivationGroup ag = getActivationGroup(form, request, true);
@@ -76,11 +93,23 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
             return getDefaultForward(mapping, request);
         }
 
+        if(!em.contains(ag)) {
+            RoadsideEquipment rseq = getRseq(form, request);
+            if(rseq == null) {
+                addMessage(request, "errors.required", "Walapparatuur");
+                return getDefaultForward(mapping, request);
+            }
+            ag.setRoadsideEquipment(rseq);
+        }
+
         /* XXX Check constraints */
 
         populateObject(ag, form, request, mapping);
 
         if(ag.getId() == null) {
+            // XXX
+            ag.setValidFrom(new Date());
+            ag.setType(ActivationGroup.TYPE_PRQA);
             em.persist(ag);
         }
         em.flush();
@@ -104,9 +133,18 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
     }
 
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
-        request.setAttribute("activationGroup", ag);
-        if(ag.getRoadsideEquipment() != null) {
+        if(getEntityManager().contains(ag)) {
+            request.setAttribute("activationGroup", ag);
+            request.setAttribute("rseq", ag.getRoadsideEquipment());
             ag.getRoadsideEquipment().getDataOwner().getName();
+        } else {
+            RoadsideEquipment rseq = getRseq(form, request);
+            if(rseq == null) {
+                addMessage(request, "errors.required", "Walapparatuur");
+            } else {
+                request.setAttribute("rseq", rseq);
+                rseq.getDataOwner().getName();
+            }
         }
     }
 

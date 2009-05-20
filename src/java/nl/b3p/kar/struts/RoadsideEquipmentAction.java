@@ -34,6 +34,8 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         hibProp.setAlternateForwardName(FAILURE);
         hibProp.setAlternateMessageKey("error.crud.savefailed");
         map.put(SAVE, hibProp);
+
+        map.put("new", new ExtendedMethodProperties("create"));
         return map;
     }
 
@@ -56,6 +58,11 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
             form.set("location", request.getParameter("newWktgeom"));
         }
 
+        return mapping.findForward(SUCCESS);
+    }
+
+    public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        createLists(null, form, request);
         return mapping.findForward(SUCCESS);
     }
 
@@ -102,9 +109,11 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
     }
 
     protected void createLists(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
-        request.setAttribute("roadsideEquipment", rseq);
-        rseq.getDataOwner().getName();
         EntityManager em = getEntityManager();
+        if(em.contains(rseq)) {
+            request.setAttribute("roadsideEquipment", rseq);
+            rseq.getDataOwner().getName();
+        }
         request.setAttribute("dataOwners", em.createQuery("from DataOwner order by type, name").getResultList());
     }
 

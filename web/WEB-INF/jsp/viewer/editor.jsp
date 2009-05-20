@@ -74,14 +74,15 @@
     var tree;
     var selectedObject;
 
-    function createTreeview() {
-        selectedObject = null;
-        window.frames["form"].location = "about:blank";
-        
+    function clearTreeview() {
         var treeEl = document.getElementById("objectTree");
         while(treeEl.firstChild != undefined) {
             treeEl.removeChild(treeEl.firstChild);
         }
+    }
+
+    function createTreeview() {
+        clearTreeview();
         treeview_create({
             "id": "objectTree",
             "root": tree,
@@ -106,7 +107,10 @@
         
         var obj = eval("(" + info + ")");
         tree = eval("(" + obj.tree + ")");
+
+        deselectObject();
         createTreeview();
+
         if(tree.object != undefined) {
             setStatus("tree", "Object op locatie geselecteerd");
 
@@ -117,8 +121,6 @@
                 options_zoomToObject();
             }
         } else {
-            // TODO deselect object
-
             setStatus("tree", "Meerdere objecten op locatie");
         }
         if(obj.envelope != undefined) {
@@ -131,12 +133,34 @@
             container = treeview_getLabelContainerNodeForItemId("objectTree", selectedObject.id);
             container.className = "node";
         }
+
         selectedObject = object;
         document.getElementById("zoomButton").disabled = object.point == undefined;
+        
+        document.getElementById("newAg").disabled = object.type != "rseq";
+        document.getElementById("newA").disabled = object.type != "ag";
+
         container = treeview_getLabelContainerNodeForItemId("objectTree", object.id);
         container.className = "selected node";
         treeview_expandItemParents("objectTree", object.id);
         treeview_expandItemChildren("objectTree", object.id);
+    }
+
+    function deselectObject() {
+        if(selectedObject != undefined) {
+            container = treeview_getLabelContainerNodeForItemId("objectTree", selectedObject.id);
+            container.className = "node";
+        }
+        selectedObject = null;
+        document.getElementById("zoomButton").disabled = true;
+        document.getElementById("newAg").disabled = true;
+        document.getElementById("newA").disabled = true;
+        window.frames["form"].location = "about:blank";
+    }
+
+    function clear() {
+        deselectObject();
+        clearTreeview();
     }
 
     function flamingo_karPuntSelected(type, id) {
@@ -204,6 +228,21 @@
         }
     }
 
+    function newRseq() {
+        deselectObject();
+        window.frames["form"].location = "<html:rewrite page="/roadsideEquipment.do?new=t"/>";
+    }
+
+    function newAg() {
+        if(selectedObject.type != "rseq") {
+            alert("Geen walapparatuur geselecteerd");
+            return;
+        }
+        var rseqId = selectedObject.id.split(":")[1];
+        deselectObject();
+        window.frames["form"].location = "<html:rewrite page="/activationGroup.do?new=t"/>" + "&rseqId=" + rseqId;
+    }
+
 </script>
 
 <div id="leftbar" style="margin-right: 15px; width: 360px; float: left">
@@ -218,9 +257,11 @@
         <div id="objectTree" style="width: 100%; height: 248px; border: 1px inset black;"></div>
         <div id="options" style="margin-top: 5px; width: 100%; height: 30px; border: none">
             <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
-            <input type="button" value="Nieuw object" onclick="alert('Nog niet geimplementeerd');">
-            <input type="button" value="Kopieëren" onclick="alert('Nog niet geimplementeerd');">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
+            <input id="newRseq" type="button" value="Nieuwe walapparatuur" onclick="newRseq()">
+            <br>
+            <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
+            <input id="newA" type="button" value="Nieuw inmeldpunt" disabled="true" onclick="alert('Nog niet geimplementeerd');">
         </div>
     </div>
 

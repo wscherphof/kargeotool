@@ -61,7 +61,6 @@
                         </c:if>
                         <html:option value="${do.code}"><c:out value="${do.name}"/></html:option>
                     </c:forEach>
-                    <html:option value="dit is een optie"/>
                 </html:select>
             </td>
         </tr>
