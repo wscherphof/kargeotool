@@ -191,7 +191,18 @@ public class ActivationGroup implements EditorTreeObject {
         j.put("type", "ag");
         j.put("id", "ag:" + getId());
         j.put("description", getDescription());
-        j.put("name", getKarSignalGroup() + " " + (getDescription() == null ? "" : getDescription()));
+        String richting = "";
+        switch(getDirectionAtIntersection()) {
+            case 1: richting = "rechtsaf"; break;
+            case 2: richting = "rechtdoor"; break;
+            case 3: richting = "linksaf"; break;
+            case 4: richting = "rechtsaf,rechtdoor,linksaf"; break;
+            case 5: richting = "rechtsaf,rechtdoor"; break;
+            case 6: richting = "rechtdoor,linksaf"; break;
+            case 7: richting = "linksaf,rechtsaf"; break;
+            default: richting = "onbekend"; break;
+        }
+        j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
         j.put("point", getPoint() == null ? null : getPoint().toString());
         if(!getActivations().isEmpty()) {
             JSONArray children = new JSONArray();
