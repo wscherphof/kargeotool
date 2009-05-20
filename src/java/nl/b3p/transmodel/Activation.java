@@ -200,11 +200,12 @@ public class Activation implements EditorTreeObject {
         j.put("id", "a:" + getId());
         NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
         nf.setGroupingUsed(false);
-        j.put("name", getIndex()
-                + (getMetersBeforeRoadsideEquipmentLocation() == null ? ""
-                : " - " + nf.format(getMetersBeforeRoadsideEquipmentLocation()) + " meter"));
+        j.put("name", getIndex() 
+                + (getKarDistanceTillStopLine() == null ? ""
+                : " " + nf.format(getKarDistanceTillStopLine()) + "m"
+                + (getKarTimeTillStopLine() == null ? ""
+                : " " + nf.format(getKarTimeTillStopLine()) + "s")));
         j.put("index", getIndex());
-        j.put("meters_before_roadside_equipment_location", getMetersBeforeRoadsideEquipmentLocation());
         j.put("point", getPoint() == null ? null : getPoint().toString());
         return j;
     }

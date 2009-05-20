@@ -23,7 +23,6 @@
             <form-property name="type" type="java.lang.String"/>
             <form-property name="karDistanceTillStopLine" type="java.lang.String"/>
             <form-property name="karTimeTillStopLine" type="java.lang.String"/>
-            <form-property name="metersBeforeRoadsideEquipmentLocation" type="java.lang.String"/>
         </form-bean>
         <form-bean name="activationGroupForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="rseqId" type="java.lang.String"/>

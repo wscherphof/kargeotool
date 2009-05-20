@@ -76,10 +76,6 @@
             <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine"/></td>
         </tr>
         <tr>
-            <td><fmt:message key="a.metersBeforeRoadsideEquipmentLocation"/></td>
-            <td><html:text style="border: none; width: 98%" property="metersBeforeRoadsideEquipmentLocation"/></td>
-        </tr>
-        <tr>
             <td><fmt:message key="a.karTimeTillStopLine"/></td>
             <td><html:text style="border: none; width: 98%" property="karTimeTillStopLine"/></td>
         </tr>

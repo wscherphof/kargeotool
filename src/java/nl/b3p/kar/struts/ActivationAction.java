@@ -165,7 +165,6 @@ public final class ActivationAction extends BaseDatabaseAction {
         
         form.set("karDistanceTillStopLine", a.getKarDistanceTillStopLine() == null ? null : nf.format( a.getKarDistanceTillStopLine()));
         form.set("karTimeTillStopLine", a.getKarTimeTillStopLine() == null ? null : nf.format(a.getKarTimeTillStopLine()));
-        form.set("metersBeforeRoadsideEquipmentLocation", a.getMetersBeforeRoadsideEquipmentLocation() == null ? null : nf.format(a.getMetersBeforeRoadsideEquipmentLocation()));
     }   
 
     protected void populateObject(Activation a, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
@@ -184,12 +183,6 @@ public final class ActivationAction extends BaseDatabaseAction {
             a.setKarTimeTillStopLine(null);
         } else {
             a.setKarTimeTillStopLine(Double.parseDouble(val));
-        }
-        val = FormUtils.nullIfEmpty(form.getString("metersBeforeRoadsideEquipmentLocation"));
-        if(val == null) {
-            a.setMetersBeforeRoadsideEquipmentLocation(null);
-        } else {
-            a.setMetersBeforeRoadsideEquipmentLocation(Double.parseDouble(val));
         }
         a.setUpdater(request.getRemoteUser());
         a.setUpdateTime(new Date());
