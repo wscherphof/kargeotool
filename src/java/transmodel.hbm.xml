@@ -8,7 +8,7 @@
         <param name="sequence">roadside_equipment_id_seq</param>
       </generator>
     </id>
-    <natural-id>
+    <natural-id mutable="true">
       <many-to-one name="dataOwner" not-null="false"/>
       <property name="unitNumber" not-null="false"/>
       <property name="validFrom" not-null="false"/>
@@ -31,7 +31,7 @@
         <param name="sequence">activation_group_id_seq</param>
       </generator>
     </id>
-    <natural-id>
+    <natural-id mutable="true">
       <many-to-one name="roadsideEquipment" not-null="true" lazy="false"/>
       <property name="karSignalGroup" not-null="true"/>
       <property name="validFrom" not-null="true"/>

@@ -15,6 +15,7 @@ import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.Activation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
@@ -70,7 +71,13 @@ public final class ActivationAction extends BaseDatabaseAction {
         }
         createLists(activation, form, request);
         
-        /* XXX Check validation */
+        ActionErrors errors = form.validate(mapping, request);
+        if(!errors.isEmpty()) {
+            addMessages(request, errors);
+            return getDefaultForward(mapping, request);
+        }
+
+        /* XXX Check constraints */
 
         populateObject(activation, form, request, mapping);
 

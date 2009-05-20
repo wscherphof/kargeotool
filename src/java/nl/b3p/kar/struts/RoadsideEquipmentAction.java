@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
@@ -66,7 +68,13 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         }
         createLists(rseq, form, request);
 
-        /* XXX Check validation */
+        ActionErrors errors = form.validate(mapping, request);
+        if(!errors.isEmpty()) {
+            addMessages(request, errors);
+            return getDefaultForward(mapping, request);
+        }
+
+        /* XXX Check constraints */
 
         populateObject(rseq, form, request, mapping);
 
@@ -102,11 +110,33 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
 
     protected void populateForm(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws Exception {
         form.set("id", rseq.getId() + "");
+        form.set("dataOwner", rseq.getDataOwner().getCode());
         form.set("unitNumber", rseq.getUnitNumber() + "");
+        form.set("type", rseq.getType());
+        form.set("radioAddress", rseq.getRadioAddress());
         form.set("description", rseq.getDescription() == null ? null : rseq.getDescription());
+        form.set("selectiveDetectionLoop", rseq.isSelectiveDetectionLoop() ? "true" : "false");
     }
 
     protected void populateObject(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
+
+        /* form is al gevalideerd, ook unique constraints e.d. zijn al gechecked  */
+
+        String dataOwner = FormUtils.nullIfEmpty(form.getString("dataOwner"));
+        DataOwner dao = null;
+        if(dataOwner != null) {
+            dao = getEntityManager().find(DataOwner.class, dataOwner);
+        }
+        rseq.setDataOwner(dao);
+        rseq.setUnitNumber(Integer.parseInt(form.getString("unitNumber")));
+        String type = FormUtils.nullIfEmpty(form.getString("type"));
+        rseq.setType(type);
+        String radioAddress = FormUtils.nullIfEmpty(form.getString("radioAddress"));
+        rseq.setRadioAddress(radioAddress);
+        String description = FormUtils.nullIfEmpty(form.getString("description"));
+        rseq.setDescription(description);
+        rseq.setSelectiveDetectionLoop("true".equals(form.getString("selectiveDetectionLoop")));
+
         rseq.setUpdater(request.getRemoteUser());
         rseq.setUpdateTime(new Date());
     }

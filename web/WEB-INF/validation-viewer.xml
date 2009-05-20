@@ -6,31 +6,46 @@
 <form-validation>
     <formset>
         <form name="activationForm">
-            <field property="karDistanceTillStopLine" depends="double">
+            <!-- velden zijn double ipv float, maar in validator-rules.xml staat
+                 geen jsFunctionName voor double validator
+            -->
+            <field property="karDistanceTillStopLine" depends="float">
                 <arg0 key="a.karDistanceTillStopLine"/>
             </field>
-            <field property="karTimeTillStopLine" depends="double">
+            <field property="karTimeTillStopLine" depends="float">
                 <arg0 key="a.karTimeTillStopLine"/>
             </field>
             <field property="karUsageType" depends="required">
 				<arg0 key="a.karUsageType"/>
+                <!-- TODO mask van mogelijke waardes -->
             </field>
             <field property="type" depends="required">
 				<arg0 key="a.type"/>
+                <!-- TODO mask van mogelijke waardes -->
             </field>
         </form>
     </formset>
     <formset>
         <form name="activationGroupForm">
-            <field property="karSignalGroup" depends="required">
+            <field property="karSignalGroup" depends="required,integer">
                 <arg0 key="ag.karSignalGroup"/>
+            </field>
+            <field property="metersAfterRoadsideEquipmentLocation" depends="integer">
+                <arg0 key="ag.metersAfterRoadsideEquipmentLocation"/>
             </field>
         </form>
     </formset>
     <formset>
         <form name="roadsideEquipmentForm">
-            <field property="unitNumber" depends="required">
+            <field property="dataOwner" depends="required">
+                <arg0 key="rseq.dataOwner"/>
+            </field>
+            <field property="unitNumber" depends="integer,required">
                 <arg0 key="rseq.unitNumber"/>
+            </field>
+            <field property="type" depends="required">
+                <arg0 key="rseq.type"/>
+                <!-- TODO mask van mogelijke waardes ^(CROSS|CLOSE|PIU)$ -->
             </field>
         </form>
     </formset>

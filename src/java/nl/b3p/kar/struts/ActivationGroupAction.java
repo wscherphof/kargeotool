@@ -14,6 +14,7 @@ import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.ActivationGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
@@ -69,7 +70,13 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
         }
         createLists(ag, form, request);
 
-        /* XXX Check validation */
+        ActionErrors errors = form.validate(mapping, request);
+        if(!errors.isEmpty()) {
+            addMessages(request, errors);
+            return getDefaultForward(mapping, request);
+        }
+
+        /* XXX Check constraints */
 
         populateObject(ag, form, request, mapping);
 
@@ -106,9 +113,8 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
     protected void populateForm(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws Exception {
         form.set("id", ag.getId() + "");
         form.set("karSignalGroup", ag.getKarSignalGroup() + "");
-        String[] d = null;
+        String[] d;
         switch(ag.getDirectionAtIntersection()) {
-            case 0: d = new String[] {"onbekend"}; break;
             case 1: d = new String[] {"rechtsaf"}; break;
             case 2: d = new String[] {"rechtdoor"}; break;
             case 3: d = new String[] {"linksaf"}; break;
@@ -116,6 +122,7 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
             case 5: d = new String[] {"rechtsaf","rechtdoor"}; break;
             case 6: d = new String[] {"rechtdoor","linksaf"}; break;
             case 7: d = new String[] {"linksaf","rechtsaf"}; break;
+            default: d = new String[] {"onbekend"}; break;
         }
         form.set("directionAtIntersection", d);
         form.set("metersAfterRoadsideEquipmentLocation", 
