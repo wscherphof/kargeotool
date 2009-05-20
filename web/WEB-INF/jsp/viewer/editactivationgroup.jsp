@@ -84,7 +84,7 @@
 </script>
                 <table cellspacing="0" cellpadding="0">
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onchange="onbekendChanged()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onclick="onbekendChanged()"/></td>
                         <td>
                             <label for="onbekend">
                                 Onbekend (complexe kruising, handmatig bepalen)
@@ -92,15 +92,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="rechtdoor" property="directionAtIntersection" value="rechtdoor" onchange="richtingChanged()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="rechtdoor" property="directionAtIntersection" value="rechtdoor" onclick="richtingChanged()"/></td>
                         <td><label for="rechtdoor">Rechtdoor</label></td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="linksaf" property="directionAtIntersection" value="linksaf" onchange="richtingChanged()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="linksaf" property="directionAtIntersection" value="linksaf" onclick="richtingChanged()"/></td>
                         <td><label for="linksaf">Linksaf</label></td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onchange="richtingChanged()"/></td>
+                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onclick="richtingChanged()"/></td>
                         <td><label for="rechtsaf">Rechtsaf</label></td>
                     </tr>
                 </table>
