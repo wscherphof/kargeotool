@@ -9,6 +9,7 @@
 
 <html:form styleId="activationForm" action="/activation" onsubmit="return validateActivationForm(this)">
     <html:hidden property="id"/>
+    <html:hidden property="agId"/>
     <html:submit property="save">Opslaan</html:submit>
     <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
@@ -41,14 +42,14 @@
     <br>
     <div class="formTableContainer">
     <table class="form" style="width: 98%" border="1" cellspacing="0" cellpadding="2">
-        <c:set var="dataOwner" value="${activation.activationGroup.roadsideEquipment.dataOwner}"/>
+        <c:set var="dataOwner" value="${activationGroup.roadsideEquipment.dataOwner}"/>
         <tr>
             <td style="width: 130px">Naam wegbeheerder</td>
             <td class="disabled"><c:out value="${dataOwner.name} (${dataOwner.type})"/></td>
         </tr>
-        <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${activation.activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
+        <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
         <tr><td><fmt:message key="a.index"/></td><td class="disabled"><c:out value="${activation.index}"/></td></tr>
-        <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="disabled"><c:out value="${activation.activationGroup.karSignalGroup}"/></td></tr>
+        <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="disabled"><c:out value="${activationGroup.karSignalGroup}"/></td></tr>
         <tr>
             <td><fmt:message key="a.karUsageType"/></td>
             <td><html:select property="karUsageType">

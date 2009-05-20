@@ -243,6 +243,16 @@
         window.frames["form"].location = "<html:rewrite page="/activationGroup.do?new=t"/>" + "&rseqId=" + rseqId;
     }
 
+    function newA() {
+        if(selectedObject.type != "ag") {
+            alert("Geen signaalgroep geselecteerd");
+            return;
+        }
+        var agId = selectedObject.id.split(":")[1];
+        deselectObject();
+        window.frames["form"].location = "<html:rewrite page="/activation.do?new=t"/>" + "&agId=" + agId;
+    }
+
 </script>
 
 <div id="leftbar" style="margin-right: 15px; width: 360px; float: left">
@@ -261,7 +271,7 @@
             <input id="newRseq" type="button" value="Nieuwe walapparatuur" onclick="newRseq()">
             <br>
             <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
-            <input id="newA" type="button" value="Nieuw inmeldpunt" disabled="true" onclick="alert('Nog niet geimplementeerd');">
+            <input id="newA" type="button" value="Nieuw inmeldpunt" disabled="true" onclick="newA()">
         </div>
     </div>
 

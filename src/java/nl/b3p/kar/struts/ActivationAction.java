@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.Activation;
+import nl.b3p.transmodel.ActivationGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
@@ -37,7 +38,9 @@ public final class ActivationAction extends BaseDatabaseAction {
         hibProp.setDefaultForwardName(SUCCESS);
         hibProp.setAlternateForwardName(FAILURE);
         hibProp.setAlternateMessageKey("error.crud.savefailed");
-        map.put(SAVE, hibProp);   
+        map.put(SAVE, hibProp);
+
+        map.put("new", new ExtendedMethodProperties("create"));
         return map;
     }
 
@@ -62,6 +65,20 @@ public final class ActivationAction extends BaseDatabaseAction {
         return mapping.findForward(SUCCESS);
     }
 
+    public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        createLists(null, form, request);
+        return mapping.findForward(SUCCESS);
+    }
+
+    private ActivationGroup getActivationGroup(DynaValidatorForm form, HttpServletRequest request) throws Exception {
+        Integer agId = FormUtils.StringToInteger(form.getString("agId"));
+        ActivationGroup ag = null;
+        if(agId != null) {
+            ag = getEntityManager().find(ActivationGroup.class, agId);
+        }
+        return ag;
+    }
+
     public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
         Activation activation = getActivation(form, request, true);
@@ -77,11 +94,23 @@ public final class ActivationAction extends BaseDatabaseAction {
             return getDefaultForward(mapping, request);
         }
 
+        if(!em.contains(activation)) {
+            ActivationGroup ag = getActivationGroup(form, request);
+            if(ag == null) {
+                addMessage(request, "errors.required", "Signaalgroep");
+                return getDefaultForward(mapping, request);
+            }
+            activation.setActivationGroup(ag);
+        }
+
         /* XXX Check constraints */
 
         populateObject(activation, form, request, mapping);
 
         if(activation.getId() == null) {
+            // XXX
+            activation.setValidFrom(new Date());
+            activation.setIndex(activation.getActivationGroup().getActivations().size()+1);
             em.persist(activation);
         }
         em.flush();
@@ -91,6 +120,7 @@ public final class ActivationAction extends BaseDatabaseAction {
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
     }
+    
     protected Activation getActivation(DynaValidatorForm dynaForm, HttpServletRequest request, boolean createNew) throws Exception {
         log.debug("Getting entity manager ......");
         EntityManager em = getEntityManager();
@@ -106,13 +136,20 @@ public final class ActivationAction extends BaseDatabaseAction {
 
     protected void createLists(Activation activation, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         EntityManager em = getEntityManager();
-        request.setAttribute("activation", activation);
-        if(activation.getPoint() != null) {
-            activation.getPoint().getGeom();
-        }
-        if(activation.getActivationGroup() != null) {
-            if(activation.getActivationGroup().getRoadsideEquipment() != null) {
-                activation.getActivationGroup().getRoadsideEquipment().getDataOwner().getName();
+        if(em.contains(activation)) {
+            request.setAttribute("activation", activation);
+            if(activation.getPoint() != null) {
+                activation.getPoint().getGeom();
+            }
+            request.setAttribute("activationGroup", activation.getActivationGroup());
+            activation.getActivationGroup().getRoadsideEquipment().getDataOwner().getName();
+        } else {
+            ActivationGroup ag = getActivationGroup(form, request);
+            if(ag == null) {
+                addMessage(request, "errors.required", "Signaalgroep");
+            } else {
+                request.setAttribute("activationGroup", ag);
+                ag.getRoadsideEquipment().getDataOwner().getName();
             }
         }
     }
