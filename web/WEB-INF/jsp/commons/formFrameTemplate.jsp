@@ -10,6 +10,7 @@
         <title>KAR in GIS - edit form frame</title>
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis.css" module=""/>" type="text/css" media="screen" />
+        <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis-design.css" module=""/>" type="text/css" media="screen" />
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>

@@ -68,3 +68,43 @@ td.disabled {
     height: 290px;
     overflow: auto;
 }
+
+/* Inline CSS uit editor.css gehaald */
+body.editor {
+    width: 1270px
+}
+
+#leftbar {
+    margin-right: 15px; width: 360px; float: left;
+}
+
+#tree {
+    margin: 5px; padding: 3px; border: 1px inset black; width: 100%; height: 392px;
+}
+
+#objectTree {
+    width: 100%; height: 248px; border: 1px inset black;
+}
+
+#options {
+    margin-top: 5px; width: 100%; height: 30px; border: none;
+}
+
+#form {
+    margin: 5px; padding: 3px;  border: 1px inset black; width: 100%; height: 405px;
+}
+
+#kaart {
+    margin: 5px 0px 5px 5px; padding: 3px; border: 1px solid black; width: 865px; height: 810px; float: left; clear: right;
+}
+
+#form_container {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#form iframe {
+    border: 0px none; width: 100%; height: 100%;
+}

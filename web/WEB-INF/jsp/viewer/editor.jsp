@@ -10,6 +10,7 @@
         <title>KAR in GIS</title>
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis.css" module=""/>" type="text/css" media="screen" />
+		<link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis-design.css" module=""/>" type="text/css" media="screen" />
         <script type="text/javascript" src="<html:rewrite page="/js/json2.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
@@ -17,7 +18,7 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
     </head>
-    <body class="editor" style="width: 1270px">
+    <body class="editor">
         <div id="header">
             <div id="headerTitle">KAR in GIS</div>
         </div>
@@ -255,17 +256,18 @@
 
 </script>
 
-<div id="leftbar" style="margin-right: 15px; width: 360px; float: left">
+<div id="leftbar">
 
-    <div id="tree" style="margin: 5px; padding: 3px; border: 1px inset black; width: 100%; height: 392px;">
-
-        Objectenboom
-        <p>
-        Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span>
-        <p>
-        <input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
-        <div id="objectTree" style="width: 100%; height: 248px; border: 1px inset black;"></div>
-        <div id="options" style="margin-top: 5px; width: 100%; height: 30px; border: none">
+    <div id="tree">
+		<div id="treeTop">
+			<div id="treeTitel">Objectenboom</div>
+			<p>
+				Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span>
+			</p>
+			<input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
+		</div>
+        <div id="objectTree"></div>
+        <div id="options">
             <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
             <input id="newRseq" type="button" value="Nieuwe walapparatuur" onclick="newRseq()">
@@ -275,25 +277,22 @@
         </div>
     </div>
 
-    <div id="form" style="margin: 5px; padding: 3px;  border: 1px inset black; width: 100%; height: 405px;">
-
-        <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-        <iframe frameborder="0" name="form" style="border: 0; width: 100%; height: 100%">    </iframe>
-
+    <div id="form">
+		<div id="form_container">
+			<span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
+			<iframe frameborder="0" name="form"></iframe>
+		</div>
     </div>
 
 </div>
 
-<div id="kaart" style="margin: 5px 0px 5px 5px; padding: 3px; border: 1px solid black; width: 865px; height: 810px; float: left; clear: right">
-
+<div id="kaart">
     <div id="flashcontent" style="width: 100%; height: 100%;"></div>
-
-<script type="text/javascript">
-    var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
-    so.write("flashcontent");
-    var flamingo = document.getElementById("flamingo");
-</script>
-
+	<script type="text/javascript">
+		var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
+		so.write("flashcontent");
+		var flamingo = document.getElementById("flamingo");
+	</script>
 </div>
 
     </body>

@@ -9,6 +9,7 @@
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/main.css" module=""/>" type="text/css" media="screen" />
         <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis.css" module=""/>" type="text/css" media="screen" />
+        <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis-design.css" module=""/>" type="text/css" media="screen" />
     </head>
     <body>
         <div id="headerbg">

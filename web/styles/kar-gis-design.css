@@ -1,0 +1,183 @@
+html, body {
+    padding: 0px;
+    margin: 0px;
+}
+
+body, div, td, th, input, textarea, span {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+body.form, body.form div, body.form td, body.form input, body.form textarea, body.form span,
+body.editor, body.editor div, body.editor td, body.editor input, body.editor textarea, body.editor span {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+}
+
+body.editor {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    min-width: 1275px;
+}
+
+#header {
+    background-color: #E32D21;
+    text-align: left;
+    padding: 5px;
+    padding-left: 15px;
+    color: White;
+    border-bottom: 1px solid #DDDDDD;
+    margin: 5px;
+}
+
+#headerTitle {
+    text-align: left;
+    margin-top: 0px;
+}
+
+body.editor #header {
+    background-color: #E32D21;
+    text-align: left;
+    padding: 5px;
+    padding-left: 15px;
+    color: White;
+    border-bottom: 1px solid #DDDDDD;
+    margin: 0px;
+}
+
+body.editor #headerTitle {
+    text-align: left;
+    margin-top: 0px;
+}
+
+#contentcontainer, #content {
+    margin: 5px;
+    height: auto;
+}
+
+body.editor #contentcontainer {
+    margin: 0px;
+}
+
+.loginBox {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    margin-top: 25px;
+    margin-left: 25px;
+}
+
+.loginBox div {
+    padding: 5px;
+}
+
+.loginBoxTitel {
+    background-color: #DDDDDD;
+    padding: 5px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+    width: 390px;
+}
+
+#leftbar {
+    margin: 0px;
+    float: none;
+    width: 375px;
+    position: absolute;
+    top: 30px;
+    left: 0px;
+    bottom: 0px;
+}
+
+#kaart {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    height: auto;
+    float: none;
+    clear: none;
+    left: 385px;
+    position: absolute;
+    top: 35px;
+    bottom: 5px;
+    right: 5px;
+}
+
+#tree, #form {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+}
+
+#tree {
+    margin: 0px;
+    padding: 0px;
+    height: auto;
+    width: 100%;
+    bottom: 426px;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+#treeTop {
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 100%;
+    height: 70px;
+}
+
+#treeTitel {
+    background-color: #DDDDDD;
+    padding: 5px;
+    font-weight: bold;
+    margin: 0px;
+    margin-left: -3px;
+    margin-right: 3px;
+}
+
+#objectTree {
+    background-color: White;
+    border: 1px solid #DDDDDD;
+
+    width: auto;
+    height: auto;
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    top: 80px;
+    bottom: 50px;
+}
+
+#options {
+    border: none;
+
+    margin: 0px;
+    position: absolute;
+    left: 3px;
+    bottom: 15px;
+    width: 100%;
+    height: 30px;
+}
+
+#form {
+    margin: 0px;
+    padding: 0px;
+    
+    width: 100%;
+    height: 416px;
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+}
+
+#form_container {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    right: 3px;
+    top: 3px;
+}
