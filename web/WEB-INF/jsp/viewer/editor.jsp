@@ -111,7 +111,7 @@
         deselectObject();
         createTreeview();
 
-        if(tree.object != undefined) {
+        if(obj.object != undefined) {
             setStatus("tree", "Object op locatie geselecteerd");
 
             var object = treeview_findItem(tree, obj.object);
