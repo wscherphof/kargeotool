@@ -40,6 +40,9 @@
             <form-property name="type" type="java.lang.String"/>
             <form-property name="radioAddress" type="java.lang.String"/>
             <form-property name="description" type="java.lang.String"/>
+            <form-property name="supplier" type="java.lang.String"/>
+            <form-property name="supplierTypeNumber" type="java.lang.String"/>
+            <form-property name="installationDate" type="java.lang.String"/>
             <form-property name="selectiveDetectionLoop" type="java.lang.String"/>
         </form-bean>
     </form-beans>

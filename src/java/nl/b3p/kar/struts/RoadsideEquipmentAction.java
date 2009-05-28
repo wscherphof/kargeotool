@@ -123,7 +123,10 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         form.set("unitNumber", rseq.getUnitNumber() + "");
         form.set("type", rseq.getType());
         form.set("radioAddress", rseq.getRadioAddress());
-        form.set("description", rseq.getDescription() == null ? null : rseq.getDescription());
+        form.set("description", rseq.getDescription());
+        form.set("supplier", rseq.getSupplier());
+        form.set("supplierTypeNumber", rseq.getSupplierTypeNumber());
+        form.set("installationDate", FormUtils.DateToFormString(rseq.getInstallationDate(), null));
         form.set("selectiveDetectionLoop", rseq.isSelectiveDetectionLoop() ? "true" : "false");
     }
 
@@ -138,12 +141,12 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         }
         rseq.setDataOwner(dao);
         rseq.setUnitNumber(Integer.parseInt(form.getString("unitNumber")));
-        String type = FormUtils.nullIfEmpty(form.getString("type"));
-        rseq.setType(type);
-        String radioAddress = FormUtils.nullIfEmpty(form.getString("radioAddress"));
-        rseq.setRadioAddress(radioAddress);
-        String description = FormUtils.nullIfEmpty(form.getString("description"));
-        rseq.setDescription(description);
+        rseq.setType(FormUtils.nullIfEmpty(form.getString("type")));
+        rseq.setRadioAddress(FormUtils.nullIfEmpty(form.getString("radioAddress")));
+        rseq.setDescription(FormUtils.nullIfEmpty(form.getString("description")));
+        rseq.setSupplier(FormUtils.nullIfEmpty(form.getString("supplier")));
+        rseq.setSupplierTypeNumber(FormUtils.nullIfEmpty(form.getString("supplierTypeNumber")));
+        rseq.setInstallationDate(FormUtils.StringToDate(form.getString("installationDate"), null));
         rseq.setSelectiveDetectionLoop("true".equals(form.getString("selectiveDetectionLoop")));
 
         rseq.setUpdater(request.getRemoteUser());

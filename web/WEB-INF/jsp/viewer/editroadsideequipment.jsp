@@ -96,12 +96,41 @@
             </td>
         </tr>
         <tr>
+            <td style="vertical-align: top"><fmt:message key="rseq.supplier"/></td>
+            <td>
+                 <html:text property="supplier" style="border: none; width: 98%"/>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top"><fmt:message key="rseq.supplierTypeNumber"/></td>
+            <td>
+                 <html:text property="supplierTypeNumber" style="border: none; width: 98%"/>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top"><fmt:message key="rseq.installationDate"/></td>
+            <td>
+                 <html:text property="installationDate" style="border: none; width: 98%"/>
+            </td>
+        </tr>
+        <tr>
             <td><fmt:message key="rseq.selectiveDetectionLoop"/></td>
             <td>
                 <html:select property="selectiveDetectionLoop">
                     <html:option value="false">Nee</html:option>
                     <html:option value="true">Ja</html:option>
                 </html:select>
+            </td>
+        </tr>
+        <tr>
+            <td><fmt:message key="rseq.inactiveFrom"/></td>
+            <td class="disabled">
+                <c:if test="${!empty roadsideEquipment.inactiveFrom}">
+                    <fmt:formatDate pattern="dd-MM-yyyy" value="${roadsideEquipment.inactiveFrom}"/>
+                </c:if>
+                <c:if test="${empty roadsideEquipment.inactiveFrom}">
+                    nvt
+                </c:if>
             </td>
         </tr>
         <tr>

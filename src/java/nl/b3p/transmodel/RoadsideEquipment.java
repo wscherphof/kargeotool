@@ -25,7 +25,7 @@ public class RoadsideEquipment implements EditorTreeObject {
     private String description;
     private String supplier;
     private String supplierTypeNumber;
-    private String installationDate;
+    private Date installationDate;
     private boolean selectiveDetectionLoop;
     private KarPunt point; /* algemene locatie van VRI */
     private Date inactiveFrom;
@@ -106,11 +106,11 @@ public class RoadsideEquipment implements EditorTreeObject {
         this.supplierTypeNumber = supplierTypeNumber;
     }
 
-    public String getInstallationDate() {
+    public Date getInstallationDate() {
         return installationDate;
     }
 
-    public void setInstallationDate(String installationDate) {
+    public void setInstallationDate(Date installationDate) {
         this.installationDate = installationDate;
     }
 
