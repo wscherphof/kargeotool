@@ -17,8 +17,11 @@
     <property name="radioAddress"/>
     <property name="description" type="text"/>
     <property name="supplier"/>
+    <property name="supplierTypeNumber"/>
+    <property name="installationDate"/>
     <property name="selectiveDetectionLoop" not-null="true"/>
     <many-to-one name="point"/>
+    <property name="inactiveFrom"/>
     <property name="updater"/>
     <property name="updateTime"/>
     <property name="validator"/>
@@ -39,7 +42,7 @@
     <property name="type" not-null="true"/>
     <property name="directionAtIntersection" not-null="true"/>
     <property name="metersBeforeRoadsideEquipmentLocation"/>
-    <property name="metersAfterRoadsideEquipmentLocation"/>
+    <property name="metersAfterStopLine"/>
     <property name="inactiveFrom"/>
     <property name="angleToNorth"/>
     <property name="followDirection" not-null="true"/>
@@ -66,7 +69,7 @@
       <property name="index" not-null="true"/>
       <property name="validFrom" not-null="false"/>
     <property name="karUsageType" not-null="true"/>
-    <property name="type" not-null="true"/>
+    <property name="triggerType" not-null="true"/>
     <property name="commandType"/>
     <property name="karDistanceTillStopLine"/>
     <property name="karTimeTillStopLine"/>

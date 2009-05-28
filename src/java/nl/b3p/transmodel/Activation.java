@@ -45,7 +45,7 @@ public class Activation implements EditorTreeObject {
     private Integer index;
     private Date validFrom;
     private String karUsageType;
-    private String type;
+    private String triggerType;
     private Integer commandType;
     private Double karDistanceTillStopLine;
     private Double karTimeTillStopLine;
@@ -98,12 +98,12 @@ public class Activation implements EditorTreeObject {
         this.karUsageType = karUsageType;
     }
 
-    public String getType() {
-        return type;
+    public String getTriggerType() {
+        return triggerType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTriggerType(String triggerType) {
+        this.triggerType = triggerType;
     }
 
     public Integer getCommandType() {

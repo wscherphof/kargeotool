@@ -20,7 +20,7 @@
             <form-property name="agId" type="java.lang.String"/>
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karUsageType" type="java.lang.String"/>
-            <form-property name="type" type="java.lang.String"/>
+            <form-property name="triggerType" type="java.lang.String"/>
             <form-property name="karDistanceTillStopLine" type="java.lang.String"/>
             <form-property name="karTimeTillStopLine" type="java.lang.String"/>
         </form-bean>
@@ -29,7 +29,7 @@
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karSignalGroup" type="java.lang.String"/>
             <form-property name="directionAtIntersection" type="java.lang.String[]"/>
-            <form-property name="metersAfterRoadsideEquipmentLocation" type="java.lang.String"/>
+            <form-property name="metersAfterStopLine" type="java.lang.String"/>
             <form-property name="followDirection" type="java.lang.String"/>
             <form-property name="description" type="java.lang.String"/>
         </form-bean>

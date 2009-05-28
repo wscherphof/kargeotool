@@ -158,7 +158,7 @@ public final class ActivationAction extends BaseDatabaseAction {
         form.set("id", a.getId() + "");
 
         form.set("karUsageType", a.getKarUsageType());
-        form.set("type", a.getType() == null ? null : a.getType() + "");
+        form.set("triggerType", a.getTriggerType() == null ? null : a.getTriggerType() + "");
 
         NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
         nf.setGroupingUsed(false);
@@ -171,7 +171,7 @@ public final class ActivationAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
 
         a.setKarUsageType(form.getString("karUsageType"));
-        a.setType(form.getString("type"));
+        a.setTriggerType(form.getString("triggerType"));
         String val = FormUtils.nullIfEmpty(form.getString("karDistanceTillStopLine"));
         if(val == null) {
             a.setKarDistanceTillStopLine(null);

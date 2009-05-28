@@ -107,11 +107,11 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="ag.metersAfterRoadsideEquipmentLocation"/>
+            <td><fmt:message key="ag.metersAfterStopLine"/>
             <span style="font-size: 8pt"><br>meters na stopstreep</span>
             </td>
             <td>
-                <html:text property="metersAfterRoadsideEquipmentLocation" style="border: none; width: 98%"/>
+                <html:text property="metersAfterStopLine" style="border: none; width: 98%"/>
             </td>
         </tr>
         <tr>

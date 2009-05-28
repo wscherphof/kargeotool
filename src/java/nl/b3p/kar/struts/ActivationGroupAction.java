@@ -163,8 +163,8 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
             default: d = new String[] {"onbekend"}; break;
         }
         form.set("directionAtIntersection", d);
-        form.set("metersAfterRoadsideEquipmentLocation", 
-                ag.getMetersAfterRoadsideEquipmentLocation() == null ? null : ag.getMetersAfterRoadsideEquipmentLocation() + "");
+        form.set("metersAfterStopLine",
+                ag.getMetersAfterStopLine() == null ? null : ag.getMetersAfterStopLine() + "");
         form.set("followDirection", ag.isFollowDirection() ? "true" : "false");
         form.set("description", ag.getDescription() == null ? null : ag.getDescription());
     }
@@ -197,7 +197,7 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
             d = 0;
         }
         ag.setDirectionAtIntersection(d);
-        ag.setMetersAfterRoadsideEquipmentLocation(FormUtils.StringToInteger(form.getString("metersAfterRoadsideEquipmentLocation")));
+        ag.setMetersAfterStopLine(FormUtils.StringToInteger(form.getString("metersAfterStopLine")));
         ag.setFollowDirection("true".equals(form.getString("followDirection")));
         ag.setDescription(FormUtils.nullIfEmpty(form.getString("description")));
 

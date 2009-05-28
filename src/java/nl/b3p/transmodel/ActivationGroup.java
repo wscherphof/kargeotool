@@ -20,7 +20,7 @@ public class ActivationGroup implements EditorTreeObject {
     private String type;
     private int directionAtIntersection;
     private Integer metersBeforeRoadsideEquipmentLocation;
-    private Integer metersAfterRoadsideEquipmentLocation;
+    private Integer metersAfterStopLine;
     private Date inactiveFrom;
     private Double angleToNorth;
     private boolean followDirection;
@@ -89,12 +89,12 @@ public class ActivationGroup implements EditorTreeObject {
         this.metersBeforeRoadsideEquipmentLocation = metersBeforeRoadsideEquipmentLocation;
     }
 
-    public Integer getMetersAfterRoadsideEquipmentLocation() {
-        return metersAfterRoadsideEquipmentLocation;
+    public Integer getMetersAfterStopLine() {
+        return metersAfterStopLine;
     }
 
-    public void setMetersAfterRoadsideEquipmentLocation(Integer metersAfterRoadsideEquipmentLocation) {
-        this.metersAfterRoadsideEquipmentLocation = metersAfterRoadsideEquipmentLocation;
+    public void setMetersAfterStopLine(Integer metersAfterStopLine) {
+        this.metersAfterStopLine = metersAfterStopLine;
     }
 
     public Date getInactiveFrom() {

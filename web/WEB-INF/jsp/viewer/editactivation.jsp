@@ -61,13 +61,13 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="a.type"/></td>
-            <td><html:select property="type">
-                    <html:option value="PRQA"><fmt:message key="a.type.PRQA"/></html:option>
-                    <html:option value="PRQM"><fmt:message key="a.type.PRQM"/></html:option>
-                    <html:option value="SDCAS"><fmt:message key="a.type.SDCAS"/></html:option>
-                    <html:option value="PRQAA"><fmt:message key="a.type.PRQAA"/></html:option>
-                    <html:option value="PRQI"><fmt:message key="a.type.PRQI"/></html:option>
+            <td><fmt:message key="a.triggerType"/></td>
+            <td><html:select property="triggerType">
+                    <html:option value="PRQA"><fmt:message key="a.triggerType.PRQA"/></html:option>
+                    <html:option value="PRQM"><fmt:message key="a.triggerType.PRQM"/></html:option>
+                    <html:option value="SDCAS"><fmt:message key="a.triggerType.SDCAS"/></html:option>
+                    <html:option value="PRQAA"><fmt:message key="a.triggerType.PRQAA"/></html:option>
+                    <html:option value="PRQI"><fmt:message key="a.triggerType.PRQI"/></html:option>
                 </html:select>
             </td>
         </tr>

@@ -24,8 +24,11 @@ public class RoadsideEquipment implements EditorTreeObject {
     private String radioAddress;
     private String description;
     private String supplier;
+    private String supplierTypeNumber;
+    private String installationDate;
     private boolean selectiveDetectionLoop;
     private KarPunt point; /* algemene locatie van VRI */
+    private Date inactiveFrom;
     private String updater;
     private Date updateTime;
     private String validator;
@@ -95,6 +98,22 @@ public class RoadsideEquipment implements EditorTreeObject {
         this.supplier = supplier;
     }
 
+    public String getSupplierTypeNumber() {
+        return supplierTypeNumber;
+    }
+
+    public void setSupplierTypeNumber(String supplierTypeNumber) {
+        this.supplierTypeNumber = supplierTypeNumber;
+    }
+
+    public String getInstallationDate() {
+        return installationDate;
+    }
+
+    public void setInstallationDate(String installationDate) {
+        this.installationDate = installationDate;
+    }
+
     public boolean isSelectiveDetectionLoop() {
         return selectiveDetectionLoop;
     }
@@ -109,6 +128,14 @@ public class RoadsideEquipment implements EditorTreeObject {
 
     public void setPoint(KarPunt point) {
         this.point = point;
+    }
+
+    public Date getInactiveFrom() {
+        return inactiveFrom;
+    }
+
+    public void setInactiveFrom(Date inactiveFrom) {
+        this.inactiveFrom = inactiveFrom;
     }
 
     public String getUpdater() {
