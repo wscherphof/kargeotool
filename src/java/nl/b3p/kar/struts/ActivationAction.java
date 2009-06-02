@@ -67,6 +67,8 @@ public final class ActivationAction extends BaseDatabaseAction {
 
     public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         createLists(null, form, request);
+        /* Default voor commandType is Inmelding */
+        form.set("commandType", "1");
         return mapping.findForward(SUCCESS);
     }
 
