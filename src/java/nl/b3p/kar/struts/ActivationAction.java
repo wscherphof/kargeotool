@@ -159,6 +159,7 @@ public final class ActivationAction extends BaseDatabaseAction {
 
         form.set("karUsageType", a.getKarUsageType());
         form.set("triggerType", a.getTriggerType() == null ? null : a.getTriggerType() + "");
+        form.set("commandType", a.getCommandType() == null ? null : a.getCommandType() + "");
 
         NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
         nf.setGroupingUsed(false);
@@ -172,6 +173,11 @@ public final class ActivationAction extends BaseDatabaseAction {
 
         a.setKarUsageType(form.getString("karUsageType"));
         a.setTriggerType(form.getString("triggerType"));
+        Integer commandType = FormUtils.StringToInteger(form.getString("commandType"));
+        if(commandType != null && (commandType < 1 || commandType > 3)) {
+            commandType = null;
+        }
+        a.setCommandType(commandType);
         String val = FormUtils.nullIfEmpty(form.getString("karDistanceTillStopLine"));
         if(val == null) {
             a.setKarDistanceTillStopLine(null);

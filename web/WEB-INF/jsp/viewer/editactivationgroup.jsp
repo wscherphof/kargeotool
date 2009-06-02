@@ -130,6 +130,14 @@
             </td>
         </tr>
         <tr>
+            <td><fmt:message key="rseq.inactiveFrom"/></td>
+            <td class="disabled">
+                <c:if test="${!empty activationGroup.inactiveFrom}">
+                    <fmt:formatDate pattern="dd-MM-yyyy" value="${activationGroup.inactiveFrom}"/>
+                </c:if>
+            </td>
+        </tr>
+        <tr>
             <td><fmt:message key="updater"/></td>
             <td class="disabled">
                 <c:if test="${!empty activationGroup.updater}">

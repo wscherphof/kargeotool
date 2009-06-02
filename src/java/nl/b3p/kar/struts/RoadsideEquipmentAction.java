@@ -20,7 +20,8 @@ import org.hibernate.HibernateException;
 
 public final class RoadsideEquipmentAction extends BaseDatabaseAction {
 
-    private static Log log = LogFactory.getLog(ActivationGroupAction.class);
+    private static Log log = LogFactory.getLog(RoadsideEquipmentAction.class);
+    
     protected static final String VIEWER = "viewer";
     protected static final String SAVE = "save";
     protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
@@ -126,7 +127,7 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         form.set("description", rseq.getDescription());
         form.set("supplier", rseq.getSupplier());
         form.set("supplierTypeNumber", rseq.getSupplierTypeNumber());
-        form.set("installationDate", FormUtils.DateToFormString(rseq.getInstallationDate(), null));
+        form.set("installationDate", FormUtils.DateToString(rseq.getInstallationDate(), null));
         form.set("selectiveDetectionLoop", rseq.isSelectiveDetectionLoop() ? "true" : "false");
     }
 

@@ -128,9 +128,6 @@
                 <c:if test="${!empty roadsideEquipment.inactiveFrom}">
                     <fmt:formatDate pattern="dd-MM-yyyy" value="${roadsideEquipment.inactiveFrom}"/>
                 </c:if>
-                <c:if test="${empty roadsideEquipment.inactiveFrom}">
-                    nvt
-                </c:if>
             </td>
         </tr>
         <tr>

@@ -72,6 +72,18 @@
             </td>
         </tr>
         <tr>
+            <td><fmt:message key="a.commandType"/><br>
+                <fmt:message key="a.commandType_regel2"/>
+                </td>
+            <td><html:select property="commandType">
+                    <html:option value=""/>
+                    <html:option value="1"><fmt:message key="a.commandType.In"/></html:option>
+                    <html:option value="2"><fmt:message key="a.commandType.Uit"/></html:option>
+                    <html:option value="3"><fmt:message key="a.commandType.Voor"/></html:option>
+                </html:select>
+            </td>
+        </tr>
+        <tr>
             <td><fmt:message key="a.karDistanceTillStopLine"/></td>
             <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine"/></td>
         </tr>

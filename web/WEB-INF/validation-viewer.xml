@@ -19,8 +19,8 @@
 				<arg0 key="a.karUsageType"/>
                 <!-- TODO mask van mogelijke waardes -->
             </field>
-            <field property="type" depends="required">
-				<arg0 key="a.type"/>
+            <field property="triggerType" depends="required">
+				<arg0 key="a.triggerType"/>
                 <!-- TODO mask van mogelijke waardes -->
             </field>
         </form>
@@ -30,8 +30,8 @@
             <field property="karSignalGroup" depends="required,integer">
                 <arg0 key="ag.karSignalGroup"/>
             </field>
-            <field property="metersAfterRoadsideEquipmentLocation" depends="integer">
-                <arg0 key="ag.metersAfterRoadsideEquipmentLocation"/>
+            <field property="metersAfterStopLine" depends="integer">
+                <arg0 key="ag.metersAfterStopLine"/>
             </field>
         </form>
     </formset>
@@ -46,6 +46,13 @@
             <field property="type" depends="required">
                 <arg0 key="rseq.type"/>
                 <!-- TODO mask van mogelijke waardes ^(CROSS|CLOSE|PIU)$ -->
+            </field>
+            <field property="installationDate" depends="date">
+				<arg0 key="rseq.installationDate"/>
+				<var>
+					<var-name>datePatternStrict</var-name>
+					<var-value>dd-MM-yyyy</var-value>
+				</var>
             </field>
         </form>
     </formset>

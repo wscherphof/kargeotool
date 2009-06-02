@@ -21,6 +21,7 @@
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karUsageType" type="java.lang.String"/>
             <form-property name="triggerType" type="java.lang.String"/>
+            <form-property name="commandType" type="java.lang.String"/>
             <form-property name="karDistanceTillStopLine" type="java.lang.String"/>
             <form-property name="karTimeTillStopLine" type="java.lang.String"/>
         </form-bean>
