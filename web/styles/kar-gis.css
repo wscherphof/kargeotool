@@ -51,8 +51,6 @@ body.form {
 }
 
 table.form {
-    margin-left: 3px;
-    margin-top: 3px;
     border-collapse: collapse;
 }
 
@@ -65,7 +63,7 @@ td.disabled {
 }
 
 .formTableContainer {
-    height: 290px;
+    height: 320px;
     overflow: auto;
 }
 

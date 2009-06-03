@@ -39,8 +39,7 @@
 </div>
 
 <div>
-    <b>Eigenschappen</b><br>
-    <br>
+    <b>Eigenschappen</b>
     <div class="formTableContainer">
     <table class="form">
         <tr>

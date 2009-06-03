@@ -38,8 +38,7 @@
 </div>
 
 <div>
-    <b>Eigenschappen walapparatuur</b><br>
-    <br>
+    <b>Eigenschappen walapparatuur</b>
     <div class="formTableContainer">
     <table class="form">
         <tr>
