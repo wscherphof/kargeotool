@@ -17,8 +17,17 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
+        
+        <script type="text/javascript" src="<html:rewrite page="/js/splitpane.js" module=""/>"></script>
+
+        <!--[if lte IE 6]>
+            <link href="<html:rewrite page="/styles/kar-gis-design-ie6.css" module=""/>" rel="stylesheet" media="screen" type="text/css" />
+            <script type="text/javascript" src="<html:rewrite page="/js/ie6fixes.js" module=""/>"></script>
+        <![endif]-->
+        <!--[if IE 7]> <link href="<html:rewrite page="/styles/kar-gis-design-ie7.css" module=""/>" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
+
     </head>
-    <body class="editor">
+    <body class="editor" id="body_editor">
         <div id="header">
             <div id="headerTitle">KAR in GIS</div>
         </div>
@@ -261,9 +270,7 @@
     <div id="tree">
 		<div id="treeTop">
 			<div id="treeTitel">Objectenboom</div>
-			<p>
-				Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span>
-			</p>
+            Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span><br />
 			<input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
 		</div>
         <div id="objectTree"></div>
@@ -280,7 +287,7 @@
     <div id="form">
 		<div id="form_container">
 			<span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-			<iframe frameborder="0" name="form"></iframe>
+			<iframe frameborder="0" name="form" src="<html:rewrite page="/empty.jsp" module=""/>"></iframe>
 		</div>
     </div>
 
@@ -295,6 +302,6 @@
 	</script>
 </div>
 
-    </body>
+ </body>
 </html:html>
 

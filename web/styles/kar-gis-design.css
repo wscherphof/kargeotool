@@ -18,7 +18,7 @@ body.editor {
     margin: 0px;
     padding: 0px;
     width: 100%;
-    min-width: 1275px;
+    /* min-width: 1275px; */
 }
 
 #header {
@@ -137,6 +137,11 @@ body.editor #contentcontainer {
     margin: 0px;
     margin-left: -3px;
     margin-right: 3px;
+    margin-bottom: 8px;
+}
+
+#treeTop input {
+    margin-top: 8px;
 }
 
 #objectTree {
@@ -180,4 +185,10 @@ body.editor #contentcontainer {
     bottom: 3px;
     right: 3px;
     top: 3px;
+    width: 98.5%;
+    height: 98.5%;
+}
+
+body.form {
+    background-color: #F5F5F5;
 }
