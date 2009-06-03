@@ -41,7 +41,7 @@
     <b>Eigenschappen</b><br>
     <br>
     <div class="formTableContainer">
-    <table class="form" style="width: 98%" border="1" cellspacing="0" cellpadding="2">
+    <table class="form">
         <c:set var="dataOwner" value="${activationGroup.roadsideEquipment.dataOwner}"/>
         <tr>
             <td style="width: 130px">Naam wegbeheerder</td>

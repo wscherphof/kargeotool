@@ -41,7 +41,7 @@
     <b>Eigenschappen walapparatuur</b><br>
     <br>
     <div class="formTableContainer">
-    <table class="form" style="width: 98%" border="1" cellspacing="0" cellpadding="2">
+    <table class="form">
         <tr>
             <td style="width: 130px"><fmt:message key="rseq.dataOwner"/></td>
             <td>

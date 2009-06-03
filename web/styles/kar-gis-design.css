@@ -192,3 +192,23 @@ body.editor #contentcontainer {
 body.form {
     background-color: #F5F5F5;
 }
+
+.formTableContainer {
+
+}
+
+.formTableContainer .form {
+    width: 98%;
+    border: 1px solid Black;
+    border-collapse: collapse;
+}
+
+.formTableContainer .form  td {
+    border: 1px solid Black;
+    padding: 2px;
+}
+
+.formTableContainer .form  td td {
+    border: 0px none;
+    padding: 1px;
+}
