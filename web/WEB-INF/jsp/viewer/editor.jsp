@@ -18,8 +18,6 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         
-        <script type="text/javascript" src="<html:rewrite page="/js/splitpane.js" module=""/>"></script>
-
         <!--[if lte IE 6]>
             <link href="<html:rewrite page="/styles/kar-gis-design-ie6.css" module=""/>" rel="stylesheet" media="screen" type="text/css" />
             <script type="text/javascript" src="<html:rewrite page="/js/ie6fixes.js" module=""/>"></script>
