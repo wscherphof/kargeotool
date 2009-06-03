@@ -199,12 +199,12 @@ body.form {
 
 .formTableContainer .form {
     width: 98%;
-    border: 1px solid Black;
+    border: 1px solid #DDDDDD;
     border-collapse: collapse;
 }
 
 .formTableContainer .form  td {
-    border: 1px solid Black;
+    border: 1px solid #DDDDDD;
     padding: 2px;
 }
 
