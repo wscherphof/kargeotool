@@ -7,12 +7,22 @@
 
 <html:javascript formName="activationForm" staticJavascript="false"/>
 
+<c:if test="${!empty treeUpdate}">
+    <script type="text/javascript">
+        parent.treeUpdate('${fn:replace(treeUpdate,"'","\\'")}');
+    </script>
+</c:if>
+
+<c:if test="${!hideForm}">
+
 <html:form styleId="activationForm" action="/activation" onsubmit="return validateActivationForm(this)">
     <html:hidden property="id"/>
     <html:hidden property="agId"/>
     <html:submit property="save">Opslaan</html:submit>
-    <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
-    <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+    <c:if test="${!empty form.id}">
+        <html:submit property="delete" onclick="return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
+        <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+    </c:if>
 
 <div style="margin-top: 4px; height: 60px">
     <b>Locatie</b><br>
@@ -38,8 +48,7 @@
 </div>
 
 <div>
-    <b>Eigenschappen</b><br>
-    <br>
+    <b>Eigenschappen</b>
     <div class="formTableContainer">
     <table class="form">
         <c:set var="dataOwner" value="${activationGroup.roadsideEquipment.dataOwner}"/>
@@ -114,3 +123,5 @@
 
 </div>
 </html:form>
+
+</c:if>

@@ -2,9 +2,9 @@ package nl.b3p.kar.struts;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -19,39 +19,31 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
 
 public final class ActivationAction extends BaseDatabaseAction {
 
     protected Log log = LogFactory.getLog(this.getClass());
-    protected static final String VIEWER = "viewer";
-    protected static final String SAVE = "save";
+
+    private static final String HIDE_FORM = "hideForm";
+
     protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     protected Map getActionMethodPropertiesMap() {
         Map map = new HashMap();
-        ExtendedMethodProperties hibProp = null;
-        hibProp = new ExtendedMethodProperties(SAVE);
-        hibProp.setDefaultMessageKey("warning.crud.savedone");
-        hibProp.setDefaultForwardName(SUCCESS);
-        hibProp.setAlternateForwardName(FAILURE);
-        hibProp.setAlternateMessageKey("error.crud.savefailed");
-        map.put(SAVE, hibProp);
-
+        map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
+        map.put("delete", new ExtendedMethodProperties("delete"));
         return map;
     }
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm dynaForm, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (isCancelled(request)) {
-            return mapping.findForward(VIEWER);
-        }
         Activation activation = getActivation(dynaForm, request, true);
-
-        if (activation == null) {
-            addAlternateMessage(mapping, request, "error.notfound");
+         if (activation == null) {
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }        
         createLists(activation, dynaForm, request);
@@ -85,7 +77,8 @@ public final class ActivationAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         Activation activation = getActivation(form, request, true);
         if (activation == null) {
-            addAlternateMessage(mapping, request, "Niet gevonden");
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         createLists(activation, form, request);
@@ -109,8 +102,9 @@ public final class ActivationAction extends BaseDatabaseAction {
 
         populateObject(activation, form, request, mapping);
 
-        if(activation.getId() == null) {
-            // XXX
+        boolean newObject = activation.getId() == null;
+        if(newObject) {
+            /* Set defaults */
             activation.setValidFrom(new Date());
             activation.setIndex(activation.getActivationGroup().getActivations().size()+1);
             em.persist(activation);
@@ -119,12 +113,13 @@ public final class ActivationAction extends BaseDatabaseAction {
 
         populateForm(activation, form, request);
 
+        request.setAttribute("treeUpdate", (newObject ? "insert" : "update") + " a:" + activation.getId() + " ag:" + activation.getActivationGroup().getId() +  " " + activation.serializeToJson());
+
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
     }
     
     protected Activation getActivation(DynaValidatorForm dynaForm, HttpServletRequest request, boolean createNew) throws Exception {
-        log.debug("Getting entity manager ......");
         EntityManager em = getEntityManager();
         Activation activation = null;
         Integer id = FormUtils.StringToInteger(dynaForm.getString("id"));
@@ -171,8 +166,6 @@ public final class ActivationAction extends BaseDatabaseAction {
     }   
 
     protected void populateObject(Activation a, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
-        EntityManager em = getEntityManager();
-
         a.setKarUsageType(form.getString("karUsageType"));
         a.setTriggerType(form.getString("triggerType"));
         Integer commandType = FormUtils.StringToInteger(form.getString("commandType"));
@@ -194,5 +187,30 @@ public final class ActivationAction extends BaseDatabaseAction {
         }
         a.setUpdater(request.getRemoteUser());
         a.setUpdateTime(new Date());
+    }
+
+    public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        EntityManager em = getEntityManager();
+
+        Activation activation = getActivation(form, request, true);
+        if (activation == null) {
+            addAlternateMessage(mapping, request, "Niet gevonden");
+            return mapping.findForward(SUCCESS);
+        }
+        /* Pas evt indexen van activations later in lijst aan */
+        List activations = activation.getActivationGroup().getActivations();
+        int idx = activations.indexOf(activation);
+        activations.remove(activation);
+        for(int i = idx; i < activations.size(); i++) {
+            Activation a = (Activation)activations.get(i);
+            a.setIndex(i+1); /* List is 1-based */
+        }
+
+        em.flush();
+        em.getTransaction().commit();
+        addMessage(request, new ActionMessage("Trigger is verwijderd.", false));
+        request.setAttribute(HIDE_FORM, Boolean.TRUE);
+        request.setAttribute("treeUpdate", "remove a:" + activation.getId());
+        return mapping.findForward(SUCCESS);
     }
 }

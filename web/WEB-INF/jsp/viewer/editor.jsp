@@ -32,7 +32,7 @@
 
 <script type="text/javascript">
     function testSelecteerObject() {
-        var obj = prompt("Geef object aan als type:idnr, dus rseq:1, ag:23, a:456", "ag:635");
+        var obj = prompt("Geef object aan als type:idnr, dus rseq:1, ag:23, a:456", "rseq:67");
         if(obj == null) { /* no input, do nothing */
             return;
         }
@@ -171,17 +171,12 @@
         clearTreeview();
     }
 
-    function flamingo_karPuntSelected(type, id) {
-        var shortType = null;
-        switch(type) {
-            case 'ACTIVATION': shortType = 'a'; break;
-            case 'ACTIVATIONGROUP': shortType = 'ag'; break;
-            case 'RoadSideEQuipment': shortType = 'rseq'; break;
-        }
-        if(shortType == null || isNaN(id)) {
-            alert("Ongeldig object");
-        } else {
-            Editor.getKarPuntInfo(shortType, id, dwr_objectInfoReceived);
+    function flamingo_map_onIdentifyData(map, layer, data, identifyextent,nridentified, total) {
+        if("map_kar_punten" == layer) {
+            var features = data["kar_punten"];
+            if(features != undefined) {
+                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
+            }
         }
     }
 
@@ -193,7 +188,6 @@
                 maxy: maxy}
         , 0);
     }
-
 
     function setStatus(what, status) {
         document.getElementById(what + "Status").innerHTML = escapeHTML(status);
@@ -227,12 +221,22 @@
         flamingo_moveToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
     }
 
-    function flamingo_map_onIdentifyData(map, layer, data, identifyextent,nridentified, total) {
-        if("map_kar_punten" == layer) {
-            var features = data["kar_punten"];
-            if(features != undefined) {
-                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
+    function treeUpdate(cmd) {
+        console.log("treeUpdate: " + cmd);
+
+        var split = cmd.split(" ", 2);
+        var action = split[0];
+        cmd = split[1];
+
+        if(action == "remove") {
+            split = cmd.split(" ", 2);
+            var id = split[0]
+            cmd = split[1];
+            if(selectedObject.id == id) {
+                deselectObject();
             }
+            
+            alert("verwijder object " + id);
         }
     }
 
