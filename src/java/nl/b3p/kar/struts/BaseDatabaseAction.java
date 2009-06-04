@@ -56,6 +56,7 @@ public abstract class BaseDatabaseAction extends ExtendedMethodAction {
      *
      */
     // <editor-fold defaultstate="" desc="public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception">
+    @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -71,11 +72,17 @@ public abstract class BaseDatabaseAction extends ExtendedMethodAction {
             String msg = null;
             try {
                 forward = super.execute(mapping, form, request, response);
-                tx.commit();
+                if(tx.isActive()) {
+                    tx.commit();
+                }
                 return forward;
             } catch (Exception e) {
-                tx.rollback();
-                log.error("Exception occured, rollback", e);
+                if(tx.isActive()) {
+                    log.error("Exception occured, rollback", e);
+                    tx.rollback();
+                } else {
+                    log.error("Exception occured, transaction not active", e);
+                }
 
                 if (e instanceof org.hibernate.JDBCException) {
                     msg = e.getMessage();
@@ -100,15 +107,12 @@ public abstract class BaseDatabaseAction extends ExtendedMethodAction {
             log.error("Exception occured while getting EntityManager: ", e);
             addAlternateMessage(mapping, request, null, e.toString());
         } finally {
-            log.debug("Closing entity manager .....");
             MyEMFDatabase.closeEntityManager(identity, MyEMFDatabase.MAIN_EM);
         }
         return getAlternateForward(mapping, request);
     }
 
     protected static EntityManager getEntityManager() throws Exception {
-        log.debug("Getting entity manager ......");
         return MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
-    }
-   
+    }   
 }
