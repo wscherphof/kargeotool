@@ -22,12 +22,15 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public final class ActivationAction extends BaseDatabaseAction {
 
     protected Log log = LogFactory.getLog(this.getClass());
 
     private static final String HIDE_FORM = "hideForm";
+    private static final String TREE_UPDATE = "treeUpdate";
 
     protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
 
@@ -113,7 +116,7 @@ public final class ActivationAction extends BaseDatabaseAction {
 
         populateForm(activation, form, request);
 
-        request.setAttribute("treeUpdate", (newObject ? "insert" : "update") + " a:" + activation.getId() + " ag:" + activation.getActivationGroup().getId() +  " " + activation.serializeToJson());
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", activation));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -189,6 +192,15 @@ public final class ActivationAction extends BaseDatabaseAction {
         a.setUpdateTime(new Date());
     }
 
+    private static String treeUpdateJson(String action, Activation a) throws Exception {
+        JSONObject update = new JSONObject();
+        update.put("action", action);
+        update.put("id", "a:" + a.getId());
+        update.put("parentId", "ag:" + a.getActivationGroup().getId());
+        update.put("object", a.serializeToJson());
+        return update.toString();
+    }
+
     public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
@@ -210,7 +222,7 @@ public final class ActivationAction extends BaseDatabaseAction {
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
-        request.setAttribute("treeUpdate", "remove a:" + activation.getId());
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", activation));
         return mapping.findForward(SUCCESS);
     }
 }

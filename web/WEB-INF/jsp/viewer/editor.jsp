@@ -74,12 +74,18 @@
         idSpan.className = "code";
         idSpan.appendChild(document.createTextNode(item.type.toUpperCase()));
         a.appendChild(idSpan);
-        var labelText = " " + item.name;
+        var labelText = " ";
+        if(item.type == "a") {
+            labelText += item.index + " " + item.name;
+        } else {
+            labelText += item.name;
+        }
         a.appendChild(document.createTextNode(labelText));
         container.appendChild(a);
     }
 
-    var tree;
+    var tree; /* root van items */
+    var objectTreeOpts; /* options van tree */
     var selectedObject;
 
     function clearTreeview() {
@@ -101,10 +107,16 @@
                 "expanded": "<html:rewrite page="/images/treeview/minus.gif" module=""/>",
                 "leaf": "<html:rewrite page="/images/treeview/leaft.gif" module=""/>"
             },
-            "saveExpandedState": false,
-            "saveScrollState": false,
+            "saveExpandedState": true,
+            "saveScrollState": true,
             "expandAll": false
         });
+        objectTreeOpts = globalTreeOptions["objectTree"];
+    }
+
+    function refreshTreeview() {
+        createTreeview();
+        treeview_restoreScrollStates();
     }
 
     function dwr_objectInfoReceived(info) {
@@ -222,21 +234,22 @@
     }
 
     function treeUpdate(cmd) {
-        console.log("treeUpdate: " + cmd);
+        cmd = eval("(" + cmd + ")");
+        console.log("treeUpdate", cmd);
 
-        var split = cmd.split(" ", 2);
-        var action = split[0];
-        cmd = split[1];
-
-        if(action == "remove") {
-            split = cmd.split(" ", 2);
-            var id = split[0]
-            cmd = split[1];
-            if(selectedObject.id == id) {
+        if(cmd.action == "remove") {
+            if(selectedObject.id == cmd.id) {
                 deselectObject();
             }
-            
-            alert("verwijder object " + id);
+
+            var parentItem = treeview_findItem(tree, cmd.parentId);
+            var item = treeview_findItem(tree, cmd.id);
+            var index = parentItem.children.indexOf(item);
+            parentItem.children.splice(index,1);
+            for(var i = index; i < parentItem.children.length;  i++) {
+                parentItem.children[i].index--;
+            }
+            refreshTreeview();
         }
     }
 
