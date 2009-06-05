@@ -200,7 +200,15 @@ public class Activation implements EditorTreeObject {
         j.put("id", "a:" + getId());
         NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
         nf.setGroupingUsed(false);
-        j.put("name", 
+        String namePart = "";
+        if(commandType != null) {
+            switch(commandType.intValue()) {
+                case 1: namePart = "Inm"; break;
+                case 2: namePart = "Uit"; break;
+                case 3: namePart = "Voor"; break;
+            }
+        }
+        j.put("name", namePart +
                   (getKarDistanceTillStopLine() == null ? ""
                 : " " + nf.format(getKarDistanceTillStopLine()) + "m"
                 + (getKarTimeTillStopLine() == null ? ""
@@ -210,5 +218,4 @@ public class Activation implements EditorTreeObject {
         j.put("point", getPoint() == null ? null : getPoint().toString());
         return j;
     }
-
 }

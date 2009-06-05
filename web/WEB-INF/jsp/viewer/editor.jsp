@@ -250,6 +250,19 @@
                 parentItem.children[i].index--;
             }
             refreshTreeview();
+        } else if(cmd.action == "update") {
+            var parentItem = treeview_findItem(tree, cmd.parentId);
+            var item = treeview_findItem(tree, cmd.id);
+            var index = parentItem.children.indexOf(item);
+            parentItem.children[index] = cmd.object;
+            refreshTreeview();
+            tree_selectObject(item);
+        } else if(cmd.action == "insert") {
+            var parentItem = treeview_findItem(tree, cmd.parentId);
+            /* Altijd als laatste child inserten */
+            parentItem.children[parentItem.children.length] = cmd.object;
+            refreshTreeview();
+            tree_selectObject(cmd.object);
         }
     }
 
