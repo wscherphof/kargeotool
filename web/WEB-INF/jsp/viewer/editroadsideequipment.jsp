@@ -18,8 +18,11 @@
 <html:form styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
     <html:hidden property="id"/>
     <html:submit property="save">Opslaan</html:submit>
-    <c:if test="${agCount > 0}">
-        <c:set var="extraMsg">Let op! De ${agCount} signaalgroepen (en alle triggerpunten daarvan) van deze walapparatuur worden ook verwijderd!</c:set>
+    <c:if test="${activationGroupCount == 1}">
+        <c:set var="extraMsg">Let op! De signaalgroep (en alle triggerpunten hiervan) van deze walapparatuur wordt ook verwijderd!</c:set>
+    </c:if>
+    <c:if test="${activationGroupCount > 1}">
+        <c:set var="extraMsg">Let op! De ${activationGroupCount} signaalgroepen (en alle triggerpunten daarvan) van deze walapparatuur worden ook verwijderd!</c:set>
     </c:if>
     <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">

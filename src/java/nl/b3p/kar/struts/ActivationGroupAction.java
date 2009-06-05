@@ -116,11 +116,14 @@ public final class ActivationGroupAction extends TreeItemAction {
     }
 
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
+
         if(getEntityManager().contains(ag)) {
             request.setAttribute("activationGroup", ag);
             request.setAttribute("rseq", ag.getRoadsideEquipment());
             ag.getRoadsideEquipment().getDataOwner().getName();
+            request.setAttribute("activationCount", ag.getActivations().size());
         } else {
+            /* Hier komen we na klik op "nieuwe signaalgroep" */
             RoadsideEquipment rseq = getRseq(form, request);
             if(rseq == null) {
                 addMessage(request, "errors.required", "Walapparatuur");

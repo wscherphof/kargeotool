@@ -98,7 +98,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         EntityManager em = getEntityManager();
         if(em.contains(rseq)) {
             request.setAttribute("roadsideEquipment", rseq);
-            request.setAttribute("agCount",
+            request.setAttribute("activationGroupCount",
                     em.createQuery("select count(*) from ActivationGroup ag where ag.roadsideEquipment = :this")
                         .setParameter("this", rseq)
                         .getSingleResult());

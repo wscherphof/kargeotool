@@ -19,7 +19,13 @@
     <html:hidden property="id"/>
     <html:hidden property="rseqId"/>
     <html:submit property="save">Opslaan</html:submit>
-    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen?')">Verwijderen</html:submit>
+    <c:if test="${activationCount == 1}">
+        <c:set var="extraMsg">Let op! Het triggerpunt van deze signaalgroep wordt ook verwijderd!</c:set>
+    </c:if>
+    <c:if test="${activationCount > 1}">
+        <c:set var="extraMsg">Let op! De ${activationCount} triggerpunten van deze signaalgroep worden ook verwijderd!</c:set>
+    </c:if>
+    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
 <div style="margin-top: 4px; height: 60px">
