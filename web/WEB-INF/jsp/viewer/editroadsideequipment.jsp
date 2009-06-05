@@ -7,10 +7,21 @@
 
 <html:javascript formName="roadsideEquipmentForm" staticJavascript="false"/>
 
+<c:if test="${!empty treeUpdate}">
+    <script type="text/javascript">
+        parent.treeUpdate('${fn:replace(treeUpdate,"'","\\'")}');
+    </script>
+</c:if>
+
+<c:if test="${!hideForm}">
+
 <html:form styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
     <html:hidden property="id"/>
     <html:submit property="save">Opslaan</html:submit>
-    <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
+    <c:if test="${agCount > 0}">
+        <c:set var="extraMsg">Let op! De ${agCount} signaalgroepen (en alle triggerpunten daarvan) van deze walapparatuur worden ook verwijderd!</c:set>
+    </c:if>
+    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
 <div style="margin-top: 4px; height: 60px">
@@ -152,3 +163,5 @@
 </div>
 
 </html:form>
+
+</c:if>

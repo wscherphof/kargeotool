@@ -2,6 +2,7 @@ package nl.b3p.kar.struts;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -10,54 +11,34 @@ import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
 
-public final class RoadsideEquipmentAction extends BaseDatabaseAction {
-
-    private static Log log = LogFactory.getLog(RoadsideEquipmentAction.class);
-    
-    protected static final String VIEWER = "viewer";
-    protected static final String SAVE = "save";
-    protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
+public final class RoadsideEquipmentAction extends TreeItemAction {
 
     protected Map getActionMethodPropertiesMap() {
         Map map = new HashMap();
-        ExtendedMethodProperties hibProp = null;
-        hibProp = new ExtendedMethodProperties(SAVE);
-        hibProp.setDefaultMessageKey("warning.crud.savedone");
-        hibProp.setDefaultForwardName(SUCCESS);
-        hibProp.setAlternateForwardName(FAILURE);
-        hibProp.setAlternateMessageKey("error.crud.savefailed");
-        map.put(SAVE, hibProp);
-
+        map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
+        map.put("delete", new ExtendedMethodProperties("delete"));
         return map;
     }
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (isCancelled(request)) {
-            return mapping.findForward(VIEWER);
-        }
         RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
-
-        if (rseq == null) {
-            addAlternateMessage(mapping, request, "error.notfound");
+        if(rseq == null) {
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
+
         createLists(rseq, form, request);
 
         populateForm(rseq, form, request);
-
-        /*Als er een nieuw object is getekend*/
-        if (FormUtils.nullIfEmpty(request.getParameter("newWktgeom"))!=null){
-            form.set("location", request.getParameter("newWktgeom"));
-        }
 
         return mapping.findForward(SUCCESS);
     }
@@ -71,7 +52,8 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
         if(rseq == null) {
-            addAlternateMessage(mapping, request, "error.notfound");
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         createLists(rseq, form, request);
@@ -86,12 +68,15 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
 
         populateObject(rseq, form, request, mapping);
 
-        if(rseq.getId() == null) {
+        boolean newObject = rseq.getId() == null;
+        if(newObject) {
             em.persist(rseq);
         }
         em.flush();
 
         populateForm(rseq, form, request);
+
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", rseq));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -113,6 +98,10 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         if(em.contains(rseq)) {
             request.setAttribute("roadsideEquipment", rseq);
+            request.setAttribute("agCount",
+                    em.createQuery("select count(*) from ActivationGroup ag where ag.roadsideEquipment = :this")
+                        .setParameter("this", rseq)
+                        .getSingleResult());
             rseq.getDataOwner().getName();
         }
         request.setAttribute("dataOwners", em.createQuery("from DataOwner order by type, name").getResultList());
@@ -152,5 +141,34 @@ public final class RoadsideEquipmentAction extends BaseDatabaseAction {
 
         rseq.setUpdater(request.getRemoteUser());
         rseq.setUpdateTime(new Date());
+    }
+
+    public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        EntityManager em = getEntityManager();
+
+        RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
+        if(rseq == null) {
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
+            return mapping.findForward(SUCCESS);
+        }
+        List agIds = em.createQuery("select id from ActivationGroup ag where ag.roadsideEquipment = :this")
+                .setParameter("this", rseq)
+                .getResultList();
+        if(!agIds.isEmpty()) {
+            em.createQuery("delete from Activation a where a.activationGroup.id in (:ids)")
+                    .setParameter("ids", agIds)
+                    .executeUpdate();
+            em.createQuery("delete from ActivationGroup ag where ag.id in (:ids)")
+                    .setParameter("ids", agIds)
+                    .executeUpdate();
+        }
+        em.remove(rseq);
+        em.flush();
+        em.getTransaction().commit();
+        addMessage(request, new ActionMessage("Walapparaat is verwijderd.", false));
+        request.setAttribute(HIDE_FORM, Boolean.TRUE);
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", rseq));
+        return mapping.findForward(SUCCESS);
     }
 }

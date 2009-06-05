@@ -84,7 +84,7 @@
         container.appendChild(a);
     }
 
-    var tree; /* root van items */
+    var tree = {"id": "root"}; /* root van items */
     var objectTreeOpts; /* options van tree */
     var selectedObject;
 
@@ -237,30 +237,40 @@
         cmd = eval("(" + cmd + ")");
         console.log("treeUpdate", cmd);
 
+        var parentItem;
+        if(cmd.parentId == null) {
+            parentItem = tree;
+        } else {
+            parentItem = treeview_findItem(tree, cmd.parentId);
+        }
+        
         if(cmd.action == "remove") {
             if(selectedObject.id == cmd.id) {
                 deselectObject();
             }
 
-            var parentItem = treeview_findItem(tree, cmd.parentId);
             var item = treeview_findItem(tree, cmd.id);
             var index = parentItem.children.indexOf(item);
             parentItem.children.splice(index,1);
-            for(var i = index; i < parentItem.children.length;  i++) {
-                parentItem.children[i].index--;
+            if(item.type == "a") {
+                <%-- Update indexes van activations in lijst van ActivationGroup,
+                     dit is bij verwijderen van activation in Action ook gedaan
+                --%>
+                for(var i = index; i < parentItem.children.length;  i++) {
+                    parentItem.children[i].index--;
+                }
             }
             refreshTreeview();
         } else if(cmd.action == "update") {
-            var parentItem = treeview_findItem(tree, cmd.parentId);
             var item = treeview_findItem(tree, cmd.id);
             var index = parentItem.children.indexOf(item);
+            /* children zitten niet in cmd.object, hou gewoon oude aan */
             var oldItemChildren = parentItem.children[index].children;
             cmd.object.children = oldItemChildren;
             parentItem.children[index] = cmd.object;
             refreshTreeview();
             tree_selectObject(item);
         } else if(cmd.action == "insert") {
-            var parentItem = treeview_findItem(tree, cmd.parentId);
             /* Altijd als laatste child inserten */
             if(parentItem.children == undefined) {
                 parentItem.children = [];
