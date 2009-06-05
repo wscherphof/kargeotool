@@ -211,3 +211,8 @@ body.form {
     border: 0px none;
     padding: 1px;
 }
+
+#location {
+    font-family: "courier new", courier, serif;
+    font-weight: normal;
+}

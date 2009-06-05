@@ -25,25 +25,59 @@
     </c:if>
 
 <div style="margin-top: 4px; height: 60px">
+    <c:set var="prevLocationStatusHtml">
+        <c:if test="${empty activation.point}">Nog geen locatie.</c:if>
+        <c:if test="${!empty activation.point}">Coordinaten: <span id='location'>${activation.point}</span></c:if>
+    </c:set>
+    <script type="text/javascript">
+        var prevLocationStatusHtml = "${prevLocationStatusHtml}";
+        var haveLocation = ${!empty activation.point};
+
+        function cancelClick() {
+            parent.flamingo_removeAllFeatures();
+            parent.flamingo.callMethod("gis", "setCreateGeometry", null);
+            document.getElementById("locationStatus").innerHTML = prevLocationStatusHtml;
+            document.getElementById("ok").style.display = "none";
+            document.getElementById("cancel").style.display = "none";
+            if(haveLocation) {
+                document.getElementById("changeLocation").style.display = "inline";
+            } else {
+                document.getElementById("newLocation").style.display = "inline";
+            }
+        }
+
+        function newLocationClicked() {
+            parent.selectLocationClicked(null, 'PointAtDistance');
+            prevLocationStatusHtml = document.getElementById("locationStatus").innerHTML;
+            document.getElementById("locationStatus").innerHTML = "Klik op een plek op de kaart...";
+            document.getElementById("ok").style.display = "inline";
+            document.getElementById("cancel").style.display = "inline";
+            document.getElementById("newLocation").style.display = "none";
+        }
+        
+        function changeLocationClicked() {
+            parent.selectLocationClicked([${activation.point}], 'PointAtDistance');
+            prevLocationStatusHtml = document.getElementById("locationStatus").innerHTML;
+            document.getElementById("locationStatus").innerHTML = "Verplaats het punt in de kaart...";
+            document.getElementById("ok").style.display = "inline";
+            document.getElementById("cancel").style.display = "inline";
+            document.getElementById("changeLocation").style.display = "none";
+        }
+
+        function okClicked() {
+            // xx form.point = ...
+            haveLocation = true;
+            prevLocationStatusHtml = "Coordinaten: <span id='location'>a, b</span>";
+        }
+
+    </script>
     <b>Locatie</b><br>
     <br>
-    <c:choose>
-        <c:when test="${empty activation.point}">
-            <b>Nog geen locatie. </b>
-            <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
-            <br>
-        </c:when>
-        <c:otherwise>
-            <b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${activation.point}"/></span>
-            <input type="button" value="Locatie wijzigen in kaart" onclick="alert('Nog niet geimplementeerd');">
-            <br>
-            <%--In de kaart kan het punt worden versleept om de locatie te wijzigen.
-            <br><br>
-            Op dit punt zijn [nnn]/[geen] andere inmeldpunten aanwezig. Bij het
-            wijzigen van de locatie worden deze ook verplaatst.
-            --%>
-        </c:otherwise>
-    </c:choose>
+    <span id="locationStatus" style="font-weight: bold">${prevLocationStatusHtml}</span>
+    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
+    <input id="cancel" type="button" style="display: none" value="Annuleren" onclick="cancelClick();">
+    <input id="newLocation" type="button" ${!empty activation.point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="changeLocation" type="button" ${empty activation.point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
     <br>
 </div>
 

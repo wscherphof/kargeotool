@@ -53,6 +53,11 @@
         }        
     }
 
+
+    function setStatus(what, status) {
+        document.getElementById(what + "Status").innerHTML = escapeHTML(status);
+    }
+
     function treeItemClick(item) {
         tree_selectObject(item);
         form_editObject(item);
@@ -211,6 +216,7 @@
         flamingo_moveToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
     }
 
+    /* Aangeroepen door form in iframe na crud actie */
     function treeUpdate(cmd) {
         cmd = eval("(" + cmd + ")");
         console.log("treeUpdate", cmd);
@@ -256,6 +262,16 @@
             parentItem.children[parentItem.children.length] = cmd.object;
             refreshTreeview();
             tree_selectObject(cmd.object);
+        }
+    }
+
+    /* Aangeroepen door form in iframe */
+    function selectLocationClicked(currentLocation, geometryType) {
+        console.log("selectLocationClicked", currentLocation, geometryType);
+        if(currentLocation != null) {
+            flamingo_editMapCreateNewGeometry(geometryType, currentLocation);
+        } else {
+            flamingo_editMapDrawNewGeometry(geometryType);
         }
     }
 
@@ -314,11 +330,11 @@
 
     // geometryType is Point, PointAtDistance, ...
 
-	function flamingo_editMapCreatePoint(geometryType) {
-		flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, [183464, 505572]);
+	function flamingo_editMapCreateNewGeometry(geometryType, geometry) {
+		flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
 	}
 
-	function flamingo_editMapDrawPoint(geometryType) {
+	function flamingo_editMapDrawNewGeometry(geometryType) {
 		flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
 	}
 
@@ -328,10 +344,6 @@
 
     function flamingo_moveToExtent(minx, miny, maxx, maxy){
         flamingo.callMethod("map", "moveToExtent", {minx: minx, miny: miny,  maxx: maxx, maxy: maxy}, 0);
-    }
-
-    function setStatus(what, status) {
-        document.getElementById(what + "Status").innerHTML = escapeHTML(status);
     }
 
 </script>
