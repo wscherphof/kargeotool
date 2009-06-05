@@ -29,10 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * $Id$
- */
-
 public class EditorAction extends BaseDatabaseAction {
     private static final Log log = LogFactory.getLog(EditorAction.class);
     
