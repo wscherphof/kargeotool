@@ -4,14 +4,13 @@
 	
     <fmc:Container borderwidth="0" bordercolor="#606060" left="0" top="33" height="776" width="82%">
         <fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
-        <tpc:EditMap id="drawMap" listento="map" left="0" top="0%" height="100%" width="100%" bottom="bottom">
-            <tpc:GIS>
-                <tpc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false">
-                    <!--tpc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
-                    <tpc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
-                </tpc:Layer>
-            </tpc:GIS>
-        </tpc:EditMap>
+        <fmc:EditMap id="drawMap" listento="gis,map" left="0" top="0%" height="100%" width="100%" bottom="bottom"/>
+		<fmc:GIS id="gis" geometryeditable="yes">
+			<fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" srsname="EPSG:28992" featuretypename="kar_punten" loadfeaturesonstart="false">
+				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
+				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
+			</fmc:Layer>
+		</fmc:GIS>
         <fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
             <!--fmc:LayerOGWMS id="bushaltes" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map&amp;Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
             <fmc:LayerOGWMS id="kar_punten" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/>
@@ -40,7 +39,7 @@
 				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
 			</group>
 		</fmc:Legend>
-        <tpc:EditInfoPanel id="editInfoPanel" left="2%" top="40%" height="20%" listento="drawMap"/>
+        <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="40%" height="20%" listento="drawMap"/>
 		<fmc:LocationFinder id="locationfinder" top="60%" width="100%" left="0%" height="40%" listento="map" controls="true">
 			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
@@ -73,10 +72,10 @@
             <fmc:ButtonPrev left="180" listento="map"/>
             <fmc:ButtonNext left="210" listento="map"/>
             <!--
-            <tpc:EditBar id="editBar" left="240" top="2" listento="drawMap" enabledbuttons="selectgeometrybutton"/>
-            <tpc:DrawTool id="drawTool" left="270" top="2" listento="drawMap"/>
+            <fmc:EditBar id="editBar" left="240" top="2" listento="drawMap" enabledbuttons="selectgeometrybutton"/>
+            <fmc:DrawTool id="drawTool" left="270" top="2" listento="drawMap"/>
             -->
-                    <!--tpc:EditGeometryBar id="editGeometryBar" left="300" top="2" listento="drawMap"/-->
+                    <!--fmc:EditGeometryBar id="editGeometryBar" left="300" top="2" listento="drawMap"/-->
         </fmc:ToolGroup>
         <!--
         <fmc:Text id="saveButton" visible="true" left="410" top="">
