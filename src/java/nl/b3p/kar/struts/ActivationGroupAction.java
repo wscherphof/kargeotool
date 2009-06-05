@@ -13,54 +13,33 @@ import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.RoadsideEquipment;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
 
-public final class ActivationGroupAction extends BaseDatabaseAction {
-
-    private static Log log = LogFactory.getLog(ActivationGroupAction.class);
-    protected static final String VIEWER = "viewer";
-    protected static final String SAVE = "save";
-    protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
+public final class ActivationGroupAction extends TreeItemAction {
 
     protected Map getActionMethodPropertiesMap() {
         Map map = new HashMap();
-        ExtendedMethodProperties hibProp = null;
-        hibProp = new ExtendedMethodProperties(SAVE);
-        hibProp.setDefaultMessageKey("warning.crud.savedone");
-        hibProp.setDefaultForwardName(SUCCESS);
-        hibProp.setAlternateForwardName(FAILURE);
-        hibProp.setAlternateMessageKey("error.crud.savefailed");
-        map.put(SAVE, hibProp);
-
+        map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
+        map.put("delete", new ExtendedMethodProperties("delete"));
         return map;
     }
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (isCancelled(request)) {
-            return mapping.findForward(VIEWER);
-        }
         ActivationGroup ag = getActivationGroup(form, request, true);
-
-        if (ag == null) {
+        if(ag == null) {
             addAlternateMessage(mapping, request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         createLists(ag, form, request);
-
         populateForm(ag, form, request);
 
-        /*Als er een nieuw object is getekend*/
-        if (FormUtils.nullIfEmpty(request.getParameter("newWktgeom"))!=null){
-            form.set("location", request.getParameter("newWktgeom"));
-        }
-        
         return mapping.findForward(SUCCESS);
     }
 
@@ -82,7 +61,8 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         ActivationGroup ag = getActivationGroup(form, request, true);
         if(ag == null) {
-            addAlternateMessage(mapping, request, "error.notfound");
+            addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         createLists(ag, form, request);
@@ -97,7 +77,7 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
             RoadsideEquipment rseq = getRseq(form, request);
             if(rseq == null) {
                 addMessage(request, "errors.required", "Walapparatuur");
-                return getDefaultForward(mapping, request);
+                return mapping.findForward(SUCCESS);
             }
             ag.setRoadsideEquipment(rseq);
         }
@@ -106,8 +86,9 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
 
         populateObject(ag, form, request, mapping);
 
-        if(ag.getId() == null) {
-            // XXX
+        boolean newObject = ag.getId() == null;
+        if(newObject) {
+            /* Set defaults */
             ag.setValidFrom(new Date());
             ag.setType(ActivationGroup.TYPE_PRQA);
             em.persist(ag);
@@ -115,6 +96,8 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
         em.flush();
 
         populateForm(ag, form, request);
+
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", ag));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -203,5 +186,22 @@ public final class ActivationGroupAction extends BaseDatabaseAction {
 
         ag.setUpdater(request.getRemoteUser());
         ag.setUpdateTime(new Date());
+    }
+
+    public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        EntityManager em = getEntityManager();
+
+        ActivationGroup ag = getActivationGroup(form, request, true);
+        if (ag == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        em.remove(ag);
+        em.flush();
+        em.getTransaction().commit();
+        addMessage(request, new ActionMessage("Signaalgroep is verwijderd.", false));
+        request.setAttribute(HIDE_FORM, Boolean.TRUE);
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", ag));
+        return mapping.findForward(SUCCESS);
     }
 }

@@ -7,11 +7,19 @@
 
 <html:javascript formName="activationGroupForm" staticJavascript="false"/>
 
+<c:if test="${!empty treeUpdate}">
+    <script type="text/javascript">
+        parent.treeUpdate('${fn:replace(treeUpdate,"'","\\'")}');
+    </script>
+</c:if>
+
+<c:if test="${!hideForm}">
+    
 <html:form styleId="activationGroupForm" action="/activationGroup" onsubmit="return validateActivationGroupForm(this)">
     <html:hidden property="id"/>
     <html:hidden property="rseqId"/>
     <html:submit property="save">Opslaan</html:submit>
-    <input type="button" value="Verwijderen" onclick="alert('Nog niet geimplementeerd');">
+    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen?')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
 <div style="margin-top: 4px; height: 60px">
@@ -159,3 +167,5 @@
 </div>
 
 </html:form>
+
+</c:if>

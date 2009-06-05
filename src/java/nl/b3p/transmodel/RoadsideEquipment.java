@@ -171,6 +171,10 @@ public class RoadsideEquipment implements EditorTreeObject {
     }
 
     public JSONObject serializeToJson() throws Exception {
+        return serializeToJson(true);
+    }
+
+    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
         JSONObject j = new JSONObject();
         j.put("type", "rseq");
         j.put("id", "rseq:" + getId());
@@ -181,11 +185,13 @@ public class RoadsideEquipment implements EditorTreeObject {
         List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
                 .setParameter("this", this)
                 .getResultList();
-        if(!groups.isEmpty()) {
-            JSONArray children = new JSONArray();
-            j.put("children", children);
-            for(Iterator it = groups.iterator(); it.hasNext();) {
-                children.put( ((ActivationGroup)it.next()).serializeToJson() );
+        if(includeChildren) {
+            if(!groups.isEmpty()) {
+                JSONArray children = new JSONArray();
+                j.put("children", children);
+                for(Iterator it = groups.iterator(); it.hasNext();) {
+                    children.put( ((ActivationGroup)it.next()).serializeToJson() );
+                }
             }
         }
         return j;

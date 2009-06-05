@@ -187,6 +187,10 @@ public class ActivationGroup implements EditorTreeObject {
     }
 
     public JSONObject serializeToJson() throws Exception {
+        return serializeToJson(true);
+    }
+
+    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
         JSONObject j = new JSONObject();
         j.put("type", "ag");
         j.put("id", "ag:" + getId());
@@ -196,19 +200,21 @@ public class ActivationGroup implements EditorTreeObject {
             case 1: richting = "Rechtsaf"; break;
             case 2: richting = "Rechtdoor"; break;
             case 3: richting = "Linksaf"; break;
-            case 4: richting = "Rechtsaf,rechtdoor,linksaf"; break;
-            case 5: richting = "Rechtsaf,rechtdoor"; break;
-            case 6: richting = "Rechtdoor,linksaf"; break;
-            case 7: richting = "Linksaf,rechtsaf"; break;
+            case 4: richting = "Rechtsaf, rechtdoor, linksaf"; break;
+            case 5: richting = "Rechtsaf, rechtdoor"; break;
+            case 6: richting = "Rechtdoor, linksaf"; break;
+            case 7: richting = "Linksaf, rechtsaf"; break;
             default: richting = "Onbekend"; break;
         }
         j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
         j.put("point", getPoint() == null ? null : getPoint().toString());
-        if(!getActivations().isEmpty()) {
-            JSONArray children = new JSONArray();
-            j.put("children", children);
-            for(Iterator it = getActivations().iterator(); it.hasNext();) {
-                children.put( ((Activation)it.next()).serializeToJson() );
+        if(includeChildren) {
+            if(!getActivations().isEmpty()) {
+                JSONArray children = new JSONArray();
+                j.put("children", children);
+                for(Iterator it = getActivations().iterator(); it.hasNext();) {
+                    children.put( ((Activation)it.next()).serializeToJson() );
+                }
             }
         }
         return j;

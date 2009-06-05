@@ -195,6 +195,10 @@ public class Activation implements EditorTreeObject {
     }
 
     public JSONObject serializeToJson() throws Exception {
+        return serializeToJson(true);
+    }
+
+    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
         JSONObject j = new JSONObject();
         j.put("type", "a");
         j.put("id", "a:" + getId());

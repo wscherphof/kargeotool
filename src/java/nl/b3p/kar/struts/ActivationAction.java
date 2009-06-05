@@ -14,25 +14,15 @@ import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-public final class ActivationAction extends BaseDatabaseAction {
-
-    protected Log log = LogFactory.getLog(this.getClass());
-
-    private static final String HIDE_FORM = "hideForm";
-    private static final String TREE_UPDATE = "treeUpdate";
-
-    protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
+public final class ActivationAction extends TreeItemAction {
 
     protected Map getActionMethodPropertiesMap() {
         Map map = new HashMap();
@@ -44,19 +34,16 @@ public final class ActivationAction extends BaseDatabaseAction {
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm dynaForm, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Activation activation = getActivation(dynaForm, request, true);
-         if (activation == null) {
+        if(activation == null) {
             addMessage(request, "error.notfound");
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }        
+
         createLists(activation, dynaForm, request);
 
         populateForm(activation, dynaForm, request);
         
-        /*Als er een nieuw object is getekend*/
-        if (FormUtils.nullIfEmpty(request.getParameter("newWktgeom"))!=null){
-            dynaForm.set("location", request.getParameter("newWktgeom"));
-        }
         return mapping.findForward(SUCCESS);
     }
 
@@ -96,7 +83,7 @@ public final class ActivationAction extends BaseDatabaseAction {
             ActivationGroup ag = getActivationGroup(form, request);
             if(ag == null) {
                 addMessage(request, "errors.required", "Signaalgroep");
-                return getDefaultForward(mapping, request);
+                return mapping.findForward(SUCCESS);
             }
             activation.setActivationGroup(ag);
         }
@@ -192,21 +179,12 @@ public final class ActivationAction extends BaseDatabaseAction {
         a.setUpdateTime(new Date());
     }
 
-    private static String treeUpdateJson(String action, Activation a) throws Exception {
-        JSONObject update = new JSONObject();
-        update.put("action", action);
-        update.put("id", "a:" + a.getId());
-        update.put("parentId", "ag:" + a.getActivationGroup().getId());
-        update.put("object", a.serializeToJson());
-        return update.toString();
-    }
-
     public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
         Activation activation = getActivation(form, request, true);
         if (activation == null) {
-            addAlternateMessage(mapping, request, "Niet gevonden");
+            addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
         /* Pas evt indexen van activations later in lijst aan */
