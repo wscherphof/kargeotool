@@ -185,6 +185,7 @@ public final class ActivationAction extends TreeItemAction {
         Activation activation = getActivation(form, request, true);
         if (activation == null) {
             addMessage(request, "error.notfound");
+            request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         /* Pas evt indexen van activations later in lijst aan */
