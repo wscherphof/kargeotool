@@ -183,28 +183,6 @@
         clearTreeview();
     }
 
-    function flamingo_map_onIdentifyData(map, layer, data, identifyextent,nridentified, total) {
-        if("map_kar_punten" == layer) {
-            var features = data["kar_punten"];
-            if(features != undefined) {
-                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
-            }
-        }
-    }
-
-    function flamingo_moveToExtent(minx, miny, maxx, maxy){
-        flamingo.callMethod("map", "moveToExtent", {
-                minx: minx,
-                miny: miny,
-                maxx: maxx,
-                maxy: maxy}
-        , 0);
-    }
-
-    function setStatus(what, status) {
-        document.getElementById(what + "Status").innerHTML = escapeHTML(status);
-    }
-
     function form_editObject(object) {
         var url;
         switch(object.type) {
@@ -243,7 +221,7 @@
         } else {
             parentItem = treeview_findItem(tree, cmd.parentId);
         }
-        
+
         if(cmd.action == "remove") {
             if(selectedObject.id == cmd.id) {
                 deselectObject();
@@ -304,6 +282,56 @@
         var agId = selectedObject.id.split(":")[1];
         deselectObject();
         window.frames["form"].location = "<html:rewrite page="/activation.do?new=t"/>" + "&agId=" + agId;
+    }
+
+    /* Flamingo event handlers */
+
+    function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
+        if("map_kar_punten" == layer) {
+            var features = data["kar_punten"];
+            if(features != undefined) {
+                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
+            }
+        }
+    }
+
+	function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
+		console.log('drawMap onGeometryDrawFinished called', obj, geometry);
+    }
+
+	function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
+		console.log('drawMap onCreatePointAtDistanceFinished called', obj, geometry, pathLength);
+    }
+
+	function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
+		console.log('drawMap onGeometryDrawUpdate called', obj, geometry);
+    }
+
+    /* Flamingo callMethod wrappers */
+
+    var editMap = "drawMap";
+    var editLayer = "drawLay";
+
+    // geometryType is Point, PointAtDistance, ...
+
+	function flamingo_editMapCreatePoint(geometryType) {
+		flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, [183464, 505572]);
+	}
+
+	function flamingo_editMapDrawPoint(geometryType) {
+		flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
+	}
+
+    function flamingo_removeAllFeatures() {
+        flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
+    }
+
+    function flamingo_moveToExtent(minx, miny, maxx, maxy){
+        flamingo.callMethod("map", "moveToExtent", {minx: minx, miny: miny,  maxx: maxx, maxy: maxy}, 0);
+    }
+
+    function setStatus(what, status) {
+        document.getElementById(what + "Status").innerHTML = escapeHTML(status);
     }
 
 </script>
