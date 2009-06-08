@@ -217,6 +217,6 @@ body.form {
     font-weight: normal;
 }
 
-#location.changed {
+.changed {
     color: red;
 }

@@ -28,6 +28,9 @@
     <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
+<script type="text/javascript">
+        parent.flamingo_cancelEdit();
+</script>
 <div style="margin-top: 4px; height: 60px">
     <b>Locatie</b><br>
     <br>

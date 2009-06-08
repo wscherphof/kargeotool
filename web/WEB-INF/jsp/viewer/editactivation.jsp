@@ -30,6 +30,15 @@
         <c:if test="${empty activation.point}">Nog geen locatie.</c:if>
         <c:if test="${!empty activation.point}">Coordinaten: <span id='location'>${activation.point}</span></c:if>
     </c:set>
+    <b>Locatie</b><br>
+    <br>
+    <span id="locationStatus" style="font-weight: bold">${prevLocationStatusHtml}</span>
+    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
+    <input id="cancel" type="button" style="display: none" value="Annuleren" onclick="cancelClick();">
+    <input id="newLocation" type="button" ${!empty activation.point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="changeLocation" type="button" ${empty activation.point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
+    <input id="deleteLocation" type="button" ${empty activation.point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
+    <br>
     <script type="text/javascript">
         var prevLocationStatusHtml = "${prevLocationStatusHtml}";
         var haveLocation = ${!empty activation.point};
@@ -45,15 +54,17 @@
         <c:if test="${locationUpdated}">
             parent.flamingo.callMethod("map_kar_punten", "update");
         </c:if>
-            
+
+        parent.flamingo_cancelEdit();
+
         function cancelClick() {
-            parent.flamingo_removeAllFeatures();
-            parent.flamingo.callMethod("gis", "setCreateGeometry", null);
+            parent.flamingo_cancelEdit();
             document.getElementById("locationStatus").innerHTML = prevLocationStatusHtml;
             document.getElementById("ok").style.display = "none";
             document.getElementById("cancel").style.display = "none";
             if(haveLocation) {
                 document.getElementById("changeLocation").style.display = "inline";
+                document.getElementById("deleteLocation").style.display = "inline";
             } else {
                 document.getElementById("newLocation").style.display = "inline";
             }
@@ -79,8 +90,20 @@
             document.getElementById("ok").style.display = "inline";
             document.getElementById("cancel").style.display = "inline";
             document.getElementById("changeLocation").style.display = "none";
+            document.getElementById("deleteLocation").style.display = "none";
         }
 
+        function deleteLocationClicked() {
+            document.getElementById("locationStatus").innerHTML = "Coordinaten: <span id='location' class='changed'>gewist</span>";
+            prevLocationStatusHtml = document.getElementById("locationStatus").innerHTML;
+            document.forms[0].location.value = "delete";
+            haveLocation = false;
+            haveNewLocation = false;
+            document.getElementById("changeLocation").style.display = "none";
+            document.getElementById("deleteLocation").style.display = "none";
+            document.getElementById("newLocation").style.display = "inline";
+        }
+        
         function okClicked() {
             if(newLocation) {
                 haveLocation = true;
@@ -94,29 +117,29 @@
         }
 
         function flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
-            form.karDistanceTillStopLine.value = Number.toFixed(pathLength);
+            document.forms[0].karDistanceTillStopLine.value = "" + pathLength.toFixed();
+            document.getElementById("distanceLabel").style.color = "red";
         }
 
+        function flamingo_onGeometryDrawFinished(obj, geometry) {
+            console.log("xxx");
+            flamingo_onGeometryDrawUpdate(obj, geometry);
+        }
+        
         function flamingo_onGeometryDrawUpdate(obj, geometry) {
-            var xy = geometry.slice(6, geometry.length-1);
-            xy = xy.split(' ');
-            var x = Number(xy[0]).toFixed();
-            var y = Number(xy[1]).toFixed();
-            newLocation = {x: x, y: y};
-            document.getElementById("locationStatus").innerHTML =
-                "Coordinaten: <span id='location' class='changed'>"
-                + newLocation.x + ", " + newLocation.y + "</span>";
+            if(geometry.indexOf("POINT") == 0) {
+                var xy = geometry.slice(6, geometry.length-1);
+                xy = xy.split(' ');
+                var x = Number(xy[0]).toFixed();
+                var y = Number(xy[1]).toFixed();
+                newLocation = {x: x, y: y};
+                document.getElementById("locationStatus").innerHTML =
+                    "Coordinaten: <span id='location' class='changed'>"
+                    + newLocation.x + ", " + newLocation.y + "</span>";
+            }
         }
 
     </script>
-    <b>Locatie</b><br>
-    <br>
-    <span id="locationStatus" style="font-weight: bold">${prevLocationStatusHtml}</span>
-    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
-    <input id="cancel" type="button" style="display: none" value="Annuleren" onclick="cancelClick();">
-    <input id="newLocation" type="button" ${!empty activation.point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
-    <input id="changeLocation" type="button" ${empty activation.point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
-    <br>
 </div>
 
 <div>
@@ -165,7 +188,7 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="a.karDistanceTillStopLine"/></td>
+            <td><span id="distanceLabel"><fmt:message key="a.karDistanceTillStopLine"/></span></td>
             <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine"/></td>
         </tr>
         <tr>

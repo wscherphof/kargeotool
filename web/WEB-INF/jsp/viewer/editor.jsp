@@ -314,6 +314,7 @@
 
 	function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
 		console.log('drawMap onGeometryDrawFinished called', obj, geometry);
+        window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
 	function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
@@ -347,6 +348,11 @@
 
     function flamingo_moveToExtent(minx, miny, maxx, maxy){
         flamingo.callMethod("map", "moveToExtent", {minx: minx, miny: miny,  maxx: maxx, maxy: maxy}, 0);
+    }
+
+    function flamingo_cancelEdit() {
+        flamingo_removeAllFeatures();
+        flamingo.callMethod("gis", "setCreateGeometry", null);
     }
 
 </script>
