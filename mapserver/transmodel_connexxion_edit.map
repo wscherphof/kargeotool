@@ -209,7 +209,7 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=kar_gis_edit password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
   data "geom from (select id,type,geom from karpunt where type = 'ACTIVATION') as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
