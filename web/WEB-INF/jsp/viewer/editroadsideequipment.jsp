@@ -17,6 +17,7 @@
 
 <html:form styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
     <html:hidden property="id"/>
+    <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${activationGroupCount == 1}">
         <c:set var="extraMsg">Let op! De signaalgroep (en alle triggerpunten hiervan) van deze walapparatuur wordt ook verwijderd!</c:set>
@@ -27,31 +28,25 @@
     <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
-<script type="text/javascript">
-        parent.flamingo_cancelEdit();
-</script>
+<c:set var="point" value="${roadsideEquipment.point}" scope="request"/>
+
 <div style="margin-top: 4px; height: 60px">
+    <c:set var="prevLocationStatusHtml">
+        <c:if test="${empty point}">Nog geen locatie.</c:if>
+        <c:if test="${!empty point}">Coordinaten: <span id='location'>${point}</span></c:if>
+    </c:set>
     <b>Locatie</b><br>
     <br>
-    <c:choose>
-        <c:when test="${empty activationGroup.point}">
-            <b>Nog geen locatie. </b>
-            <input type="button" value="Locatie aanwijzen in kaart" onclick="alert('Nog niet geimplementeerd');">
-            <br>
-        </c:when>
-        <c:otherwise>
-            <b>Coordinaten: </b> <span style="font-family: 'courier new', courier, serif"> <c:out value="${roadsideEquipment.point}"/></span>
-            <input type="button" value="Locatie wijzigen in kaart" onclick="alert('Nog niet geimplementeerd');">
-            <br>
-            <%--<br>
-            In de kaart kan het punt worden versleept om de locatie te wijzigen.
-            <br><br>
-            Op dit punt zijn [nnn]/[geen] andere signaalgroepen aanwezig. Bij het
-            wijzigen van de locatie worden deze ook verplaatst.
-            --%>
-        </c:otherwise>
-    </c:choose>
+    <span id="locationStatus" style="font-weight: bold">${prevLocationStatusHtml}</span>
+    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
+    <input id="cancel" type="button" style="display: none" value="Annuleren" onclick="cancelClick();">
+    <input id="newLocation" type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="changeLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
+    <input id="deleteLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
     <br>
+    <c:set var="geometryType" value="Point" scope="request"/>
+    <c:set var="layer" value="draw_walapparatuur" scope="request"/>
+    <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 </div>
 
 <div>
