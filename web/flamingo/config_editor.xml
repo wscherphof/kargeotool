@@ -6,14 +6,22 @@
         <fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
         <fmc:EditMap id="drawMap" listento="gis,map" left="0" top="0%" height="100%" width="100%" bottom="bottom"/>
 		<fmc:GIS id="gis" geometryeditable="yes">
-			<fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" srsname="EPSG:28992" featuretypename="kar_punten" loadfeaturesonstart="false">
+			<fmc:Layer id="draw_walapparatuur" name="draw_walapparatuur" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="walapparatuur" loadfeaturesonstart="false">
+				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
+				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
+			</fmc:Layer>
+			<fmc:Layer id="draw_signaalgroepen" name="draw_signaalgroepen" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="signaalgroepen" loadfeaturesonstart="false">
+				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
+				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
+			</fmc:Layer>
+			<fmc:Layer id="draw_triggerpunten" name="draw_triggerpunten" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="triggerpunten" loadfeaturesonstart="false">
 				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
 		</fmc:GIS>
         <fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
             <!--fmc:LayerOGWMS id="bushaltes" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map&amp;Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
-            <fmc:LayerOGWMS id="kar_punten" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/>
+            <fmc:LayerOGWMS id="kar_layer" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,triggerpunten,walapparatuur,signaalgroepen" showerrors="true" query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"/>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
             <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
             <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
@@ -21,18 +29,24 @@
     </fmc:Container>
 
     <fmc:Container left="82%" height="776" width="18%" top="33" backgroundcolor="#F5F5F5">
-		<fmc:Legend id="legend" top="0" height="40%" width="98%" left="2%" listento="map">
+		<fmc:Legend id="legend" top="0" height="455" width="98%" left="2%" listento="map">
 			<group label="Transmodel">
-			<item label="Bushaltes" canhide="true" listento="kar_punten.bushaltes">
+			<item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
 			</item>
-			<item label="KAR punten" canhide="true" listento="kar_punten.kar_punten">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=kar_punten&amp;format=image/png"/>
+			<item label="Walapparatuur" canhide="true" listento="kar_layer.walapparatuur">
+				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
 			</item>
-			<item label="Buslijnen" canhide="true" listento="kar_punten.buslijnen">
+			<item label="Signaalgroepen" canhide="true" listento="kar_layer.signaalgroepen">
+				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
+			</item>
+			<item label="Triggerpunten" canhide="true" listento="kar_layer.triggerpunten">
+				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
+			</item>
+			<item label="Buslijnen" canhide="true" listento="kar_layer.buslijnen">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
 			</item>
-			<item label="Bushaltes labels" canhide="true" listento="kar_punten.bushaltes_labels"/>
+			<item label="Bushaltes labels" canhide="true" listento="kar_layer.bushaltes_labels"/>
 			</group>
 			<group label="Achtergrond" open="true">
 				<item label="Openstreetmap" canhide="true" listento="osm"/>

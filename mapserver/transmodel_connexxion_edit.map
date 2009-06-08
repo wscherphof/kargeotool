@@ -195,11 +195,11 @@ LAYER
 END
 
 LAYER
-  NAME kar_punten
+  NAME triggerpunten
   METADATA
-    "wms_title" "kar_punten"
+    "wms_title" "triggerpunten"
     "gml_include_items" "all"     
-    "wfs_title" "kar_punten"
+    "wfs_title" "triggerpunten"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "id"
   END
@@ -210,16 +210,116 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "geom from (select id,type,geom from karpunt where type = 'ACTIVATION') as bla using srid=28992 using unique id"
+  data "geom from (select karpunt.id,command_type,geom from activation join karpunt on activation.point = karpunt.id) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
+  CLASSITEM "command_type"
+  CLASS 
+    NAME "Onbekend"
+    EXPRESSION ""
+    STYLE      
+      SYMBOL "radio_zwart.gif"      
+    END 
+  END  
+  CLASS 
+    NAME "Inmelding"
+    EXPRESSION "1"
+    STYLE      
+      SYMBOL "radio_groen.gif"      
+    END 
+  END
+  CLASS 
+    NAME "Uitmeldpunt"
+    EXPRESSION "2"
+    STYLE      
+      SYMBOL "radio_rood.gif"      
+    END 
+  END
   CLASS 
     NAME "Aanmeldpunt"
+    EXPRESSION "3"
     STYLE      
       SYMBOL "radio_blauw.gif"      
     END 
   END
+  
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME walapparatuur
+  METADATA
+    "wms_title" "walapparatuur"
+    "gml_include_items" "all"     
+    "wfs_title" "walapparatuur"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "id"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla
+  TOLERANCE 10  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  data "geom from (select karpunt.id,roadside_equipment.type,unit_number,geom from roadside_equipment join karpunt on roadside_equipment.point = karpunt.id) as bla using srid=28992 using unique id"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  CLASSITEM "type"
+  CLASS 
+    NAME "VRI"
+    EXPRESSION "CROSS"
+    STYLE      
+      SYMBOL "vri.gif"      
+    END 
+  END  
+  CLASS 
+    NAME "Selectieve afsluiting"
+    EXPRESSION "CLOSE"
+    STYLE      
+      SYMBOL "close.gif"      
+    END 
+  END
+  CLASS 
+    NAME "Halteprocessor"
+    EXPRESSION "PIU"
+    STYLE      
+      SYMBOL "piu.gif"      
+    END 
+  END
+  
+  PROCESSING "CLOSE_CONNECTION=DEFER"
+END
+
+LAYER
+  NAME signaalgroepen
+  METADATA
+    "wms_title" "signaalgroepen"
+    "gml_include_items" "all"     
+    "wfs_title" "signaalgroepen"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "id"
+  END
+  TYPE POINT
+  DUMP true
+  TEMPLATE bla
+  TOLERANCE 10  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  data "geom from (select karpunt.id,kar_signal_group,geom from activation_group join karpunt on activation_group.point = karpunt.id) as bla using srid=28992 using unique id"
+  PROJECTION
+    "init=epsg:28992"
+  END
+  CLASS 
+    NAME "Signaalgroep"
+    STYLE      
+      SYMBOL "ag.gif"      
+    END 
+  END  
+  
   PROCESSING "CLOSE_CONNECTION=DEFER"
 END
 
