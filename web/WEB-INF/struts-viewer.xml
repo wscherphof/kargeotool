@@ -17,6 +17,7 @@
             <form-property name="provincie" type="java.lang.String"/>
         </form-bean>
         <form-bean name="activationForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="location" type="java.lang.String"/>
             <form-property name="agId" type="java.lang.String"/>
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karUsageType" type="java.lang.String"/>
@@ -26,6 +27,7 @@
             <form-property name="karTimeTillStopLine" type="java.lang.String"/>
         </form-bean>
         <form-bean name="activationGroupForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="location" type="java.lang.String"/>
             <form-property name="rseqId" type="java.lang.String"/>
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karSignalGroup" type="java.lang.String"/>
@@ -35,6 +37,7 @@
             <form-property name="description" type="java.lang.String"/>
         </form-bean>
         <form-bean name="roadsideEquipmentForm" type="org.apache.struts.validator.DynaValidatorForm">
+            <form-property name="location" type="java.lang.String"/>
             <form-property name="id" type="java.lang.String"/>
             <form-property name="dataOwner" type="java.lang.String"/>
             <form-property name="unitNumber" type="java.lang.String"/>

@@ -18,6 +18,7 @@
 <html:form styleId="activationForm" action="/activation" onsubmit="return validateActivationForm(this)">
     <html:hidden property="id"/>
     <html:hidden property="agId"/>
+    <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${!empty form.id}">
         <html:submit property="delete" onclick="return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
@@ -32,7 +33,19 @@
     <script type="text/javascript">
         var prevLocationStatusHtml = "${prevLocationStatusHtml}";
         var haveLocation = ${!empty activation.point};
+        var haveNewLocation = false;
+        <c:if test="${activation.point == null}">
+            var oldLocation = null;
+        </c:if>
+        <c:if test="${activation.point != null}">
+            var oldLocation = [${activation.point}];
+        </c:if>
+        var newLocation;
 
+        <c:if test="${locationUpdated}">
+            parent.flamingo.callMethod("map_kar_punten", "update");
+        </c:if>
+            
         function cancelClick() {
             parent.flamingo_removeAllFeatures();
             parent.flamingo.callMethod("gis", "setCreateGeometry", null);
@@ -56,7 +69,11 @@
         }
         
         function changeLocationClicked() {
-            parent.selectLocationClicked([${activation.point}], 'PointAtDistance');
+            var loc = oldLocation;
+            if(haveNewLocation) {
+                loc = [newLocation.x, newLocation.y];
+            }
+            parent.selectLocationClicked(loc, 'PointAtDistance');
             prevLocationStatusHtml = document.getElementById("locationStatus").innerHTML;
             document.getElementById("locationStatus").innerHTML = "Verplaats het punt in de kaart...";
             document.getElementById("ok").style.display = "inline";
@@ -65,9 +82,30 @@
         }
 
         function okClicked() {
-            // xx form.point = ...
-            haveLocation = true;
-            prevLocationStatusHtml = "Coordinaten: <span id='location'>a, b</span>";
+            if(newLocation) {
+                haveLocation = true;
+                haveNewLocation = true;
+                prevLocationStatusHtml =
+                    "Coordinaten: <span id='location' class='changed'>"
+                    + newLocation.x + ", " + newLocation.y + "</span>";
+                document.forms[0].location.value = newLocation.x + " " + newLocation.y;
+            }
+            cancelClick();
+        }
+
+        function flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
+            form.karDistanceTillStopLine.value = Number.toFixed(pathLength);
+        }
+
+        function flamingo_onGeometryDrawUpdate(obj, geometry) {
+            var xy = geometry.slice(6, geometry.length-1);
+            xy = xy.split(' ');
+            var x = Number(xy[0]).toFixed();
+            var y = Number(xy[1]).toFixed();
+            newLocation = {x: x, y: y};
+            document.getElementById("locationStatus").innerHTML =
+                "Coordinaten: <span id='location' class='changed'>"
+                + newLocation.x + ", " + newLocation.y + "</span>";
         }
 
     </script>

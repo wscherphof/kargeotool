@@ -1,5 +1,7 @@
 package nl.b3p.kar.struts;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 
@@ -99,6 +102,10 @@ public final class ActivationAction extends TreeItemAction {
             activation.setIndex(activation.getActivationGroup().getActivations().size()+1);
             em.persist(activation);
         }
+        if(activation.getPoint() != null && activation.getPoint().getId() == null) {
+            em.persist(activation.getPoint());
+        }
+
         em.flush();
 
         populateForm(activation, form, request);
@@ -177,6 +184,20 @@ public final class ActivationAction extends TreeItemAction {
         }
         a.setUpdater(request.getRemoteUser());
         a.setUpdateTime(new Date());
+
+        String location = FormUtils.nullIfEmpty(form.getString("location"));
+        if(location != null) {
+            KarPunt kp = a.getPoint();
+            if(kp == null) {
+                kp = new KarPunt();
+                a.setPoint(kp);
+            }
+            kp.setType(KarPunt.TYPE_ACTIVATION);
+            String[] xy = location.split(" ");
+            Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
+            kp.setGeom(new Point(c, null, 28992));
+            request.setAttribute("locationUpdated", Boolean.TRUE);
+        }
     }
 
     public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -196,7 +217,7 @@ public final class ActivationAction extends TreeItemAction {
             Activation a = (Activation)activations.get(i);
             a.setIndex(i+1); /* List is 1-based */
         }
-
+        // todo delete orphan KarPoint indien geen refs meer!!!
         em.flush();
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));

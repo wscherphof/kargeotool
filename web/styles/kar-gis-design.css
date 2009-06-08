@@ -216,3 +216,7 @@ body.form {
     font-family: "courier new", courier, serif;
     font-weight: normal;
 }
+
+#location.changed {
+    color: red;
+}

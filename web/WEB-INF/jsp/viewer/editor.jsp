@@ -268,6 +268,7 @@
     /* Aangeroepen door form in iframe */
     function selectLocationClicked(currentLocation, geometryType) {
         console.log("selectLocationClicked", currentLocation, geometryType);
+        // TODO set flamingo tool naar handje
         if(currentLocation != null) {
             flamingo_editMapCreateNewGeometry(geometryType, currentLocation);
         } else {
@@ -317,10 +318,12 @@
 
 	function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
 		console.log('drawMap onCreatePointAtDistanceFinished called', obj, geometry, pathLength);
+        window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
 	function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
 		console.log('drawMap onGeometryDrawUpdate called', obj, geometry);
+        window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
     }
 
     /* Flamingo callMethod wrappers */
