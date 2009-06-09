@@ -29,25 +29,9 @@
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
 <c:set var="point" value="${roadsideEquipment.point}" scope="request"/>
-
-<div style="margin-top: 4px; height: 60px">
-    <c:set var="prevLocationStatusHtml">
-        <c:if test="${empty point}">Nog geen locatie.</c:if>
-        <c:if test="${!empty point}">Coordinaten: <span id='location'>${point}</span></c:if>
-    </c:set>
-    <b>Locatie</b><br>
-    <br>
-    <span id="locationStatus" style="font-weight: bold">${prevLocationStatusHtml}</span>
-    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
-    <input id="cancel" type="button" style="display: none" value="Annuleren" onclick="cancelClick();">
-    <input id="newLocation" type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
-    <input id="changeLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
-    <input id="deleteLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
-    <br>
-    <c:set var="geometryType" value="Point" scope="request"/>
-    <c:set var="layer" value="draw_walapparatuur" scope="request"/>
-    <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
-</div>
+<c:set var="geometryType" value="Point" scope="request"/>
+<c:set var="layer" value="draw_walapparatuur" scope="request"/>
+<tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
 <div>
     <b>Eigenschappen walapparatuur</b>
