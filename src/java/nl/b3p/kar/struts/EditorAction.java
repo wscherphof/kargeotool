@@ -93,19 +93,15 @@ public class EditorAction extends BaseDatabaseAction {
         }
     }
 
-    public static String getObjectInfo(String type, String id) throws Exception {
-        return (String)executeInTransaction("getObjectInfoFromDb", type, id);
+    public static String getObjectTree(String type, String id) throws Exception {
+        return (String)executeInTransaction("getObjectTreeFromDb", type, id);
     }
 
-    public static String getKarPuntInfo(String type, String id) throws Exception {
-        return (String)executeInTransaction("getKarPuntInfoFromDb", type, id);
+    public static String getIdentifyTree(String layers) throws Exception {
+        return (String)executeInTransaction("getIdentifyTreeFromDb", layers);
     }
 
-    public static String getMultipleKarPuntInfo(String features) throws Exception {
-        return (String)executeInTransaction("getMultipleKarPuntInfoFromDb", features);
-    }
-
-    public static String getObjectInfoFromDb(String... args) throws Exception {
+    public static String getObjectTreeFromDb(String... args) throws Exception {
         String type = args[0];
         String id = args[1];
         Class clazz = null;
@@ -141,6 +137,61 @@ public class EditorAction extends BaseDatabaseAction {
         return info.toString();
     }
 
+    public static String getIdentifyTreeFromDb(String... args) throws Exception {
+
+        JSONObject layers = new JSONObject(args[0]);
+
+        List objects = new ArrayList();
+
+        objects.addAll(getFeatureListEntities(layers, "walapparatuur", RoadsideEquipment.class));
+        objects.addAll(getFeatureListEntities(layers, "signaalgroepen", ActivationGroup.class));
+        objects.addAll(getFeatureListEntities(layers, "triggerpunten", Activation.class));
+
+        if(objects.isEmpty()) {
+            return "error: no objects found";
+        }
+
+        Envelope envelope = new Envelope();
+        for(Iterator it = objects.iterator(); it.hasNext();) {
+            Object obj = it.next();
+            Coordinate c = getObjectCoordinate(obj);
+            if(c != null) {
+                envelope.expandToInclude(c);
+            }
+        }
+        JSONObject info = new JSONObject();
+        if(!envelope.isNull()) {
+            info.put("envelope", "{minX: " + envelope.getMinX() + ", maxX: " + envelope.getMaxX()
+                    + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
+        }
+        if(objects.size() == 1) {
+            info.put("selectedObject", ((EditorTreeObject)objects.get(0)).serializeToJson(false));
+        }
+        info.put("tree", buildObjectTree(objects));
+        return info.toString();
+    }
+
+    private static List getFeatureListEntities(JSONObject layers, String layerName, Class entityClass) throws Exception {
+        EntityManager em = getEntityManager();
+
+        if(!layers.has(layerName)) {
+            return new ArrayList();
+        }
+        JSONArray features = layers.getJSONArray(layerName);
+        List ids = new ArrayList();
+        for(int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            ids.add(feature.getInt("id"));
+        }
+        List objects = new ArrayList();
+        if(!ids.isEmpty()) {
+            objects = em.createQuery("from " + entityClass.getName() + " where id in (:ids)")
+                    .setParameter("ids", ids)
+                    .getResultList();
+        }
+        return objects;
+    }
+
     private static Coordinate getObjectCoordinate(Object obj) {
         if(obj == null) {
             return null;
@@ -156,110 +207,8 @@ public class EditorAction extends BaseDatabaseAction {
         }
         return null;
     }
-    public static String getKarPuntInfoFromDb(String... args) throws Exception {
-        /* id is the id of a KarPunt, so find the first object of type that has
-         * a reference to that KarPunt
-         */
-        String type = args[0];
-        String id = args[1];
-        String clazz = null;
-        if("a".equals(type)) {
-            clazz = "Activation";
-            type = "a";
-        } else if("ag".equals(type)) {
-            clazz = "ActivationGroup";
-            type = "ag";
-        } else if("rseq".equals(type)) {
-            clazz = "RoadsideEquipment";
-            type = "rseq";
-        }
-        if(clazz == null) {
-            return "error: invalid object type";
-        }
-        Integer idObj;
-        try {
-            idObj = new Integer(Integer.parseInt(id));
-        } catch(NumberFormatException nfe) {
-            return "error: invalid id";
-        }
-        Integer objectId = (Integer)getEntityManager().createQuery("select id from " + clazz + " where point.id = :id")
-                .setParameter("id", idObj)
-                .setMaxResults(1)
-                .getSingleResult();
-        if(objectId == null) {
-            return "error: no object " + type + " found for point " + idObj;
-        }
 
-        return getObjectInfoFromDb(type, objectId + "");
-    }
-
-    public static String getMultipleKarPuntInfoFromDb(String... args) throws Exception {
-        JSONArray features;
-        List karPuntIds = new ArrayList();
-        try {
-            features = new JSONArray(args[0]);
-
-            for(int i = 0; i < features.length(); i++) {
-                JSONObject jo = features.getJSONObject(i);
-                int id = jo.getInt("id");
-                String type = jo.getString("type");
-                if(type.equals(KarPunt.TYPE_ACTIVATION)
-                || type.equals(KarPunt.TYPE_ACTIVATION_GROUP)
-                || type.equals(KarPunt.TYPE_ROADSIDE_EQUIPMENT)) {
-                    karPuntIds.add(id);
-                }
-            }
-        } catch(JSONException je) {
-            return "error: json exception";
-        }
-        if(karPuntIds.isEmpty()) {
-            return "error: no valid karpunt id's found";
-        }
-        List objects = getEntityManager().createQuery(
-                "from Activation where point.id in (:ids) " +
-                "union from ActivationGroup where point.id in (:ids) " +
-                "union from RoadsideEquipment where point.id in (:ids)")
-                .setParameter("ids", karPuntIds)
-                .getResultList();
-
-        if(objects.isEmpty()) {
-            return "error: no objects found";
-        }
-
-        JSONObject info = new JSONObject();
-        JSONArray jObjects = new JSONArray();
-        Envelope envelope = new Envelope();
-        for(Iterator it = objects.iterator(); it.hasNext();) {
-            Object obj = it.next();
-            String type = null;
-            Integer id = null;
-            if(obj instanceof Activation) {
-                type = "a";
-                Activation a = (Activation)obj;
-                id = ((Activation)obj).getId();
-            } else if(obj instanceof ActivationGroup) {
-                type = "ag";
-                id = ((ActivationGroup)obj).getId();
-            } else if(obj instanceof RoadsideEquipment) {
-                type = "rseq";
-                id = ((RoadsideEquipment)obj).getId();
-            }
-            Coordinate c = getObjectCoordinate(obj);
-            if(c != null) {
-                envelope.expandToInclude(c);
-            }
-            jObjects.put(type + ":" + id);
-        }
-        info.put("objects", jObjects);
-        if(!envelope.isNull()) {
-            info.put("envelope", "{minX: " + envelope.getMinX() + ", maxX: " + envelope.getMaxX()
-                    + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
-        }
-        info.put("tree", buildObjectTree(objects));
-        return info.toString();
-    }
-
-    private static String buildObjectTree(List objects) throws Exception {
+    private static JSONObject buildObjectTree(List objects) throws Exception {
 
         List roots = new ArrayList();
 
@@ -289,7 +238,7 @@ public class EditorAction extends BaseDatabaseAction {
         for(Iterator it = roots.iterator(); it.hasNext();) {
             children.put(((EditorTreeObject)it.next()).serializeToJson());
         }
-        return root.toString();
+        return root;
     }
 
 }

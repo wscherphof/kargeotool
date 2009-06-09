@@ -4,9 +4,10 @@
     <allow>
         <create creator="none" javascript="Editor">
             <param name="class" value="nl.b3p.kar.struts.EditorAction"/>
-            <include method="getObjectInfo"/>
+            <include method="getObjectTree"/>
             <include method="getKarPuntInfo"/>
             <include method="getMultipleKarPuntInfo"/>
+            <include method="getIdentifyTree"/>
         </create>
     </allow>
 </dwr>

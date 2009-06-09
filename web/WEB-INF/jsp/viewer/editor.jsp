@@ -49,7 +49,7 @@
         if(!valid) {
             alert("Ongeldige invoer");
         } else {
-            Editor.getObjectInfo(type, id, dwr_objectInfoReceived);
+            Editor.getObjectTree(type, id, dwr_treeInfoReceived);
         }        
     }
 
@@ -124,22 +124,22 @@
         treeview_restoreScrollStates();
     }
 
-    function dwr_objectInfoReceived(info) {
+    function dwr_treeInfoReceived(info) {
         if(info.toLowerCase().indexOf("error") == 0) {
             alert(info);
             return;
         }
         
         var obj = eval("(" + info + ")");
-        tree = eval("(" + obj.tree + ")");
+        tree = obj.tree;
 
         deselectObject();
         createTreeview();
 
-        if(obj.object != undefined) {
+        if(obj.selectedObject != undefined) {
             setStatus("tree", "Object op locatie geselecteerd");
 
-            var object = treeview_findItem(tree, obj.object);
+            var object = treeview_findItem(tree, obj.selectedObject.id);
             tree_selectObject(object);
             form_editObject(object);
             if(document.getElementById("autoZoom").checked) {
@@ -267,8 +267,6 @@
 
     /* Aangeroepen door form in iframe */
     function selectLocationClicked(editLayer, currentLocation, geometryType) {
-        console.log("selectLocationClicked", currentLocation, geometryType);
-        // TODO set flamingo tool naar handje
         if(currentLocation != null) {
             flamingo_editMapCreateNewGeometry(editLayer, geometryType, currentLocation);
         } else {
@@ -304,10 +302,10 @@
     /* Flamingo event handlers */
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
-        if("map_kar_punten" == layer) {
-            var features = data["kar_punten"];
-            if(features != undefined) {
-                Editor.getMultipleKarPuntInfo(JSON.stringify(features), dwr_objectInfoReceived);
+        console.log("onIdentifyData", map, layer, data, identifyextent, nridentified, total);
+        if("map_kar_layer" == layer) {
+            if(data != undefined) {
+                Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }
         }
     }
