@@ -125,7 +125,7 @@ public final class ActivationGroupAction extends TreeItemAction {
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         
         request.setAttribute("activationGroup", ag);
-        if(ag.getPoint() != null) {
+        if(ag != null && ag.getPoint() != null) {
             ag.getPoint().getGeom();
         }
 

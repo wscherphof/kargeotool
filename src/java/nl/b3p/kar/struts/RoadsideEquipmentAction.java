@@ -105,7 +105,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         EntityManager em = getEntityManager();
 
         request.setAttribute("roadsideEquipment", rseq);
-        if(rseq.getPoint() != null) {
+        if(rseq != null && rseq.getPoint() != null) {
             rseq.getPoint().getGeom();
         }
 

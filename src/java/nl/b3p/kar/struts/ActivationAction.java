@@ -133,7 +133,7 @@ public final class ActivationAction extends TreeItemAction {
         EntityManager em = getEntityManager();
 
         request.setAttribute("activation", activation);
-        if(activation.getPoint() != null) {
+        if(activation != null && activation.getPoint() != null) {
             activation.getPoint().getGeom();
         }
 
