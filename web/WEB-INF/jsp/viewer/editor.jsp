@@ -126,7 +126,11 @@
 
     function dwr_treeInfoReceived(info) {
         if(info.toLowerCase().indexOf("error") == 0) {
-            alert(info);
+            if(info.toLowerCase().indexOf("no objects found") != -1) {
+                alert("Geen objecten gevonden op deze locatie");
+            } else {
+                alert(info);
+            }
             return;
         }
         
@@ -134,6 +138,7 @@
         tree = obj.tree;
 
         deselectObject();
+        window.frames["form"].location = "about:blank";
         createTreeview();
 
         if(obj.selectedObject != undefined) {
@@ -180,7 +185,6 @@
         document.getElementById("zoomButton").disabled = true;
         document.getElementById("newAg").disabled = true;
         document.getElementById("newA").disabled = true;
-        window.frames["form"].location = "about:blank";
     }
 
     function clear() {
@@ -371,7 +375,7 @@
             <input id="newRseq" type="button" value="Nieuwe walapparatuur" onclick="newRseq()">
             <br>
             <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
-            <input id="newA" type="button" value="Nieuw inmeldpunt" disabled="true" onclick="newA()">
+            <input id="newA" type="button" value="Nieuw triggerpunt" disabled="true" onclick="newA()">
         </div>
     </div>
 

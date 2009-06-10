@@ -13,6 +13,11 @@
     </script>
 </c:if>
 
+<script type="text/javascript">
+    parent.flamingo_cancelEdit();
+    parent.flamingo.callMethod("map_kar_layer", "update");
+</script>
+
 <c:if test="${!hideForm}">
 
 <html:form styleId="activationForm" action="/activation" onsubmit="return validateActivationForm(this)">

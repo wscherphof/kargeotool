@@ -131,14 +131,17 @@ public final class ActivationAction extends TreeItemAction {
 
     protected void createLists(Activation activation, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         EntityManager em = getEntityManager();
+
+        request.setAttribute("activation", activation);
+        if(activation.getPoint() != null) {
+            activation.getPoint().getGeom();
+        }
+
         if(em.contains(activation)) {
-            request.setAttribute("activation", activation);
-            if(activation.getPoint() != null) {
-                activation.getPoint().getGeom();
-            }
             request.setAttribute("activationGroup", activation.getActivationGroup());
             activation.getActivationGroup().getRoadsideEquipment().getDataOwner().getName();
         } else {
+            /* Hier komen we na klik op "nieuw triggerpunt" en ook bij save van nieuwe */
             ActivationGroup ag = getActivationGroup(form, request);
             if(ag == null) {
                 addMessage(request, "errors.required", "Signaalgroep");
@@ -205,7 +208,6 @@ public final class ActivationAction extends TreeItemAction {
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
                 kp.setGeom(new Point(c, null, 28992));
             }
-            request.setAttribute("locationUpdated", Boolean.TRUE);
         }
     }
 
@@ -248,7 +250,6 @@ public final class ActivationAction extends TreeItemAction {
             deleteOrphanKarPoint(activation.getPoint(), activation);
         }
 
-        // todo delete orphan KarPoint indien geen refs meer!!!
         em.flush();
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));

@@ -123,17 +123,19 @@ public final class ActivationGroupAction extends TreeItemAction {
     }
 
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
+        
+        request.setAttribute("activationGroup", ag);
+        if(ag.getPoint() != null) {
+            ag.getPoint().getGeom();
+        }
 
         if(getEntityManager().contains(ag)) {
-            request.setAttribute("activationGroup", ag);
             request.setAttribute("rseq", ag.getRoadsideEquipment());
             ag.getRoadsideEquipment().getDataOwner().getName();
-            if(ag.getPoint() != null) {
-                ag.getPoint().getGeom();
-            }
+
             request.setAttribute("activationCount", ag.getActivations().size());
         } else {
-            /* Hier komen we na klik op "nieuwe signaalgroep" */
+            /* Hier komen we na klik op "nieuwe signaalgroep" en ook bij save van nieuwe */
             RoadsideEquipment rseq = getRseq(form, request);
             if(rseq == null) {
                 addMessage(request, "errors.required", "Walapparatuur");
@@ -219,7 +221,6 @@ public final class ActivationGroupAction extends TreeItemAction {
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
                 kp.setGeom(new Point(c, null, 28992));
             }
-            request.setAttribute("locationUpdated", Boolean.TRUE);
         }
     }
 

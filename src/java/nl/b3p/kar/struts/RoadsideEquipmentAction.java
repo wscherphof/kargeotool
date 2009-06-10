@@ -103,11 +103,13 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
     protected void createLists(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         EntityManager em = getEntityManager();
+
+        request.setAttribute("roadsideEquipment", rseq);
+        if(rseq.getPoint() != null) {
+            rseq.getPoint().getGeom();
+        }
+
         if(em.contains(rseq)) {
-            request.setAttribute("roadsideEquipment", rseq);
-            if(rseq.getPoint() != null) {
-                rseq.getPoint().getGeom();
-            }
             request.setAttribute("activationGroupCount",
                     em.createQuery("select count(*) from ActivationGroup ag where ag.roadsideEquipment = :this")
                         .setParameter("this", rseq)
@@ -171,7 +173,6 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
                 kp.setGeom(new Point(c, null, 28992));
             }
-            request.setAttribute("locationUpdated", Boolean.TRUE);
         }
     }
 
