@@ -226,7 +226,6 @@
     /* Aangeroepen door form in iframe na crud actie */
     function treeUpdate(cmd) {
         cmd = eval("(" + cmd + ")");
-        console.log("treeUpdate", cmd);
 
         var parentItem;
         if(cmd.parentId == null) {
@@ -260,7 +259,7 @@
             cmd.object.children = oldItemChildren;
             parentItem.children[index] = cmd.object;
             refreshTreeview();
-            tree_selectObject(item);
+            tree_selectObject(cmd.object);
         } else if(cmd.action == "insert") {
             /* Altijd als laatste child inserten */
             if(parentItem.children == undefined) {
@@ -309,7 +308,6 @@
     /* Flamingo event handlers */
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
-        console.log("onIdentifyData", map, layer, data, identifyextent, nridentified, total);
         if("map_kar_layer" == layer) {
             if(data != undefined) {
                 document.getElementById("loading").style.visibility = "visible";
@@ -319,17 +317,14 @@
     }
 
 	function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
-		console.log('drawMap onGeometryDrawFinished called', obj, geometry);
         window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
 	function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
-		console.log('drawMap onCreatePointAtDistanceFinished called', obj, geometry, pathLength);
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
 	function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
-		console.log('drawMap onGeometryDrawUpdate called', obj, geometry);
         window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
     }
 
@@ -360,6 +355,10 @@
         flamingo_removeAllFeatures("draw_signaalgroepen");
         flamingo_removeAllFeatures("draw_triggerpunten");
         flamingo.callMethod("gis", "setCreateGeometry", null);
+    }
+
+    function flamingo_updateKarLayer() {
+        flamingo.callMethod("map_kar_layer", "update");
     }
 
     function  walapparaatnummerKeyPressed(e) {
@@ -394,6 +393,7 @@
             <br>
             <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
             <input id="newA" type="button" value="Nieuw triggerpunt" disabled="true" onclick="newA()">
+            <%--input id="refresh" type="button" value="Refresh"  onclick="flamingo_updateKarLayer(); flamingo.call('map','update', 0 , true);"--%>
         </div>
     </div>
 

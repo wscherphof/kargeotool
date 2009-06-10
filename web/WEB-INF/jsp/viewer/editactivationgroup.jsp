@@ -14,8 +14,8 @@
 </c:if>
 
 <script type="text/javascript">
+    parent.flamingo_updateKarLayer();
     parent.flamingo_cancelEdit();
-    parent.flamingo.callMethod("map_kar_layer", "update");
 </script>
 
 <c:if test="${!hideForm}">
