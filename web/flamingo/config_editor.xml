@@ -53,17 +53,30 @@
 				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
 			</group>
 		</fmc:Legend>
-        <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="40%" height="20%" listento="drawMap"/>
-		<fmc:LocationFinder id="locationfinder" top="60%" width="100%" left="0%" height="40%" listento="map" controls="true">
+        <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="454" height="200" listento="drawMap"/>
+		<!--fmc:LocationFinder id="locationfinder" top="1220" width="100%" left="0%" height="40%" listento="map" controls="true">
+            <string id="label" nl="Zoek..." en="Search..." />
+            <string id="busy" nl="Zoeken..." en="Searching..." />
+            <string id="next" nl="Volgende" en="Next" />
+            <string id="prev" nl="Vorige" en="Previous" />
+            <LOCATIONS id="gemeente" server="kaart.nederland.risicokaartinvoer.nl"
+            service="locationfinder_gemeente_nl" layerid="gemeente" searchfield="GM_NAAM"
+            outputfields="GM_NAAM">
+            <string id="output" nl="[GM_NAAM]" en="[GM_NAAM]" de="[GM_NAAM]" fr="[GM_NAAM]" />
+            <string id="label" nl="Zoek een gemeente" en="Search a municipality" de="Kommune suchen"
+            fr="Recherche d'une commune" />
+            </LOCATIONS>
+            <!- -
 			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
                 <string id="label" nl="Zoek een plaats" en="Search for town" />
             </LOCATIONS>
-            <LOCATIONS id="buslijnen" server="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion" layerid="buslijnen" searchfield="publicnumber" outputfields="publicnumber,name" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+            <LOCATIONS id="buslijnen" server="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" layerid="buslijnen" searchfield="publicnumber" outputfields="publicnumber,name" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[publicnumber]:[name]" en="[publicnumber]:[name]" />
                 <string id="label" nl="Zoek een buslijn" en="Search for busline" />
             </LOCATIONS>
-		</fmc:LocationFinder>
+            - ->
+		</fmc:LocationFinder-->
         <fmc:Coordinates listento="map" left="0" top="98%" decimals="2">
 			<style id=".xy" font-family="arial, sans-serif" font-size="11"/>
 			<string id="xy" nl="X: [x]     Y: [y]"/>
