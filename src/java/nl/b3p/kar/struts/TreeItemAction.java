@@ -9,8 +9,6 @@ public abstract class TreeItemAction extends BaseDatabaseAction {
     protected static final String HIDE_FORM = "hideForm";
     protected static final String TREE_UPDATE = "treeUpdate";
 
-    protected static final String WKTGEOM_NOTVALID_ERROR_KEY = "error.wktgeomnotvalid";
-
     protected static String treeUpdateJson(String action, EditorTreeObject to) throws Exception {
         JSONObject update = new JSONObject();
         String id = null, parentId = null;
