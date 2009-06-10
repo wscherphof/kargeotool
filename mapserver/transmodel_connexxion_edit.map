@@ -210,7 +210,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "geom from (select karpunt.id,command_type,geom from activation join karpunt on activation.point = karpunt.id) as bla using srid=28992 using unique id"
+  data "geom from (select activation.id,command_type,geom from activation join karpunt on activation.point = karpunt.id) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
@@ -263,7 +263,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "geom from (select karpunt.id,roadside_equipment.type,unit_number,geom from roadside_equipment join karpunt on roadside_equipment.point = karpunt.id) as bla using srid=28992 using unique id"
+  data "geom from (select roadside_equipment.id,roadside_equipment.type,unit_number,geom from roadside_equipment join karpunt on roadside_equipment.point = karpunt.id) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
@@ -340,7 +340,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "geom from (select karpunt.id,kar_signal_group,geom from activation_group join karpunt on activation_group.point = karpunt.id) as bla using srid=28992 using unique id"
+  data "geom from (select activation_group.id,kar_signal_group,geom from activation_group join karpunt on activation_group.point = karpunt.id) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
