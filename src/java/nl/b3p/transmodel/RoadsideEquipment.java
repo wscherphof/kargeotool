@@ -179,7 +179,7 @@ public class RoadsideEquipment implements EditorTreeObject {
         j.put("type", "rseq");
         j.put("id", "rseq:" + getId());
         j.put("description", getDescription());
-        j.put("name", getUnitNumber() + " " + getType() + ": " + getDescription());
+        j.put("name", getUnitNumber() + " " + getType() + (getDescription() == null ? "" : ": " + getDescription()));
         j.put("point", getPoint() == null ? null : getPoint().toString());
         EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
