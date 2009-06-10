@@ -7,15 +7,12 @@
         <fmc:EditMap id="drawMap" listento="gis,map" left="0" top="0%" height="100%" width="100%" bottom="bottom"/>
 		<fmc:GIS id="gis" geometryeditable="yes">
 			<fmc:Layer id="draw_walapparatuur" name="draw_walapparatuur" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="walapparatuur" loadfeaturesonstart="false">
-				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
 			<fmc:Layer id="draw_signaalgroepen" name="draw_signaalgroepen" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="signaalgroepen" loadfeaturesonstart="false">
-				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
 			<fmc:Layer id="draw_triggerpunten" name="draw_triggerpunten" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="triggerpunten" loadfeaturesonstart="false">
-				<!--fmc:Layer id="drawLay" name="drawLay" title="Teken KAR punt" visible="true" geometrytypes="Point" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map" version="1.0.0" featuretypename="kar_punten" loadfeaturesonstart="false"-->
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
 		</fmc:GIS>
@@ -28,8 +25,8 @@
         </fmc:Map>
     </fmc:Container>
 
-    <fmc:Container left="82%" height="776" width="18%" top="33" backgroundcolor="#F5F5F5">
-		<fmc:Legend id="legend" top="0" height="455" width="98%" left="2%" listento="map">
+    <fmc:Container left="82%" height="100%" width="18%" top="0" backgroundcolor="#F5F5F5">
+		<fmc:Legend id="legend" top="0" height="460" width="98%" left="2%" listento="map">
 			<group label="Transmodel">
 			<item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
@@ -53,8 +50,8 @@
 				<item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
 			</group>
 		</fmc:Legend>
-        <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="454" height="200" listento="drawMap"/>
-		<!--fmc:LocationFinder id="locationfinder" top="1220" width="100%" left="0%" height="40%" listento="map" controls="true">
+        <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="455" height="160" listento="drawMap"/>
+		<fmc:LocationFinder id="locationfinder" top="590" width="100%" left="0%" height="200" listento="map" controls="true">
             <string id="label" nl="Zoek..." en="Search..." />
             <string id="busy" nl="Zoeken..." en="Searching..." />
             <string id="next" nl="Volgende" en="Next" />
@@ -66,7 +63,7 @@
             <string id="label" nl="Zoek een gemeente" en="Search a municipality" de="Kommune suchen"
             fr="Recherche d'une commune" />
             </LOCATIONS>
-            <!- -
+            <!--
 			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
                 <string id="label" nl="Zoek een plaats" en="Search for town" />
@@ -75,8 +72,8 @@
                 <string id="output" nl="[publicnumber]:[name]" en="[publicnumber]:[name]" />
                 <string id="label" nl="Zoek een buslijn" en="Search for busline" />
             </LOCATIONS>
-            - ->
-		</fmc:LocationFinder-->
+            -->
+		</fmc:LocationFinder>
         <fmc:Coordinates listento="map" left="0" top="98%" decimals="2">
 			<style id=".xy" font-family="arial, sans-serif" font-size="11"/>
 			<string id="xy" nl="X: [x]     Y: [y]"/>
