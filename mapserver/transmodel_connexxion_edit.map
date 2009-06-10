@@ -93,7 +93,7 @@ LAYER
   TEMPLATE bla  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=japikola port=5432 user=postgres"
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
   data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
