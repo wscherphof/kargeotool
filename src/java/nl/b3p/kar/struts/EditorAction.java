@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
@@ -97,6 +98,10 @@ public class EditorAction extends BaseDatabaseAction {
         return (String)executeInTransaction("getObjectTreeFromDb", type, id);
     }
 
+    public static String getRseqUnitNumberTree(String unitNumber) throws Exception {
+        return (String)executeInTransaction("getRseqUnitNumberTreeFromDb", unitNumber);
+    }
+
     public static String getIdentifyTree(String layers) throws Exception {
         return (String)executeInTransaction("getIdentifyTreeFromDb", layers);
     }
@@ -134,6 +139,42 @@ public class EditorAction extends BaseDatabaseAction {
                     + ", minY: " + c.y + ", maxY: " + c.y + "}");
         }
         info.put("tree", buildObjectTree(Arrays.asList(new Object[] {object})));
+        return info.toString();
+    }
+
+    public static String getRseqUnitNumberTreeFromDb(String... args) throws Exception {
+        Integer unitNumber;
+        try {
+            unitNumber = Integer.parseInt(args[0]);
+        } catch(NumberFormatException nfe) {
+            return "error: Ongeldig nummer";
+        }
+
+        List rseqs = getEntityManager().createQuery("from RoadsideEquipment where unitNumber = :n")
+                    .setParameter("n", unitNumber)
+                    .getResultList();
+        if(rseqs.isEmpty()) {
+            return "error: Geen walapparatuur met dit nummer gevonden";
+        }
+
+        JSONObject info = new JSONObject();
+
+        Envelope envelope = new Envelope();
+        for(Iterator it = rseqs.iterator(); it.hasNext();) {
+            Object obj = it.next();
+            Coordinate c = getObjectCoordinate(obj);
+            if(c != null) {
+                envelope.expandToInclude(c);
+            }
+        }
+        if(!envelope.isNull()) {
+            info.put("envelope", "{minX: " + envelope.getMinX() + ", maxX: " + envelope.getMaxX()
+                    + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
+        }
+        if(rseqs.size() == 1) {
+            info.put("selectedObject", ((EditorTreeObject)rseqs.get(0)).serializeToJson(false));
+        }
+        info.put("tree", buildObjectTree(rseqs));
         return info.toString();
     }
 

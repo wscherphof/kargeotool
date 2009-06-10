@@ -5,8 +5,7 @@
         <create creator="none" javascript="Editor">
             <param name="class" value="nl.b3p.kar.struts.EditorAction"/>
             <include method="getObjectTree"/>
-            <include method="getKarPuntInfo"/>
-            <include method="getMultipleKarPuntInfo"/>
+            <include method="getRseqUnitNumberTree"/>
             <include method="getIdentifyTree"/>
         </create>
     </allow>

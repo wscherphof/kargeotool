@@ -49,6 +49,7 @@
         if(!valid) {
             alert("Ongeldige invoer");
         } else {
+            document.getElementById("loading").style.visibility = "visible";
             Editor.getObjectTree(type, id, dwr_treeInfoReceived);
         }        
     }
@@ -125,6 +126,8 @@
     }
 
     function dwr_treeInfoReceived(info) {
+        document.getElementById("loading").style.visibility = "hidden";
+
         if(info.toLowerCase().indexOf("error") == 0) {
             if(info.toLowerCase().indexOf("no objects found") != -1) {
                 alert("Geen objecten gevonden op deze locatie");
@@ -142,7 +145,7 @@
         createTreeview();
 
         if(obj.selectedObject != undefined) {
-            setStatus("tree", "Object op locatie geselecteerd");
+            //setStatus("tree", "Object op locatie geselecteerd");
 
             var object = treeview_findItem(tree, obj.selectedObject.id);
             tree_selectObject(object);
@@ -151,7 +154,7 @@
                 options_zoomToObject();
             }
         } else {
-            setStatus("tree", "Meerdere objecten op locatie");
+            //setStatus("tree", "Meerdere objecten op locatie");
         }
         if(obj.envelope != undefined) {
             zoomToEnvelope(eval("(" + obj.envelope + ")"));
@@ -200,7 +203,7 @@
             case "rseq": url = "<html:rewrite page="/roadsideEquipment.do"/>"; break;
         }
         url = url + "?id=" + object.id.split(":")[1];
-        setStatus("form", "form laden voor object " + object.id + ": " + url);
+        //setStatus("form", "form laden voor object " + object.id + ": " + url);
         window.frames["form"].location = url;
     }
 
@@ -309,6 +312,7 @@
         console.log("onIdentifyData", map, layer, data, identifyextent, nridentified, total);
         if("map_kar_layer" == layer) {
             if(data != undefined) {
+                document.getElementById("loading").style.visibility = "visible";
                 Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }
         }
@@ -358,6 +362,19 @@
         flamingo.callMethod("gis", "setCreateGeometry", null);
     }
 
+    function  walapparaatnummerKeyPressed(e) {
+        if(e.keyCode == 0xd) {
+            zoekWalapparatuur();
+        }
+    }
+
+    function zoekWalapparatuur() {
+        var unitNumber = document.getElementById("walapparaatnummer").value;
+        document.getElementById("loading").style.visibility = "visible";
+        Editor.getRseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
+    }
+
+    setOnload(function() { document.getElementById("walapparaatnummer").focus(); });
 </script>
 
 <div id="leftbar">
@@ -365,8 +382,9 @@
     <div id="tree">
 		<div id="treeTop">
 			<div id="treeTitel">Objectenboom</div>
-            Status: <span id="treeStatus" style="font-weight: bold">Geen objecten geselecteerd</span><br />
-			<input type="button" value="Test: Selecteer/zoek een object" onclick="testSelecteerObject()">
+            <div id="loading"><html:img page="/images/ajax-loader.gif" module=""/></div>
+            Zoek op walapparaatnummer: <input id="walapparaatnummer" type="text" size="10" onkeypress="walapparaatnummerKeyPressed(event);">
+			<input type="button" name="zoekWalapparatuur" value="Zoeken" onclick="zoekWalapparatuur()">
 		</div>
         <div id="objectTree"></div>
         <div id="options">
