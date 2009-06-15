@@ -511,10 +511,9 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.B3pSpatialLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pSpatialLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pGeotoolsPostgisLib.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.B3pDwrLib.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.B3pDwrLib.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.Servlet24.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.Servlet24.classpath" todir="${dist.ear.dir}"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} ${manifest.libs.B3pDwrLib.classpath} ${manifest.libs.Servlet24.classpath} "/>
+            <attribute name="Class-Path" value="${manifest.reference.b3p-commons-core.jar} ${manifest.reference.b3p-commons-hibernate.jar} ${manifest.reference.securityfilter-b3p.jar} ${manifest.libs.jstl11.classpath} ${manifest.libs.B3pCommonsLib.classpath} ${manifest.libs.B3pHibernateLib.classpath} ${manifest.libs.B3pHibernateEntityManagerLib.classpath} ${manifest.libs.B3pHibernateSpatialLib.classpath} ${manifest.libs.struts.classpath} ${manifest.libs.B3pSpatialLib.classpath} ${manifest.libs.B3pGeotoolsPostgisLib.classpath} ${manifest.libs.B3pDwrLib.classpath} "/>
         </manifest>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
@@ -530,7 +529,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.B3pSpatialLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pGeotoolsPostgisLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.B3pDwrLib.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.Servlet24.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>
