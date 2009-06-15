@@ -1,24 +1,28 @@
 
 <FLAMINGO xmlns:fmc="fmc" xmlns:tpc="tpc" id="flamingo" lang="nl" languages="en,nl" tooltipdelay="300" commtojava="true" preloadtitle="Prototypemap" useexternalinterface="true">
     <style id=".tooltip" font-family="arial, sans-serif" font-size="11" color="#880000" display="block"/>
-	
+
+    <!-- dev:  http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;
+         prod: http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?
+    -->
+    
     <fmc:Container borderwidth="0" bordercolor="#606060" left="0" top="33" height="776" width="82%">
         <fmc:BorderNavigation listento="map" top="0%" width="100%" height="100%" skin="f1"/>
         <fmc:EditMap id="drawMap" listento="gis,map" left="0" top="0%" height="100%" width="100%" bottom="bottom"/>
 		<fmc:GIS id="gis" geometryeditable="yes">
-			<fmc:Layer id="draw_walapparatuur" name="draw_walapparatuur" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="walapparatuur" loadfeaturesonstart="false">
+			<fmc:Layer id="draw_walapparatuur" name="draw_walapparatuur" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" srsname="EPSG:28992" featuretypename="walapparatuur" loadfeaturesonstart="false">
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
-			<fmc:Layer id="draw_signaalgroepen" name="draw_signaalgroepen" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="signaalgroepen" loadfeaturesonstart="false">
+			<fmc:Layer id="draw_signaalgroepen" name="draw_signaalgroepen" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" srsname="EPSG:28992" featuretypename="signaalgroepen" loadfeaturesonstart="false">
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
-			<fmc:Layer id="draw_triggerpunten" name="draw_triggerpunten" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" version="1.0.0" srsname="EPSG:28992" featuretypename="triggerpunten" loadfeaturesonstart="false">
+			<fmc:Layer id="draw_triggerpunten" name="draw_triggerpunten" title="Teken KAR punt" visible="true" geometrytypes="Point,PointAtDistance" wfsurl="wfs::http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" version="1.0.0" srsname="EPSG:28992" featuretypename="triggerpunten" loadfeaturesonstart="false">
 				<fmc:Style fillcolor="0x0000FF" fillopacity="30" strokecolor="0x0000FF" strokeopacity="50" strokeWidth="1"/>
 			</fmc:Layer>
 		</fmc:GIS>
         <fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
-            <!--fmc:LayerOGWMS id="bushaltes" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion.map&amp;Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
-            <fmc:LayerOGWMS id="kar_layer" url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,triggerpunten,walapparatuur,signaalgroepen" showerrors="true" query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"/>
+            <!--fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
+            <fmc:LayerOGWMS id="kar_layer" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,triggerpunten,walapparatuur,signaalgroepen" showerrors="true" query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"/>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
             <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
             <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
@@ -29,19 +33,19 @@
 		<fmc:Legend id="legend" top="0" height="460" width="98%" left="2%" listento="map">
 			<group label="Transmodel">
 			<item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
 			</item>
 			<item label="Walapparatuur" canhide="true" listento="kar_layer.walapparatuur">
-				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
 			</item>
 			<item label="Signaalgroepen" canhide="true" listento="kar_layer.signaalgroepen">
-				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
 			</item>
 			<item label="Triggerpunten" canhide="true" listento="kar_layer.triggerpunten">
-				<symbol dx="0" dy="0" symbolurl="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
 			</item>
 			<item label="Buslijnen" canhide="true" listento="kar_layer.buslijnen">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
+				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
 			</item>
 			<item label="Bushaltes labels" canhide="true" listento="kar_layer.bushaltes_labels"/>
 			</group>
@@ -56,23 +60,15 @@
             <string id="busy" nl="Zoeken..." en="Searching..." />
             <string id="next" nl="Volgende" en="Next" />
             <string id="prev" nl="Vorige" en="Previous" />
-            <LOCATIONS id="gemeente" server="kaart.nederland.risicokaartinvoer.nl"
-            service="locationfinder_gemeente_nl" layerid="gemeente" searchfield="GM_NAAM"
-            outputfields="GM_NAAM">
-            <string id="output" nl="[GM_NAAM]" en="[GM_NAAM]" de="[GM_NAAM]" fr="[GM_NAAM]" />
-            <string id="label" nl="Zoek een gemeente" en="Search a municipality" de="Kommune suchen"
-            fr="Recherche d'une commune" />
-            </LOCATIONS>
-            <!--
-			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+            
+			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" type="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
-                <string id="label" nl="Zoek een plaats" en="Search for town" />
+                <string id="label" nl="Zoek een gemeente" en="Search for municipality" />
             </LOCATIONS>
-            <LOCATIONS id="buslijnen" server="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;" layerid="buslijnen" searchfield="publicnumber" outputfields="publicnumber,name" srs="EPSG:28992" serverType="WFS" serverVersion="1.0.0" enlargeExtent="10000">
+            <LOCATIONS id="buslijnen" server="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?" layerid="buslijnen" searchfield="publicnumber" outputfields="publicnumber,name" srs="EPSG:28992" type="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[publicnumber]:[name]" en="[publicnumber]:[name]" />
                 <string id="label" nl="Zoek een buslijn" en="Search for busline" />
             </LOCATIONS>
-            -->
 		</fmc:LocationFinder>
         <fmc:Coordinates listento="map" left="0" top="98%" decimals="2">
 			<style id=".xy" font-family="arial, sans-serif" font-size="11"/>
@@ -85,7 +81,6 @@
             <string id="waiting" en="Making... [layer] [percentage]%..." nl="Kaart aan het maken..."/>
             <string id="loading" en="Making... [layer] [percentage]%..." nl="Kaart aan het laden. [percentage]%"/>
         </fmc:MonitorLayer>
-		<!--fmc:Container backgroundcolor="#E8F3EB" left="0" top="0" height="6%" width="100%"-->
         <fmc:ToolGroup tool="zoom" listento="map" width="100%" height="100" left="10" top="5" backgroundcolor="#F5F5F5">
             <fmc:ToolZoomin id="zoom" skin="f2"/>
             <fmc:ToolZoomout left="30" skin="f2"/>
@@ -95,23 +90,6 @@
             <fmc:ButtonFull left="150" listento="map"/>
             <fmc:ButtonPrev left="180" listento="map"/>
             <fmc:ButtonNext left="210" listento="map"/>
-            <!--
-            <fmc:EditBar id="editBar" left="240" top="2" listento="drawMap" enabledbuttons="selectgeometrybutton"/>
-            <fmc:DrawTool id="drawTool" left="270" top="2" listento="drawMap"/>
-            -->
-                    <!--fmc:EditGeometryBar id="editGeometryBar" left="300" top="2" listento="drawMap"/-->
         </fmc:ToolGroup>
-        <!--
-        <fmc:Text id="saveButton" visible="true" left="410" top="">
-            <string id="text">
-                <nl>
-      <![CDATA[
-            <a href='javascript: saveActiveGeom()' title='save selectie'><img src="../flamingo/assets/schijf.swf" width="25" height="25" title="save selectie">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-      ]]>
-                </nl>
-            </string>
-        </fmc:Text>
--->
-		<!--/fmc:Container-->
     </fmc:Container>
 </FLAMINGO>
