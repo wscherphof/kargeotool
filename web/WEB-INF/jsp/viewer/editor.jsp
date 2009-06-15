@@ -358,7 +358,7 @@
     }
 
     function flamingo_updateKarLayer() {
-        flamingo.callMethod("map_kar_layer", "update");
+        flamingo.callMethod("map_kar_layer", "update", true);
     }
 
     function  walapparaatnummerKeyPressed(e) {
@@ -393,7 +393,6 @@
             <br>
             <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
             <input id="newA" type="button" value="Nieuw triggerpunt" disabled="true" onclick="newA()">
-            <%--input id="refresh" type="button" value="Refresh"  onclick="flamingo_updateKarLayer(); flamingo.call('map','update', 0 , true);"--%>
         </div>
     </div>
 
