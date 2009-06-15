@@ -1,3 +1,5 @@
 Omdat hibernate spatial niet goed werkt met schemaexport, maak van alle properties van het type org.hibernatespatial.GeometryUserType commentaar (in kar.hbm.xml en transmodel.hbm.xml) en draai dan de schemaexport.
 
+Voeg voor schemaexport Servlet API libs toe aan project, maar deze geven soms probleem bij deployen in productie, verwijder ze daarna dus weer.
+
 Om de geometry kolommen in de database aan te maken gebruik de PostGIS functie AddGeometryColumn(), deze worden bijgehouden in "database/2 add geometry columns.sql".
