@@ -31,7 +31,7 @@
 
     <fmc:Container left="82%" height="100%" width="18%" top="0" backgroundcolor="#F5F5F5">
 		<fmc:Legend id="legend" top="0" height="460" width="98%" left="2%" listento="map">
-			<group label="Transmodel">
+			<group label="OV-informatie">
 			<item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes">
 				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
 			</item>
