@@ -44,8 +44,8 @@
     <div class="formTableContainer">
     <table class="form">
         <tr>
-            <td style="width: 130px">Naam wegbeheerder</td>
-            <td class="disabled"><c:out value="${rseq.dataOwner.name} (${rseq.dataOwner.type})"/></td>
+            <td style="width: 130px">Databeheerder</td>
+            <td class="disabled"><c:out value="${rseq.dataOwner.name}"/></td>
         </tr>
         <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${rseq.unitNumber}"/></td></tr>
         <tr>

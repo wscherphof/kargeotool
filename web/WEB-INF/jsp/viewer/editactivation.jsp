@@ -41,8 +41,8 @@
     <table class="form">
         <c:set var="dataOwner" value="${activationGroup.roadsideEquipment.dataOwner}"/>
         <tr>
-            <td style="width: 130px">Naam wegbeheerder</td>
-            <td class="disabled"><c:out value="${dataOwner.name} (${dataOwner.type})"/></td>
+            <td style="width: 130px">Databeheerder</td>
+            <td class="disabled"><c:out value="${dataOwner.name}"/></td>
         </tr>
         <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
         <tr><td><fmt:message key="a.index"/></td><td class="disabled"><c:out value="${activation.index}"/></td></tr>
