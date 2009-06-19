@@ -1,10 +1,10 @@
 package nl.b3p.transmodel;
 
+import com.vividsolutions.jts.geom.Point;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONObject;
 
@@ -52,7 +52,7 @@ public class Activation implements EditorTreeObject {
     private Double karRadioPower;
     private Double metersBeforeRoadsideEquipmentLocation;
     private Double angleToNorth;
-    private KarPunt point;
+    private Point location;
     private String updater;
     private Date updateTime;
     private String validator;
@@ -154,12 +154,22 @@ public class Activation implements EditorTreeObject {
         this.angleToNorth = angleToNorth;
     }
 
-    public KarPunt getPoint() {
-        return point;
+    public Point getLocation() {
+        return location;
     }
 
-    public void setPoint(KarPunt point) {
-        this.point = point;
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public String getLocationString() {
+        if(location != null) {
+            NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+            nf.setGroupingUsed(false);
+            return nf.format(location.getCoordinate().x) + ", " + nf.format(location.getCoordinate().y);
+        } else {
+            return null;
+        }
     }
 
     public String getUpdater() {
@@ -219,7 +229,7 @@ public class Activation implements EditorTreeObject {
                 : " " + nf.format(getKarTimeTillStopLine()) + "s")));
 
         j.put("index", getIndex());
-        j.put("point", getPoint() == null ? null : getPoint().toString());
+        j.put("point", getLocationString());
         return j;
     }
 }

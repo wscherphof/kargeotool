@@ -60,6 +60,7 @@
     }
 
     function treeItemClick(item) {
+        flamingo_hideIdentifyIcon();
         tree_selectObject(item);
         form_editObject(item);
         if(document.getElementById("autoZoom").checked) {
@@ -181,6 +182,7 @@
 
     function deselectObject() {
         if(selectedObject != undefined) {
+            flamingo_hideIdentifyIcon();   
             container = treeview_getLabelContainerNodeForItemId("objectTree", selectedObject.id);
             container.className = "node";
         }
@@ -361,6 +363,10 @@
         flamingo.callMethod("map_kar_layer", "update", true);
     }
 
+    function flamingo_hideIdentifyIcon() {
+        flamingo.callMethod("map_identifyicon","hide");
+    }
+    
     function  walapparaatnummerKeyPressed(e) {
         if(e.keyCode == 0xd) {
             zoekWalapparatuur();

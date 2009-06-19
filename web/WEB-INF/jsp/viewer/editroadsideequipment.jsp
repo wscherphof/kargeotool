@@ -33,7 +33,7 @@
     <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
-<c:set var="point" value="${roadsideEquipment.point}" scope="request"/>
+<c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
 <c:set var="layer" value="draw_walapparatuur" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>

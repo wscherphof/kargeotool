@@ -9,12 +9,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
@@ -97,9 +95,7 @@ public final class ActivationGroupAction extends TreeItemAction {
             ag.setType(ActivationGroup.TYPE_PRQA);
             em.persist(ag);
         }
-        if(ag.getPoint() != null && ag.getPoint().getId() == null) {
-            em.persist(ag.getPoint());
-        }
+
         em.flush();
 
         populateForm(ag, form, request);
@@ -125,9 +121,6 @@ public final class ActivationGroupAction extends TreeItemAction {
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         
         request.setAttribute("activationGroup", ag);
-        if(ag != null && ag.getPoint() != null) {
-            ag.getPoint().getGeom();
-        }
 
         if(getEntityManager().contains(ag)) {
             request.setAttribute("rseq", ag.getRoadsideEquipment());
@@ -205,40 +198,12 @@ public final class ActivationGroupAction extends TreeItemAction {
         String location = FormUtils.nullIfEmpty(form.getString("location"));
         if(location != null) {
             if("delete".equals(location)) {
-                KarPunt oldKp = ag.getPoint();
-                ag.setPoint(null);
-                if(oldKp != null) {
-                    deleteOrphanKarPoint(oldKp, ag);
-                }
+                ag.setStopLineLocation(null);
             } else {
-                KarPunt kp = ag.getPoint();
-                if(kp == null) {
-                    kp = new KarPunt();
-                    ag.setPoint(kp);
-                }
-                kp.setType(KarPunt.TYPE_ACTIVATION);
                 String[] xy = location.split(" ");
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
-                kp.setGeom(new Point(c, null, 28992));
+                ag.setStopLineLocation(new Point(c, null, 28992));
             }
-        }
-    }
-
-    private void deleteOrphanKarPoint(KarPunt kp, ActivationGroup notCountingThisOne) throws Exception {
-        EntityManager em = getEntityManager();
-        Object haveOtherRefs = null;
-        try {
-            haveOtherRefs = em.createQuery("select 1 from ActivationGroup a where " +
-                    "a <> :notCountingThisOne " +
-                    "and a.point = :kp")
-                    .setParameter("notCountingThisOne", notCountingThisOne)
-                    .setParameter("kp", kp)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
-            // zucht
-        }
-        if(haveOtherRefs == null) {
-            em.remove(kp);
         }
     }
 
@@ -250,9 +215,7 @@ public final class ActivationGroupAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
-        if(ag.getPoint() != null) {
-            deleteOrphanKarPoint(ag.getPoint(), ag);
-        }
+
         em.remove(ag);
         em.flush();
         em.getTransaction().commit();

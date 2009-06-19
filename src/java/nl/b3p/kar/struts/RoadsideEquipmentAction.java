@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
@@ -76,9 +75,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         if(newObject) {
             em.persist(rseq);
         }
-        if(rseq.getPoint() != null && rseq.getPoint().getId() == null) {
-            em.persist(rseq.getPoint());
-        }
+
         em.flush();
 
         populateForm(rseq, form, request);
@@ -105,9 +102,6 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         EntityManager em = getEntityManager();
 
         request.setAttribute("roadsideEquipment", rseq);
-        if(rseq != null && rseq.getPoint() != null) {
-            rseq.getPoint().getGeom();
-        }
 
         if(em.contains(rseq)) {
             request.setAttribute("activationGroupCount",
@@ -157,41 +151,12 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         String location = FormUtils.nullIfEmpty(form.getString("location"));
         if(location != null) {
             if("delete".equals(location)) {
-                KarPunt oldKp = rseq.getPoint();
-                rseq.setPoint(null);
-                if(oldKp != null) {
-                    deleteOrphanKarPoint(oldKp, rseq);
-                }
+                rseq.setLocation(null);
             } else {
-                KarPunt kp = rseq.getPoint();
-                if(kp == null) {
-                    kp = new KarPunt();
-                    rseq.setPoint(kp);
-                }
-                kp.setType(KarPunt.TYPE_ACTIVATION);
                 String[] xy = location.split(" ");
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
-                kp.setGeom(new Point(c, null, 28992));
+                rseq.setLocation(new Point(c, null, 28992));
             }
-        }
-    }
-
-
-    private void deleteOrphanKarPoint(KarPunt kp, RoadsideEquipment notCountingThisOne) throws Exception {
-        EntityManager em = getEntityManager();
-        Object haveOtherRefs = null;
-        try {
-            haveOtherRefs = em.createQuery("select 1 from Activation a where " +
-                    "a <> :notCountingThisOne " +
-                    "and a.point = :kp")
-                    .setParameter("notCountingThisOne", notCountingThisOne)
-                    .setParameter("kp", kp)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
-            // zucht
-        }
-        if(haveOtherRefs == null) {
-            em.remove(kp);
         }
     }
     
@@ -216,9 +181,6 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                     .executeUpdate();
         }
         em.remove(rseq);
-        if(rseq.getPoint() != null) {
-            deleteOrphanKarPoint(rseq.getPoint(), rseq);
-        }
         em.flush();
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Walapparaat is verwijderd.", false));

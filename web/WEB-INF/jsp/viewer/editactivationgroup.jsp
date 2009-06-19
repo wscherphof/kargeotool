@@ -34,7 +34,7 @@
     <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
     <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
 
-<c:set var="point" value="${activationGroup.point}" scope="request"/>
+<c:set var="point" value="${activationGroup.stopLineLocationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
 <c:set var="layer" value="draw_signaalgroepen" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>

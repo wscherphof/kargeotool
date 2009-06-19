@@ -86,7 +86,7 @@
             <fmc:ToolZoomout left="30" skin="f2"/>
             <fmc:ToolPan left="60" skin="f2"/>
             <fmc:ToolMeasure left="90" skin="f2"/>
-            <fmc:ToolIdentify left="120" skin="f2"/>
+            <fmc:ToolIdentify id="identifyTool" left="120" skin="f2"/>
             <fmc:ButtonFull left="150" listento="map"/>
             <fmc:ButtonPrev left="180" listento="map"/>
             <fmc:ButtonNext left="210" listento="map"/>

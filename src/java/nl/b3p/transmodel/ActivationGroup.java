@@ -1,10 +1,13 @@
 package nl.b3p.transmodel;
 
+import com.vividsolutions.jts.geom.Point;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import nl.b3p.kar.hibernate.KarPunt;
+import java.util.Locale;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,7 +28,7 @@ public class ActivationGroup implements EditorTreeObject {
     private Double angleToNorth;
     private boolean followDirection;
     private String description;
-    private KarPunt point; /* locatie van stopstreep */
+    private Point stopLineLocation; /* locatie van stopstreep */
     private String updater;
     private Date updateTime;
     private String validator;
@@ -129,12 +132,22 @@ public class ActivationGroup implements EditorTreeObject {
         this.description = description;
     }
 
-    public KarPunt getPoint() {
-        return point;
+    public Point getStopLineLocation() {
+        return stopLineLocation;
     }
 
-    public void setPoint(KarPunt point) {
-        this.point = point;
+    public void setStopLineLocation(Point stopLineLocation) {
+        this.stopLineLocation = stopLineLocation;
+    }
+
+    public String getStopLineLocationString() {
+        if(stopLineLocation != null) {
+            NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+            nf.setGroupingUsed(false);
+            return nf.format(stopLineLocation.getCoordinate().x) + ", " + nf.format(stopLineLocation.getCoordinate().y);
+        } else {
+            return null;
+        }
     }
 
     public String getUpdater() {
@@ -176,6 +189,8 @@ public class ActivationGroup implements EditorTreeObject {
     public void setActivations(List activations) {
         this.activations = activations;
     }
+
+    @Override
     public String toString(){
         String returnValue="";
         returnValue+=this.getType();
@@ -207,7 +222,7 @@ public class ActivationGroup implements EditorTreeObject {
             default: richting = "Onbekend"; break;
         }
         j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
-        j.put("point", getPoint() == null ? null : getPoint().toString());
+        j.put("point", getStopLineLocationString());
         if(includeChildren) {
             if(!getActivations().isEmpty()) {
                 JSONArray children = new JSONArray();

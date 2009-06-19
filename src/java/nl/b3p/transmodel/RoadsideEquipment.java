@@ -1,10 +1,13 @@
 package nl.b3p.transmodel;
 
+import com.vividsolutions.jts.geom.Point;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import javax.persistence.EntityManager;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONArray;
@@ -27,7 +30,7 @@ public class RoadsideEquipment implements EditorTreeObject {
     private String supplierTypeNumber;
     private Date installationDate;
     private boolean selectiveDetectionLoop;
-    private KarPunt point; /* algemene locatie van VRI */
+    private Point location; /* algemene locatie van VRI */
     private Date inactiveFrom;
     private String updater;
     private Date updateTime;
@@ -122,12 +125,22 @@ public class RoadsideEquipment implements EditorTreeObject {
         this.selectiveDetectionLoop = selectiveDetectionLoop;
     }
 
-    public KarPunt getPoint() {
-        return point;
+    public Point getLocation() {
+        return location;
     }
 
-    public void setPoint(KarPunt point) {
-        this.point = point;
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public String getLocationString() {
+        if(location != null) {
+            NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
+            nf.setGroupingUsed(false);
+            return nf.format(location.getCoordinate().x) + ", " + nf.format(location.getCoordinate().y);
+        } else {
+            return null;
+        }
     }
 
     public Date getInactiveFrom() {
@@ -180,7 +193,7 @@ public class RoadsideEquipment implements EditorTreeObject {
         j.put("id", "rseq:" + getId());
         j.put("description", getDescription());
         j.put("name", getUnitNumber() + " " + getType() + (getDescription() == null ? "" : ": " + getDescription()));
-        j.put("point", getPoint() == null ? null : getPoint().toString());
+        j.put("point", getLocationString());
         EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
                 .setParameter("this", this)

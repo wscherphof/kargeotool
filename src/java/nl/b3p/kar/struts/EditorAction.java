@@ -12,11 +12,9 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
@@ -238,13 +236,13 @@ public class EditorAction extends BaseDatabaseAction {
             return null;
         }
         if(obj instanceof Activation) {
-            return ((Activation)obj).getPoint() == null ? null : ((Activation)obj).getPoint().getGeom().getCoordinate();
+            return ((Activation)obj).getLocation() == null ? null : ((Activation)obj).getLocation().getCoordinate();
         }
         if(obj instanceof ActivationGroup) {
-            return ((ActivationGroup)obj).getPoint() == null ? null : ((ActivationGroup)obj).getPoint().getGeom().getCoordinate();
+            return ((ActivationGroup)obj).getStopLineLocation() == null ? null : ((ActivationGroup)obj).getStopLineLocation().getCoordinate();
         }
         if(obj instanceof RoadsideEquipment) {
-            return ((RoadsideEquipment)obj).getPoint() == null ? null : ((RoadsideEquipment)obj).getPoint().getGeom().getCoordinate();
+            return ((RoadsideEquipment)obj).getLocation() == null ? null : ((RoadsideEquipment)obj).getLocation().getCoordinate();
         }
         return null;
     }

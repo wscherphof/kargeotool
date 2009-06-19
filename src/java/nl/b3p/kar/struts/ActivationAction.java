@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
-import nl.b3p.kar.hibernate.KarPunt;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 
@@ -103,9 +102,6 @@ public final class ActivationAction extends TreeItemAction {
             activation.setIndex(activation.getActivationGroup().getActivations().size()+1);
             em.persist(activation);
         }
-        if(activation.getPoint() != null && activation.getPoint().getId() == null) {
-            em.persist(activation.getPoint());
-        }
 
         em.flush();
 
@@ -133,9 +129,6 @@ public final class ActivationAction extends TreeItemAction {
         EntityManager em = getEntityManager();
 
         request.setAttribute("activation", activation);
-        if(activation != null && activation.getPoint() != null) {
-            activation.getPoint().getGeom();
-        }
 
         if(em.contains(activation)) {
             request.setAttribute("activationGroup", activation.getActivationGroup());
@@ -192,40 +185,12 @@ public final class ActivationAction extends TreeItemAction {
         String location = FormUtils.nullIfEmpty(form.getString("location"));
         if(location != null) {
             if("delete".equals(location)) {
-                KarPunt oldKp = a.getPoint();
-                a.setPoint(null);
-                if(oldKp != null) {
-                    deleteOrphanKarPoint(oldKp, a);
-                }
+                a.setLocation(null);
             } else {
-                KarPunt kp = a.getPoint();
-                if(kp == null) {
-                    kp = new KarPunt();
-                    a.setPoint(kp);
-                }
-                kp.setType(KarPunt.TYPE_ACTIVATION);
                 String[] xy = location.split(" ");
                 Coordinate c = new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1]));
-                kp.setGeom(new Point(c, null, 28992));
+                a.setLocation(new Point(c, null, 28992));
             }
-        }
-    }
-
-    private void deleteOrphanKarPoint(KarPunt kp, Activation notCountingThisOne) throws Exception {
-        EntityManager em = getEntityManager();
-        Object haveOtherRefs = null;
-        try {
-            haveOtherRefs = em.createQuery("select 1 from Activation a where " +
-                    "a <> :notCountingThisOne " +
-                    "and a.point = :kp")
-                    .setParameter("notCountingThisOne", notCountingThisOne)
-                    .setParameter("kp", kp)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
-            // zucht
-        }
-        if(haveOtherRefs == null) {
-            em.remove(kp);
         }
     }
 
@@ -245,9 +210,6 @@ public final class ActivationAction extends TreeItemAction {
         for(int i = idx; i < activations.size(); i++) {
             Activation a = (Activation)activations.get(i);
             a.setIndex(i+1); /* List is 1-based */
-        }
-        if(activation.getPoint() != null) {
-            deleteOrphanKarPoint(activation.getPoint(), activation);
         }
 
         em.flush();
