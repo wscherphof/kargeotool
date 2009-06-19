@@ -49,16 +49,7 @@
                     <c:if test="${empty form.id}">
                         <html:option value=""/>
                     </c:if>
-                    <c:set var="optgroup" value=""/>
                     <c:forEach var="do" items="${dataOwners}">
-                        <c:if test="${do.type != optgroup}">
-                            <c:if test="${optgroup != ''}">
-                                </optgroup>
-                            </c:if>
-                            <c:set var="optgroup" value="${do.type}"/>
-                            <c:set var="label"><fmt:message key="do.type.${do.type}"/></c:set>
-                            <optgroup label="${label}">
-                        </c:if>
                         <html:option value="${do.code}"><c:out value="${do.name}"/></html:option>
                     </c:forEach>
                 </html:select>

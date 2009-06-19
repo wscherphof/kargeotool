@@ -110,7 +110,10 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                         .getSingleResult());
             rseq.getDataOwner().getName();
         }
-        request.setAttribute("dataOwners", em.createQuery("from DataOwner order by type, name").getResultList());
+        request.setAttribute("dataOwners",
+                em.createQuery("from DataOwner where type = :type order by name")
+                .setParameter("type", DataOwner.TYPE_ROOW)
+                .getResultList());
     }
 
     protected void populateForm(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws Exception {
