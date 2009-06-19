@@ -395,10 +395,11 @@
         <div id="options">
             <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
-            <input id="newRseq" type="button" value="Nieuwe walapparatuur" onclick="newRseq()">
             <br>
-            <input id="newAg" type="button" value="Nieuwe signaalgroep" disabled="true" onclick="newAg()">
-            <input id="newA" type="button" value="Nieuw triggerpunt" disabled="true" onclick="newA()">
+            <b>Nieuwe:</b>
+            <input id="newRseq" type="button" value="Walapparatuur" onclick="newRseq()">
+            <input id="newAg" type="button" value="Signaalgroep" disabled="true" onclick="newAg()">
+            <input id="newA" type="button" value="Triggerpunt" disabled="true" onclick="newA()">
         </div>
     </div>
 
