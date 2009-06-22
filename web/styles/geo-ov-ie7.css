@@ -1,4 +1,4 @@
-#form_container {
+#formContainer {
     position: absolute;
     left: 3px;
     bottom: 6px;
@@ -10,6 +10,8 @@
 }
 
 #form iframe {
-    border: 0px none; width: 100%; height: 100%;
+    border: 0px none; 
+    width: 100%;
+    height: 100%;
     background-color: #F5F5F5;
 }

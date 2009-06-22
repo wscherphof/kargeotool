@@ -1,5 +1,5 @@
 body.editor {
-    width: 1260px
+    width: 1260px;
 }
 
 #leftbar {
@@ -13,15 +13,14 @@ body.editor {
 }
 
 #tree {
-    margin: 0px;
-    padding: 0px;
-    height: auto;
-    width: 100%;
     bottom: 426px;
     position: absolute;
     left: 5px;
     top: 5px;
-    margin: 5px; padding: 3px; width: 100%; height: 392px;
+    margin: 5px;
+    padding: 3px;
+    width: 100%;
+    height: 392px;
 }
 
 #treeTop {
@@ -56,32 +55,30 @@ body.editor {
     top: 80px;
     bottom: 50px;
 
-    width: 372px; height: 248px;
+    width: 372px;
+    height: 248px;
 }
 
 #options {
     border: none;
-
     margin: 0px;
     position: absolute;
     left: 3px;
     bottom: 15px;
+    margin-top: 5px; 
     width: 100%;
     height: 30px;
-    margin-top: 5px; width: 100%; height: 30px; border: none;
 }
 
 #form {
-    margin: 0px;
-    padding: 0px;
-
-    width: 100%;
     height: 440px;
     position: absolute;
     left: 5px;
     bottom: 5px;
     top: 398px;
-    margin: 5px; padding: 3px; width: 100%;
+    margin: 5px;
+    padding: 3px;
+    width: 100%;
 }
 
 #kaart {
@@ -102,7 +99,7 @@ body.editor {
     margin: 5px 0px 5px 5px; padding: 3px; width: 860px; height: 833px; float: left; clear: right;
 }
 
-#form_container {
+#formContainer {
     position: absolute;
     left: 3px;
     bottom: 3px;

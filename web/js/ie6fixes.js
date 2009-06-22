@@ -2,7 +2,7 @@
 
 var resizeIE = function() {
     var viewport = getViewport();
-    document.getElementById('body_editor').style.width = viewport[0] + 'px';
+    document.getElementById('editorBody').style.width = viewport[0] + 'px';
     document.getElementById('leftbar').style.height = (viewport[1] - 30) + 'px';
     var treeheight = viewport[1] - 497;
     document.getElementById('tree').style.height = treeheight + 'px';

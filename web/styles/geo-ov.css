@@ -1,0 +1,243 @@
+html, body {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+}
+
+input {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+}
+
+select {
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 8pt;
+}
+
+body.editor {
+    width: 100%;
+}
+
+body.form {
+    background-color: #F5F5F5;
+}
+
+#header {
+    margin: 0px;
+    height: 20px;
+    background-color: #E32D21;
+    padding: 5px;
+    padding-left: 15px;
+    color: white;
+    border-bottom: 1px solid #DDDDDD;
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+#objectTree {
+    overflow: auto;
+    
+    background-color: white;
+    border: 1px solid #DDDDDD;
+
+    width: auto;
+    height: auto;
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    top: 60px;
+    bottom: 50px;    
+}
+
+#objectTree .node {
+    margin: 2px;
+}
+
+#objectTree .selected {
+    margin: 1px;
+    font-weight: bold;
+}
+
+table.form {
+    border-collapse: collapse;
+}
+
+.number {
+    text-align: right;
+}
+
+td.disabled {
+    background-color: rgb(215,209,197);
+}
+
+.formTableContainer {
+    height: 320px;
+    overflow: auto;
+}
+
+#leftbar {
+    margin: 0px;
+    width: 375px;
+    position: absolute;
+    top: 30px;
+    left: 0px;
+    bottom: 0px;
+}
+
+#tree {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    margin: 0px;
+    padding: 0px;
+    height: auto;
+    width: 100%;
+    bottom: 436px;
+    position: absolute;
+    left: 5px;
+    top: 5px;    
+}
+
+#treeTop {
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 100%;
+    height: 50px;
+}
+
+#treeTitel {
+    background-color: #DDDDDD;
+    padding: 5px;
+    font-weight: bold;
+    margin: 0px;
+    margin-left: -3px;
+    margin-right: 3px;
+    margin-bottom: 3px;
+}
+
+#treeTop input {
+    margin-top: 8px;
+}
+
+#loading {
+    float: right;
+    margin-right: 3px;
+    margin-top: 10px;
+    width: 19px;
+    height: 16px;
+    visibility: hidden;
+}
+
+#options {
+    border: none;
+    margin: 0px;
+    position: absolute;
+    left: 3px;
+    bottom: 15px;
+    width: 100%;
+    height: 30px;    
+}
+
+#form {
+    border: 1px solid #DDDDDD;
+    background-color: #F5F5F5;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 426px;
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+}
+
+#kaart {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    height: auto;
+    left: 385px;
+    position: absolute;
+    top: 35px;
+    bottom: 5px;
+    right: 5px;
+}
+
+#formContainer {
+	margin: 0px;
+	padding: 0px;
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    right: 3px;
+    top: 3px;
+    width: 98.5%;
+    height: 98.5%;
+}
+
+#form iframe {
+    width: 100%;
+    height: 100%;
+}
+
+#contentcontainer, #content {
+    margin: 5px;
+    height: auto;
+}
+
+.loginBox {
+    width: 400px;
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    margin-top: 25px;
+    margin-left: 25px;
+}
+
+.loginBox td {
+    font-size: 10pt;
+}
+
+.loginBox div {
+    padding: 5px;
+}
+
+.loginBoxTitel {
+    background-color: #DDDDDD;
+    padding: 5px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+    width: 390px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.formTableContainer .form {
+    width: 98%;
+    border: 1px solid #DDDDDD;
+    border-collapse: collapse;
+}
+
+.formTableContainer .form td {
+    border: 1px solid #DDDDDD;
+    padding: 2px;
+    font-size: 8pt;
+}
+
+.formTableContainer .form td td {
+    border: none;
+    padding: 1px;
+}
+
+#location {
+    font-family: "courier new", courier, serif;
+    font-weight: normal;
+}
+
+.changed {
+    color: red;
+}

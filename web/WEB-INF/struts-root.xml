@@ -2,10 +2,6 @@
 <!DOCTYPE struts-config PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 1.2//EN' ''>
 <struts-config>
 
-    <global-forwards>
-        <forward name="success" path="/index.do"/>
-        <forward name="failure" path="/WEB-INF/jsp/commons/failurepage.jsp"/>
-    </global-forwards>
     <action-mappings>
         <action path="/login" forward="login" />
         <action path="/loginError" type="nl.b3p.kar.struts.LoginErrorAction">
@@ -13,11 +9,6 @@
         </action>
         <action path="/logout" type="nl.b3p.kar.struts.LogoutAction">
             <forward name="destination" path="/login.do"/>
-        </action>
-        <action path="/index" forward="site.index"/>
-        <action path="/help" forward="site.help"/>
-        <action path="/contactpersonen" type="nl.b3p.kar.struts.UserListAction">
-            <forward name="destination" path="site.contactpersonen"/>
         </action>
     </action-mappings>
 

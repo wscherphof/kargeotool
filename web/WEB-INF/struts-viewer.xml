@@ -5,17 +5,6 @@
           "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
 <struts-config>
     <form-beans>
-        <form-bean name="edituserForm" type="org.apache.struts.validator.DynaValidatorForm">
-            <form-property name="username" type="java.lang.String"/>
-            <form-property name="volledigenaam" type="java.lang.String"/>
-            <form-property name="email" type="java.lang.String"/>
-            <form-property name="telefoon" type="java.lang.String"/>
-            <form-property name="positie" type="java.lang.String"/>
-            <form-property name="wachtwoord" type="java.lang.String"/>
-            <form-property name="gemeente" type="java.lang.String"/>
-            <form-property name="regio" type="java.lang.String"/>
-            <form-property name="provincie" type="java.lang.String"/>
-        </form-bean>
         <form-bean name="activationForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="location" type="java.lang.String"/>
             <form-property name="agId" type="java.lang.String"/>
@@ -51,19 +40,11 @@
         </form-bean>
     </form-beans>
     <global-forwards>
-        <forward name="success" path="index.do"/>
         <forward name="failure" path="site.failure"/>
     </global-forwards>
     <action-mappings>
-    	<action path="/viewer" type="nl.b3p.kar.struts.ViewerAction" scope="request" validate="false">
-            <forward name="success" path="site.viewer"/>
-        </action>
         <action path="/editor" type="nl.b3p.kar.struts.EditorAction">
             <forward name="editor" path="site.editor"/>
-        </action>
-        <action path="/edituser" name="edituserForm" type="nl.b3p.kar.struts.EditUserAction" scope="request" validate="false">
-            <forward name="success" path="site.edituser"/>
-            <forward name="failure" path="site.edituser"/>
         </action>
         <action path="/activation" name="activationForm" type="nl.b3p.kar.struts.ActivationAction" scope="request" validate="false">
             <forward name="success" path="site.activation"/>
@@ -77,7 +58,6 @@
             <forward name="success" path="site.roadsideEquipment"/>
             <forward name="failure" path="site.roadsideEquipment"/>
         </action>
-
     </action-mappings>
 
     <message-resources parameter="nl/b3p/kar/ApplicationResources"/>

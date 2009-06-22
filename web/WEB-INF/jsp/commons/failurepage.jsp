@@ -5,13 +5,12 @@
 
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Failure Page</title>
+        <title>Foutmelding</title>
     </head>
     <body>
 
         <h1>Er is een fout opgetreden</h1>
-        <%-- foutmeldingen --%>
+
         <tiles:insert definition="infoblock"/>
 
     </body>

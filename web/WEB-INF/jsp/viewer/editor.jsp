@@ -1,16 +1,17 @@
 <%@include file="/WEB-INF/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
 
+<%@page pageEncoding="UTF-8"%>
+
 <tiles:importAttribute/>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html:html>
     <head>
-        <title>KAR in GIS</title>
+        <title><fmt:message key="index.title"/></title>
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
-        <link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis.css" module=""/>" type="text/css" media="screen" />
-		<link rel="stylesheet" href="<html:rewrite page="/styles/kar-gis-design.css" module=""/>" type="text/css" media="screen" />
+        <link rel="stylesheet" href="<html:rewrite page="/styles/geo-ov.css" module=""/>" type="text/css" media="screen" />
         <script type="text/javascript" src="<html:rewrite page="/js/json2.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
@@ -25,9 +26,9 @@
         <!--[if IE 7]> <link href="<html:rewrite page="/styles/kar-gis-design-ie7.css" module=""/>" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
 
     </head>
-    <body class="editor" id="body_editor">
+    <body class="editor" id="editorBody">
         <div id="header">
-            <div id="headerTitle">KAR in GIS</div>
+            <div id="headerTitle">Geo OV platform</div>
         </div>
 
 <script type="text/javascript">
@@ -364,9 +365,18 @@
     }
 
     function flamingo_hideIdentifyIcon() {
-        flamingo.callMethod("map_identifyicon","hide");
+        flamingo.callMethod("map_identifyicon", "hide");
     }
     
+    function flamingo_hideLayers(layers) {
+        flamingo.callMethod("map_kar_layer", "setVisible", false, layers);
+        <%-- niet nodig bij onInit; flamingo.callMethod("map_kar_layer", "update", true); --%>
+    }
+
+    function flamingo_map_kar_layer_onInit() {
+        flamingo_hideLayers("bushaltes,buslijnen");
+    }
+
     function  walapparaatnummerKeyPressed(e) {
         if(e.keyCode == 0xd) {
             zoekWalapparatuur();
@@ -404,7 +414,7 @@
     </div>
 
     <div id="form">
-		<div id="form_container">
+		<div id="formContainer">
 			<span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
 			<iframe frameborder="0" name="form" src="<html:rewrite page="/empty.jsp" module=""/>"></iframe>
 		</div>

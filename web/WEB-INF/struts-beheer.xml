@@ -22,8 +22,7 @@
         </form-bean>
     </form-beans>
     <global-forwards>
-        <forward name="success" path="index.do"/>
-        <forward name="failure" path="/WEB-INF/jsp/commons/failurepage.jsp"/>
+        <forward name="failure" path="site.failure"/>
     </global-forwards>
     <action-mappings>
         <action path="/index" forward="beheer.index"/>        

@@ -17,13 +17,4 @@
 	<definition name="login" extends="loginBase">
 		<put name="content" value="/WEB-INF/jsp/website/login.jsp"/>
 	</definition>
-    <definition name="site.index" extends="siteBase">
-        <put name="content" value="/WEB-INF/jsp/website/index.jsp"/>
-    </definition>
-    <definition name="site.help" extends="siteBase">
-        <put name="content" value="/WEB-INF/jsp/website/help.jsp"/>
-    </definition>
-    <definition name="site.contactpersonen" extends="siteBase">
-        <put name="content" value="/WEB-INF/jsp/website/contactpersonen.jsp"/>
-    </definition>
 </tiles-definitions>

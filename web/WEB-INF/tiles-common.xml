@@ -6,7 +6,6 @@
 <tiles-definitions>
     <!-- tiles met herbruikbare onderdelen die in de content pagina's kunnen worden ge-insert  -->
     <definition name="infoblock" path="/WEB-INF/jsp/inserts/infoblock.jsp"/>
-    <definition name="headerinfo" path="/WEB-INF/jsp/inserts/headerinfo.jsp"/>
     <definition name="empty" path="/WEB-INF/jsp/inserts/empty.jsp"/>
     <definition name="setFocus" path="/WEB-INF/jsp/inserts/setFocus.jsp"/>
 
