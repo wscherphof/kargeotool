@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
@@ -29,6 +31,7 @@ public final class ActivationGroupAction extends TreeItemAction {
         map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
+        map.put("copy", new ExtendedMethodProperties("copy"));
         return map;
     }
 
@@ -46,6 +49,7 @@ public final class ActivationGroupAction extends TreeItemAction {
     }
 
     public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        form.initialize(mapping);
         createLists(null, form, request);
         return mapping.findForward(SUCCESS);
     }
@@ -75,6 +79,8 @@ public final class ActivationGroupAction extends TreeItemAction {
             return getDefaultForward(mapping, request);
         }
 
+        boolean copiedActivations = false;
+
         if(!em.contains(ag)) {
             RoadsideEquipment rseq = getRseq(form, request);
             if(rseq == null) {
@@ -82,6 +88,24 @@ public final class ActivationGroupAction extends TreeItemAction {
                 return mapping.findForward(SUCCESS);
             }
             ag.setRoadsideEquipment(rseq);
+
+            Integer copyFromId = FormUtils.StringToInteger(form.getString("copyFrom"));
+            if(copyFromId != null) {
+                ActivationGroup copyFrom = em.find(ActivationGroup.class, copyFromId);
+                if(copyFrom != null) {
+                    for(Iterator it = copyFrom.getActivations().iterator(); it.hasNext();) {
+                        Activation original = (Activation)it.next();
+                        Activation copy = (Activation)original.clone();
+                        copy.setActivationGroup(ag);
+                        copy.setUpdater(request.getRemoteUser());
+                        copy.setUpdateTime(new Date());
+                        copy.setValidator(null);
+                        copy.setValidationTime(null);
+                        ag.getActivations().add(copy);
+                    }
+                    copiedActivations = true;
+                }
+            }
         }
 
         /* XXX Check constraints */
@@ -100,7 +124,7 @@ public final class ActivationGroupAction extends TreeItemAction {
 
         populateForm(ag, form, request);
 
-        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", ag));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", ag, copiedActivations));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -224,4 +248,23 @@ public final class ActivationGroupAction extends TreeItemAction {
         request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", ag));
         return mapping.findForward(SUCCESS);
     }
+
+    public ActionForward copy(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ActivationGroup ag = getActivationGroup(form, request, true);
+        if (ag == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        form.set("id", null);
+        form.set("rseqId", ag.getRoadsideEquipment().getId() + "");
+        form.set("copyFrom", ag.getId() + "");
+        form.set("karSignalGroup", null);
+        form.set("directionAtIntersection", null);
+        createLists(null, form, request);
+        /* voor locatie edit form */
+        ActivationGroup emptyAg = new ActivationGroup();
+        emptyAg.setStopLineLocation(ag.getStopLineLocation());
+        request.setAttribute("activationGroup", emptyAg);
+        return mapping.findForward(SUCCESS);
+   }
 }

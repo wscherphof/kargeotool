@@ -47,6 +47,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
     }
 
     public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        form.initialize(mapping);
         createLists(null, form, request);
         return mapping.findForward(SUCCESS);
     }

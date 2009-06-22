@@ -1,7 +1,7 @@
 <%@include file="/WEB-INF/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
 
-<c:set var="form" value="${activationForm.map}"/>
+<c:set var="form" value="${activationGroupForm.map}"/>
 
 <tiles:insert definition="infoblock"/>
 
@@ -22,6 +22,7 @@
     
 <html:form styleId="activationGroupForm" action="/activationGroup" onsubmit="return validateActivationGroupForm(this)">
     <html:hidden property="id"/>
+    <html:hidden property="copyFrom"/>
     <html:hidden property="rseqId"/>
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
@@ -31,13 +32,18 @@
     <c:if test="${activationCount > 1}">
         <c:set var="extraMsg">Let op! De ${activationCount} triggerpunten van deze signaalgroep worden ook verwijderd!</c:set>
     </c:if>
-    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
-    <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
-
+    <c:if test="${!empty form.id}">
+        <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
+        <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+        <html:submit property="copy">Kopi&euml;ren</html:submit>
+    </c:if>
 <c:set var="point" value="${activationGroup.stopLineLocationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
 <c:set var="layer" value="draw_signaalgroepen" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
+
+<c:set var="focus" value="karSignalGroup" scope="request"/>
+<tiles:insert definition="setFocus"/>
 
 <div>
     <b>Eigenschappen</b>

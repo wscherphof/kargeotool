@@ -30,13 +30,18 @@
     <c:if test="${activationGroupCount > 1}">
         <c:set var="extraMsg">Let op! De ${activationGroupCount} signaalgroepen (en alle triggerpunten daarvan) van deze walapparatuur worden ook verwijderd!</c:set>
     </c:if>
-    <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
-    <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
-
+    <c:if test="${!empty form.id}">
+        <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
+        <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+    </c:if>
+    
 <c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
 <c:set var="layer" value="draw_walapparatuur" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
+
+<c:set var="focus" value="unitNumber" scope="request"/>
+<tiles:insert definition="setFocus"/>
 
 <div>
     <b>Eigenschappen walapparatuur</b>

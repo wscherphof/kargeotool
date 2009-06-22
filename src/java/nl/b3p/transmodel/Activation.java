@@ -8,7 +8,7 @@ import java.util.Locale;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONObject;
 
-public class Activation implements EditorTreeObject {
+public class Activation implements EditorTreeObject, Cloneable {
     public static final String TYPE_PRQA = "PRQA"; /* automatisch */
     public static final String TYPE_PRQM = "PRQM"; /* halteknop */
     public static final String TYPE_SDCAS = "SDCAS"; /* start deur sluiten */
@@ -231,5 +231,12 @@ public class Activation implements EditorTreeObject {
         j.put("index", getIndex());
         j.put("point", getLocationString());
         return j;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Activation cloned = (Activation)super.clone();
+        cloned.setId(null); // cloned object should get another identity when persisted
+        return cloned;
     }
 }

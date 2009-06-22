@@ -35,6 +35,9 @@
 <c:set var="layer" value="draw_triggerpunten" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
+<c:set var="focus" value="commandType" scope="request"/>
+<tiles:insert definition="setFocus"/>
+
 <div>
     <b>Eigenschappen</b>
     <div class="formTableContainer">

@@ -51,6 +51,7 @@ public final class ActivationAction extends TreeItemAction {
     }
 
     public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        form.initialize(mapping);
         createLists(null, form, request);
         /* Default voor commandType is Inmelding */
         form.set("commandType", "1");

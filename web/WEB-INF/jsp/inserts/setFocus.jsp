@@ -1,4 +1,5 @@
-<%@include file="/WEB-INF/jsp/taglibs.jsp" %>
+<%@include file="/WEB-INF/taglibs.jsp" %>
+
 <c:if test="${!empty focus}">
 <script type="text/JavaScript">
 <!--

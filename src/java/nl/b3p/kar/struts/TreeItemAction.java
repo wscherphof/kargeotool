@@ -10,6 +10,10 @@ public abstract class TreeItemAction extends BaseDatabaseAction {
     protected static final String TREE_UPDATE = "treeUpdate";
 
     protected static String treeUpdateJson(String action, EditorTreeObject to) throws Exception {
+        return treeUpdateJson(action, to, false);
+    }
+
+    protected static String treeUpdateJson(String action, EditorTreeObject to, boolean includeChildren) throws Exception {
         JSONObject update = new JSONObject();
         String id = null, parentId = null;
         if(to instanceof Activation) {
@@ -24,7 +28,7 @@ public abstract class TreeItemAction extends BaseDatabaseAction {
         update.put("action", action);
         update.put("id", id);
         update.put("parentId", parentId);
-        update.put("object", to.serializeToJson(false));
+        update.put("object", to.serializeToJson(includeChildren));
         return update.toString();
     }
 }
