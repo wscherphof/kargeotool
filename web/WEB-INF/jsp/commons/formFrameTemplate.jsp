@@ -1,7 +1,7 @@
-<%@page pageEncoding="UTF-8"%>
-
 <%@include file="/WEB-INF/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
+
+<%@page pageEncoding="UTF-8"%>
 
 <tiles:importAttribute/>
 
