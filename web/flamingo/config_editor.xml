@@ -21,8 +21,15 @@
 			</fmc:Layer>
 		</fmc:GIS>
         <fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000">
-            <!--fmc:LayerOGWMS id="bushaltes" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="bushaltes,bushaltes_labels,buslijnen,kar_punten" showerrors="true" query_layers="kar_punten,bushaltes"/-->
-            <fmc:LayerOGWMS id="kar_layer" url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS" srs="EPSG:28992" layers="buslijnen,bushaltes,bushaltes_labels,triggerpunten,walapparatuur,signaalgroepen" showerrors="true" query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"/>
+            <fmc:LayerOGWMS 
+                id="kar_layer"
+                url="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?Service=WMS"
+                srs="EPSG:28992"
+                layers="buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen"
+                showerrors="true"
+                query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"
+            >
+            </fmc:LayerOGWMS>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
             <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
             <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
@@ -32,22 +39,16 @@
     <fmc:Container left="82%" height="100%" width="18%" top="0" backgroundcolor="#F5F5F5">
 		<fmc:Legend id="legend" top="0" height="460" width="98%" left="2%" listento="map">
 			<group label="OV-informatie">
-			<item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes&amp;format=image/png"/>
-			</item>
-			<item label="Walapparatuur" canhide="true" listento="kar_layer.walapparatuur">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
-			</item>
-			<item label="Signaalgroepen" canhide="true" listento="kar_layer.signaalgroepen">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
-			</item>
-			<item label="Triggerpunten" canhide="true" listento="kar_layer.triggerpunten">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
-			</item>
-			<item label="Buslijnen" canhide="true" listento="kar_layer.buslijnen">
-				<symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
-			</item>
-			<item label="Bushaltes labels" canhide="true" listento="kar_layer.bushaltes_labels"/>
+                <item label="Walapparatuur" canhide="true" listento="kar_layer.walapparatuur"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
+                <item label="Signaalgroepen" canhide="true" listento="kar_layer.signaalgroepen"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
+                <item label="Triggerpunten" canhide="true" listento="kar_layer.triggerpunten"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
+                <item label="Buslijnen" canhide="true" listento="kar_layer.buslijnen"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/>
+                <item label="Bushaltes" canhide="true" listento="kar_layer.bushaltes"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/>
 			</group>
 			<group label="Achtergrond" open="true">
 				<item label="Openstreetmap" canhide="true" listento="osm"/>
