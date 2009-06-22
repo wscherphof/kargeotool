@@ -101,15 +101,16 @@ LAYER
 END
 
 LAYER
-  NAME bushaltes
+  NAME bushaltes_symbol
   METADATA
-    "wms_title" "bushaltes"
+    "wms_title" "bushaltes_symbol"
     "gml_include_items" "all"
     "gml_exclude_items" "oid"        
     "wfs_title" "bushaltes"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "oid"
   END
+  GROUP bushaltes
   TYPE POINT
   DUMP true
   TEMPLATE bla  
@@ -137,6 +138,7 @@ LAYER
     "wms_title" "bushaltes_labels"
     "gml_include_items" "all"
   END
+  GROUP bushaltes
   TYPE POINT
   DUMP true
   TEMPLATE bla  
@@ -147,7 +149,7 @@ LAYER
   PROJECTION
     "init=epsg:28992"
   END
-  MAXSCALE 13000
+  MAXSCALE 25000
   LABELITEM "name"    
   CLASS 
     STYLE
