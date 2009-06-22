@@ -1,5 +1,7 @@
 <%@include file="/WEB-INF/taglibs.jsp" %>
 
+<div class="loginImage"></div>
+
 <div class="loginBox">
     <div class="loginboxTitel">Log in</div>
     <div>

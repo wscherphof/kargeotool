@@ -190,12 +190,25 @@ td.disabled {
     height: auto;
 }
 
+.loginImage {
+    background-image: url(../images/busmatrix2.jpg);
+    background-repeat: no-repeat;
+    height: 820px;    
+}
+
 .loginBox {
+    position: absolute;
+    top: 200px;
+    left: 30px;
     width: 400px;
+    height: 150px;
     background-color: #F5F5F5;
-    border: 1px solid #DDDDDD;
-    margin-top: 25px;
-    margin-left: 25px;
+    border: 1px solid black;
+
+	filter: alpha(opacity=85);
+	-moz-opacity: 0.85;
+	-khtml-opacity: 0.85;
+	opacity: 0.85;
 }
 
 .loginBox td {
