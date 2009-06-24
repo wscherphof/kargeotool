@@ -30,8 +30,8 @@
             <field property="karSignalGroup" depends="required,integer">
                 <arg0 key="ag.karSignalGroup"/>
             </field>
-            <field property="metersAfterStopLine" depends="integer">
-                <arg0 key="ag.metersAfterStopLine"/>
+            <field property="metersAfterStopLine" depends="required,integer">
+                <arg0 key="Uitmelding in meters na stopstreep" resource="false"/>
             </field>
         </form>
     </formset>
