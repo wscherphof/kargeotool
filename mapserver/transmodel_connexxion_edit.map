@@ -84,18 +84,6 @@ LAYER
        SYMBOl "pijl"
        SIZE 20
     END
-    LABEL
-        TYPE truetype
-        FONT "arial"
-        antialias true
-	 MINFEATURESIZE 1000
-        SIZE 8
-	 ANGLE auto
-        COLOR 255 255 255
-        outlinecolor 255 0 0
-        buffer 2
-	 position auto
-    END
   END		
   PROCESSING "CLOSE_CONNECTION=DEFER"
 END
@@ -212,7 +200,7 @@ LAYER
     END 
   END
   CLASS 
-    NAME "Aanmeldpunt"
+    NAME "Vooraanmeldpunt"
     EXPRESSION "3"
     STYLE      
       SYMBOL "radio_blauw.gif"      
@@ -315,7 +303,7 @@ LAYER
   status off
   connectiontype postgis
   connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
-  data "stop_line_location from (select id,kar_signal_group,stop_line_location from activation_group) as bla using srid=28992 using unique id"
+  data "stop_line_location from (select id,kar_signal_group,stop_line_location,case meters_after_stop_line when '0' then 'ag-rood.gif' else 'ag.gif' end as symbol from activation_group) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
   END
@@ -323,7 +311,7 @@ LAYER
   CLASS 
     NAME "Signaalgroep"
     STYLE      
-      SYMBOL "ag.gif"      
+      SYMBOL [symbol]
     END
     LABEL
         TYPE truetype
