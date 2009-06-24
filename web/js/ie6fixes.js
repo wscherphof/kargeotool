@@ -10,7 +10,7 @@ var resizeIE = function() {
     var kaartheight = viewport[1] - 46;
     if(kaartheight < 631) kaartheight = 631;
     document.getElementById('kaart').style.height = kaartheight + 'px';
-    var kaartwidth = viewport[0] - 402;
+    var kaartwidth = viewport[0] - 415;
     if(kaartwidth < 575) kaartwidth = 575;
     document.getElementById('kaart').style.width = kaartwidth + 'px';
 }
