@@ -29,6 +29,7 @@
     <c:if test="${!empty form.id}">
         <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
         <html:submit property="validate" onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');">Valideren</html:submit>
+        <html:submit property="copy">Kopi&euml;ren</html:submit>
     </c:if>
 
 <c:set var="point" value="${activation.locationString}" scope="request"/>

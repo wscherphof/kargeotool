@@ -31,6 +31,7 @@ public final class ActivationAction extends TreeItemAction {
         map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
+        map.put("copy", new ExtendedMethodProperties("copy"));
         map.put("validate", new ExtendedMethodProperties("validate"));
         return map;
     }
@@ -218,6 +219,24 @@ public final class ActivationAction extends TreeItemAction {
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
         request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", activation));
+        return mapping.findForward(SUCCESS);
+    }
+
+    public ActionForward copy(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Activation a = getActivation(form, request, true);
+        if (a == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        form.set("id", null);
+        ActivationGroup ag = a.getActivationGroup();
+        form.set("agId", ag.getId() + "");
+        request.setAttribute("activationGroup", ag);
+        ag.getRoadsideEquipment().getDataOwner().getName();
+        /* voor locatie edit form */
+        Activation emptyA = new Activation();
+        emptyA.setLocation(a.getLocation());
+        request.setAttribute("activation", emptyA);
         return mapping.findForward(SUCCESS);
     }
 
