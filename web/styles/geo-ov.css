@@ -20,6 +20,7 @@ select {
 
 body.editor {
     width: 100%;
+    min-height: 645px;
 }
 
 body.form {
@@ -50,7 +51,9 @@ body.form {
     left: 3px;
     right: 3px;
     top: 60px;
-    bottom: 50px;    
+    bottom: 50px;
+
+    min-height: 60px;
 }
 
 #objectTree .node {
@@ -86,6 +89,7 @@ td.disabled {
     top: 30px;
     left: 0px;
     bottom: 0px;
+    min-height: 620px;
 }
 
 #tree {
@@ -98,7 +102,8 @@ td.disabled {
     bottom: 436px;
     position: absolute;
     left: 5px;
-    top: 5px;    
+    top: 5px;
+    min-height: 170px;
 }
 
 #treeTop {
@@ -152,6 +157,7 @@ td.disabled {
     position: absolute;
     left: 5px;
     bottom: 5px;
+
 }
 
 #kaart {
@@ -166,6 +172,15 @@ td.disabled {
     top: 35px;
     bottom: 5px;
     right: 5px;
+    min-height: 608px;
+}
+
+#flashcontent {
+    min-height: 608px;
+}
+
+#flashcontent object {
+    min-height: 608px;
 }
 
 #formContainer {

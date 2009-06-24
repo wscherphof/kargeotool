@@ -1,14 +1,15 @@
-
-
 var resizeIE = function() {
     var viewport = getViewport();
     document.getElementById('editorBody').style.width = viewport[0] + 'px';
     document.getElementById('leftbar').style.height = (viewport[1] - 30) + 'px';
     var treeheight = viewport[1] - 497;
+    if(treeheight < 180) treeheight = 180;
     document.getElementById('tree').style.height = treeheight + 'px';
-    document.getElementById('objectTree').style.height = (treeheight - 140) + 'px';
+    document.getElementById('objectTree').style.height = (treeheight - 125) + 'px';
     document.getElementById('form').style.top = (treeheight + 16) + 'px';
-    document.getElementById('kaart').style.height = (viewport[1] - 46) + 'px';
+    var kaartheight = viewport[1] - 46;
+    if(kaartheight < 631) kaartheight = 631;
+    document.getElementById('kaart').style.height = kaartheight + 'px';
     document.getElementById('kaart').style.width = (viewport[0] - 402) + 'px';
 }
 
