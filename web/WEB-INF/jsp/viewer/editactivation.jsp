@@ -22,12 +22,13 @@
 
 <html:form styleId="activationForm" action="/activation" onsubmit="return validateActivationForm(this)">
     <html:hidden property="id"/>
+    <html:hidden property="validated"/>
     <html:hidden property="agId"/>
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${!empty form.id}">
-        <html:submit property="delete" onclick="return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
-        <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+        <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
+        <html:submit property="validate" onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');">Valideren</html:submit>
     </c:if>
 
 <c:set var="point" value="${activation.locationString}" scope="request"/>
@@ -104,8 +105,9 @@
             <td><fmt:message key="validator"/></td>
             <td class="disabled">
                 <c:if test="${!empty activation.validator}">
+                    <html:img page="/images/checkmark.gif" module="" style="display: block; float: left;"/>
                     <c:out value="${activation.validator}"/> op
-                    <fmt:formatDate pattern="dd-MM-yyyy" value="${activation.validatorTime}"/>
+                    <fmt:formatDate pattern="dd-MM-yyyy" value="${activation.validationTime}"/>
                 </c:if>
             </td>
         </tr>

@@ -22,6 +22,7 @@
 
 <html:form styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
     <html:hidden property="id"/>
+    <html:hidden property="validated"/>
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${activationGroupCount == 1}">
@@ -31,8 +32,8 @@
         <c:set var="extraMsg">Let op! De ${activationGroupCount} signaalgroepen (en alle triggerpunten daarvan) van deze walapparatuur worden ook verwijderd!</c:set>
     </c:if>
     <c:if test="${!empty form.id}">
-        <html:submit property="delete" onclick="return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
-        <input type="button" value="Valideren" onclick="alert('Nog niet geimplementeerd');">
+        <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
+        <html:submit property="validate" onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');">Valideren</html:submit>
     </c:if>
     
 <c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>
@@ -139,8 +140,9 @@
             <td><fmt:message key="validator"/></td>
             <td class="disabled">
                 <c:if test="${!empty roadsideEquipment.validator}">
+                    <html:img page="/images/checkmark.gif" module="" style="display: block; float: left;"/>
                     <c:out value="${roadsideEquipment.validator}"/> op
-                    <fmt:formatDate pattern="dd-MM-yyyy" value="${roadsideEquipment.validatorTime}"/>
+                    <fmt:formatDate pattern="dd-MM-yyyy" value="${roadsideEquipment.validationTime}"/>
                 </c:if>
             </td>
         </tr>

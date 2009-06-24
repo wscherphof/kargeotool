@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
@@ -32,6 +31,7 @@ public final class ActivationAction extends TreeItemAction {
         map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
+        map.put("validate", new ExtendedMethodProperties("validate"));
         return map;
     }
 
@@ -218,6 +218,23 @@ public final class ActivationAction extends TreeItemAction {
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
         request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", activation));
+        return mapping.findForward(SUCCESS);
+    }
+
+    public ActionForward validate(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Activation a = getActivation(form, request, true);
+        if (a == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        if("true".equals(form.getString("validated"))) {
+            a.setValidator(request.getRemoteUser());
+            a.setValidationTime(new Date());
+        } else {
+            a.setValidator(null);
+            a.setValidationTime(null);
+        }
+        createLists(a, form, request);
         return mapping.findForward(SUCCESS);
     }
 }

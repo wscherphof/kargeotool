@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
@@ -28,6 +27,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         map.put("save", new ExtendedMethodProperties("save"));
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
+        map.put("validate", new ExtendedMethodProperties("validate"));
         return map;
     }
 
@@ -190,6 +190,23 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         addMessage(request, new ActionMessage("Walapparaat is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
         request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", rseq));
+        return mapping.findForward(SUCCESS);
+    }
+
+    public ActionForward validate(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
+        if (rseq == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        if("true".equals(form.getString("validated"))) {
+            rseq.setValidator(request.getRemoteUser());
+            rseq.setValidationTime(new Date());
+        } else {
+            rseq.setValidator(null);
+            rseq.setValidationTime(null);
+        }
+        createLists(rseq, form, request);
         return mapping.findForward(SUCCESS);
     }
 }

@@ -32,6 +32,7 @@ public final class ActivationGroupAction extends TreeItemAction {
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
         map.put("copy", new ExtendedMethodProperties("copy"));
+        map.put("validate", new ExtendedMethodProperties("validate"));
         return map;
     }
 
@@ -266,5 +267,22 @@ public final class ActivationGroupAction extends TreeItemAction {
         emptyAg.setStopLineLocation(ag.getStopLineLocation());
         request.setAttribute("activationGroup", emptyAg);
         return mapping.findForward(SUCCESS);
-   }
+    }
+
+    public ActionForward validate(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ActivationGroup ag = getActivationGroup(form, request, true);
+        if (ag == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        if("true".equals(form.getString("validated"))) {
+            ag.setValidator(request.getRemoteUser());
+            ag.setValidationTime(new Date());
+        } else {
+            ag.setValidator(null);
+            ag.setValidationTime(null);
+        }
+        createLists(ag, form, request);
+        return mapping.findForward(SUCCESS);
+    }
 }
