@@ -40,6 +40,15 @@ body.form {
     font-weight: bold;
 }
 
+#headerLinks {
+    float: right;
+    font-size: 10pt;
+}
+
+#headerLinks a {
+    color: white;
+}
+
 #objectTree {
     overflow: auto;
     

@@ -12,5 +12,6 @@
     <definition name="site.failure" extends="siteBase">
         <put name="content" value="/WEB-INF/jsp/commons/failurepage.jsp"/>
     </definition>
+    <definition name="headerlinks" path="/WEB-INF/jsp/commons/headerlinks.jsp"/>
 
 </tiles-definitions>

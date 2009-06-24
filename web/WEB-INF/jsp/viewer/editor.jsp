@@ -27,9 +27,7 @@
 
     </head>
     <body class="editor" id="editorBody">
-        <div id="header">
-            <div id="headerTitle">Geo OV platform</div>
-        </div>
+        <tiles:insert definition="headerlinks"/>
 
 <script type="text/javascript">
     function testSelecteerObject() {
