@@ -21,6 +21,7 @@ select {
 body.editor {
     width: 100%;
     min-height: 645px;
+    min-width: 950px;
 }
 
 body.form {
@@ -173,6 +174,7 @@ td.disabled {
     bottom: 5px;
     right: 5px;
     min-height: 608px;
+    min-width: 575px;
 }
 
 #flashcontent {
