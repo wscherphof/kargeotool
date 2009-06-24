@@ -3,9 +3,15 @@ package nl.b3p.kar.hibernate;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
+import nl.b3p.transmodel.DataOwner;
 
 public class Gebruiker implements Principal {
     private Integer id;
@@ -17,6 +23,7 @@ public class Gebruiker implements Principal {
     private String phone;
     private String position;
     private Set roles;
+    private Map<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new HashMap<DataOwner, GebruikerDataOwnerRights>();
 
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String salt = SecurityRealm.generateHexSalt(request);
@@ -106,5 +113,34 @@ public class Gebruiker implements Principal {
      */
     public void setRoles(Set roles) {
         this.roles = roles;
+    }
+
+    public Map<DataOwner, GebruikerDataOwnerRights> getDataOwnerRights() {
+        return dataOwnerRights;
+    }
+
+    public void setDataOwnerRights(Map<DataOwner, GebruikerDataOwnerRights> dataOwnerRights) {
+        this.dataOwnerRights = dataOwnerRights;
+    }
+
+    public boolean canEditDataOwner(DataOwner d) {
+        GebruikerDataOwnerRights r = dataOwnerRights.get(d);
+        return r != null && r.isEditable();
+    }
+
+    public boolean canValidateDataOwner(DataOwner d) {
+        GebruikerDataOwnerRights r = dataOwnerRights.get(d);
+        return r != null && r.isValidatable();
+    }
+
+    public Set<DataOwner> getEditableDataOwners() {
+        HashSet<DataOwner> dataOwners = new HashSet<DataOwner>();
+        for(Iterator it = dataOwnerRights.entrySet().iterator(); it.hasNext();) {
+            Entry<DataOwner, GebruikerDataOwnerRights> entry = (Entry<DataOwner, GebruikerDataOwnerRights>)it.next();
+            if(entry.getValue().isEditable()) {
+                dataOwners.add(entry.getValue().getDataOwner());
+            }
+        }
+        return dataOwners;
     }
 }
