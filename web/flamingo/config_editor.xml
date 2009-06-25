@@ -59,11 +59,17 @@
 			</group>
 		</fmc:Legend>
         <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="455" height="160" listento="drawMap"/>
-		<fmc:LocationFinder id="locationfinder" top="590" width="100%" left="0%" height="200" listento="map" controls="true">
+		<fmc:LocationFinder id="locationfinder" top="590" width="100%" left="0%" height="250" listento="map" controls="true">
+            <style id=".nohit" font-family="tahoma, sans-serif" font-size="11" color="#000000" font-weight="bold" display="block"/>
+            <style id=".busy" font-family="tahoma, sans-serif" font-size="11" color="#444444" font-style="italic" display="block"/>
+            <style id=".feature" font-family="tahoma, sans-serif" font-size="11" color="#0066cc" display="block"/>
+            <style id=".error" font-family="tahoma, sans-serif" font-size="11" color="#ff0000" font-weight="bold" display="block"/>
+            <style id=".hint" font-family="tahoma, sans-serif" font-size="11" color="#000000" display="block"/>
             <string id="label" nl="Zoek..." en="Search..." />
             <string id="busy" nl="Zoeken..." en="Searching..." />
             <string id="next" nl="Volgende" en="Next" />
             <string id="prev" nl="Vorige" en="Previous" />
+            <string id="nohit" en="No results" nl="Niks gevonden"/>
             
 			<LOCATIONS id="Gemeenten" server="http://public-wms.kaartenbalie.nl/wms/nederland" layerid="gemeenten_2006" searchfield="gm_naam" outputfields="gm_naam" srs="EPSG:28992" type="WFS" serverVersion="1.0.0" enlargeExtent="10000">
                 <string id="output" nl="[gm_naam]" en="[gm_naam]" />
