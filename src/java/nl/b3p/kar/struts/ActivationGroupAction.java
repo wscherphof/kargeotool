@@ -50,7 +50,9 @@ public final class ActivationGroupAction extends TreeItemAction {
     }
 
     public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String rseqId = form.getString("rseqId");
         form.initialize(mapping);
+        form.set("rseqId", rseqId);
         createLists(null, form, request);
         return mapping.findForward(SUCCESS);
     }
