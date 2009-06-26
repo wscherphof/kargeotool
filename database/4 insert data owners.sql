@@ -1,3 +1,5 @@
+-- encoding: UTF-8
+
 -- nav "20090615 DataOwnercodes.xls"
 
 insert into data_owner (code, type, name, description, validation_required) values ('BRU','COPR','Bestuur Regio Utrecht','OV autoriteit',false);
@@ -39,7 +41,7 @@ insert into data_owner (code, type, name, description, validation_required) valu
 insert into data_owner (code, type, name, description, validation_required) values ('0047','ROOW','Veendam',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0048','ROOW','Vlagtwedde',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0050','ROOW','Zeewolde',null,false);
-insert into data_owner (code, type, name, description, validation_required) values ('0051','ROOW','Skarsterl‚n',null,false);
+insert into data_owner (code, type, name, description, validation_required) values ('0051','ROOW','Skarsterl√¢n',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0052','ROOW','Winschoten',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0053','ROOW','Winsum',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0055','ROOW','Boarnsterhim',null,false);
@@ -289,7 +291,7 @@ insert into data_owner (code, type, name, description, validation_required) valu
 insert into data_owner (code, type, name, description, validation_required) values ('0643','ROOW','Nederlek',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0644','ROOW','Ouderkerk',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0645','ROOW','Jacobswoude',null,false);
-insert into data_owner (code, type, name, description, validation_required) values ('0653','ROOW','Gaasterl‚n-Sleat',null,false);
+insert into data_owner (code, type, name, description, validation_required) values ('0653','ROOW','Gaasterl√¢n-Sleat',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0654','ROOW','Borsele',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0664','ROOW','Goes',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0668','ROOW','West Maas en Waal',null,false);
@@ -302,7 +304,7 @@ insert into data_owner (code, type, name, description, validation_required) valu
 insert into data_owner (code, type, name, description, validation_required) values ('0694','ROOW','Liesveld',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0703','ROOW','Reimerswaal',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0707','ROOW','Zederik',null,false);
-insert into data_owner (code, type, name, description, validation_required) values ('0710','ROOW','W˚nseradiel',null,false);
+insert into data_owner (code, type, name, description, validation_required) values ('0710','ROOW','W√ªnseradiel',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0715','ROOW','Terneuzen',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0716','ROOW','Tholen',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('0717','ROOW','Veere',null,false);
@@ -498,7 +500,7 @@ insert into data_owner (code, type, name, description, validation_required) valu
 insert into data_owner (code, type, name, description, validation_required) values ('2650','ROOW','Waterschap Zuiderzeeland',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('2651','ROOW','Hoogheemraadschap Hollands Noorderkwartier',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('2652','ROOW','Waterschap Brabantse Delta',null,false);
-insert into data_owner (code, type, name, description, validation_required) values ('2653','ROOW','Wetterskip Frysl‚n',null,false);
+insert into data_owner (code, type, name, description, validation_required) values ('2653','ROOW','Wetterskip Frysl√¢n',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('2654','ROOW','Waterschap Aa en Maas',null,false);
 insert into data_owner (code, type, name, description, validation_required) values ('A','ROOW','Groningen (provincie)','Prov. Groningen, wegbeheerder',false);
 insert into data_owner (code, type, name, description, validation_required) values ('B','ROOW','Friesland','Prov. Friesland, wegbeheerder',false);
