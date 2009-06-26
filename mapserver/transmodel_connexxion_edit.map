@@ -66,7 +66,7 @@ LAYER
   TEMPLATE bla  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
@@ -105,7 +105,7 @@ LAYER
   TOLERANCE 6
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "point_geom from (select oid,point_geom,validfrom,dataowner,code,name from point where name is not null) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
@@ -132,7 +132,7 @@ LAYER
   TEMPLATE bla  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
   PROJECTION
     "init=epsg:28992"
@@ -172,7 +172,7 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "location from (select id,command_type,location from activation) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
@@ -225,7 +225,7 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "location from (select id,type,unit_number,location from roadside_equipment) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
@@ -302,7 +302,7 @@ LAYER
   TOLERANCE 10  
   status off
   connectiontype postgis
-  connection "host=localhost dbname=kar_gis password=YYPlDvZMkrOyYFB94rZ port=5432 user=kar_gis"
+  connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "stop_line_location from (select id,kar_signal_group,stop_line_location,case meters_after_stop_line when '0' then 'ag-rood.gif' else 'ag.gif' end as symbol from activation_group) as bla using srid=28992 using unique id"
   PROJECTION
     "init=epsg:28992"
