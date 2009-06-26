@@ -57,6 +57,7 @@
         </tbody>
     </table>
 <p>
+<tiles:insert definition="infoblock"/>
 
     <c:if test="${!empty form.id}">
         <p>
