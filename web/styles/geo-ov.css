@@ -20,7 +20,7 @@ select {
 
 body.editor {
     width: 100%;
-    min-height: 645px;
+    min-height: 850px;
     min-width: 963px;
 }
 
@@ -182,12 +182,12 @@ td.disabled {
     top: 35px;
     bottom: 5px;
     right: 5px;
-    min-height: 608px;
+    min-height: 810px;
     min-width: 575px;
 }
 
 #flashcontent {
-    min-height: 608px;
+    min-height: 810px;
 }
 
 #flashcontent object {
