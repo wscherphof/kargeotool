@@ -84,6 +84,12 @@
 			<string id="xy" nl="X: [x]     Y: [y]"/>
 		</fmc:Coordinates>
 	</fmc:Container>
+	<fmc:Window title="Overview" visible="true" canclose="true" canresize="true" defocusalpha="10" width="20%" height="20%" left="80%" top="0%">
+		<fmc:Map id="map_overview" clear="true" extent="14562,307839,277026,613073" fullextent="14562,307839,277026,613073">
+			<fmc:LayerOverview listento="map" color="#33CC33"/>
+			<fmc:LayerImage imageurl="assets/provincies.swf" extent="14562,307839,277026,613073" listento="map"/>
+		</fmc:Map>
+	</fmc:Window>
 	<fmc:Window title="info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
 		<string id="title" nl="Informatie" en="Information"/>
 		<fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
