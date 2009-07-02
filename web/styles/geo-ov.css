@@ -99,7 +99,7 @@ td.disabled {
     top: 30px;
     left: 0px;
     bottom: 0px;
-    min-height: 620px;
+    min-height: 822px;
 }
 
 #tree {
@@ -167,7 +167,6 @@ td.disabled {
     position: absolute;
     left: 5px;
     bottom: 5px;
-
 }
 
 #kaart {
