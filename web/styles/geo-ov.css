@@ -67,12 +67,63 @@ body.form {
 }
 
 #objectTree .node {
-    margin: 2px;
+    /*margin: 1px;*/
 }
 
 #objectTree .selected {
     margin: 1px;
     font-weight: bold;
+}
+
+#objectTree .icon {
+    width: 19px;
+    height: 16px;
+    background-repeat: no-repeat;
+    display: block;
+    float: left;
+    margin-right: 1px;
+}
+
+#objectTree .icon_rseq_CROSS {
+    background-image: url(../images/treeview/vri.png);
+}
+
+#objectTree .icon_rseq_PIU {
+    background-image: url(../images/treeview/piu.png);
+}
+
+#objectTree .icon_rseq_CLOSE {
+    background-image: url(../images/treeview/close.png);
+    width: 17px;
+    margin-right: 0px;
+}
+
+#objectTree .icon_ag_nostop {
+    background-image: url(../images/treeview/ag.gif);
+}
+
+#objectTree .icon_ag_stop {
+    background-image: url(../images/treeview/ag-rood.gif);
+}
+
+#objectTree .icon_a_Onbekend {
+    background-image: url(../images/treeview/radio_zwart.gif);
+    width: 19px;
+}
+
+#objectTree .icon_a_Inm {
+    background-image: url(../images/treeview/radio_groen.gif);
+    width: 19px;
+}
+
+#objectTree .icon_a_Uit {
+    background-image: url(../images/treeview/radio_rood.gif);
+    width: 19px;
+}
+
+#objectTree .icon_a_Voor {
+    background-image: url(../images/treeview/radio_blauw.gif);
+    width: 19px;
 }
 
 table.form {

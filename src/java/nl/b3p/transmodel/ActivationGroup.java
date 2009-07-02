@@ -221,6 +221,7 @@ public class ActivationGroup implements EditorTreeObject {
             case 7: richting = "Linksaf, rechtsaf"; break;
             default: richting = "Onbekend"; break;
         }
+        j.put("icon", new Integer(0).equals(getMetersAfterStopLine()) ? "stop" : "nostop");
         j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
         j.put("point", getStopLineLocationString());
         if(includeChildren) {

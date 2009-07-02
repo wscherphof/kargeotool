@@ -76,10 +76,17 @@
             treeItemClick(item);
         };
 
-        var idSpan = document.createElement("span");
-        idSpan.className = "code";
-        idSpan.appendChild(document.createTextNode(item.type.toUpperCase()));
-        a.appendChild(idSpan);
+        var icon = document.createElement("span");
+        icon.className = "icon icon_" + item.type;
+        if(item.type == "rseq") {
+            icon.className += "_" + item.rseqType;
+        } else if(item.type == "ag") {
+            icon.className += "_" + item.icon;
+        } else if(item.type == "a") {
+            icon.className += "_" + item.commandType;
+        }
+        
+        a.appendChild(icon);
         var labelText = " ";
         if(item.type == "a") {
             labelText += item.index + " " + item.name;

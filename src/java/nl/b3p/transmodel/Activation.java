@@ -214,15 +214,16 @@ public class Activation implements EditorTreeObject, Cloneable {
         j.put("id", "a:" + getId());
         NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
         nf.setGroupingUsed(false);
-        String namePart = "";
+        String type = "Onbekend";
         if(commandType != null) {
             switch(commandType.intValue()) {
-                case 1: namePart = "Inm"; break;
-                case 2: namePart = "Uit"; break;
-                case 3: namePart = "Voor"; break;
+                case 1: type = "Inm"; break;
+                case 2: type = "Uit"; break;
+                case 3: type = "Voor"; break;
             }
         }
-        j.put("name", namePart +
+        j.put("commandType", type);
+        j.put("name", 
                   (getKarDistanceTillStopLine() == null ? ""
                 : " " + nf.format(getKarDistanceTillStopLine()) + "m"
                 + (getKarTimeTillStopLine() == null ? ""
