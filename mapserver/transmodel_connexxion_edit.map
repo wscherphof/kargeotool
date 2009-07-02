@@ -79,11 +79,11 @@ LAYER
 	SYMBOL "circle"
 	SIZE 3
     END
-    STYLE
-    	COLOR 255 0 0
-       SYMBOl "pijl"
-       SIZE 20
-    END
+    #STYLE
+    #	COLOR 255 0 0
+    #   SYMBOl "pijl"
+    #   SIZE 20
+    #END
   END		
   PROCESSING "CLOSE_CONNECTION=DEFER"
 END
