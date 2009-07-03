@@ -281,6 +281,8 @@
 
     /* Aangeroepen door form in iframe */
     function selectLocationClicked(editLayer, currentLocation, geometryType) {
+        flamingo.callMethod("location", "show");
+
         if(currentLocation != null) {
             flamingo_editMapCreateNewGeometry(editLayer, geometryType, currentLocation);
         } else {
@@ -324,15 +326,15 @@
         }
     }
 
-	function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
+    function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
         window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
-	function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
+    function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
-	function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
+    function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
         window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
     }
 
@@ -342,13 +344,13 @@
 
     // geometryType is Point, PointAtDistance, ...
 
-	function flamingo_editMapCreateNewGeometry(editLayer, geometryType, geometry) {
-		flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
-	}
+    function flamingo_editMapCreateNewGeometry(editLayer, geometryType, geometry) {
+        flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
+    }
 
-	function flamingo_editMapDrawNewGeometry(editLayer,geometryType) {
-		flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
-	}
+    function flamingo_editMapDrawNewGeometry(editLayer,geometryType) {
+        flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
+    }
 
     function flamingo_removeAllFeatures(editLayer) {
         flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
@@ -362,6 +364,7 @@
         flamingo_removeAllFeatures("draw_walapparatuur");
         flamingo_removeAllFeatures("draw_signaalgroepen");
         flamingo_removeAllFeatures("draw_triggerpunten");
+        flamingo.callMethod("location", "hide");
         flamingo.callMethod("gis", "setCreateGeometry", null);
     }
 
