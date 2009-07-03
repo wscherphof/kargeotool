@@ -1,14 +1,14 @@
-MAP
+map
 
-NAME transmodel_connexxion
-STATUS ON
-EXTENT 12000 304000 280000 620000
-UNITS METERS
-IMAGECOLOR 255 255 255
-FONTSET "fonts/fonts.list"
+name transmodel_connexxion
+status on
+extent 12000 304000 280000 620000
+units meters
+imagecolor 255 255 255
+fontset "fonts/fonts.list"
 
-WEB
-  METADATA
+web
+  metadata
     "wms_title"				"Transmodel Connexxion"
     "wfs_title"				"Transmodel Connexxion"
     "wms_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit"
@@ -17,315 +17,323 @@ WEB
     "wfs_srs"				"EPSG:28992"
     "wfs_extent"			"12000 304000 280000 620000"
     "ows_schemas_location"		"http://schemas.opengeospatial.net"
-  END
-END
+  end
+end
 
-PROJECTION
+projection
   "init=epsg:28992" 
-END
+end
 
-OUTPUTFORMAT
-	NAME png
-	DRIVER "GD/PNG"
-	MIMETYPE "image/png"
-	IMAGEMODE RGBA
-	EXTENSION "png"
-	TRANSPARENT ON
-END
+outputformat
+  name png
+  driver "GD/PNG"
+  mimetype "image/png"
+  imagemode RGBA
+  extension "png"
+  transparent on
+end
 
-LEGEND
-	STATUS ON
-	POSITION LR
-	TRANSPARENT TRUE
-END
+legend
+  status on
+  position lr
+  transparent true
+  label
+    type truetype
+    font "tahoma"
+    antialias true
+    size 8
+    color 0 0 0
+  end    
+end
 
-SYMBOL
-	NAME 'circle'
-	TYPE ELLIPSE
-	FILLED TRUE
-	POINTS 1 1 
-	END
-END
-SYMBOL
-  NAME "pijl"
-  TYPE TRUETYPE
-  FONT "arial"
-  CHARACTER ">"
-  ANTIALIAS TRUE
-  GAP -50
-END
+symbol
+  name "circle"
+  type ellipse
+  filled true
+  points 1 1
+  end
+end
 
-LAYER
-  NAME buslijnen
-  METADATA
+symbol
+  name "pijl"
+  type truetype
+  font "arial"
+  character ">"
+  antialias true
+  gap -50
+end
+
+layer
+  name buslijnen
+  metadata
     "wms_title" "buslijnen"
     "gml_include_items" "all"
-  END
-  TYPE LINE
-  DUMP true
-  TEMPLATE bla  
+  end
+  type line
+  dump true
+  template bla  
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
-  LABELITEM "publicnumber"
-  CLASS 
-    NAME ""
-    STYLE      
-	COLOR 255 0 0
-	SYMBOL "circle"
-	SIZE 3
-    END
-    #STYLE
-    #	COLOR 255 0 0
-    #   SYMBOl "pijl"
-    #   SIZE 20
-    #END
-  END		
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+  end
+  labelitem "publicnumber"
+  class 
+    name ""
+    style      
+	color 255 0 0
+	symbol "circle"
+	size 3
+    end
+    #style
+    #	color 255 0 0
+    #   symbol "pijl"
+    #   size 20
+    #end
+  end		
+  processing "close_connection=defer"
+end
 
-LAYER
-  NAME bushaltes_symbol
-  METADATA
+layer
+  name bushaltes_symbol
+  metadata
     "wms_title" "bushaltes_symbol"
     "gml_include_items" "all"
     "gml_exclude_items" "oid"        
     "wfs_title" "bushaltes"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "oid"
-  END
-  GROUP bushaltes
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla  
-  TOLERANCE 6
+  end
+  group bushaltes
+  type point
+  dump true
+  template bla  
+  tolerance 6
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "point_geom from (select oid,point_geom,validfrom,dataowner,code,name from point where name is not null) as bla using srid=28992"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
-  LABELITEM "name"  
-  CLASS 
-    NAME ""
-    STYLE      
-      SYMBOL "bushalte.gif"      
-    END 
-  END
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+  end
+  labelitem "name"  
+  class 
+    name ""
+    style      
+      symbol "bushalte.gif"      
+    end 
+  end
+  processing "CLOSE_CONNECTION=DEFER"
+end
 
-LAYER
-  NAME bushaltes_labels
-  METADATA
+layer
+  name bushaltes_labels
+  metadata
     "wms_title" "bushaltes_labels"
     "gml_include_items" "all"
-  END
-  GROUP bushaltes
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla  
+  end
+  group bushaltes
+  type point
+  dump true
+  template bla  
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
   data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
-  MAXSCALE 25000
-  LABELITEM "name"    
-  CLASS 
-    STYLE
+  end
+  maxscale 25000
+  labelitem "name"    
+  class 
+    style
     end
-    LABEL
-        TYPE truetype
-        FONT "arial"
+    label
+        type truetype
+        font "arial"
         antialias true
-        SIZE 8
-        COLOR 2 2 2
+        size 8
+        color 2 2 2
         outlinecolor 255 255 255
         buffer 2
-	fORCE true
+	force true
 	position auto
-    END  
-  END
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+    end  
+  end
+  processing "CLOSE_CONNECTION=DEFER"
+end
 
-LAYER
-  NAME triggerpunten
-  METADATA
+layer
+  name triggerpunten
+  metadata
     "wms_title" "triggerpunten"
     "gml_include_items" "all"     
     "wfs_title" "triggerpunten"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "id"
-  END
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla
-  TOLERANCE 10  
+  end
+  type point
+  dump true
+  template bla
+  tolerance 10  
   status off
   connectiontype postgis
   connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "location from (select id,command_type,location from activation) as bla using srid=28992 using unique id"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
-  CLASSITEM "command_type"
-  CLASS 
-    NAME "Onbekend"
-    EXPRESSION ""
-    STYLE      
-      SYMBOL "radio_zwart.gif"      
-    END 
-  END  
-  CLASS 
-    NAME "Inmelding"
-    EXPRESSION "1"
-    STYLE      
-      SYMBOL "radio_groen.gif"      
-    END 
-  END
-  CLASS 
-    NAME "Uitmeldpunt"
-    EXPRESSION "2"
-    STYLE      
-      SYMBOL "radio_rood.gif"      
-    END 
-  END
-  CLASS 
-    NAME "Vooraanmeldpunt"
-    EXPRESSION "3"
-    STYLE      
-      SYMBOL "radio_blauw.gif"      
-    END 
-  END
+  end
+  classitem "command_type"
+  class 
+    name "Onbekend"
+    expression ""
+    style      
+      symbol "radio_zwart.gif"      
+    end 
+  end  
+  class 
+    name "Inmelding"
+    expression "1"
+    style      
+      symbol "radio_groen.gif"      
+    end 
+  end
+  class 
+    name "Uitmeldpunt"
+    expression "2"
+    style      
+      symbol "radio_rood.gif"      
+    end 
+  end
+  class 
+    name "Vooraanmeldpunt"
+    expression "3"
+    style      
+      symbol "radio_blauw.gif"      
+    end 
+  end
   
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+  processing "CLOSE_CONNECTION=DEFER"
+end
 
-LAYER
-  NAME walapparatuur
-  METADATA
+layer
+  name walapparatuur
+  metadata
     "wms_title" "walapparatuur"
     "gml_include_items" "all"     
     "wfs_title" "walapparatuur"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "id"
-  END
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla
-  TOLERANCE 10  
+  end
+  type point
+  dump true
+  template bla
+  tolerance 10  
   status off
   connectiontype postgis
   connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "location from (select id,type,unit_number,location from roadside_equipment) as bla using srid=28992 using unique id"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
-  CLASSITEM "type"
+  end
+  classitem "type"
   labelitem unit_number
   CLASS 
     NAME "VRI"
-    EXPRESSION "CROSS"
-    STYLE      
-      SYMBOL "vri.gif"      
-    END 
-    LABEL
-        TYPE truetype
-        FONT "arial"
+    expression "CROSS"
+    style      
+      symbol "vri.gif"      
+    end 
+    label
+        type truetype
+        font "arial"
         antialias true
-        SIZE 10
-        COLOR 255 255 255
+        size 10
+        color 255 255 255
         outlinecolor 0 150 0
         offset -3 -3
 	position ur
-    END      
-  END  
-  CLASS 
-    NAME "Selectieve afsluiting"
-    EXPRESSION "CLOSE"
-    STYLE      
-      SYMBOL "close.gif"      
-    END 
-    LABEL
-        TYPE truetype
-        FONT "arial"
+    end      
+  end  
+  class 
+    name "Selectieve afsluiting"
+    expression "CLOSE"
+    style      
+      symbol "close.gif"      
+    end 
+    label
+        type truetype
+        font "arial"
         antialias true
-        SIZE 10
-        COLOR 255 255 255
+        size 10
+        color 255 255 255
         outlinecolor 0 150 0
         offset -2 -2
 	position ur
-    END      
-  END
-  CLASS 
-    NAME "Halteprocessor"
-    EXPRESSION "PIU"
-    STYLE      
-      SYMBOL "piu.gif"      
-    END 
-    LABEL
-        TYPE truetype
-        FONT "arial"
+    end      
+  end
+  class 
+    name "Halteprocessor"
+    expression "PIU"
+    style      
+      symbol "piu.gif"      
+    end 
+    label
+        type truetype
+        font "arial"
         antialias true
-        SIZE 10
-        COLOR 255 255 255
+        size 10
+        color 255 255 255
         outlinecolor 0 150 0
         offset -2 -2
 	position ur
-    END     
-  END
+    end     
+  end
   
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+  processing "close_connection=defer"
+end
 
-LAYER
-  NAME signaalgroepen
-  METADATA
+layer
+  name signaalgroepen
+  metadata
     "wms_title" "signaalgroepen"
     "gml_include_items" "all"     
     "wfs_title" "signaalgroepen"
     "wfs_srs"  "EPSG:28992"
     "gml_featureid" "id"
-  END
-  TYPE POINT
-  DUMP true
-  TEMPLATE bla
-  TOLERANCE 10  
+  end
+  type point
+  dump true
+  template bla
+  tolerance 10  
   status off
   connectiontype postgis
   connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
   data "stop_line_location from (select id,kar_signal_group,stop_line_location,case meters_after_stop_line when '0' then 'ag-rood.gif' else 'ag.gif' end as symbol from activation_group) as bla using srid=28992 using unique id"
-  PROJECTION
+  projection
     "init=epsg:28992"
-  END
+  end
   labelitem kar_signal_group
-  CLASS 
-    NAME "Signaalgroep"
-    STYLE      
-      SYMBOL [symbol]
-    END
-    LABEL
-        TYPE truetype
-        FONT "arial"
+  class 
+    name "Signaalgroep"
+    style      
+      symbol [symbol]
+    end
+    label
+        type truetype
+        font "arial"
         antialias true
-        SIZE 10
-        COLOR 255 255 255
+        size 10
+        color 255 255 255
         offset -2 -2
         outlinecolor 0 0 0
 	position ur
-    END    
-  END  
-  
-  PROCESSING "CLOSE_CONNECTION=DEFER"
-END
+    end    
+  end
+ 
+  processing "CLOSE_CONNECTION=DEFER"
+end
 
-END
+end

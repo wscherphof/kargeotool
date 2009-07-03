@@ -46,8 +46,7 @@
                 <item label="Walapparatuur" canhide="true" listento="kar_layer.walapparatuur"/>
                 <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/>
                 <item label="Signaalgroepen" canhide="true" listento="kar_layer.signaalgroepen"/>
-                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png&amp;symbol=ag.gif"/>
-                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png&amp;symbol=ag-rood.gif"/>
+                <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen_legend&amp;format=image/png&amp;"/>
                 <item label="Triggerpunten" canhide="true" listento="kar_layer.triggerpunten"/>
                 <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/>
 			</group>
@@ -63,7 +62,7 @@
 			</group>
 		</fmc:Legend>
         <fmc:EditInfoPanel id="editInfoPanel" left="2%" top="455" height="160" listento="drawMap"/>
-		<fmc:LocationFinder id="locationfinder" top="590" width="100%" left="0%" height="250" listento="map" controls="true">
+		<fmc:LocationFinder id="locationfinder" top="591" width="100%" left="0%" height="250" listento="map" controls="true">
             <style id=".nohit" font-family="tahoma, sans-serif" font-size="11" color="#000000" font-weight="bold" display="block"/>
             <style id=".busy" font-family="tahoma, sans-serif" font-size="11" color="#444444" font-style="italic" display="block"/>
             <style id=".feature" font-family="tahoma, sans-serif" font-size="11" color="#0066cc" display="block"/>
