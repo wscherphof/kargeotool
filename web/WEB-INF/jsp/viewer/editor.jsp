@@ -137,7 +137,7 @@
 
         if(info.toLowerCase().indexOf("error") == 0) {
             if(info.toLowerCase().indexOf("no objects found") != -1) {
-                alert("Geen objecten gevonden op deze locatie");
+                //alert("Geen objecten gevonden op deze locatie");
             } else {
                 alert(info);
             }
@@ -319,7 +319,10 @@
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
         if("map_kar_layer" == layer) {
-            if(data != undefined) {
+            if(data.bushaltes_symbol != undefined) {
+                flamingo.callMethod("bushalte_info", "show");
+            }
+            if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
                 document.getElementById("loading").style.visibility = "visible";
                 Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }

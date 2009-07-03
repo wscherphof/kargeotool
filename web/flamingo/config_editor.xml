@@ -86,11 +86,29 @@
             <string id="xy" nl="X: [x]     Y: [y]"/>
         </fmc:Coordinates>
     </fmc:Container>
+
     <fmc:Window id="location" title="Locatie" left="right -315" top="bottom -180" width="145" height="180" canresize="false" visible="false">
         <fmc:Container width="100%" height="100%" backgroundcolor="#ffffff">
             <fmc:EditInfoPanel id="editInfoPanel" height="180" listento="drawMap"/>
         </fmc:Container>
     </fmc:Window>
+
+    <fmc:Window id="bushalte_info" title="Bushalte info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
+        <fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
+            <fmc:IdentifyResults id="info" width="100%" height="100%" visible="true" listento="map" showonidentify="false">
+                <style id=".field" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="bold"/>
+                <style id=".value" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="normal"/>
+                <style id=".maplayer" font-family="verdana" font-size="13px" color="#000000" display="block" font-weight="normal"/>
+                <style id=".layer" font-family="verdana" font-size="12px" color="#000000" display="block" font-weight="normal"/>
+                <string id="startidentify" en="Loading" nl="Info wordt opgehaald"/>
+                <string id="identify" en="[progress]%" nl="[progress]%"/>
+                <string id="finishidentify" en="Information" nl="Informatie"/>
+                <string id="seperator" en=":" nl=":"/>
+                <style id="a" font-family="arial" font-size="10px" color="#333399" display="block" font-weight="normal" text-decoration="underline"/>
+            </fmc:IdentifyResults>
+        </fmc:Container>
+    </fmc:Window>
+
     <fmc:Container backgroundcolor="#F5F5F5" left="0" top="0" height="100%" width="100%">
         <fmc:MonitorLayer id="monitorl" left="37%" top="50%" width="50%" listento="map">
             <string id="waiting" en="Making... [layer] [percentage]%..." nl="Kaart aan het maken..."/>
@@ -107,4 +125,5 @@
             <fmc:ButtonNext left="210" listento="map"/>
         </fmc:ToolGroup>
     </fmc:Container>
+
 </FLAMINGO>
