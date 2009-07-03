@@ -3,12 +3,12 @@
   <persistence-unit name="karGisPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <properties>
-      <property name="hibernate.connection.username" value="kar_gis"/>
+      <property name="hibernate.connection.username" value="geo_ov"/>
       <property name="hibernate.connection.driver_class" value="org.postgis.DriverWrapper"/>
       <property name="hibernate.connection.password" value="xXxXxXxXxXx"/>
       <!-- productie: -->
-      <!--property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://x5.b3p.nl:5432/kar_gis"/-->
-      <property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://b3p-demoserver:5432/kar_gis"/>
+      <!--property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://x5.b3p.nl:5432/geo_ov"/-->
+      <property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://b3p-demoserver:5432/geo_ov"/>
       <property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
       <property name="hibernate.dialect" value="org.hibernatespatial.postgis.PostgisDialect"/>
