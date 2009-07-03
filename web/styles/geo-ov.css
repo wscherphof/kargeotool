@@ -71,7 +71,7 @@ body.form {
 }
 
 #objectTree .selected {
-    margin: 1px;
+    /*margin: 1px;*/
     font-weight: bold;
 }
 
