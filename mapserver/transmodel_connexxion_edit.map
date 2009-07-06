@@ -37,10 +37,11 @@ legend
   status on
   position lr
   transparent true
+  
   label
     type truetype
-    font "tahoma"
-    antialias true
+    font "verdana"
+    antialias false # werkt niet
     size 8
     color 0 0 0
   end    
@@ -50,8 +51,7 @@ symbol
   name "circle"
   type ellipse
   filled true
-  points 1 1
-  end
+  points 1 1 end
 end
 
 symbol
@@ -93,7 +93,7 @@ layer
     #   size 20
     #end
   end		
-  processing "close_connection=defer"
+  processing "CLOSE_CONNECTION=DEFER"
 end
 
 layer
@@ -114,7 +114,7 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,validfrom,dataowner,code,name from point where name is not null) as bla using srid=28992"
+  data "point_geom from (select oid,point_geom,name,code,dataowner,validfrom from point where name is not null) as bla using srid=28992"
   projection
     "init=epsg:28992"
   end
@@ -136,7 +136,7 @@ layer
   end
   group bushaltes
   type point
-  dump true
+  dump false
   template bla  
   status off
   connectiontype postgis
@@ -292,7 +292,7 @@ layer
     end     
   end
   
-  processing "close_connection=defer"
+  processing "CLOSE_CONNECTION=DEFER"
 end
 
 layer
@@ -330,10 +330,38 @@ layer
         offset -2 -2
         outlinecolor 0 0 0
 	position ur
-    end    
+    end
   end
- 
+  
   processing "CLOSE_CONNECTION=DEFER"
+end
+
+layer
+  name signaalgroepen_legend
+  metadata
+    "wms_title" "signaalgroepen_legend"
+    "gml_include_items" "all"     
+    "wfs_title" "signaalgroepen_legend"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "id"
+  end
+  projection
+    "init=epsg:28992"
+  end  
+  type point
+  status off
+  class
+    name "Signaalgroep"
+    style      
+      symbol ag.gif
+    end
+  end
+  class
+    name "Signaalgroep/uitmelding"
+    style      
+      symbol ag-rood.gif
+    end
+  end
 end
 
 end
