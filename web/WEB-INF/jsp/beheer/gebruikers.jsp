@@ -1,14 +1,14 @@
 <%@include file="/WEB-INF/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
 
-<h1>Gebruikersbeheer</h1>
+<h2>Gebruikersbeheer</h2>
 
 <c:set var="form" value="${gebruikersForm.map}"/>
 
 <html:javascript formName="gebruikersForm" staticJavascript="false"/>
 <script type="text/javascript" src="<html:rewrite module="" page="/js/table.js"/>"></script>
 
-<html:form action="/gebruikers.do" method="POST" onsubmit="return validateGebruikersForm(this)">
+<html:form action="/gebruikers.do" method="POST" onsubmit="return validateGebruikersForm(this)" style="\" autocomplete='off'">
 
 <c:set var="focus" value="username" scope="request"/>
 <tiles:insert definition="setFocus"/>
@@ -22,6 +22,7 @@
 <c:if test="${!empty gebruikers}">
     Aantal gebruikers: <b>${fn:length(gebruikers)}</b>
     <p>
+    <div style="max-height: 180px; overflow: auto; padding: 1px; width: 600px">
     <table border="1" cellpadding="3" style="border-collapse: collapse" class="table-autosort:0 table-stripeclass:alternate">
         <thead>
             <tr>
@@ -40,15 +41,15 @@
                     <c:set var="col" value="#cccccc"/>
                 </c:if>
                 <tr bgcolor="${col}">
-                    <td><html:link href="${editLink}"><c:out value="${g.username}"/></html:link></td>
-                    <td><c:out value="${g.fullname}"/></td>
-                    <td><c:out value="${g.email}"/></td>
-                    <td><c:out value="${g.phone}"/></td>
+                    <td style="width: 150px"><html:link href="${editLink}"><c:out value="${g.username}"/></html:link></td>
+                    <td style="width: 200px"><c:out value="${g.fullname}"/></td>
+                    <td style="width: 200px"><c:out value="${g.email}"/></td>
+                    <td style="width: 100px"><c:out value="${g.phone}"/></td>
                     <td>
                         <%-- niet gebruiker zichzelf laten verwijderen --%>
                         <c:if test="${g.username != pageContext.request.userPrincipal.username}">
                             <html:link page="/gebruikers.do?delete=t&amp;id=${g.id}">
-                                <html:img page="/images/delete.gif" altKey="button.remove" module="" border="0" vspace="2"/>
+                                <html:img page="/images/delete.gif" altKey="button.remove" module="" border="0"/>
                             </html:link>
                         </c:if>
                     </td>
@@ -56,6 +57,7 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
 <p>
 <tiles:insert definition="infoblock"/>
 
@@ -79,6 +81,9 @@
             </c:otherwise>
         </c:choose>
         <p>
+        <table>
+            <tr>
+                <td>
         <table>
             <tr>
                 <td><fmt:message key="gebruiker.username"/></td>
@@ -118,6 +123,21 @@
 
             </tr>
         </table>
+                </td>
+                <td valign="top">
+                    <%-- WIP
+                    <c:set var="isBeheerder" value="${user.roles.contains.. etc'beheerder')}"/>
+        <div id="beheerder" style="display: ${isBeheerder ? 'block' : 'none'} ">
+            Een beheerder kan van alle wegbeheerders gegevens bewerken en valideren.
+        </div>
+        <div id="nietBeheerder" style="display: ${isBeheerder ? 'none' : 'block'}">
+            Gebruiker kan gegevens van de onderstaande wegbeheerders bewerken of valideren:
+        </div>--%>
+                </td>
+            </tr>
+        </table>
+
+
     </c:if>
     <c:if test="${empty form.id}">
         <html:submit property="create" onclick="bCancel=true;">Nieuw account toevoegen</html:submit>

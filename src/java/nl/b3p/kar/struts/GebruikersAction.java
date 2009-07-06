@@ -24,50 +24,51 @@ public class GebruikersAction extends BaseDatabaseAction {
 
     @Override
     protected Map getActionMethodPropertiesMap() {
-		Map map = new HashMap();
-		map.put("save", new ExtendedMethodProperties("save", FORM, FORM));
-		map.put("delete", new ExtendedMethodProperties("delete", FORM, FORM));
-		map.put("edit", new ExtendedMethodProperties("edit", FORM, FORM));
-		map.put("create", new ExtendedMethodProperties("create", FORM, FORM));
-		map.put("list", new ExtendedMethodProperties("list", FORM, FORM));
-		return map;
+        Map map = new HashMap();
+        map.put("save", new ExtendedMethodProperties("save", FORM, FORM));
+        map.put("delete", new ExtendedMethodProperties("delete", FORM, FORM));
+        map.put("edit", new ExtendedMethodProperties("edit", FORM, FORM));
+        map.put("create", new ExtendedMethodProperties("create", FORM, FORM));
+        map.put("list", new ExtendedMethodProperties("list", FORM, FORM));
+        return map;
     }
 
     @Override
-	protected ActionForward getUnspecifiedAlternateForward(ActionMapping mapping, HttpServletRequest request) {
-		return mapping.findForward(FORM);
-	}
+    protected ActionForward getUnspecifiedAlternateForward(ActionMapping mapping, HttpServletRequest request) {
+        return mapping.findForward(FORM);
+    }
 
-	public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		/* standaard actie is list */
-		return list(mapping, form, request, response);
-	}
+    public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        /* standaard actie is list */
+        return list(mapping, form, request, response);
+    }
 
-	public ActionForward cancelled(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		/* bij cancel knop clear confirmAction en ga naar list mode */
-		DynaValidatorForm dynaForm = (DynaValidatorForm)form;
-		dynaForm.set("confirmAction", null);
+    public ActionForward cancelled(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        /* bij cancel knop clear confirmAction en ga naar list mode */
+        DynaValidatorForm dynaForm = (DynaValidatorForm)form;
+        dynaForm.set("confirmAction", null);
         dynaForm.set("id", null);
-		return list(mapping, form, request, response);
-	}
+        return list(mapping, form, request, response);
+    }
 
-	public ActionForward list(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward list(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         createLists(form, request);
         return mapping.findForward(FORM);
-	}
+    }
 
-	public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		form.initialize(mapping);
-		createLists(form, request);
+    public ActionForward create(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        form.initialize(mapping);
+        createLists(form, request);
         form.set("id", -1);
-		return mapping.findForward(FORM);
-	}
+        return mapping.findForward(FORM);
+    }
 
-	private void createLists(DynaValidatorForm form, HttpServletRequest request) throws Exception {
+    private void createLists(DynaValidatorForm form, HttpServletRequest request) throws Exception {
         EntityManager em = getEntityManager();
         request.setAttribute("gebruikers", em.createQuery("from Gebruiker order by id").getResultList());
         request.setAttribute("availableRoles", em.createQuery("from Role order by id").getResultList());
-	}
+        //request.setAttribute("roadOwners", em.createQuery("from DataOwner where
+    }
 
     private Gebruiker getGebruiker(DynaValidatorForm form, HttpServletRequest request, boolean createNew) throws Exception {
         EntityManager em = getEntityManager();
@@ -129,38 +130,38 @@ public class GebruikersAction extends BaseDatabaseAction {
         g.setRoles(s);
     }
     
-	public ActionForward edit(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward edit(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Gebruiker g = getGebruiker(form, request, false);
-		if(g == null) {
-			return list(mapping, form, request, response);
-		}
-		populateGebruikerForm(g, form, request);
-		createLists(form, request);
+        if(g == null) {
+                return list(mapping, form, request, response);
+        }
+        populateGebruikerForm(g, form, request);
+        createLists(form, request);
 
-		return mapping.findForward(FORM);
-	}
+        return mapping.findForward(FORM);
+    }
 
-	public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
         ActionErrors errors = form.validate(mapping, request);
-		if(!errors.isEmpty()) {
-			addMessages(request, errors);
-			createLists(form, request);
-			return mapping.findForward(FORM);
-		}
+        if(!errors.isEmpty()) {
+            addMessages(request, errors);
+            createLists(form, request);
+            return mapping.findForward(FORM);
+        }
 
         Gebruiker g = getGebruiker(form, request, true);
-		if(g == null) {
-			return list(mapping, form, request, response);
-		}
+        if(g == null) {
+            return list(mapping, form, request, response);
+        }
 
-		/* Controles of er al een andere persoon met dezelfde unique properties
-		 * als in het form staan bestaat. Dit moet voor het veranderen van het
-		 * persistant object.
-		 */
+        /* Controles of er al een andere persoon met dezelfde unique properties
+         * als in het form staan bestaat. Dit moet voor het veranderen van het
+         * persistant object.
+         */
 
-		/* check of username al bestaat */
+        /* check of username al bestaat */
         Gebruiker bestaandeUsername = null;
         try {
             bestaandeUsername = (Gebruiker)em.createQuery("from Gebruiker g where g.id <> :editingId and lower(g.username) = lower(:username)")
@@ -170,54 +171,53 @@ public class GebruikersAction extends BaseDatabaseAction {
         } catch(NoResultException nre) {
             /* debiele API */
         }
-		if(bestaandeUsername != null) {
-			addMessage(request, "gebruiker.save.usernameBestaat");
-			createLists(form, request);
-			return mapping.findForward(FORM);
-		}       
+        if(bestaandeUsername != null) {
+            addMessage(request, "gebruiker.save.usernameBestaat");
+            createLists(form, request);
+            return mapping.findForward(FORM);
+        }
 
-		populateGebruikerObject(form, g, request);
+        populateGebruikerObject(form, g, request);
 
         em.merge(g);
-		em.flush();
+        em.flush();
 
-		createLists(form, request);
+        createLists(form, request);
 
-		addMessage(request, "gebruiker.save.success");
-        
-		return mapping.findForward(FORM);
-	}
+        addMessage(request, "gebruiker.save.success");
 
-	public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return mapping.findForward(FORM);
+    }
+
+    public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
-		if(!"delete".equals(form.get("confirmAction"))) {           
-			addMessage(request, "gebruiker.delete.confirm");
-			form.set("confirmAction", "delete");
-			edit(mapping, form, request, response);
-			return mapping.findForward(FORM);
-		}
+        if(!"delete".equals(form.get("confirmAction"))) {
+            addMessage(request, "gebruiker.delete.confirm");
+            form.set("confirmAction", "delete");
+            edit(mapping, form, request, response);
+            return mapping.findForward(FORM);
+        }
 
-		Gebruiker g = getGebruiker(form, request, false);
-		if(g == null) {
-			return list(mapping, form, request, response);
-		}
+        Gebruiker g = getGebruiker(form, request, false);
+        if(g == null) {
+            return list(mapping, form, request, response);
+        }
 
-		em.remove(g);
-		em.flush();
+        em.remove(g);
+        em.flush();
 
-		/* XXX pas bij committen krijg je constraint/save exceptions, maar dan
-		 * is al wel succes message toegevoegd. Dit in request attribute saven
-		 * en superclass pas bij Tx successvol commit laten toevoegen of methode
-		 * laten aanroepen die dat doet?
-		 * Nu al committen kan niet omdat list() weer uitleest? Of dat in nieuwe
-		 * Tx
-		 */
-		addMessage(request, "gebruiker.delete.success");
+        /* XXX pas bij committen krijg je constraint/save exceptions, maar dan
+         * is al wel succes message toegevoegd. Dit in request attribute saven
+         * en superclass pas bij Tx successvol commit laten toevoegen of methode
+         * laten aanroepen die dat doet?
+         * Nu al committen kan niet omdat list() weer uitleest? Of dat in nieuwe
+         * Tx
+         */
+        addMessage(request, "gebruiker.delete.success");
 
-		form.set("id", null);
+        form.set("id", null);
 
-		return list(mapping, form, request, response);
-	}
-
+        return list(mapping, form, request, response);
+    }
 }

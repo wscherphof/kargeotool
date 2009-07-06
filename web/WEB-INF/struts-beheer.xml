@@ -6,7 +6,7 @@
 <struts-config>
     <form-beans>
         <form-bean name="gebruikersForm" type="org.apache.struts.validator.DynaValidatorForm">
-			<!-- hidden property voor JavaScript submit -->
+            <!-- hidden property voor JavaScript submit -->
             <form-property name="confirmAction" type="java.lang.String"/>
 
             <form-property name="id" type="java.lang.Integer"/>
@@ -19,6 +19,9 @@
             <form-property name="role" type="java.lang.String"/>
             <form-property name="loc" type="java.lang.String"/>
             <form-property name="roles" type="java.lang.Integer[]"/>
+
+            <form-property name="roadOwnersEditable" type="java.lang.String"/>
+            <form-property name="roadOwnersValidatable" type="java.lang.String"/>
         </form-bean>
     </form-beans>
     <global-forwards>
