@@ -74,6 +74,10 @@
         <servlet-name>action</servlet-name>
         <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
         <init-param>
+            <param-name>chainConfig</param-name>
+            <param-value>org/apache/struts/tiles/chain-config.xml</param-value>
+        </init-param>
+        <init-param>
             <param-name>config</param-name>
             <param-value>/WEB-INF/struts-root.xml</param-value>
         </init-param>
@@ -81,7 +85,6 @@
             <param-name>config/viewer</param-name>
             <param-value>/WEB-INF/struts-viewer.xml</param-value>
         </init-param>
-
         <init-param>
             <param-name>config/beheer</param-name>
             <param-value>/WEB-INF/struts-beheer.xml</param-value>
