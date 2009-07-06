@@ -37,7 +37,7 @@
     <natural-id mutable="true">
       <many-to-one name="roadsideEquipment" not-null="true" lazy="false"/>
       <property name="karSignalGroup" not-null="true"/>
-      <property name="validFrom" not-null="true"/>
+      <property name="validFrom" not-null="false"/>
     </natural-id>
     <property name="type" not-null="true"/>
     <property name="directionAtIntersection" not-null="true"/>
