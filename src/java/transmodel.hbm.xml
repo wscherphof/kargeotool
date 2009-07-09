@@ -83,9 +83,15 @@
     <property name="validationTime"/>
   </class>
   <class name="nl.b3p.transmodel.DataOwner">
-    <id name="code">
-      <generator class="assigned"/>
+    <id name="id">
+      <column name="id" sql-type="serial"/>
+      <generator class="native">
+        <param name="sequence">data_owner_id_seq</param>
+      </generator>
     </id>
+    <natural-id mutable="false">
+        <property name="code" not-null="true"/>
+    </natural-id>
     <property name="type" not-null="true"/>
     <property name="name" not-null="true"/>
     <property name="description"/>

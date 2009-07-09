@@ -1,6 +1,7 @@
 package nl.b3p.transmodel;
 
 public class DataOwner {
+    private Integer id;
     private String code;
     private String type;
     private String name;
@@ -20,6 +21,14 @@ public class DataOwner {
      */
     public static final String TYPE_COPR = "COPR";
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
     public String getCode() {
         return code;
     }

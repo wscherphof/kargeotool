@@ -1,5 +1,6 @@
 <%@include file="/WEB-INF/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
+<%@page import="nl.b3p.kar.hibernate.Gebruiker" %>
 
 <h2>Gebruikersbeheer</h2>
 
@@ -125,14 +126,37 @@
         </table>
                 </td>
                 <td valign="top">
-                    <%-- WIP
-                    <c:set var="isBeheerder" value="${user.roles.contains.. etc'beheerder')}"/>
-        <div id="beheerder" style="display: ${isBeheerder ? 'block' : 'none'} ">
-            Een beheerder kan van alle wegbeheerders gegevens bewerken en valideren.
-        </div>
-        <div id="nietBeheerder" style="display: ${isBeheerder ? 'none' : 'block'}">
-            Gebruiker kan gegevens van de onderstaande wegbeheerders bewerken of valideren:
-        </div>--%>
+                    <c:set var="isBeheerder" value="${false}"/>
+                    <c:if test="${!empty gebruiker}">
+                        <c:set var="isBeheerder"><%= ((Gebruiker)request.getAttribute("gebruiker")).isInRole("beheerder") %></c:set>
+                    </c:if>
+            <div id="roListHeader">
+                <div id="beheerder" style="display: ${isBeheerder ? 'block' : 'none'} ">
+                    Een beheerder kan van alle wegbeheerders gegevens bewerken en valideren.
+                </div>
+                <div id="nietBeheerder" style="display: ${isBeheerder ? 'none' : 'block'}">
+                    Gebruiker kan gegevens van de onderstaande wegbeheerders bewerken of valideren:
+                </div>
+            </div>
+            <div id="roList">
+                <table>
+                    <tr>
+                        <th style="width: 35px">Code</th>
+                        <th style="width: 160px">Naam</th>
+                        <th style="width: 60px">Bewerken</th>
+                        <th style="width: 60px">Valideren</th>
+                    </tr>
+                    <c:forEach var="dor" items="${dataOwnerRights}">
+
+                        <tr>
+                            <td>${dor.dataOwner.code}</td>
+                            <td>${dor.dataOwner.name}</td>
+                            <td style="text-align: center">${dor.editable ? 'Ja' : ''}</td>
+                            <td style="text-align: center">${dor.validatable ? 'Ja' : ''}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
                 </td>
             </tr>
         </table>

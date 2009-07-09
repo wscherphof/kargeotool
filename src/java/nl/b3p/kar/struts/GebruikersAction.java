@@ -1,8 +1,12 @@
 package nl.b3p.kar.struts;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -12,11 +16,14 @@ import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.GebruikerDataOwnerRights;
 import nl.b3p.kar.hibernate.Role;
+import nl.b3p.transmodel.DataOwner;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
+import org.hibernate.Hibernate;
 
 public class GebruikersAction extends BaseDatabaseAction {
 
@@ -67,7 +74,10 @@ public class GebruikersAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         request.setAttribute("gebruikers", em.createQuery("from Gebruiker order by id").getResultList());
         request.setAttribute("availableRoles", em.createQuery("from Role order by id").getResultList());
-        //request.setAttribute("roadOwners", em.createQuery("from DataOwner where
+        request.setAttribute("roadOwners", 
+                em.createQuery("from DataOwner where type = :type orderro by id")
+                .setParameter("type", DataOwner.TYPE_ROOW)
+                .getResultList());
     }
 
     private Gebruiker getGebruiker(DynaValidatorForm form, HttpServletRequest request, boolean createNew) throws Exception {
@@ -107,6 +117,19 @@ public class GebruikersAction extends BaseDatabaseAction {
             roles[i]=((Role)it.next()).getId();
         }
         form.set("roles",roles);
+
+        List<GebruikerDataOwnerRights> dataOwnerRights = new ArrayList<GebruikerDataOwnerRights>();
+        dataOwnerRights.addAll(g.getDataOwnerRights().values());
+        Collections.sort(dataOwnerRights, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                GebruikerDataOwnerRights dor1 = (GebruikerDataOwnerRights)o1;
+                GebruikerDataOwnerRights dor2 = (GebruikerDataOwnerRights)o2;
+                Hibernate.initialize(dor1.getDataOwner());
+                Hibernate.initialize(dor2.getDataOwner());
+                return dor1.getDataOwner().getId().compareTo(dor2.getDataOwner().getId());
+            }
+        });
+        request.setAttribute("dataOwnerRights", dataOwnerRights);
     }
 
     private void populateGebruikerObject(DynaValidatorForm form, Gebruiker g, HttpServletRequest request) throws Exception {

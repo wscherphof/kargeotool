@@ -56,7 +56,7 @@
                         <html:option value=""/>
                     </c:if>
                     <c:forEach var="do" items="${dataOwners}">
-                        <html:option value="${do.code}"><c:out value="${do.name}"/></html:option>
+                        <html:option value="${do.id}"><c:out value="${do.name}"/></html:option>
                     </c:forEach>
                 </html:select>
             </td>

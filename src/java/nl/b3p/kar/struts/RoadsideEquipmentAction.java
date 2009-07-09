@@ -112,14 +112,14 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             rseq.getDataOwner().getName();
         }
         request.setAttribute("dataOwners",
-                em.createQuery("from DataOwner where type = :type order by name")
+                em.createQuery("from DataOwner where type = :type order by id")
                 .setParameter("type", DataOwner.TYPE_ROOW)
                 .getResultList());
     }
 
     protected void populateForm(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws Exception {
         form.set("id", rseq.getId() + "");
-        form.set("dataOwner", rseq.getDataOwner().getCode());
+        form.set("dataOwner", rseq.getDataOwner().getId() + "");
         form.set("unitNumber", rseq.getUnitNumber() + "");
         form.set("type", rseq.getType());
         form.set("radioAddress", rseq.getRadioAddress());
@@ -134,7 +134,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
         /* form is al gevalideerd, ook unique constraints e.d. zijn al gechecked  */
 
-        String dataOwner = FormUtils.nullIfEmpty(form.getString("dataOwner"));
+        Integer dataOwner = FormUtils.StringToInteger(form.getString("dataOwner"));
         DataOwner dao = null;
         if(dataOwner != null) {
             dao = getEntityManager().find(DataOwner.class, dataOwner);

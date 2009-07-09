@@ -115,6 +115,16 @@ public class Gebruiker implements Principal {
         this.roles = roles;
     }
 
+    public boolean isInRole(String roleName) {
+        for(Iterator it = getRoles().iterator(); it.hasNext();) {
+            Role r = (Role)it.next();
+            if(r.getRole().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Map<DataOwner, GebruikerDataOwnerRights> getDataOwnerRights() {
         return dataOwnerRights;
     }

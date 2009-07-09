@@ -330,3 +330,23 @@ td.disabled {
 .changed {
     color: red;
 }
+
+#roListHeader {
+    width: 300px;
+    margin-bottom: 8pt;
+}
+
+#roList {
+    width: 300px;
+    height: 200px;
+    overflow: auto;
+    border: 2px solid threedface;
+}
+
+#roList td {
+    background-color: #eeeeee;
+}
+
+#roList th {
+    background-color: #aaaaaa;
+}
