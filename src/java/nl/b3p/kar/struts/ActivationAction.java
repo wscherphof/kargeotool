@@ -239,6 +239,7 @@ public final class ActivationAction extends TreeItemAction {
         Activation emptyA = new Activation();
         emptyA.setLocation(a.getLocation());
         request.setAttribute("activation", emptyA);
+        form.set("location", emptyA.getLocationString(" "));
         return mapping.findForward(SUCCESS);
     }
 

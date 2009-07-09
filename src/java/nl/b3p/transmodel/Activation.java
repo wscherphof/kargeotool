@@ -163,10 +163,14 @@ public class Activation implements EditorTreeObject, Cloneable {
     }
 
     public String getLocationString() {
+        return getLocationString(", ");
+    }
+
+    public String getLocationString(String separator) {
         if(location != null) {
             NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
             nf.setGroupingUsed(false);
-            return nf.format(location.getCoordinate().x) + ", " + nf.format(location.getCoordinate().y);
+            return nf.format(location.getCoordinate().x) + separator + nf.format(location.getCoordinate().y);
         } else {
             return null;
         }
