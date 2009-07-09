@@ -215,7 +215,7 @@
         window.frames["form"].location = url;
     }
 
-    var zoomBorder = 80;
+    var zoomBorder = 150;
 
     function options_zoomToObject() {
         if(selectedObject != undefined && selectedObject != null) {
