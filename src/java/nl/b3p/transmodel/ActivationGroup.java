@@ -140,14 +140,18 @@ public class ActivationGroup implements EditorTreeObject {
         this.stopLineLocation = stopLineLocation;
     }
 
-    public String getStopLineLocationString() {
+    public String getStopLineLocationString(String separator) {
         if(stopLineLocation != null) {
             NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
             nf.setGroupingUsed(false);
-            return nf.format(stopLineLocation.getCoordinate().x) + ", " + nf.format(stopLineLocation.getCoordinate().y);
+            return nf.format(stopLineLocation.getCoordinate().x) + separator + nf.format(stopLineLocation.getCoordinate().y);
         } else {
             return null;
         }
+    }
+    
+    public String getStopLineLocationString() {
+        return getStopLineLocationString(", ");
     }
 
     public String getUpdater() {

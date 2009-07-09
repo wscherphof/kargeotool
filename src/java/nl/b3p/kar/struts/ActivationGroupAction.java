@@ -268,6 +268,7 @@ public final class ActivationGroupAction extends TreeItemAction {
         ActivationGroup emptyAg = new ActivationGroup();
         emptyAg.setStopLineLocation(ag.getStopLineLocation());
         request.setAttribute("activationGroup", emptyAg);
+        form.set("location", emptyAg.getStopLineLocationString(" "));
         return mapping.findForward(SUCCESS);
     }
 
