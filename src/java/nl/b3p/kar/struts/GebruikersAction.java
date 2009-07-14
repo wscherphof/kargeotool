@@ -1,6 +1,7 @@
 package nl.b3p.kar.struts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.Hibernate;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class GebruikersAction extends BaseDatabaseAction {
 
@@ -74,10 +77,21 @@ public class GebruikersAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         request.setAttribute("gebruikers", em.createQuery("from Gebruiker order by id").getResultList());
         request.setAttribute("availableRoles", em.createQuery("from Role order by id").getResultList());
-        request.setAttribute("roadOwners", 
-                em.createQuery("from DataOwner where type = :type orderro by id")
-                .setParameter("type", DataOwner.TYPE_ROOW)
-                .getResultList());
+        List dataOwners = em.createQuery("from DataOwner" + /* where type = :type */ " order by id")
+                /*.setParameter("type", DataOwner.TYPE_ROOW)*/
+                .getResultList();
+        request.setAttribute("dataOwners", dataOwners);
+
+        JSONArray dataOwnersJson = new JSONArray();
+        for(Iterator it = dataOwners.iterator(); it.hasNext();) {
+            DataOwner dao = (DataOwner)it.next();
+            JSONObject daoJson = new JSONObject();
+            daoJson.put("id", dao.getId());
+            daoJson.put("code", dao.getCode());
+            daoJson.put("name", dao.getName());
+            dataOwnersJson.put(daoJson);
+        }
+        request.setAttribute("dataOwnersJson", dataOwnersJson);
     }
 
     private Gebruiker getGebruiker(DynaValidatorForm form, HttpServletRequest request, boolean createNew) throws Exception {
@@ -118,6 +132,23 @@ public class GebruikersAction extends BaseDatabaseAction {
         }
         form.set("roles",roles);
 
+        List dataOwnersEditable = new ArrayList();
+        List dataOwnersValidatable = new ArrayList();
+
+        for(Iterator<GebruikerDataOwnerRights> it2 = g.getDataOwnerRights().values().iterator(); it2.hasNext();) {
+            GebruikerDataOwnerRights dor = it2.next();
+            if(dor.isEditable()) {
+                dataOwnersEditable.add(dor.getDataOwner().getId() + "");
+            }
+            if(dor.isValidatable()) {
+                dataOwnersValidatable.add(dor.getDataOwner().getId() + "");
+            }
+        }
+        
+        form.set("dataOwnersEditable", dataOwnersEditable.toArray(new String[]{}));
+        form.set("dataOwnersValidatable", dataOwnersValidatable.toArray(new String[]{}));
+
+        /* Sorteer values van map op id van dataowner, voor consistente volgorde */
         List<GebruikerDataOwnerRights> dataOwnerRights = new ArrayList<GebruikerDataOwnerRights>();
         dataOwnerRights.addAll(g.getDataOwnerRights().values());
         Collections.sort(dataOwnerRights, new Comparator() {
@@ -151,6 +182,20 @@ public class GebruikersAction extends BaseDatabaseAction {
                 s.add(r);
         }
         g.setRoles(s);
+
+        String[] dataOwnersEditable = (String[])form.get("dataOwnersEditable");
+        String[] dataOwnersValidatable = (String[])form.get("dataOwnersValidatable");
+
+        g.getDataOwnerRights().clear();
+        em.flush();
+        for(int i = 0; i < dataOwnersEditable.length; i++) {
+            DataOwner dao = em.find(DataOwner.class, Integer.parseInt(dataOwnersEditable[i]));
+            g.setDataOwnerRight(dao, Boolean.TRUE, null);
+        }
+        for(int i = 0; i < dataOwnersValidatable.length; i++) {
+            DataOwner dao = em.find(DataOwner.class, Integer.parseInt(dataOwnersValidatable[i]));
+            g.setDataOwnerRight(dao, null, Boolean.TRUE);
+        }
     }
     
     public ActionForward edit(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -205,6 +250,7 @@ public class GebruikersAction extends BaseDatabaseAction {
         em.merge(g);
         em.flush();
 
+        populateGebruikerForm(g, form, request);
         createLists(form, request);
 
         addMessage(request, "gebruiker.save.success");

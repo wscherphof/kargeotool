@@ -84,7 +84,7 @@
         <p>
         <table>
             <tr>
-                <td>
+                <td valign="top">
         <table>
             <tr>
                 <td><fmt:message key="gebruiker.username"/></td>
@@ -139,7 +139,7 @@
                 </div>
             </div>
             <div id="roList">
-                <table>
+                <table id="roListTable">
                     <tr>
                         <th style="width: 35px">Code</th>
                         <th style="width: 160px">Naam</th>
@@ -147,16 +147,162 @@
                         <th style="width: 60px">Valideren</th>
                     </tr>
                     <c:forEach var="dor" items="${dataOwnerRights}">
-
                         <tr>
                             <td>${dor.dataOwner.code}</td>
                             <td>${dor.dataOwner.name}</td>
-                            <td style="text-align: center">${dor.editable ? 'Ja' : ''}</td>
-                            <td style="text-align: center">${dor.validatable ? 'Ja' : ''}</td>
+                            <td style="text-align: center"><html:multibox property="dataOwnersEditable" value="${dor.dataOwner.id}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
+                            <td style="text-align: center"><html:multibox property="dataOwnersValidatable" value="${dor.dataOwner.id}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
                         </tr>
                     </c:forEach>
                 </table>
             </div>
+                    Toevoegen wegbeheerder:<br>
+                    <select id="availableDataOwners" onchange="checkDOAdd()">
+                        <option>Selecteer een wegbeheerder...
+                    </select>
+<script type="text/javascript">
+    setOnload(initAvailableDataOwners);
+
+    var dataOwners = ${dataOwnersJson};
+    var usedDataOwners = {};
+
+    var codeNameSeparator = " - ";
+
+    function initAvailableDataOwners() {
+        usedDataOwners = {};
+        var editable = document.forms[0].dataOwnersEditable;
+        var validatable = document.forms[0].dataOwnersValidatable;
+        for(var i = 0; i < editable.length; i++) {
+            var value = editable[i].value;
+            if(editable[i].checked || validatable[i].checked) {
+                usedDataOwners[value] = true;                
+            }
+        }
+
+        var availableDO = document.forms[0].availableDataOwners;
+        for(var i = 0; i < dataOwners.length; i++) {
+            var dao = dataOwners[i];
+            var used = usedDataOwners[dao.id + ""] ? true : false;
+            if(!used) {
+                availableDO.options[availableDO.length] = new Option(dao.code + codeNameSeparator + dao.name, dao.id);
+            }
+        }
+    }
+
+    function checkDOAdd() {
+        var availableDO = document.forms[0].availableDataOwners;
+        var selectedIndex = availableDO.selectedIndex;
+        if(selectedIndex > 0) {
+            var value = parseInt(availableDO.options[selectedIndex].value);
+            var text = availableDO.options[selectedIndex].text;
+            var code = text.substring(0, text.indexOf(codeNameSeparator)); /* XXX deze separator is hardcoded... */
+            var name = text.substring(text.indexOf(codeNameSeparator) + codeNameSeparator.length, text.length);
+
+            addDataOwner(value, code, name);
+
+            availableDO.remove(selectedIndex);
+            
+            availableDO.selectedIndex = 0;
+        }
+    }
+
+    function checkDORemove(e) {
+        if(!e) var e = window.event;
+        var target = e.target ? e.target : e.srcElement;
+
+        var id = target.value;
+
+        var bothUnchecked = !isChecked("dataOwnersEditable", id) && !isChecked("dataOwnersValidatable", id);
+
+        if(bothUnchecked) {
+            if(confirm("Wilt u deze wegbeheerder uit de lijst verwijderen?")) {
+                removeDataOwner(id);
+            } else {
+                target.checked = true;
+            }
+        }
+    }
+
+    function isChecked(name, value) {
+        var options = document.forms[0][name];
+        for(var i = 0; i < options.length; i++) {
+            if(options[i].value == value) {
+                return options[i].checked;
+            }
+        }
+        return undefined;
+    }
+    
+    function addDataOwner(id, code, name) {
+        /* zoek positie waarop table row geinsert moet worden */
+        var table = document.getElementById("roListTable");
+        var index = table.rows.length;
+        for(var i = 0; i < table.rows.length; i++) {
+            var rowValue = table.rows[i].cells[2].firstChild.value;
+            if(id < rowValue) {
+                index = i;
+                break;
+            }
+        }
+
+        var row = table.insertRow(index);
+        /* helaas is row.innerHTML in IE read-only... */
+        var cell = row.insertCell(0);
+        cell.appendChild(document.createTextNode(code));
+        cell = row.insertCell(1);
+        cell.appendChild(document.createTextNode(name));
+        cell = row.insertCell(2);
+        cell.style.textAlign = "center";
+        var input = document.createElement("input");
+        input.name = "dataOwnersEditable";
+        input.type = "checkbox";
+        input.value = id + "";
+        input.checked = true;
+        input.onchange = checkDORemove;
+        input.onclick = function() { this.blur() };
+        cell.appendChild(input);
+        cell = row.insertCell(3);
+        cell.style.textAlign = "center";
+        input = document.createElement("input");
+        input.name = "dataOwnersValidatable";
+        input.type = "checkbox";
+        input.value = id + "";
+        input.checked = false;
+        input.onchange = checkDORemove;
+        input.onclick = function() { this.blur() };
+        cell.appendChild(input);
+    }
+
+    function removeDataOwner(id) {
+        var code, name;
+
+        var table = document.getElementById("roListTable");
+        for(var i = 0; i < table.rows.length; i++) {
+            var rowValue = table.rows[i].cells[2].firstChild.value;
+            if(id == rowValue) {
+                code = table.rows[i].cells[0].firstChild.nodeValue;
+                name = table.rows[i].cells[1].firstChild.nodeValue;
+                table.deleteRow(i);
+                break;
+            }
+        }
+        
+        /* zoek positie waarop select option geinsert moet worden */
+        var availableDO = document.forms[0].availableDataOwners;
+        var insertBefore = null;
+        for(var i = 0; i < availableDO.options.length; i++) {
+            if(parseInt(id) < parseInt(availableDO.options[i].value)) {
+                insertBefore = availableDO.options[i];
+                break;
+            }
+         }
+        var option = new Option(code + codeNameSeparator + name, id);
+        availableDO.add(option, insertBefore);
+    }
+
+</script>
+
+
                 </td>
             </tr>
         </table>

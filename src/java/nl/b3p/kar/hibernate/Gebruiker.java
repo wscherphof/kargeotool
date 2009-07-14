@@ -9,8 +9,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
+import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.DataOwner;
 
 public class Gebruiker implements Principal {
@@ -152,5 +154,23 @@ public class Gebruiker implements Principal {
             }
         }
         return dataOwners;
+    }
+
+    public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean validatable) throws Exception {
+        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
+        GebruikerDataOwnerRights dor = getDataOwnerRights().get(dao);
+        if(dor == null) {
+            dor = new GebruikerDataOwnerRights();
+            dor.setDataOwner(dao);
+            dor.setGebruiker(this);
+            em.persist(dor);
+            getDataOwnerRights().put(dao, dor);
+        }
+        if(editable != null) {
+            dor.setEditable(editable);
+        }
+        if(validatable != null) {
+            dor.setValidatable(validatable);
+        }
     }
 }
