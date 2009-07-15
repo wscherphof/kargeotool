@@ -1,7 +1,6 @@
 package nl.b3p.kar.struts;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -131,6 +130,8 @@ public class GebruikersAction extends BaseDatabaseAction {
             roles[i]=((Role)it.next()).getId();
         }
         form.set("roles",roles);
+
+        request.setAttribute("gebruiker", g);
 
         List dataOwnersEditable = new ArrayList();
         List dataOwnersValidatable = new ArrayList();

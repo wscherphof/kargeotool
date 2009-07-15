@@ -117,8 +117,28 @@
             <tr>
                 <td style="vertical-align: top"><fmt:message key="gebruiker.role"/></td>
                 <td>
+                    <script type="text/javascript">
+                        function checkRole(e) {
+                            if(!e) var e = window.event;
+                            var target = e.target ? e.target : e.srcElement;
+
+
+                            if(target.value == "1") {
+                                var beheerder = target.checked;
+                                document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
+                                document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
+                                document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
+                                if(!beheerder) {
+                                    if(!availableDataOwnersInited) {
+                                        setTimeout(initAvailableDataOwners(), 1000);
+                                        availableDataOwnersInited = true;
+                                    }
+                                }
+                            }
+                        }
+                    </script>
                     <c:forEach var="r" items="${availableRoles}">
-                        <html:multibox property="roles" value="${r.id}"/><c:out value="${r.role}"/><br>
+                        <html:multibox property="roles" value="${r.id}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/><br>
                     </c:forEach>
                 </td>
 
@@ -138,6 +158,7 @@
                     Gebruiker kan gegevens van de onderstaande wegbeheerders bewerken of valideren:
                 </div>
             </div>
+            <div id="daoedit" style="display: ${isBeheerder ? 'none' : 'block'}">
             <div id="roList">
                 <table id="roListTable">
                     <tr>
@@ -160,15 +181,22 @@
                     <select id="availableDataOwners" onchange="checkDOAdd()">
                         <option>Selecteer een wegbeheerder...
                     </select>
+            </div>
+
 <script type="text/javascript">
-    setOnload(initAvailableDataOwners);
+    <c:if test="${!isBeheerder}">
+        setOnload(initAvailableDataOwners);
+    </c:if>
 
     var dataOwners = ${dataOwnersJson};
     var usedDataOwners = {};
 
     var codeNameSeparator = " - ";
 
+    var availableDataOwnersInited = false;
+
     function initAvailableDataOwners() {
+
         usedDataOwners = {};
         var editable = document.forms[0].dataOwnersEditable;
         var validatable = document.forms[0].dataOwnersValidatable;
@@ -306,7 +334,6 @@
                 </td>
             </tr>
         </table>
-
 
     </c:if>
     <c:if test="${empty form.id}">
