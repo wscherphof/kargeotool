@@ -54,11 +54,14 @@
         <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="disabled"><c:out value="${activationGroup.karSignalGroup}"/></td></tr>
         <tr>
             <td><fmt:message key="a.karUsageType"/></td>
-            <td><html:select property="karUsageType">
-                    <html:option value="ALL"><fmt:message key="a.karUsageType.ALL"/></html:option>
+            <td><html:select property="karUsageType" style="width: 98%">
                     <html:option value="ES"><fmt:message key="a.karUsageType.ES"/></html:option>
                     <html:option value="PT"><fmt:message key="a.karUsageType.PT"/></html:option>
                     <html:option value="ESWA"><fmt:message key="a.karUsageType.ESWA"/></html:option>
+                    <html:option value="DS"><fmt:message key="a.karUsageType.DS"/></html:option>
+                    <html:option value="ESPT"><fmt:message key="a.karUsageType.ESPT"/></html:option>
+                    <html:option value="ESWAPT"><fmt:message key="a.karUsageType.ESWAPT"/></html:option>
+                    <html:option value="ALL"><fmt:message key="a.karUsageType.ALL"/></html:option>
                 </html:select>
             </td>
         </tr>

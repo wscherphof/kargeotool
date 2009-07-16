@@ -25,11 +25,11 @@ public class Activation implements EditorTreeObject, Cloneable {
     /* "Emergency Services Without Alarm" */
     public static final String KAR_USAGE_TYPE_ESWA = "ESWA";
     /* "Demand response Service" */
-    //public static final String KAR_USAGE_TYPE_DS = "DS";
+    public static final String KAR_USAGE_TYPE_DS = "DS";
     /* "Emergency Services and Public Transport" */
-    //public static final String KAR_USAGE_TYPE_ESPT = "ESPT";
+    public static final String KAR_USAGE_TYPE_ESPT = "ESPT";
     /* "Emergency Services with and without Alarm AND Public Transport" */
-    //public static final String KAR_USAGE_TYPE_ESWAPT = "ESWAPT";
+    public static final String KAR_USAGE_TYPE_ESWAPT = "ESWAPT";
     /* "All Categories" */
     public static final String KAR_USAGE_TYPE_ALL = "ALL";
 
