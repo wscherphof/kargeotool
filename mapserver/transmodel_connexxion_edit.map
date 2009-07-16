@@ -194,7 +194,7 @@ layer
     end 
   end  
   class 
-    name "Inmelding"
+    name "Inmeldpunt"
     expression "1"
     style      
       symbol "radio_groen.gif"      
@@ -357,7 +357,7 @@ layer
     end
   end
   class
-    name "Signaalgroep/uitmelding"
+    name "Signaalgroep/uitmeldpunt"
     style      
       symbol ag-rood.gif
     end

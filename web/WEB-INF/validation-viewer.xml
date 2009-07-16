@@ -16,11 +16,11 @@
                 <arg0 key="a.karTimeTillStopLine"/>
             </field>
             <field property="karUsageType" depends="required">
-				<arg0 key="a.karUsageType"/>
+                <arg0 key="a.karUsageType"/>
                 <!-- TODO mask van mogelijke waardes -->
             </field>
             <field property="triggerType" depends="required">
-				<arg0 key="a.triggerType"/>
+		<arg0 key="a.triggerType"/>
                 <!-- TODO mask van mogelijke waardes -->
             </field>
         </form>
@@ -31,7 +31,7 @@
                 <arg0 key="ag.karSignalGroup"/>
             </field>
             <field property="metersAfterStopLine" depends="required,integer">
-                <arg0 key="Uitmelding in meters na stopstreep" resource="false"/>
+                <arg0 key="Uitmeldpunt in meters na stopstreep" resource="false"/>
             </field>
         </form>
     </formset>
