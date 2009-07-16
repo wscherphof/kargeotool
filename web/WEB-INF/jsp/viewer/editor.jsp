@@ -215,11 +215,20 @@
         window.frames["form"].location = url;
     }
 
-    var zoomBorder = 150;
+    function getZoomBorder() {
+        var text = document.getElementById("zoomExtent").value;
+        var zoomExtent = parseInt(text);
+        if(isNaN(zoomExtent) || zoomExtent < 10 || zoomExtent > 9999) {
+            zoomExtent = 375;
+            document.getElementById("zoomExtent").value = zoomExtent + "";
+        }
+        return zoomExtent / 2.0;
+    }
 
     function options_zoomToObject() {
         if(selectedObject != undefined && selectedObject != null) {
             if(selectedObject.point) {
+                var zoomBorder = getZoomBorder();
                 var xy = selectedObject.point.split(", ");
                 var x = parseInt(xy[0]); var y = parseInt(xy[1]);
                 flamingo_moveToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
@@ -228,6 +237,7 @@
     }
 
     function zoomToEnvelope(envelope) {
+        var zoomBorder = getZoomBorder();
         flamingo_moveToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
     }
 
@@ -408,16 +418,17 @@
 <div id="leftbar">
 
     <div id="tree">
-		<div id="treeTop">
-			<div id="treeTitel">Objectenboom</div>
+        <div id="treeTop">
+            <div id="treeTitel">Objectenboom</div>
             <div id="loading"><html:img page="/images/ajax-loader.gif" module=""/></div>
             Zoek op walapparaatnummer: <input id="walapparaatnummer" type="text" size="10" onkeypress="walapparaatnummerKeyPressed(event);">
-			<input type="button" name="zoekWalapparatuur" value="Zoeken" onclick="zoekWalapparatuur()">
-		</div>
+            <input type="button" name="zoekWalapparatuur" value="Zoeken" onclick="zoekWalapparatuur()">
+        </div>
         <div id="objectTree"></div>
         <div id="options">
             <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
+            <input id="zoomExtent" name="zoomExtent" type="text" value="375" size="2" maxlength="4" style="text-align: right"> m
             <br>
             <b>Nieuwe:</b>
             <input id="newRseq" type="button" value="Walapparatuur" onclick="newRseq()">
@@ -427,10 +438,10 @@
     </div>
 
     <div id="form">
-		<div id="formContainer">
-			<span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-			<iframe frameborder="0" name="form" src="<html:rewrite page="/empty.jsp" module=""/>"></iframe>
-		</div>
+        <div id="formContainer">
+            <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
+            <iframe frameborder="0" name="form" src="<html:rewrite page="/empty.jsp" module=""/>"></iframe>
+        </div>
     </div>
 
 </div>
