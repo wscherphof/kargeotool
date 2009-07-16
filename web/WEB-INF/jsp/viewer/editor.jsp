@@ -281,7 +281,6 @@
 
     /* Aangeroepen door form in iframe */
     function selectLocationClicked(editLayer, currentLocation, geometryType) {
-        flamingo.callMethod("location", "show");
 
         if(currentLocation != null) {
             flamingo_editMapCreateNewGeometry(editLayer, geometryType, currentLocation);
@@ -330,14 +329,17 @@
     }
 
     function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
+        flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
     function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
+        flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
     function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
+        flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
     }
 
