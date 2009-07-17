@@ -8,7 +8,7 @@
         <param name="sequence">gebruiker_id_seq</param>
       </generator>
     </id>
-    <property name="username"/>
+    <property name="username" unique="true"/>
     <property name="passwordsalt"/>
     <property name="passwordhash"/>
     <property name="fullname"/>
