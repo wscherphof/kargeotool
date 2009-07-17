@@ -87,13 +87,13 @@
                 layerid="buslijnen"
                 searchfield="publicnumber"
                 fieldtype="n"
-                outputfields="publicnumber,name"
+                outputfields="publicnumber,name,direction"
                 srs="EPSG:28992"
                 type="WFS"
                 serverVersion="1.0.0"
                 enlargeExtent="10000"
             >
-                <string id="output" nl="[publicnumber]:[name]" en="[publicnumber]:[name]" />
+                <string id="output" nl="[publicnumber] ([direction]): [name]" en="[publicnumber] ([direction]): [name]" />
                 <string id="label" nl="Zoek een buslijn" en="Search for busline" />
             </LOCATIONS>
         </fmc:LocationFinder>
