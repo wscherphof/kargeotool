@@ -131,7 +131,7 @@ public final class ActivationAction extends TreeItemAction {
 
         populateForm(activation, form, request);
 
-        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", activation));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", activation, request));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -258,7 +258,7 @@ public final class ActivationAction extends TreeItemAction {
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Trigger is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
-        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", activation));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", activation, request));
         return mapping.findForward(SUCCESS);
     }
 

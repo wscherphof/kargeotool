@@ -152,7 +152,7 @@ public final class ActivationGroupAction extends TreeItemAction {
 
         populateForm(ag, form, request);
 
-        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", ag, copiedActivations));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", ag, request, copiedActivations));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -290,7 +290,7 @@ public final class ActivationGroupAction extends TreeItemAction {
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Signaalgroep is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
-        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", ag));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", ag, request));
         return mapping.findForward(SUCCESS);
     }
 

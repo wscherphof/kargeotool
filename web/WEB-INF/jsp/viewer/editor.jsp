@@ -67,6 +67,11 @@
         }
     }
 
+    <%-- beetje een hack, gaat er vanuit dat tree depth-first (dus na rseq de
+         daar onder horende ag en a) opbouwt...
+    --%>
+    var editableGlobal = false;
+
     function createLabel(container, item) {
         container.className = "node";
 
@@ -80,10 +85,20 @@
         icon.className = "icon icon_" + item.type;
         if(item.type == "rseq") {
             icon.className += "_" + item.rseqType;
+            editableGlobal = item.editable;
+            if(!editableGlobal) {
+                a.className = "uneditable";
+            }
         } else if(item.type == "ag") {
             icon.className += "_" + item.icon;
+            if(!editableGlobal) {
+                a.className = "uneditable";
+            }
         } else if(item.type == "a") {
             icon.className += "_" + item.commandType;
+            if(!editableGlobal) {
+                a.className = "uneditable";
+            }
         }
         
         a.appendChild(icon);
@@ -194,6 +209,11 @@
         }
         selectedObject = null;
         document.getElementById("zoomButton").disabled = true;
+        document.getElementById("newAg").disabled = true;
+        document.getElementById("newA").disabled = true;
+    }
+
+    function notEditable() {
         document.getElementById("newAg").disabled = true;
         document.getElementById("newA").disabled = true;
     }

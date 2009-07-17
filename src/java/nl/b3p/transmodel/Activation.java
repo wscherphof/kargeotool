@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONObject;
 
@@ -208,11 +209,11 @@ public class Activation implements EditorTreeObject, Cloneable {
         this.validationTime = validationTime;
     }
 
-    public JSONObject serializeToJson() throws Exception {
-        return serializeToJson(true);
+    public JSONObject serializeToJson(HttpServletRequest request) throws Exception {
+        return serializeToJson(request, true);
     }
 
-    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
+    public JSONObject serializeToJson(HttpServletRequest request, boolean includeChildren) throws Exception {
         JSONObject j = new JSONObject();
         j.put("type", "a");
         j.put("id", "a:" + getId());

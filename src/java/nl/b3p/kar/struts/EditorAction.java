@@ -42,7 +42,7 @@ public class EditorAction extends BaseDatabaseAction {
         return mapping.findForward("editor");
     }
 
-    public static Object executeInTransaction(String method, String... args) throws Exception {
+    public static Object executeInTransaction(String method, HttpServletRequest request, String... args) throws Exception {
         Object identity = null;
         try {
             identity = MyEMFDatabase.createEntityManager(MyEMFDatabase.MAIN_EM);
@@ -51,7 +51,7 @@ public class EditorAction extends BaseDatabaseAction {
             tx.begin();
 
             try {
-                Object result = EditorAction.class.getMethod(method, new String[] {}.getClass()).invoke(null, (Object)args);
+                Object result = EditorAction.class.getMethod(method, HttpServletRequest.class, new String[] {}.getClass()).invoke(null, request, (Object)args);
                 tx.commit();
                 return result;
             } catch (Exception exception) {
@@ -92,19 +92,19 @@ public class EditorAction extends BaseDatabaseAction {
         }
     }
 
-    public static String getObjectTree(String type, String id) throws Exception {
-        return (String)executeInTransaction("getObjectTreeFromDb", type, id);
+    public static String getObjectTree(String type, String id, HttpServletRequest request) throws Exception {
+        return (String)executeInTransaction("getObjectTreeFromDb", request, type, id);
     }
 
-    public static String getRseqUnitNumberTree(String unitNumber) throws Exception {
-        return (String)executeInTransaction("getRseqUnitNumberTreeFromDb", unitNumber);
+    public static String getRseqUnitNumberTree(String unitNumber, HttpServletRequest request) throws Exception {
+        return (String)executeInTransaction("getRseqUnitNumberTreeFromDb", request, unitNumber);
     }
 
-    public static String getIdentifyTree(String layers) throws Exception {
-        return (String)executeInTransaction("getIdentifyTreeFromDb", layers);
+    public static String getIdentifyTree(String layers, HttpServletRequest request) throws Exception {
+        return (String)executeInTransaction("getIdentifyTreeFromDb", request, layers);
     }
 
-    public static String getObjectTreeFromDb(String... args) throws Exception {
+    public static String getObjectTreeFromDb(HttpServletRequest request, String... args) throws Exception {
         String type = args[0];
         String id = args[1];
         Class clazz = null;
@@ -136,11 +136,11 @@ public class EditorAction extends BaseDatabaseAction {
             info.put("envelope", "{minX: " + c.x + ", maxX: " + c.x
                     + ", minY: " + c.y + ", maxY: " + c.y + "}");
         }
-        info.put("tree", buildObjectTree(Arrays.asList(new Object[] {object})));
+        info.put("tree", buildObjectTree(Arrays.asList(new Object[] {object}), request));
         return info.toString();
     }
 
-    public static String getRseqUnitNumberTreeFromDb(String... args) throws Exception {
+    public static String getRseqUnitNumberTreeFromDb(HttpServletRequest request, String... args) throws Exception {
         Integer unitNumber;
         try {
             unitNumber = Integer.parseInt(args[0]);
@@ -170,13 +170,13 @@ public class EditorAction extends BaseDatabaseAction {
                     + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
         }
         if(rseqs.size() == 1) {
-            info.put("selectedObject", ((EditorTreeObject)rseqs.get(0)).serializeToJson(false));
+            info.put("selectedObject", ((EditorTreeObject)rseqs.get(0)).serializeToJson(request, false));
         }
-        info.put("tree", buildObjectTree(rseqs));
+        info.put("tree", buildObjectTree(rseqs, request));
         return info.toString();
     }
 
-    public static String getIdentifyTreeFromDb(String... args) throws Exception {
+    public static String getIdentifyTreeFromDb(HttpServletRequest request, String... args) throws Exception {
 
         JSONObject layers = new JSONObject(args[0]);
 
@@ -204,9 +204,9 @@ public class EditorAction extends BaseDatabaseAction {
                     + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
         }
         if(objects.size() == 1) {
-            info.put("selectedObject", ((EditorTreeObject)objects.get(0)).serializeToJson(false));
+            info.put("selectedObject", ((EditorTreeObject)objects.get(0)).serializeToJson(request, false));
         }
-        info.put("tree", buildObjectTree(objects));
+        info.put("tree", buildObjectTree(objects, request));
         return info.toString();
     }
 
@@ -247,7 +247,7 @@ public class EditorAction extends BaseDatabaseAction {
         return null;
     }
 
-    private static JSONObject buildObjectTree(List objects) throws Exception {
+    private static JSONObject buildObjectTree(List objects, HttpServletRequest request) throws Exception {
 
         List roots = new ArrayList();
 
@@ -275,7 +275,7 @@ public class EditorAction extends BaseDatabaseAction {
         JSONArray children = new JSONArray();
         root.put("children", children);
         for(Iterator it = roots.iterator(); it.hasNext();) {
-            children.put(((EditorTreeObject)it.next()).serializeToJson());
+            children.put(((EditorTreeObject)it.next()).serializeToJson(request));
         }
         return root;
     }

@@ -16,6 +16,10 @@
 <script type="text/javascript">
     parent.flamingo_updateKarLayer();
     parent.flamingo_cancelEdit();
+
+    <c:if test="${notEditable}">
+        parent.notEditable();
+    </c:if>
 </script>
 
 <c:if test="${!hideForm}">

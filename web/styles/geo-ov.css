@@ -66,6 +66,10 @@ body.form {
     min-height: 60px;
 }
 
+#objectTree a.uneditable {
+    color: gray;
+}
+
 #objectTree .node {
     /*margin: 1px;*/
 }

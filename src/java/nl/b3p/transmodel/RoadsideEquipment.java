@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Role;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONArray;
@@ -183,19 +186,25 @@ public class RoadsideEquipment implements EditorTreeObject {
         this.validationTime = validationTime;
     }
 
-    public JSONObject serializeToJson() throws Exception {
-        return serializeToJson(true);
+    public JSONObject serializeToJson(HttpServletRequest request) throws Exception {
+        return serializeToJson(request, true);
     }
 
-    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
+    public JSONObject serializeToJson(HttpServletRequest request, boolean includeChildren) throws Exception {
+        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         JSONObject j = new JSONObject();
         j.put("type", "rseq");
         j.put("id", "rseq:" + getId());
+        if(request.isUserInRole(Role.BEHEERDER)) {
+            j.put("editable", true);
+        } else {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            j.put("editable", g.canEditDataOwner(getDataOwner()));
+        }
         j.put("description", getDescription());
         j.put("rseqType", getType());
         j.put("name", getUnitNumber() + (getDescription() == null ? "" : ": " + getDescription()));
         j.put("point", getLocationString());
-        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
                 .setParameter("this", this)
                 .getResultList();
@@ -204,7 +213,7 @@ public class RoadsideEquipment implements EditorTreeObject {
                 JSONArray children = new JSONArray();
                 j.put("children", children);
                 for(Iterator it = groups.iterator(); it.hasNext();) {
-                    children.put( ((ActivationGroup)it.next()).serializeToJson() );
+                    children.put( ((ActivationGroup)it.next()).serializeToJson(request) );
                 }
             }
         }

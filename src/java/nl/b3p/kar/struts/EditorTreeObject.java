@@ -1,5 +1,6 @@
 package nl.b3p.kar.struts;
 
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
 public interface EditorTreeObject {
@@ -8,7 +9,7 @@ public interface EditorTreeObject {
      * met de parameter includeChildren worden aangegeven (tbv updaten alleen
      * dit item in de tree)
      */
-    public JSONObject serializeToJson(boolean includeChildren) throws Exception;
+    public JSONObject serializeToJson(HttpServletRequest request, boolean includeChildren) throws Exception;
     
-    public JSONObject serializeToJson() throws Exception;
+    public JSONObject serializeToJson(HttpServletRequest request) throws Exception;
 }

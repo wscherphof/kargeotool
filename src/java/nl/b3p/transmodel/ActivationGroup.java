@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.struts.EditorTreeObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -205,11 +206,11 @@ public class ActivationGroup implements EditorTreeObject {
         return returnValue;
     }
 
-    public JSONObject serializeToJson() throws Exception {
-        return serializeToJson(true);
+    public JSONObject serializeToJson(HttpServletRequest request) throws Exception {
+        return serializeToJson(request, true);
     }
 
-    public JSONObject serializeToJson(boolean includeChildren) throws Exception {
+    public JSONObject serializeToJson(HttpServletRequest request, boolean includeChildren) throws Exception {
         JSONObject j = new JSONObject();
         j.put("type", "ag");
         j.put("id", "ag:" + getId());
@@ -233,7 +234,7 @@ public class ActivationGroup implements EditorTreeObject {
                 JSONArray children = new JSONArray();
                 j.put("children", children);
                 for(Iterator it = getActivations().iterator(); it.hasNext();) {
-                    children.put( ((Activation)it.next()).serializeToJson() );
+                    children.put( ((Activation)it.next()).serializeToJson(request) );
                 }
             }
         }

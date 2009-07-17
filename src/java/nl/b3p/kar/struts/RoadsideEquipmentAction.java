@@ -100,7 +100,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
         populateForm(rseq, form, request);
 
-        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", rseq));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson(newObject ? "insert" : "update", rseq, request));
 
         addDefaultMessage(mapping, request);
         return getDefaultForward(mapping, request);
@@ -220,7 +220,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         em.getTransaction().commit();
         addMessage(request, new ActionMessage("Walapparaat is verwijderd.", false));
         request.setAttribute(HIDE_FORM, Boolean.TRUE);
-        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", rseq));
+        request.setAttribute(TREE_UPDATE, treeUpdateJson("remove", rseq, request));
         return mapping.findForward(SUCCESS);
     }
 

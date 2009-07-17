@@ -1,5 +1,6 @@
 package nl.b3p.kar.struts;
 
+import javax.servlet.http.HttpServletRequest;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.RoadsideEquipment;
@@ -9,11 +10,11 @@ public abstract class TreeItemAction extends BaseDatabaseAction {
     protected static final String HIDE_FORM = "hideForm";
     protected static final String TREE_UPDATE = "treeUpdate";
 
-    protected static String treeUpdateJson(String action, EditorTreeObject to) throws Exception {
-        return treeUpdateJson(action, to, false);
+    protected static String treeUpdateJson(String action, EditorTreeObject to, HttpServletRequest request) throws Exception {
+        return treeUpdateJson(action, to, request, false);
     }
 
-    protected static String treeUpdateJson(String action, EditorTreeObject to, boolean includeChildren) throws Exception {
+    protected static String treeUpdateJson(String action, EditorTreeObject to, HttpServletRequest request, boolean includeChildren) throws Exception {
         JSONObject update = new JSONObject();
         String id = null, parentId = null;
         if(to instanceof Activation) {
@@ -28,7 +29,7 @@ public abstract class TreeItemAction extends BaseDatabaseAction {
         update.put("action", action);
         update.put("id", id);
         update.put("parentId", parentId);
-        update.put("object", to.serializeToJson(includeChildren));
+        update.put("object", to.serializeToJson(request, includeChildren));
         return update.toString();
     }
 }
