@@ -2,10 +2,15 @@ package nl.b3p.kar.struts;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -130,10 +135,30 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                         .getSingleResult());
             rseq.getDataOwner().getName();
         }
-        request.setAttribute("dataOwners",
-                em.createQuery("from DataOwner where type = :type order by id")
+        List dataOwners;
+        if(request.isUserInRole(Role.BEHEERDER)) {
+            dataOwners = em.createQuery("from DataOwner where type = :type order by id")
                 .setParameter("type", DataOwner.TYPE_ROOW)
-                .getResultList());
+                .getResultList();
+        } else {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            Set dataOwnersUnsorted = g.getDataOwnerRights().keySet();
+            dataOwners = new ArrayList();
+            for (Iterator<DataOwner> it = dataOwnersUnsorted.iterator(); it.hasNext();) {
+                DataOwner dao = it.next();
+                if(dao.getType().equals(DataOwner.TYPE_ROOW)) {
+                    dataOwners.add(dao);
+                }
+            }
+            Collections.sort(dataOwners,  new Comparator() {
+            public int compare(Object o1, Object o2) {
+                DataOwner lhs = (DataOwner)o1;
+                DataOwner rhs = (DataOwner)o2;
+                return lhs.getId().compareTo(rhs.getId());
+            }
+        });
+        }
+        request.setAttribute("dataOwners", dataOwners);
     }
 
     protected void populateForm(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request) throws Exception {
