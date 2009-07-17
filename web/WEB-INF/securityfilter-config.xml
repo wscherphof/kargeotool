@@ -14,8 +14,7 @@
             <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>roow</role-name>
-            <role-name>copr</role-name>
+            <role-name>gebruiker</role-name>
             <role-name>beheerder</role-name>
         </auth-constraint>
     </security-constraint>
