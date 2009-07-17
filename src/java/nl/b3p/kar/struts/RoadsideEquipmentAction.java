@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Role;
 import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
@@ -68,8 +70,25 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             return getDefaultForward(mapping, request);
         }
 
+        /* check hier en niet in populateObject(), omdat nodig is voor auth check */
+        Integer daoId = FormUtils.StringToInteger(form.getString("dataOwner"));
+        DataOwner dao = daoId == null ? null : em.find(DataOwner.class, daoId);
+        if(dao == null) {
+            addMessage(request, "errors.required", "Databeheerder");
+            return mapping.findForward(SUCCESS);
+        }
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+
         /* XXX Check constraints */
 
+        rseq.setDataOwner(dao);
         populateObject(rseq, form, request, mapping);
 
         boolean newObject = rseq.getId() == null;
@@ -128,18 +147,19 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         form.set("supplierTypeNumber", rseq.getSupplierTypeNumber());
         form.set("installationDate", FormUtils.DateToString(rseq.getInstallationDate(), null));
         form.set("selectiveDetectionLoop", rseq.isSelectiveDetectionLoop() ? "true" : "false");
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = rseq.getDataOwner();
+            request.setAttribute("notEditable", !g.canEditDataOwner(dao));
+            request.setAttribute("notValidatable", !g.canValidateDataOwner(dao));
+        }
     }
 
     protected void populateObject(RoadsideEquipment rseq, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
 
         /* form is al gevalideerd, ook unique constraints e.d. zijn al gechecked  */
 
-        Integer dataOwner = FormUtils.StringToInteger(form.getString("dataOwner"));
-        DataOwner dao = null;
-        if(dataOwner != null) {
-            dao = getEntityManager().find(DataOwner.class, dataOwner);
-        }
-        rseq.setDataOwner(dao);
         rseq.setUnitNumber(Integer.parseInt(form.getString("unitNumber")));
         rseq.setType(FormUtils.nullIfEmpty(form.getString("type")));
         rseq.setRadioAddress(FormUtils.nullIfEmpty(form.getString("radioAddress")));
@@ -173,6 +193,17 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
+        createLists(rseq, form, request);
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = rseq.getDataOwner();
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+
         List agIds = em.createQuery("select id from ActivationGroup ag where ag.roadsideEquipment = :this")
                 .setParameter("this", rseq)
                 .getResultList();
@@ -199,6 +230,14 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = rseq.getDataOwner();
+            if(!g.canValidateDataOwner(dao)) {
+                addMessage(request, "error.dataowner.unvalidatable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
         if("true".equals(form.getString("validated"))) {
             rseq.setValidator(request.getRemoteUser());
             rseq.setValidationTime(new Date());
@@ -207,6 +246,9 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             rseq.setValidationTime(null);
         }
         createLists(rseq, form, request);
+
+        /* nodig omdat form mogelijk disabled is */
+        populateForm(rseq, form, request);
         return mapping.findForward(SUCCESS);
     }
 }

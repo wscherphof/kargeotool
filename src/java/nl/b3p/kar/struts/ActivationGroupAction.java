@@ -14,8 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Role;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
+import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
@@ -84,18 +87,40 @@ public final class ActivationGroupAction extends TreeItemAction {
 
         boolean copiedActivations = false;
 
+        RoadsideEquipment rseq = null;
         if(!em.contains(ag)) {
-            RoadsideEquipment rseq = getRseq(form, request);
+            rseq = getRseq(form, request);
             if(rseq == null) {
                 addMessage(request, "errors.required", "Walapparatuur");
                 return mapping.findForward(SUCCESS);
             }
-            ag.setRoadsideEquipment(rseq);
+        }
 
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao;
+            if(em.contains(ag)) {
+                dao = ag.getRoadsideEquipment().getDataOwner();
+            } else {
+                dao = rseq.getDataOwner();
+            }
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+        if(rseq != null) {
+            ag.setRoadsideEquipment(rseq);
+        }
+
+        if(!em.contains(ag)) {
             Integer copyFromId = FormUtils.StringToInteger(form.getString("copyFrom"));
             if(copyFromId != null) {
                 ActivationGroup copyFrom = em.find(ActivationGroup.class, copyFromId);
                 if(copyFrom != null) {
+                    if(!copyFrom.getRoadsideEquipment().equals(ag.getRoadsideEquipment())) {
+                        throw new IllegalStateException("Kan geen signaalgroep van andere walapparatuur kopieren");
+                    }
                     for(Iterator it = copyFrom.getActivations().iterator(); it.hasNext();) {
                         Activation original = (Activation)it.next();
                         Activation copy = (Activation)original.clone();
@@ -185,6 +210,13 @@ public final class ActivationGroupAction extends TreeItemAction {
                 ag.getMetersAfterStopLine() == null ? null : ag.getMetersAfterStopLine() + "");
         form.set("followDirection", ag.isFollowDirection() ? "true" : "false");
         form.set("description", ag.getDescription() == null ? null : ag.getDescription());
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = ag.getRoadsideEquipment().getDataOwner();
+            request.setAttribute("notEditable", !g.canEditDataOwner(dao));
+            request.setAttribute("notValidatable", !g.canValidateDataOwner(dao));
+        }
     }
 
     protected void populateObject(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
@@ -242,7 +274,17 @@ public final class ActivationGroupAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
+        createLists(ag, form, request);
 
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = ag.getRoadsideEquipment().getDataOwner();
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+        
         em.remove(ag);
         em.flush();
         em.getTransaction().commit();
@@ -278,6 +320,14 @@ public final class ActivationGroupAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = ag.getRoadsideEquipment().getDataOwner();
+            if(!g.canValidateDataOwner(dao)) {
+                addMessage(request, "error.dataowner.unvalidatable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
         if("true".equals(form.getString("validated"))) {
             ag.setValidator(request.getRemoteUser());
             ag.setValidationTime(new Date());
@@ -286,6 +336,9 @@ public final class ActivationGroupAction extends TreeItemAction {
             ag.setValidationTime(null);
         }
         createLists(ag, form, request);
+
+        /* nodig omdat form mogelijk disabled is */
+        populateForm(ag, form, request);
         return mapping.findForward(SUCCESS);
     }
 }

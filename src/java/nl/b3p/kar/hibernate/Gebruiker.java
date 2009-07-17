@@ -34,6 +34,16 @@ public class Gebruiker implements Principal {
         setPasswordhash(hash);
     }
 
+    public static Gebruiker getNonTransientPrincipal(HttpServletRequest request) throws Exception {
+        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
+
+        Gebruiker g = (Gebruiker)request.getUserPrincipal();
+        if(g == null) {
+            return null;
+        }
+        return em.find(Gebruiker.class, g.getId());
+    }
+
     public Integer getId() {
         return id;
     }

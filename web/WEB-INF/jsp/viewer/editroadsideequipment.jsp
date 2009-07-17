@@ -20,9 +20,10 @@
 
 <c:if test="${!hideForm}">
 
-<html:form styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
-    <html:hidden property="id"/>
-    <html:hidden property="validated"/>
+<html:form disabled="${notEditable}" styleId="roadsideEquipmentForm" action="/roadsideEquipment" onsubmit="return validateRoadsideEquipmentForm(this)">
+    <%-- geen struts tag omdat form tag disabled="true" kan zijn... maar validate submit mogelijk wel mogelijk --%>
+    <input type="hidden" name="id" value="${form.id}">
+    <input type="hidden" name="validated">
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${activationGroupCount == 1}">
@@ -33,7 +34,8 @@
     </c:if>
     <c:if test="${!empty form.id}">
         <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
-        <html:submit property="validate" onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');">Valideren</html:submit>
+        <%-- geen struts tag omdat form tag disabled="true" kan zijn... --%>
+        <input type="submit" name="validate" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
     </c:if>
     
 <c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>

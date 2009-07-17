@@ -20,10 +20,11 @@
 
 <c:if test="${!hideForm}">
     
-<html:form styleId="activationGroupForm" action="/activationGroup" onsubmit="return validateActivationGroupForm(this)">
-    <html:hidden property="id"/>
+<html:form disabled="${notEditable}" styleId="activationGroupForm" action="/activationGroup" onsubmit="return validateActivationGroupForm(this)">
+    <%-- geen struts tag omdat form tag disabled="true" kan zijn... maar validate submit mogelijk wel mogelijk --%>
+    <input type="hidden" name="id" value="${form.id}">
+    <input type="hidden" name="validated">
     <html:hidden property="copyFrom"/>
-    <html:hidden property="validated"/>
     <html:hidden property="rseqId"/>
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
@@ -35,7 +36,8 @@
     </c:if>
     <c:if test="${!empty form.id}">
         <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
-        <html:submit property="validate" onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');">Valideren</html:submit>
+        <%-- geen struts tag omdat form tag disabled="true" kan zijn... --%>
+        <input type="submit" name="validate" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
         <html:submit property="copy">Kopi&euml;ren</html:submit>
     </c:if>
 <c:set var="point" value="${activationGroup.stopLineLocationString}" scope="request"/>

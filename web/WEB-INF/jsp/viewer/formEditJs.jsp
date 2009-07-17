@@ -8,11 +8,10 @@
     <b>Locatie</b><br>
     <br>
     <span id="locationStatus" style="font-weight: bold">${savedLocationStatusHtml}</span>
-    <input id="ok" type="button" style="display: none" value="OK" onclick="okClicked();">
-    <input id="newLocation" type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="newLocation" disabled="${notEditable}" type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
     <input id="reset" type="button" style="display: none" value="Reset" onclick="resetClicked();">
-    <input id="changeLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
-    <input id="deleteLocation" type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
+    <input id="changeLocation" disabled="${notEditable}" type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
+    <input id="deleteLocation" disabled="${notEditable}" type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
     <br>
 </div>
 

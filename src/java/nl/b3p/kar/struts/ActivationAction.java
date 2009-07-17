@@ -14,9 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Role;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 
+import nl.b3p.transmodel.DataOwner;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -86,13 +89,30 @@ public final class ActivationAction extends TreeItemAction {
             return getDefaultForward(mapping, request);
         }
 
+        ActivationGroup activationGroup = null;
         if(!em.contains(activation)) {
-            ActivationGroup ag = getActivationGroup(form, request);
-            if(ag == null) {
+            activationGroup = getActivationGroup(form, request);
+            if(activationGroup == null) {
                 addMessage(request, "errors.required", "Signaalgroep");
                 return mapping.findForward(SUCCESS);
             }
-            activation.setActivationGroup(ag);
+        }
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao;
+            if(em.contains(activation)) {
+                dao = activation.getActivationGroup().getRoadsideEquipment().getDataOwner();
+            } else {
+                dao = activationGroup.getRoadsideEquipment().getDataOwner();
+            }
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+        if(activationGroup != null) {
+            activation.setActivationGroup(activationGroup);
         }
 
         /* XXX Check constraints */
@@ -161,6 +181,13 @@ public final class ActivationAction extends TreeItemAction {
         
         form.set("karDistanceTillStopLine", a.getKarDistanceTillStopLine() == null ? null : nf.format( a.getKarDistanceTillStopLine()));
         form.set("karTimeTillStopLine", a.getKarTimeTillStopLine() == null ? null : nf.format(a.getKarTimeTillStopLine()));
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = a.getActivationGroup().getRoadsideEquipment().getDataOwner();
+            request.setAttribute("notEditable", !g.canEditDataOwner(dao));
+            request.setAttribute("notValidatable", !g.canValidateDataOwner(dao));
+        }
     }   
 
     protected void populateObject(Activation a, DynaValidatorForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
@@ -207,6 +234,17 @@ public final class ActivationAction extends TreeItemAction {
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
+        createLists(activation, form, request);
+
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = activation.getActivationGroup().getRoadsideEquipment().getDataOwner();
+            if(!g.canEditDataOwner(dao)) {
+                addMessage(request, "error.dataowner.uneditable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+
         /* Pas evt indexen van activations later in lijst aan */
         List activations = activation.getActivationGroup().getActivations();
         int idx = activations.indexOf(activation);
@@ -249,6 +287,14 @@ public final class ActivationAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = a.getActivationGroup().getRoadsideEquipment().getDataOwner();
+            if(!g.canValidateDataOwner(dao)) {
+                addMessage(request, "error.dataowner.unvalidatable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
         if("true".equals(form.getString("validated"))) {
             a.setValidator(request.getRemoteUser());
             a.setValidationTime(new Date());
@@ -257,6 +303,9 @@ public final class ActivationAction extends TreeItemAction {
             a.setValidationTime(null);
         }
         createLists(a, form, request);
+
+        /* nodig omdat form mogelijk disabled is */
+        populateForm(a, form, request);
         return mapping.findForward(SUCCESS);
     }
 }
