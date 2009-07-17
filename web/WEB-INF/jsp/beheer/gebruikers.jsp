@@ -7,7 +7,7 @@
 <c:set var="form" value="${gebruikersForm.map}"/>
 
 <html:javascript formName="gebruikersForm" staticJavascript="false"/>
-<script type="text/javascript" src="<html:rewrite module="" page="/js/table.js"/>"></script>
+<%--script type="text/javascript" src="<html:rewrite module="" page="/js/table.js"/>"></script--%>
 
 <html:form action="/gebruikers.do" method="POST" onsubmit="return validateGebruikersForm(this)" style="\" autocomplete='off'">
 
@@ -274,12 +274,16 @@
 
     function isChecked(name, value) {
         var options = document.forms[0][name];
-        for(var i = 0; i < options.length; i++) {
-            if(options[i].value == value) {
-                return options[i].checked;
+        if(options.length == undefined) {
+            return options.value == value && options.checked;
+        } else {
+            for(var i = 0; i < options.length; i++) {
+                if(options[i].value == value) {
+                    return options[i].checked;
+                }
             }
+            return false;
         }
-        return undefined;
     }
     
     function addDataOwner(id, code, name) {
