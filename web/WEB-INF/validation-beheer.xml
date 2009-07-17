@@ -7,52 +7,48 @@
 <form-validation>
     <formset>
         <form name="gebruikersForm">
-			<field property="username" depends="required, maxlength">
-				<arg0 key="gebruiker.username"/>
-				<arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
-				<var>
-					<var-name>maxlength</var-name>
-					<var-value>50</var-value>
-				</var>
-			</field>
-			<field property="fullName" depends="maxlength">
-				<arg0 key="gebruiker.fullName"/>
-				<arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
-				<var>
-					<var-name>maxlength</var-name>
-					<var-value>50</var-value>
-				</var>
-			</field>
-			<field property="email" depends="maxlength">
-				<arg0 key="gebruiker.email"/>
-				<arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
-				<var>
-					<var-name>maxlength</var-name>
-					<var-value>50</var-value>
-				</var>
-			</field>
-			<field property="password" depends="validwhen">
-				<arg0 key="gebruiker.password"/>
-				<var>
-					<var-name>test</var-name>
-					<var-value>((*this* != null) or (id != -1))</var-value>
-				</var>
-			</field>
-			<field property="phone" depends="maxlength">
-				<arg0 key="gebruiker.phone"/>
-				<arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
-				<var>
-					<var-name>maxlength</var-name>
-					<var-value>15</var-value>
-				</var>
-			</field>
-			<field property="roles" depends="validwhen">
-				<arg0 key="gebruiker.role"/>
-				<var>
-					<var-name>test</var-name>
-					<var-value>((*this* != null) or (id != -1))</var-value>
-				</var>
-			</field>
+            <field property="username" depends="required, maxlength">
+                <arg0 key="gebruiker.username"/>
+                <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+                <var>
+                    <var-name>maxlength</var-name>
+                    <var-value>50</var-value>
+                </var>
+            </field>
+            <field property="fullName" depends="maxlength">
+                <arg0 key="gebruiker.fullName"/>
+                <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+                <var>
+                    <var-name>maxlength</var-name>
+                    <var-value>50</var-value>
+                </var>
+            </field>
+            <field property="email" depends="maxlength">
+                <arg0 key="gebruiker.email"/>
+                <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+                <var>
+                    <var-name>maxlength</var-name>
+                    <var-value>50</var-value>
+                </var>
+            </field>
+            <field property="password" depends="validwhen">
+                <arg0 key="gebruiker.password"/>
+                <var>
+                    <var-name>test</var-name>
+                    <var-value>((*this* != null) or (id != -1))</var-value>
+                </var>
+            </field>
+            <field property="phone" depends="maxlength">
+                <arg0 key="gebruiker.phone"/>
+                <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+                <var>
+                    <var-name>maxlength</var-name>
+                    <var-value>15</var-value>
+                </var>
+            </field>
+            <field property="role" depends="required">
+                <arg0 key="gebruiker.role"/>
+            </field>
         </form>
     </formset>
 </form-validation>
