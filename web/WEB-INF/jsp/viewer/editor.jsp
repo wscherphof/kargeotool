@@ -177,8 +177,8 @@
         selectedObject = object;
         document.getElementById("zoomButton").disabled = object.point == undefined;
         
-        document.getElementById("newAg").disabled = object.type != "rseq";
-        document.getElementById("newA").disabled = object.type != "ag";
+        document.getElementById("newAg").disabled = false;
+        document.getElementById("newA").disabled = object.type == "rseq";
 
         container = treeview_getLabelContainerNodeForItemId("objectTree", object.id);
         container.className = "selected node";
@@ -304,22 +304,82 @@
         window.frames["form"].location = "<html:rewrite page="/roadsideEquipment.do?new=t"/>";
     }
 
+    /* Zoek in een tree naar een item en return een array van parent items, beginnende
+     * bij de parent het hoogst in de tree.
+     * Aanroep met alleen de eerste twee argumenten, het derde argument wordt
+     * gebruikt voor recursieve aanroep.
+     */
+    function findTreeItemParents(root, needle, crumbs) {
+
+        if(root == needle) {
+            /* needle gevonden, return array met parent items */
+            return crumbs ? crumbs : []; /* indien eerste aanroep return lege array */
+        }
+
+        if(root == undefined || root.children == undefined) {
+            return null;
+        }
+
+        if(crumbs == undefined) {
+            /* eerste aanroep */
+            crumbs = [root];
+        } else {
+            /* voeg root toe als parent item */
+            crumbs.push(root);
+        }
+
+        for(var i = 0; i < root.children.length; i++) {
+            var recursedCrumbs = findTreeItemParents(root.children[i], needle, crumbs.slice());
+            if(recursedCrumbs != null) {
+                return recursedCrumbs;
+            }
+        }
+        return null;
+    }
+
     function newAg() {
-        if(selectedObject.type != "rseq") {
-            alert("Geen walapparatuur geselecteerd");
+        if(selectedObject == "undefined") {
+            alert("Geen object geselecteerd");
             return;
         }
-        var rseqId = selectedObject.id.split(":")[1];
+        var rseq;
+        if(selectedObject.type == "rseq") {
+            rseq = selectedObject;
+        } else {
+            var parents = findTreeItemParents(tree, selectedObject);
+            /* parents[0] is tree, daaronder moet altijd de rseq te vinden zijn */
+            if(parents.length < 2) {
+                alert("Interne fout: kan geen rseq parent vinden van selectedObject");
+            }
+            rseq = parents[1];
+        }
+        var rseqId = rseq.id.split(":")[1];
         deselectObject();
         window.frames["form"].location = "<html:rewrite page="/activationGroup.do?new=t"/>" + "&rseqId=" + rseqId;
     }
 
     function newA() {
-        if(selectedObject.type != "ag") {
+        if(selectedObject == "undefined") {
+            alert("Geen object geselecteerd");
+            return;
+        }
+        if(selectedObject.type == "rseq") {
             alert("Geen signaalgroep geselecteerd");
             return;
         }
-        var agId = selectedObject.id.split(":")[1];
+        var ag;
+        if(selectedObject.type == "ag") {
+            ag = selectedObject;
+
+        } else {
+            var parents = findTreeItemParents(tree, selectedObject);
+            /* parents[0] is tree, daaronder rseq, daaronder moet altijd de ag te vinden zijn */
+            if(parents.length < 3) {
+                alert("Interne fout: kan geen ag parent vinden van selectedObject");
+            }
+            ag = parents[2];
+        }
+        var agId = ag.id.split(":")[1];
         deselectObject();
         window.frames["form"].location = "<html:rewrite page="/activation.do?new=t"/>" + "&agId=" + agId;
     }
