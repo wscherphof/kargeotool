@@ -13,6 +13,7 @@
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/json2.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
+        <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/geo-ov.css" module=""/>" type="text/css" media="screen" />
         <!--[if lte IE 6]>
             <link href="<html:rewrite page="/styles/geo-ov-ie6.css" module=""/>" rel="stylesheet" media="screen" type="text/css" />

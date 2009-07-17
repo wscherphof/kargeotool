@@ -17,9 +17,39 @@
     <html:hidden property="id"/>
 
 <c:if test="${!empty gebruikers}">
+
+    <script type="text/javascript">
+        function loadScroll() {
+            var scroll = getCookie("gebruikersScroll");
+            if(scroll != undefined) {
+                scroll = parseInt(scroll);
+                if(!isNaN(scroll)) {
+                    document.getElementById("gebruikerScroller").scrollTop = scroll;
+                }
+            }
+        }
+
+        function saveScroll() {
+            setCookie("gebruikersScroll", document.getElementById("gebruikerScroller").scrollTop);
+        }
+
+        function scrollToBottom() {
+            var div = document.getElementById("gebruikerScroller");
+            div.scrollTop = div.scrollHeight;
+            saveScroll();
+        }
+        
+        if(document.addEventListener) {
+                document.addEventListener("mouseup", saveScroll, false);
+                window.addEventListener("load", loadScroll, false);
+        } else if(document.attachEvent) {
+                document.attachEvent("onmouseup", saveScroll);
+                window.attachEvent("onload", loadScroll);
+        }
+    </script>
     Aantal gebruikers: <b>${fn:length(gebruikers)}</b>
     <p>
-    <div style="max-height: 180px; overflow: auto; padding: 1px; width: 600px">
+    <div id="gebruikerScroller" style="max-height: 180px; overflow: auto; padding: 1px; width: 600px">
     <table border="1" cellpadding="3" style="border-collapse: collapse" class="table-autosort:0 table-stripeclass:alternate">
         <thead>
             <tr>
@@ -120,7 +150,7 @@
                 <td>
                     <script type="text/javascript">
                         function checkRole(e) {
-                            if(!e) var e = window.event;
+                            if(!e) { e = window.event };
                             var target = e.target ? e.target : e.srcElement;
 
                             var beheerder = document.getElementById("role_beheerder").checked;
@@ -226,7 +256,7 @@
     }
 
     function checkDORemove(e) {
-        if(!e) var e = window.event;
+        if(!e) e = window.event;
         var target = e.target ? e.target : e.srcElement;
 
         var id = target.value;
@@ -328,7 +358,7 @@
 
     </c:if>
     <c:if test="${empty form.id}">
-        <html:submit property="create" onclick="bCancel=true;">Nieuw account toevoegen</html:submit>
+        <html:submit property="create" onclick="scrollToBottom(); bCancel=true;">Nieuw account toevoegen</html:submit>
     </c:if>
 
 </c:if>
