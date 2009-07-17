@@ -77,8 +77,8 @@ public class GebruikersAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         request.setAttribute("gebruikers", em.createQuery("from Gebruiker order by id").getResultList());
         request.setAttribute("availableRoles", em.createQuery("from Role order by id").getResultList());
-        List dataOwners = em.createQuery("from DataOwner" + /* where type = :type */ " order by id")
-                /*.setParameter("type", DataOwner.TYPE_ROOW)*/
+        List dataOwners = em.createQuery("from DataOwner where type = :type order by id")
+                .setParameter("type", DataOwner.TYPE_ROOW)
                 .getResultList();
         request.setAttribute("dataOwners", dataOwners);
 
@@ -179,7 +179,11 @@ public class GebruikersAction extends BaseDatabaseAction {
             roles.add(Role.findByName(Role.BEHEERDER));
         }
         g.setRoles(roles);
+    }
 
+    private void populateGebruikerDataOwnerRights(DynaValidatorForm form, Gebruiker g, HttpServletRequest request) throws Exception {
+        EntityManager em = getEntityManager();
+        
         String[] dataOwnersEditable = (String[])form.get("dataOwnersEditable");
         String[] dataOwnersValidatable = (String[])form.get("dataOwnersValidatable");
 
@@ -244,8 +248,15 @@ public class GebruikersAction extends BaseDatabaseAction {
 
         populateGebruikerObject(form, g, request);
 
-        em.merge(g);
+        if(em.contains(g)) {
+            em.merge(g);
+        } else {
+            em.persist(g);
+        }
         em.flush();
+
+        populateGebruikerDataOwnerRights(form, g, request);
+        em.merge(g);
 
         populateGebruikerForm(g, form, request);
         createLists(form, request);
