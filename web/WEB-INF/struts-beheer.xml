@@ -17,8 +17,6 @@
             <form-property name="phone" type="java.lang.String"/>
             <form-property name="password" type="java.lang.String"/>
             <form-property name="role" type="java.lang.String"/>
-            <form-property name="loc" type="java.lang.String"/>
-            <form-property name="roles" type="java.lang.Integer[]"/>
 
             <form-property name="dataOwnersEditable" type="java.lang.String[]"/>
             <form-property name="dataOwnersValidatable" type="java.lang.String[]"/>

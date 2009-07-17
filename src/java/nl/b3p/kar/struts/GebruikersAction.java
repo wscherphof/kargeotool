@@ -1,6 +1,7 @@
 package nl.b3p.kar.struts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -124,12 +125,7 @@ public class GebruikersAction extends BaseDatabaseAction {
         form.set("email", g.getEmail() == null ? "" : g.getEmail());
         form.set("phone", g.getPhone() == null ? "" : g.getPhone());
         form.set("password", "");
-        Iterator it=g.getRoles().iterator();
-        Integer[] roles=new Integer[g.getRoles().size()];
-        for(int i=0; it.hasNext(); i++){
-            roles[i]=((Role)it.next()).getId();
-        }
-        form.set("roles",roles);
+        form.set("role", g.isInRole(Role.BEHEERDER) ? Role.BEHEERDER : Role.GEBRUIKER);
 
         request.setAttribute("gebruiker", g);
 
@@ -175,14 +171,14 @@ public class GebruikersAction extends BaseDatabaseAction {
             g.changePassword(request, pw);
             form.set("password", null);
         }
-        Integer[] roles= (Integer[]) form.get("roles");
-        Set s = new HashSet();
-        for (int i=0; i < roles.length; i ++){
-            Role r = em.find(Role.class, roles[i]);
-            if (r!=null)
-                s.add(r);
+        boolean isBeheerder = Role.BEHEERDER.equals(form.getString("role"));
+
+        Set roles = new HashSet();
+        roles.add(Role.findByName(Role.GEBRUIKER));
+        if(isBeheerder) {
+            roles.add(Role.findByName(Role.BEHEERDER));
         }
-        g.setRoles(s);
+        g.setRoles(roles);
 
         String[] dataOwnersEditable = (String[])form.get("dataOwnersEditable");
         String[] dataOwnersValidatable = (String[])form.get("dataOwnersValidatable");

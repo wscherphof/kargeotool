@@ -11,14 +11,10 @@
 
 <html:form action="/gebruikers.do" method="POST" onsubmit="return validateGebruikersForm(this)" style="\" autocomplete='off'">
 
-<c:set var="focus" value="username" scope="request"/>
-<tiles:insert definition="setFocus"/>
+    <c:set var="focus" value="username" scope="request"/>
+    <tiles:insert definition="setFocus"/>
 
     <html:hidden property="id"/>
-    <c:if test="${form.id != -1}">
-        <html:hidden property="role"/>
-        <html:hidden property="loc"/>
-    </c:if>
 
 <c:if test="${!empty gebruikers}">
     Aantal gebruikers: <b>${fn:length(gebruikers)}</b>
@@ -42,7 +38,12 @@
                     <c:set var="col" value="#cccccc"/>
                 </c:if>
                 <tr bgcolor="${col}">
-                    <td style="width: 150px"><html:link href="${editLink}"><c:out value="${g.username}"/></html:link></td>
+                    <td style="width: 150px">
+                        <html:link href="${editLink}"><c:out value="${g.username}"/></html:link>
+                        <c:if test="<%= ((Gebruiker)pageContext.getAttribute(\"g\")).isInRole(\"beheerder\") %>">
+                            <html:img page="/images/star.png" module="/"/>
+                        </c:if>
+                    </td>
                     <td style="width: 200px"><c:out value="${g.fullname}"/></td>
                     <td style="width: 200px"><c:out value="${g.email}"/></td>
                     <td style="width: 100px"><c:out value="${g.phone}"/></td>
@@ -122,23 +123,14 @@
                             if(!e) var e = window.event;
                             var target = e.target ? e.target : e.srcElement;
 
-
-                            if(target.value == "1") {
-                                var beheerder = target.checked;
-                                document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
-                                document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
-                                document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
-                                if(!beheerder) {
-                                    if(!availableDataOwnersInited) {
-                                        setTimeout(initAvailableDataOwners(), 1000);
-                                        availableDataOwnersInited = true;
-                                    }
-                                }
-                            }
+                            var beheerder = document.getElementById("role_beheerder").checked;
+                            document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
+                            document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
+                            document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
                         }
                     </script>
                     <c:forEach var="r" items="${availableRoles}">
-                        <html:multibox property="roles" value="${r.id}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/><br>
+                        <html:radio property="role" value="${r.role}" styleId="role_${r.role}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/><br>
                     </c:forEach>
                 </td>
 
@@ -184,26 +176,25 @@
             </div>
 
 <script type="text/javascript">
-    <c:if test="${!isBeheerder}">
-        setOnload(initAvailableDataOwners);
-    </c:if>
+    setOnload(initAvailableDataOwners);
 
     var dataOwners = ${dataOwnersJson};
     var usedDataOwners = {};
 
     var codeNameSeparator = " - ";
 
-    var availableDataOwnersInited = false;
 
     function initAvailableDataOwners() {
 
         usedDataOwners = {};
         var editable = document.forms[0].dataOwnersEditable;
         var validatable = document.forms[0].dataOwnersValidatable;
-        for(var i = 0; i < editable.length; i++) {
-            var value = editable[i].value;
-            if(editable[i].checked || validatable[i].checked) {
-                usedDataOwners[value] = true;                
+        if(editable != undefined) {
+            for(var i = 0; i < editable.length; i++) {
+                var value = editable[i].value;
+                if(editable[i].checked || validatable[i].checked) {
+                    usedDataOwners[value] = true;
+                }
             }
         }
 
@@ -340,6 +331,9 @@
         <html:submit property="create" onclick="bCancel=true;">Nieuw account toevoegen</html:submit>
     </c:if>
 
+</c:if>
+<c:if test="${empty gebruikers}">
+    <tiles:insert definition="infoblock"/>
 </c:if>
 
 </html:form>
