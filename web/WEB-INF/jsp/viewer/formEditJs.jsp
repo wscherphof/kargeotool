@@ -5,13 +5,13 @@
         <c:if test="${empty point}">Nog geen locatie.</c:if>
         <c:if test="${!empty point}">Coordinaten: <span id='location'>${point}</span></c:if>
     </c:set>
-    <b>Locatie</b><br>
+    <b>Locatie</b>${notEditable}<br>
     <br>
     <span id="locationStatus" style="font-weight: bold">${savedLocationStatusHtml}</span>
-    <input id="newLocation" disabled="${notEditable}" type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="newLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
     <input id="reset" type="button" style="display: none" value="Reset" onclick="resetClicked();">
-    <input id="changeLocation" disabled="${notEditable}" type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
-    <input id="deleteLocation" disabled="${notEditable}" type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
+    <input id="changeLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
+    <input id="deleteLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
     <br>
 </div>
 
