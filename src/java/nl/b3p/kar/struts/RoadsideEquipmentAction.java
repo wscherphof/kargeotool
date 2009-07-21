@@ -142,7 +142,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                 .getResultList();
         } else {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
-            Set dataOwnersUnsorted = g.getDataOwnerRights().keySet();
+            Set dataOwnersUnsorted = g.getEditableDataOwners();
             dataOwners = new ArrayList();
             for (Iterator<DataOwner> it = dataOwnersUnsorted.iterator(); it.hasNext();) {
                 DataOwner dao = it.next();
