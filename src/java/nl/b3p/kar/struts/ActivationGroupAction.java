@@ -206,8 +206,7 @@ public final class ActivationGroupAction extends TreeItemAction {
             default: d = new String[] {"onbekend"}; break;
         }
         form.set("directionAtIntersection", d);
-        form.set("metersAfterStopLine",
-                ag.getMetersAfterStopLine() == null ? null : ag.getMetersAfterStopLine() + "");
+        form.set("leaveAnnouncement", ag.isLeaveAnnouncement() ? "true" : "false");
         form.set("followDirection", ag.isFollowDirection() ? "true" : "false");
         form.set("description", ag.getDescription() == null ? null : ag.getDescription());
 
@@ -247,7 +246,7 @@ public final class ActivationGroupAction extends TreeItemAction {
             d = 0;
         }
         ag.setDirectionAtIntersection(d);
-        ag.setMetersAfterStopLine(FormUtils.StringToInteger(form.getString("metersAfterStopLine")));
+        ag.setLeaveAnnouncement( "true".equals(form.getString("leaveAnnouncement")));// Boolean.parseBoolean(form.getString("metersAfterStopLine")) );
         ag.setFollowDirection("true".equals(form.getString("followDirection")));
         ag.setDescription(FormUtils.nullIfEmpty(form.getString("description")));
 

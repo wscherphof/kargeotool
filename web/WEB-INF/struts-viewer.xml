@@ -24,7 +24,7 @@
             <form-property name="id" type="java.lang.String"/>
             <form-property name="karSignalGroup" type="java.lang.String"/>
             <form-property name="directionAtIntersection" type="java.lang.String[]"/>
-            <form-property name="metersAfterStopLine" type="java.lang.String"/>
+            <form-property name="leaveAnnouncement" type="java.lang.String"/>
             <form-property name="followDirection" type="java.lang.String"/>
             <form-property name="description" type="java.lang.String"/>
         </form-bean>

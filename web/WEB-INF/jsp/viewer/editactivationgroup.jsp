@@ -120,11 +120,12 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="ag.metersAfterStopLine"/>
-            <span style="font-size: 8pt"><br>meters na stopstreep</span>
-            </td>
+                <td><fmt:message key="ag.leaveAnnouncement"/></td>
             <td>
-                <html:text property="metersAfterStopLine" style="border: none; width: 98%"/>
+                <html:select property="leaveAnnouncement">
+                    <html:option value="false">Nee</html:option>
+                    <html:option value="true">Ja</html:option>
+                </html:select>
             </td>
         </tr>
         <tr>

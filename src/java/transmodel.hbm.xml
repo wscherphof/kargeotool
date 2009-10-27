@@ -42,7 +42,7 @@
     <property name="type" not-null="true"/>
     <property name="directionAtIntersection" not-null="true"/>
     <property name="metersBeforeRoadsideEquipmentLocation"/>
-    <property name="metersAfterStopLine"/>
+    <property name="leaveAnnouncement" not-null="true"/>
     <property name="inactiveFrom"/>
     <property name="angleToNorth"/>
     <property name="followDirection" not-null="true"/>

@@ -24,7 +24,7 @@ public class ActivationGroup implements EditorTreeObject {
     private String type;
     private int directionAtIntersection;
     private Integer metersBeforeRoadsideEquipmentLocation;
-    private Integer metersAfterStopLine;
+    private boolean leaveAnnouncement;
     private Date inactiveFrom;
     private Double angleToNorth;
     private boolean followDirection;
@@ -93,12 +93,12 @@ public class ActivationGroup implements EditorTreeObject {
         this.metersBeforeRoadsideEquipmentLocation = metersBeforeRoadsideEquipmentLocation;
     }
 
-    public Integer getMetersAfterStopLine() {
-        return metersAfterStopLine;
+    public boolean isLeaveAnnouncement() {
+        return leaveAnnouncement;
     }
 
-    public void setMetersAfterStopLine(Integer metersAfterStopLine) {
-        this.metersAfterStopLine = metersAfterStopLine;
+    public void setLeaveAnnouncement(boolean leaveAnnouncement) {
+        this.leaveAnnouncement = leaveAnnouncement;
     }
 
     public Date getInactiveFrom() {
@@ -226,7 +226,7 @@ public class ActivationGroup implements EditorTreeObject {
             case 7: richting = "Linksaf, rechtsaf"; break;
             default: richting = "Onbekend"; break;
         }
-        j.put("icon", new Integer(0).equals(getMetersAfterStopLine()) ? "stop" : "nostop");
+        j.put("icon", isLeaveAnnouncement() ? "stop" : "nostop");
         j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
         j.put("point", getStopLineLocationString());
         if(includeChildren) {
