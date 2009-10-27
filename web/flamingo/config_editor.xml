@@ -37,7 +37,7 @@
                 
             >
                 <layer id="signaalgroepen" maptip="Signaalgroep: [kar_signal_group] Richting: [richting]"/>
-                <layer id="triggerpunten" maptip="Triggerpunt: [kar_signal_group] Afstand tot stopstreep: [kar_distance_till_stop_line]"/>
+                <layer id="triggerpunten" maptip="Afstand tot stopstreep: [kar_distance_till_stop_line]"/>
             </fmc:LayerOGWMS>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
             <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
