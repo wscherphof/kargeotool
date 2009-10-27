@@ -68,12 +68,6 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="rseq.unitNumber"/></td>
-            <td>
-                <html:text property="unitNumber" style="border: none; width: 98%"/>
-            </td>
-        </tr>
-        <tr>
             <td><fmt:message key="rseq.type"/></td>
             <td>
                 <html:select property="type">
@@ -84,6 +78,12 @@
                     <html:option value="CLOSE">CLOSE - selectieve afsluiting</html:option>
                     <html:option value="PIU">PIU - halteprocessor</html:option>
                 </html:select>
+            </td>
+        </tr>
+        <tr>
+            <td><fmt:message key="rseq.unitNumber"/></td>
+            <td>
+                <html:text property="unitNumber" style="border: none; width: 98%"/>
             </td>
         </tr>
         <tr>
