@@ -26,13 +26,13 @@
             </fmc:Layer>
         </fmc:GIS>
         <fmc:Map extenthistory="10" id="map" left="0" top="0%" height="100%" width="100%" bottom="bottom" visible="true" fullextent="12000,304000,280000,620000" extent="12000,304000,280000,620000" maptipdelay="500">
-            <fmc:LayerOGWMS 
+            <fmc:LayerOGWMS
                 id="kar_layer"
                 url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;Service=WMS"
                 srs="EPSG:28992"
                 layers="buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen"
                 showerrors="true"
-                query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes"
+                query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes,buslijnen"
                 MAPTIP_LAYERS="signaalgroepen,triggerpunten"
                 
             >
@@ -43,7 +43,7 @@
             <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
             <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
         </fmc:Map>
-        <fmc:Maptip id="tral" listento="map"/>
+        <fmc:Maptip id="maptip" listento="map"/>
     </fmc:Container>
 
     <fmc:Container left="right -170" height="100%" right="right" top="0" backgroundcolor="#F5F5F5">
@@ -113,21 +113,35 @@
             <fmc:EditInfoPanel id="editInfoPanel" height="180" listento="drawMap"/>
         </fmc:Container>
     </fmc:Window>
+    
+    <fmc:Window id="info" title="Informatie" width="50%" height="50%" top="25%" left="25%" visible="false" canclose="true" canresize="true" skin="f2" defocusalpha="10">
+        <fmc:IdentifyResultsHTML id="info_html" width="100%" height="100%" listento="map" showonidentify="false">
+            <style id=".bold" font-family="verdana" font-size="15px" color="#333333" display="block" font-weight="bold"/>
+            <style id=".normal" font-family="verdana" font-size="11px" color="#333333" display="block" font-weight="normal"/>
+            <style id="a" font-family="verdana" font-size="11px" color="#0033cc" display="block" font-weight="normal" text-decoration="underline"/>
+            <style id=".uitleg" font-family="verdana" font-size="11px" color="#0033cc" display="block" font-weight="normal" font-style="italic"/>
 
-    <fmc:Window id="bushalte_info" title="Bushalte info" visible="false" canclose="true" canresize="true" defocusalpha="10" width="50%" height="50%" left="25%" top="25%">
-        <fmc:Container width="100%" height="100%" backgroundcolor="#FFFFFF">
-            <fmc:IdentifyResults id="info" width="100%" height="100%" visible="true" listento="map" showonidentify="false">
-                <style id=".field" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="bold"/>
-                <style id=".value" font-family="verdana" font-size="11px" color="#000000" display="block" font-weight="normal"/>
-                <style id=".maplayer" font-family="verdana" font-size="13px" color="#000000" display="block" font-weight="normal"/>
-                <style id=".layer" font-family="verdana" font-size="12px" color="#000000" display="block" font-weight="normal"/>
-                <string id="startidentify" en="Loading" nl="Info wordt opgehaald"/>
-                <string id="identify" en="[progress]%" nl="[progress]%"/>
-                <string id="finishidentify" en="Information" nl="Informatie"/>
-                <string id="seperator" en=":" nl=":"/>
-                <style id="a" font-family="arial" font-size="10px" color="#333399" display="block" font-weight="normal" text-decoration="underline"/>
-            </fmc:IdentifyResults>
-        </fmc:Container>
+            <!-- Bushalte -->
+            <string id="kar_layer.bushaltes_symbol" stripdatabase="true">
+            <nl><![CDATA[<span class='normal'>
+                <span class='bold'>Bushalte:</span><textformat>
+                    validfrom:\t\t[validfrom]
+                    dataowner:\t[dataowner]
+                    code:     \t\t[code]
+                    name:     \t\t[name]</textformat></span>
+            ]]>
+            </nl>
+            </string>
+            <!-- Buslijn-->
+            <string id="kar_layer.buslijnen" stripdatabase="true">
+            <nl><![CDATA[<span class='normal'>
+                <span class='bold'>Buslijn:</span>
+                    <textformat>[publicnumber] ([direction]): [name]</textformat></span>
+
+            ]]>
+            </nl>
+            </string>
+        </fmc:IdentifyResultsHTML>
     </fmc:Window>
 
     <fmc:Container backgroundcolor="#F5F5F5" left="0" top="0" height="100%" width="100%">

@@ -408,12 +408,13 @@
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
         if("map_kar_layer" == layer) {
-            if(data.bushaltes_symbol != undefined) {
-                flamingo.callMethod("bushalte_info", "show");
+            if(data.bushaltes_symbol != undefined || data.buslijnen != undefined) {
+                flamingo.callMethod("info", "show");
             }
+            
             if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
                 document.getElementById("loading").style.visibility = "visible";
-                Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
+                    Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }
         }
     }
