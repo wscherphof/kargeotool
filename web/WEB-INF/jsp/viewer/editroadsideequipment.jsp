@@ -28,6 +28,7 @@
     <%-- geen struts tag omdat form tag disabled="true" kan zijn... maar validate submit mogelijk wel mogelijk --%>
     <input type="hidden" name="id" value="${form.id}">
     <input type="hidden" name="validated">
+    <input type="hidden" name="validatedAll">
     <html:hidden property="location"/>
     <html:submit property="save">Opslaan</html:submit>
     <c:if test="${activationGroupCount == 1}">
@@ -40,6 +41,7 @@
         <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u deze walapparatuur wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
         <%-- geen struts tag omdat form tag disabled="true" kan zijn... --%>
         <input type="submit" name="validate" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
+        <input type="submit" name="validateAll" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validatedAll.value = confirm('Wilt u alle objecten valideren voor opname in de TMI export?');" value="Allemaal valideren">
     </c:if>
     
 <c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>

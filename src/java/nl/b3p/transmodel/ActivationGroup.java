@@ -15,8 +15,8 @@ import org.json.JSONObject;
 
 public class ActivationGroup implements EditorTreeObject {
     /* "Priority ReQuest Automatic" */
-    public static final String TYPE_PRQA = "PRQA";
 
+    public static final String TYPE_PRQA = "PRQA";
     private Integer id;
     private RoadsideEquipment roadsideEquipment;
     private int karSignalGroup;
@@ -30,11 +30,11 @@ public class ActivationGroup implements EditorTreeObject {
     private boolean followDirection;
     private String description;
     private Point stopLineLocation; /* locatie van stopstreep */
+
     private String updater;
     private Date updateTime;
     private String validator;
     private Date validationTime;
-
     private List activations = new ArrayList();
 
     public Integer getId() {
@@ -142,7 +142,7 @@ public class ActivationGroup implements EditorTreeObject {
     }
 
     public String getStopLineLocationString(String separator) {
-        if(stopLineLocation != null) {
+        if (stopLineLocation != null) {
             NumberFormat nf = DecimalFormat.getInstance(Locale.ENGLISH);
             nf.setGroupingUsed(false);
             return nf.format(stopLineLocation.getCoordinate().x) + separator + nf.format(stopLineLocation.getCoordinate().y);
@@ -150,7 +150,7 @@ public class ActivationGroup implements EditorTreeObject {
             return null;
         }
     }
-    
+
     public String getStopLineLocationString() {
         return getStopLineLocationString(", ");
     }
@@ -196,13 +196,13 @@ public class ActivationGroup implements EditorTreeObject {
     }
 
     @Override
-    public String toString(){
-        String returnValue="";
-        returnValue+=this.getType();
-        if (this.getRoadsideEquipment()!=null){
-            returnValue+=" "+this.getRoadsideEquipment().getDescription();
+    public String toString() {
+        String returnValue = "";
+        returnValue += this.getType();
+        if (this.getRoadsideEquipment() != null) {
+            returnValue += " " + this.getRoadsideEquipment().getDescription();
         }
-        returnValue+="(KAR-signal: "+this.getKarSignalGroup()+")";
+        returnValue += "(KAR-signal: " + this.getKarSignalGroup() + ")";
         return returnValue;
     }
 
@@ -216,28 +216,56 @@ public class ActivationGroup implements EditorTreeObject {
         j.put("id", "ag:" + getId());
         j.put("description", getDescription());
         String richting = "";
-        switch(getDirectionAtIntersection()) {
-            case 1: richting = "Rechtsaf"; break;
-            case 2: richting = "Rechtdoor"; break;
-            case 3: richting = "Linksaf"; break;
-            case 4: richting = "Rechtsaf, rechtdoor, linksaf"; break;
-            case 5: richting = "Rechtsaf, rechtdoor"; break;
-            case 6: richting = "Rechtdoor, linksaf"; break;
-            case 7: richting = "Linksaf, rechtsaf"; break;
-            default: richting = "Onbekend"; break;
+        switch (getDirectionAtIntersection()) {
+            case 1:
+                richting = "Rechtsaf";
+                break;
+            case 2:
+                richting = "Rechtdoor";
+                break;
+            case 3:
+                richting = "Linksaf";
+                break;
+            case 4:
+                richting = "Rechtsaf, rechtdoor, linksaf";
+                break;
+            case 5:
+                richting = "Rechtsaf, rechtdoor";
+                break;
+            case 6:
+                richting = "Rechtdoor, linksaf";
+                break;
+            case 7:
+                richting = "Linksaf, rechtsaf";
+                break;
+            default:
+                richting = "Onbekend";
+                break;
         }
         j.put("icon", isLeaveAnnouncement() ? "stop" : "nostop");
         j.put("name", getKarSignalGroup() + " " + richting + " " + (getDescription() == null ? "" : getDescription()));
         j.put("point", getStopLineLocationString());
-        if(includeChildren) {
-            if(!getActivations().isEmpty()) {
+        if (includeChildren) {
+            if (!getActivations().isEmpty()) {
                 JSONArray children = new JSONArray();
                 j.put("children", children);
-                for(Iterator it = getActivations().iterator(); it.hasNext();) {
-                    children.put( ((Activation)it.next()).serializeToJson(request) );
+                for (Iterator it = getActivations().iterator(); it.hasNext();) {
+                    children.put(((Activation) it.next()).serializeToJson(request));
                 }
             }
         }
         return j;
+    }
+
+    public void validateAll(String validator, Date validationTime) {
+        setValidator(validator);
+        setValidationTime(validationTime);
+
+        for (Iterator it = activations.iterator(); it.hasNext();) {
+            Activation activation = (Activation) it.next();
+
+            activation.setValidationTime(validationTime);
+            activation.setValidator(validator);
+        }
     }
 }

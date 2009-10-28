@@ -221,6 +221,17 @@ public class RoadsideEquipment implements EditorTreeObject {
         return j;
     }
 
+    public void validateAll(String user, Date time) {
+        setValidator(user);
+        setValidationTime(time);
+
+        // Propagate to all children
+        for (Iterator<ActivationGroup> it1 = activationGroups.iterator(); it1.hasNext();) {
+            ActivationGroup activationGroup = it1.next();
+            activationGroup.validateAll(validator, validationTime);
+        }
+    }
+
     public Set getActivationGroups() {
         return activationGroups;
     }

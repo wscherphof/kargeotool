@@ -35,6 +35,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         map.put("new", new ExtendedMethodProperties("create"));
         map.put("delete", new ExtendedMethodProperties("delete"));
         map.put("validate", new ExtendedMethodProperties("validate"));
+        map.put("validateAll", new ExtendedMethodProperties("validateAll"));
         return map;
     }
 
@@ -263,4 +264,32 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         populateForm(rseq, form, request);
         return mapping.findForward(SUCCESS);
     }
+
+    public ActionForward validateAll(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
+        if (rseq == null) {
+            addMessage(request, "error.notfound");
+            return mapping.findForward(SUCCESS);
+        }
+        if(!request.isUserInRole(Role.BEHEERDER)) {
+            Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+            DataOwner dao = rseq.getDataOwner();
+            if(!g.canValidateDataOwner(dao)) {
+                addMessage(request, "error.dataowner.unvalidatable", dao.getName());
+                return mapping.findForward(SUCCESS);
+            }
+        }
+
+        if("true".equals(form.getString("validatedAll"))) {
+            rseq.validateAll(request.getRemoteUser(), new Date());
+        } else {
+            rseq.validateAll(null, null);
+        }
+        createLists(rseq, form, request);
+
+        /* nodig omdat form mogelijk disabled is */
+        populateForm(rseq, form, request);
+        return mapping.findForward(SUCCESS);
+    }
+
 }

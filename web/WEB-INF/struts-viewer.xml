@@ -30,6 +30,7 @@
         </form-bean>
         <form-bean name="roadsideEquipmentForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="validated" type="java.lang.String"/>
+            <form-property name="validatedAll" type="java.lang.String"/>
             <form-property name="location" type="java.lang.String"/>
             <form-property name="id" type="java.lang.String"/>
             <form-property name="dataOwner" type="java.lang.String"/>
