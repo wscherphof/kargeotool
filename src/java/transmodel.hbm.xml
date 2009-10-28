@@ -26,6 +26,11 @@
     <property name="updateTime"/>
     <property name="validator"/>
     <property name="validationTime"/>
+
+    <set name="activationGroups" cascade="all-delete-orphan" order-by="kar_signal_group asc" inverse="true" >
+        <key column="roadsideEquipment"/>
+        <one-to-many class="nl.b3p.transmodel.ActivationGroup" />
+    </set>
   </class>
   <class name="nl.b3p.transmodel.ActivationGroup">
     <id name="id">

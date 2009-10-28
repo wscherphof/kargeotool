@@ -130,9 +130,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
         if(em.contains(rseq)) {
             request.setAttribute("activationGroupCount",
-                    em.createQuery("select count(*) from ActivationGroup ag where ag.roadsideEquipment = :this")
-                        .setParameter("this", rseq)
-                        .getSingleResult());
+                    rseq.getActivationGroups().size());
             rseq.getDataOwner().getName();
         }
         List dataOwners;
@@ -229,17 +227,6 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             }
         }
 
-        List agIds = em.createQuery("select id from ActivationGroup ag where ag.roadsideEquipment = :this")
-                .setParameter("this", rseq)
-                .getResultList();
-        if(!agIds.isEmpty()) {
-            em.createQuery("delete from Activation a where a.activationGroup.id in (:ids)")
-                    .setParameter("ids", agIds)
-                    .executeUpdate();
-            em.createQuery("delete from ActivationGroup ag where ag.id in (:ids)")
-                    .setParameter("ids", agIds)
-                    .executeUpdate();
-        }
         em.remove(rseq);
         em.flush();
         em.getTransaction().commit();

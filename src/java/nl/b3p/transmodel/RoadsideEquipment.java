@@ -5,8 +5,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.hibernate.Gebruiker;
@@ -39,6 +40,8 @@ public class RoadsideEquipment implements EditorTreeObject {
     private Date updateTime;
     private String validator;
     private Date validationTime;
+
+    private Set<ActivationGroup> activationGroups = new HashSet<ActivationGroup>();
 
     public Integer getId() {
         return id;
@@ -205,9 +208,7 @@ public class RoadsideEquipment implements EditorTreeObject {
         j.put("rseqType", getType());
         j.put("name", getUnitNumber() + (getDescription() == null ? "" : ": " + getDescription()));
         j.put("point", getLocationString());
-        List groups = em.createQuery("from ActivationGroup where roadsideEquipment = :this")
-                .setParameter("this", this)
-                .getResultList();
+        Set groups = getActivationGroups();
         if(includeChildren) {
             if(!groups.isEmpty()) {
                 JSONArray children = new JSONArray();
@@ -219,4 +220,14 @@ public class RoadsideEquipment implements EditorTreeObject {
         }
         return j;
     }
+
+    public Set getActivationGroups() {
+        return activationGroups;
+    }
+
+    public void setActivationGroups(Set activationGroups) {
+        this.activationGroups = activationGroups;
+    }
+
+
 }
