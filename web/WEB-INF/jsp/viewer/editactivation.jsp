@@ -30,12 +30,12 @@
     <input type="hidden" name="validated">
     <html:hidden property="agId"/>
     <html:hidden property="location"/>
-    <html:submit property="save">Opslaan</html:submit>
+    <html:submit property="save" title="Sla de wijzigingen steeds op per walapparaat, signaalgroep of triggerpunt.">Opslaan</html:submit>
     <c:if test="${!empty form.id}">
-        <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
+        <html:submit property="delete" title="Het triggerpunt verwijderen." onclick="bCancel = true; return confirm('Weet u zeker dat u dit triggerpunt wilt verwijderen?')">Verwijderen</html:submit>
         <%-- geen struts tag omdat form tag disabled="true" kan zijn... --%>
-        <input type="submit" name="validate" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
-        <html:submit property="copy">Kopi&euml;ren</html:submit>
+        <input type="submit" name="validate" title="De data van het triggerpunt valideren." ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
+        <html:submit property="copy" title="Selecteer deze optie voor het kopiëren van het triggerpunt. Op deze manier kunnen eenvoudig meerdere triggerpunten met bijvoorbeeld dezelfde eigenschappen, maar met verschillende locaties, aan de signaalgroep worden toegevoegd.">Kopi&euml;ren</html:submit>
     </c:if>
 
 <c:set var="point" value="${activation.locationString}" scope="request"/>
@@ -52,15 +52,15 @@
     <table class="form">
         <c:set var="dataOwner" value="${activationGroup.roadsideEquipment.dataOwner}"/>
         <tr>
-            <td style="width: 130px">Databeheerder</td>
-            <td class="disabled"><c:out value="${dataOwner.name}"/></td>
+            <td style="width: 130px"><label title="De wegbeheerder (gemeente, provincie, waterschap, etc) die eigenaar is van /verantwoordelijk is voor de data.">Databeheerder</label></td>
+            <td class="disabled" title="De wegbeheerder (gemeente, provincie, waterschap, etc) die eigenaar is van /verantwoordelijk is voor de data."><c:out value="${dataOwner.name}"/></td>
         </tr>
-        <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
-        <tr><td><fmt:message key="a.index"/></td><td class="disabled"><c:out value="${activation.index}"/></td></tr>
-        <tr><td><fmt:message key="ag.karSignalGroup"/></td><td class="disabled"><c:out value="${activationGroup.karSignalGroup}"/></td></tr>
+        <tr><td><label title="Nummer dat de wegbeheerder toewijst aan het walapparaat (bij VRI's is dit nummer het kruispuntnummer).">Nummer walapparaat</label></td><td class="disabled" title="Nummer dat de wegbeheerder toewijst aan het walapparaat (bij VRI's is dit nummer het kruispuntnummer)."><c:out value="${activationGroup.roadsideEquipment.unitNumber}"/></td></tr>
+        <tr><td><label title="Binnen elke signaalgroep krijgen de triggerpunten een volgnummer toegewezen."><fmt:message key="a.index"/></label></td><td title="Binnen elke signaalgroep krijgen de triggerpunten een volgnummer toegewezen." class="disabled"><c:out value="${activation.index}"/></td></tr>
+        <tr><td><label title="De signaalgroep waar het triggerpunt bij hoort."><fmt:message key="ag.karSignalGroup"/></label></td><td class="disabled" title="De signaalgroep waar het triggerpunt bij hoort."><c:out value="${activationGroup.karSignalGroup}"/></td></tr>
         <tr>
-            <td><fmt:message key="a.karUsageType"/></td>
-            <td><html:select property="karUsageType" style="width: 98%">
+            <td><label title="Voor welke voertuigcategorie is het triggerpunt bedoeld?"><fmt:message key="a.karUsageType"/></label></td>
+            <td><html:select property="karUsageType" style="width: 98%" title="Voor welke voertuigcategorie is het triggerpunt bedoeld?">
                     <html:option value="ES"><fmt:message key="a.karUsageType.ES"/></html:option>
                     <html:option value="PT"><fmt:message key="a.karUsageType.PT"/></html:option>
                     <html:option value="ESWA"><fmt:message key="a.karUsageType.ESWA"/></html:option>
@@ -72,8 +72,8 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="a.triggerType"/></td>
-            <td><html:select property="triggerType">
+            <td><label title="Selecteer hier op welke wijze de in- of uitmelding geactiveerd kan worden.Automatisch: De in- of uitmelding wordt automatisch geactiveerd bij passage van het triggerpunt, Start Deur Sluiten: Indien zich vlak voor het kruispunt/de wegafsluiting een halte bevindt, kan het deur sluiten moment van de bus  worden gebruikt om het KAR bericht te versturen. Advies is het inmeldpunt ongeveer 75 meter (zichtafstand) voor de halte te leggen. Na passage van dit inmeldpunt kan de chauffeur op een knop drukken om het voertuig in te melden. Als de bus halteert, vervalt deze functie en zal de bus zich automatisch inmelden zodra de chauffeur de deuren sluit, Altijd automatisch:  In- of uitmelding die automatisch wordt geactiveerd en die niet overruled kan worden door Start Deur Sluiten of halteknop."><fmt:message key="a.triggerType"/></label></td>
+            <td title="Selecteer hier op welke wijze de in- of uitmelding geactiveerd kan worden.Automatisch: De in- of uitmelding wordt automatisch geactiveerd bij passage van het triggerpunt, Start Deur Sluiten: Indien zich vlak voor het kruispunt/de wegafsluiting een halte bevindt, kan het deur sluiten moment van de bus  worden gebruikt om het KAR bericht te versturen. Advies is het inmeldpunt ongeveer 75 meter (zichtafstand) voor de halte te leggen. Na passage van dit inmeldpunt kan de chauffeur op een knop drukken om het voertuig in te melden. Als de bus halteert, vervalt deze functie en zal de bus zich automatisch inmelden zodra de chauffeur de deuren sluit, Altijd automatisch:  In- of uitmelding die automatisch wordt geactiveerd en die niet overruled kan worden door Start Deur Sluiten of halteknop."><html:select property="triggerType">
                     <html:option value="PRQA"><fmt:message key="a.triggerType.PRQA"/></html:option>
                     <html:option value="PRQM"><fmt:message key="a.triggerType.PRQM"/></html:option>
                     <html:option value="SDCAS"><fmt:message key="a.triggerType.SDCAS"/></html:option>
@@ -83,10 +83,10 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="a.commandType"/><br>
-                <fmt:message key="a.commandType_regel2"/>
+            <td><label title="Betreft het triggerpunt een inmeldpunt, een uitmeldpunt of een voorinmeldpunt?"><fmt:message key="a.commandType"/><br>
+                <fmt:message key="a.commandType_regel2"/></label>
                 </td>
-            <td><html:select property="commandType">
+            <td><html:select property="commandType" title="Betreft het triggerpunt een inmeldpunt, een uitmeldpunt of een voorinmeldpunt?">
                     <html:option value=""/>
                     <html:option value="1"><fmt:message key="a.commandType.In"/></html:option>
                     <html:option value="2"><fmt:message key="a.commandType.Uit"/></html:option>
@@ -95,16 +95,16 @@
             </td>
         </tr>
         <tr>
-            <td><span id="distanceLabel"><fmt:message key="a.karDistanceTillStopLine"/></span></td>
-            <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine"/></td>
+            <td><span id="distanceLabel"><label title="Afstand tussen het triggerpunt en de stopstreep van de bijbehorende signaalgroep. De afstand tot stopstreep wordt automatisch ingevuld indien de locatie van het triggerpunt op de kaart is vastgelegd."><fmt:message key="a.karDistanceTillStopLine"/></label></span></td>
+            <td><html:text style="border: none; width: 98%" property="karDistanceTillStopLine" title="Afstand tussen het triggerpunt en de stopstreep van de bijbehorende signaalgroep. De afstand tot stopstreep wordt automatisch ingevuld indien de locatie van het triggerpunt op de kaart is vastgelegd."/></td>
         </tr>
         <tr>
-            <td><fmt:message key="a.karTimeTillStopLine"/></td>
-            <td><html:text style="border: none; width: 98%" property="karTimeTillStopLine"/></td>
+            <td><label title="Tijd tussen het triggerpunt en de stopstreep van de bijbehorende signaalgroep."><fmt:message key="a.karTimeTillStopLine"/></label></td>
+            <td><html:text style="border: none; width: 98%" property="karTimeTillStopLine" title="Tijd tussen het triggerpunt en de stopstreep van de bijbehorende signaalgroep."/></td>
         </tr>
         <tr>
-            <td><fmt:message key="updater"/></td>
-            <td class="disabled">
+            <td><label title="Persoon die de data heeft gemuteerd met de laatste mutatiedatum."><fmt:message key="updater"/></label></td>
+            <td class="disabled" title="Persoon die de data heeft gemuteerd met de laatste mutatiedatum.">
                 <c:if test="${!empty activation.updater}">
                     <c:out value="${activation.updater}"/> op
                     <fmt:formatDate pattern="dd-MM-yyyy" value="${activation.updateTime}"/>
@@ -112,8 +112,8 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="validator"/></td>
-            <td class="disabled">
+            <td><label title="Persoon die de data van heeft gevalideerd met de laatste validatiedatum."><fmt:message key="validator"/></label></td>
+            <td class="disabled" title="Persoon die de data van heeft gevalideerd met de laatste validatiedatum.">
                 <c:if test="${!empty activation.validator}">
                     <html:img page="/images/checkmark.gif" module="" style="display: block; float: left;"/>
                     <c:out value="${activation.validator}"/> op

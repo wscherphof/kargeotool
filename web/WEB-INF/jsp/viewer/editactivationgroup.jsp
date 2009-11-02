@@ -31,7 +31,7 @@
     <html:hidden property="copyFrom"/>
     <html:hidden property="rseqId"/>
     <html:hidden property="location"/>
-    <html:submit property="save">Opslaan</html:submit>
+    <html:submit property="save" title="Sla de wijzigingen steeds op per walapparaat, signaalgroep of triggerpunt.">Opslaan</html:submit>
     <c:if test="${activationCount == 1}">
         <c:set var="extraMsg">Let op! Het triggerpunt van deze signaalgroep wordt ook verwijderd!</c:set>
     </c:if>
@@ -39,10 +39,10 @@
         <c:set var="extraMsg">Let op! De ${activationCount} triggerpunten van deze signaalgroep worden ook verwijderd!</c:set>
     </c:if>
     <c:if test="${!empty form.id}">
-        <html:submit property="delete" onclick="bCancel = true; return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
+        <html:submit property="delete" title="De signaalgroep en de bijbehorende triggerpunten verwijderen." onclick="bCancel = true; return confirm('Weet u zeker dat u deze signaalgroep wilt verwijderen? ${extraMsg}')">Verwijderen</html:submit>
         <%-- geen struts tag omdat form tag disabled="true" kan zijn... --%>
-        <input type="submit" name="validate" ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
-        <html:submit property="copy">Kopi&euml;ren</html:submit>
+        <input type="submit" name="validate" title="De data van de signaalgroepen en de bijbehorende triggerpunten valideren." ${notValidatable ? 'disabled="disabled"' : ''} onclick="bCancel = true; document.forms[0].validated.value = confirm('Wilt u dit object valideren voor opname in de TMI export?');" value="Valideren">
+        <html:submit property="copy" title="Selecteer deze optie voor het kopiëren van de signaalgroep inclusief de bijbehorende triggerpunten. Op deze manier kunnen eenvoudig signaalgroepen en triggerpunten die op dezelfde kruispuntarm liggen worden aangemaakt. Maak hiervoor eerst één van de signaalgroepen op een kruispuntarm aan, inclusief de bijbehorende triggerpunten. Na het kopiëren van deze signaalgroep dienen alleen de gegevens en de locatie van de nieuwe signaalgroep aangepast te worden. De nieuwe triggerpunten worden automatisch gekoppeld aan de nieuwe signaalgroep.">Kopi&euml;ren</html:submit>
     </c:if>
 <c:set var="point" value="${activationGroup.stopLineLocationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
@@ -57,18 +57,18 @@
     <div class="formTableContainer">
     <table class="form">
         <tr>
-            <td style="width: 130px">Databeheerder</td>
-            <td class="disabled"><c:out value="${rseq.dataOwner.name}"/></td>
+            <td style="width: 130px"><label title="De wegbeheerder (gemeente, provincie, waterschap, etc) die eigenaar is van /verantwoordelijk is voor de data.">Databeheerder</label></td>
+            <td class="disabled" title="De wegbeheerder (gemeente, provincie, waterschap, etc) die eigenaar is van /verantwoordelijk is voor de data."><c:out value="${rseq.dataOwner.name}"/></td>
         </tr>
-        <tr><td>Nummer walapparaat</td><td class="disabled"><c:out value="${rseq.unitNumber}"/></td></tr>
+        <tr><td><label title="Nummer dat de wegbeheerder toewijst aan het walapparaat (bij VRI's is dit nummer het kruispuntnummer).">Nummer walapparaat</label></td><td class="disabled" title="Nummer dat de wegbeheerder toewijst aan het walapparaat (bij VRI's is dit nummer het kruispuntnummer)."><c:out value="${rseq.unitNumber}"/></td></tr>
         <tr>
-            <td><fmt:message key="ag.karSignalGroup"/></td>
+            <td><label title="Voer hier de signaalgroep in waarvoor u in- en uitmeldpunten wilt aanmaken."><fmt:message key="ag.karSignalGroup"/></label></td>
             <td>
-                <html:text property="karSignalGroup" style="border: none; width: 98%"/>
+                <html:text title="Voer hier de signaalgroep in waarvoor u in- en uitmeldpunten wilt aanmaken." property="karSignalGroup" style="border: none; width: 98%"/>
             </td>
         </tr>
         <tr>
-            <td style="vertical-align: top"><fmt:message key="ag.directionAtIntersection"/></td>
+            <td style="vertical-align: top"><label title="Selecteer de rijrichtingen die mogelijk zijn bij de signaalgroep."><fmt:message key="ag.directionAtIntersection"/></label></td>
             <td>
 <script type="text/javascript">
     function onbekendChanged() {
@@ -95,7 +95,7 @@
         }
     }
 </script>
-                <table cellspacing="0" cellpadding="0">
+                <table cellspacing="0" cellpadding="0" title="Selecteer de rijrichtingen die mogelijk zijn bij de signaalgroep.">
                     <tr>
                         <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onclick="onbekendChanged()"/></td>
                         <td>
@@ -120,40 +120,40 @@
             </td>
         </tr>
         <tr>
-                <td><fmt:message key="ag.leaveAnnouncement"/></td>
+                <td><label title="Indien het uitmeldpunt op de stopstreep ligt, wordt geen afzonderlijk uitmeldpunt vastgelegd."><fmt:message key="ag.leaveAnnouncement"/></label></td>
             <td>
-                <html:select property="leaveAnnouncement">
+                <html:select property="leaveAnnouncement" title="Indien het uitmeldpunt op de stopstreep ligt, wordt geen afzonderlijk uitmeldpunt vastgelegd.">
                     <html:option value="false">Nee</html:option>
                     <html:option value="true">Ja</html:option>
                 </html:select>
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="ag.followDirection"/></td>
+            <td><label title="Indien de signaalgroep via een koppelsignaal gekoppeld is aan bijv. een uitmelding van een eerdere signaalgroep, is het niet nodig een inmeldpunt te definiëren voor deze signaalgroep. Een uitmeldpunt wordt alleen vastgelegd indien een vaste nalooptijd ontbreekt."><fmt:message key="ag.followDirection"/></label></td>
             <td>
-                <html:select property="followDirection">
+                <html:select property="followDirection" title="Indien de signaalgroep via een koppelsignaal gekoppeld is aan bijv. een uitmelding van een eerdere signaalgroep, is het niet nodig een inmeldpunt te definiëren voor deze signaalgroep. Een uitmeldpunt wordt alleen vastgelegd indien een vaste nalooptijd ontbreekt.">
                     <html:option value="false">Nee</html:option>
                     <html:option value="true">Ja</html:option>
                 </html:select>
             </td>
         </tr>
         <tr>
-            <td style="vertical-align: top"><fmt:message key="ag.description"/></td>
+            <td style="vertical-align: top"><label title="Ruimte voor opmerkingen. Indien de signaalgroep een volgrichting is kan worden aangeven van welke richting het een volgrichting is."><fmt:message key="ag.description"/></label></td>
             <td>
-                <html:textarea rows="2" style="width: 100%; border: none; font-family: tahoma, sans-serif; font-size: 8pt" property="description"/>
+                <html:textarea title="Ruimte voor opmerkingen. Indien de signaalgroep een volgrichting is kan worden aangeven van welke richting het een volgrichting is." rows="2" style="width: 100%; border: none; font-family: tahoma, sans-serif; font-size: 8pt" property="description"/>
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="rseq.inactiveFrom"/></td>
-            <td class="disabled">
+            <td><label title="Datum waarop de signaalgroep volgens planning buiten bedrijf is/wordt gesteld. Notatiewijze: dd-mm-jjjj"><fmt:message key="rseq.inactiveFrom"/></label></td>
+            <td class="disabled" title="Datum waarop de signaalgroep volgens planning buiten bedrijf is/wordt gesteld. Notatiewijze: dd-mm-jjjj">
                 <c:if test="${!empty activationGroup.inactiveFrom}">
                     <fmt:formatDate pattern="dd-MM-yyyy" value="${activationGroup.inactiveFrom}"/>
                 </c:if>
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="updater"/></td>
-            <td class="disabled">
+            <td><label title="Persoon die de data heeft gemuteerd met de laatste mutatiedatum."><fmt:message key="updater"/></label></td>
+            <td class="disabled" title="Persoon die de data heeft gemuteerd met de laatste mutatiedatum.">
                 <c:if test="${!empty activationGroup.updater}">
                     <c:out value="${activationGroup.updater}"/> op
                     <fmt:formatDate pattern="dd-MM-yyyy" value="${activationGroup.updateTime}"/>
@@ -161,8 +161,8 @@
             </td>
         </tr>
         <tr>
-            <td><fmt:message key="validator"/></td>
-            <td class="disabled">
+            <td><label title="Persoon die de data van heeft gevalideerd met de laatste validatiedatum."><fmt:message key="validator"/></label></td>
+            <td class="disabled" title="Persoon die de data van heeft gevalideerd met de laatste validatiedatum.">
                 <c:if test="${!empty activationGroup.validator}">
                     <html:img page="/images/checkmark.gif" module="" style="display: block; float: left;"/>
                     <c:out value="${activationGroup.validator}"/> op

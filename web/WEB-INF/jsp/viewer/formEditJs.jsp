@@ -8,10 +8,10 @@
     <b>Locatie</b>${notEditable}<br>
     <br>
     <span id="locationStatus" style="font-weight: bold">${savedLocationStatusHtml}</span>
-    <input id="newLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
-    <input id="reset" type="button" style="display: none" value="Reset" onclick="resetClicked();">
-    <input id="changeLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
-    <input id="deleteLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
+    <input title="Zoom in op de locatie van het walapparaat waarvoor u data wilt invoeren en wijs aan waar het walapparaat zich bevindt. Voor VRI's kunt u ook het midden van het kruispunt aanwijzen. Na het selecteren van een locatie op de kaart is het ook mogelijk coördinaten in te voeren in het venster Locatie." id="newLocation" ${notEditable ? 'disabled="disabled"' : ''} type="button" ${!empty point ? 'style="display: none"' : ""} value="Locatie aanwijzen in kaart" onclick="newLocationClicked();">
+    <input id="reset" type="button" title="Selecteer deze optie om de oorspronkelijke locatie te herstellen." style="display: none" value="Reset" onclick="resetClicked();">
+    <input id="changeLocation" title="Selecteer deze optie om de locatie te wijzigen. Wijzigen kan vervolgens door het punt in de kaart te verplaatsen of door de coördinaten in het venster Locatie in te vullen. De locatie wissen en daarna opnieuw aanwijzen in de kaart is ook een manier om de locatie te wijzigen." ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Locatie wijzigen" onclick="changeLocationClicked();">
+    <input id="deleteLocation" title="Selecteer deze optie om de locatie te wissen. Vervolgens zal de optie Locatie aanwijzen in kaart weer beschikbaar komen." ${notEditable ? 'disabled="disabled"' : ''} type="button" ${empty point ? 'style="display: none"' : ""} value="Wissen" onclick="deleteLocationClicked();">
     <br>
 </div>
 

@@ -19,6 +19,8 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         
+
+        
         <!--[if lte IE 6]>
             <link href="<html:rewrite page="/styles/geo-ov-ie6.css" module=""/>" rel="stylesheet" media="screen" type="text/css" />
             <script type="text/javascript" src="<html:rewrite page="/js/ie6fixes.js" module=""/>"></script>
@@ -494,6 +496,8 @@
     }
 
     setOnload(function() { document.getElementById("walapparaatnummer").focus(); });
+
+   
 </script>
 
 <div id="leftbar">
@@ -502,19 +506,19 @@
         <div id="treeTop">
             <div id="treeTitel">Objectenboom</div>
             <div id="loading"><html:img page="/images/ajax-loader.gif" module=""/></div>
-            Zoek op walapparaatnummer: <input id="walapparaatnummer" type="text" size="10" onkeypress="walapparaatnummerKeyPressed(event);">
+            <label title="asdfwe">Zoek op walapparaatnummer:</label> <input title="asdf" id="walapparaatnummer" type="text" size="10" onkeypress="walapparaatnummerKeyPressed(event);">
             <input type="button" name="zoekWalapparatuur" value="Zoeken" onclick="zoekWalapparatuur()">
         </div>
         <div id="objectTree"></div>
         <div id="options">
-            <input id="zoomButton" type="button" value="Zoom naar object" onclick="options_zoomToObject();">
+            <input id="zoomButton" type="button" value="Zoom naar object" title="Zoom in op een geselecteerd object uit de objectenboom. Met Auto-zoom aangevinkt wordt direct ingezoomd op een geselecteerd object. Het zoomniveau is instelbaar door de minimale ‘diameter’ (in meters) op te geven van het gebied rond het object. Klik na het wijzigen van de diameter op Zoom naar object om te zoomen naar het opgegeven niveau." onclick="options_zoomToObject();">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
             <input id="zoomExtent" name="zoomExtent" type="text" value="375" size="2" maxlength="4" style="text-align: right"> m
             <br>
             <b>Nieuwe:</b>
-            <input id="newRseq" type="button" value="Walapparatuur" onclick="newRseq()">
-            <input id="newAg" type="button" value="Signaalgroep" disabled="true" onclick="newAg()">
-            <input id="newA" type="button" value="Triggerpunt" disabled="true" onclick="newA()">
+            <input id="newRseq" type="button" value="Walapparatuur" title="Selecteer deze optie voor het toevoegen van een nieuw walapparaat. Het is niet mogelijk signaalgroepen of triggerpunten aan te maken zonder eerst een walapparaat te selecteren of aan te maken." onclick="newRseq()">
+            <input id="newAg" type="button" value="Signaalgroep" title="Selecteer deze optie voor het vastleggen van de stopstreep (van signaalgroep) bij de geselecteerde VRI. (Het is niet mogelijk een signaalgroep aan te maken zonder eerst een walapparaat te selecteren of aan te maken.)" disabled="true" onclick="newAg()">
+            <input id="newA" type="button" value="Triggerpunt" title="Selecteer deze optie voor het koppelen van een nieuw triggerpunt aan de geselecteerde signaalgroep. (Het is niet mogelijk een triggerpunt aan te maken zonder eerst een signaalgroep te selecteren of aan te maken.)" disabled="true" onclick="newA()">
         </div>
     </div>
 
