@@ -37,7 +37,7 @@ import org.securityfilter.realm.SecurityRealmInterface;
  * Wachtwoorden worden gehashed in UTF8 encoding, dus
  * salt = 00 11 22 33, wachtwoord = "test", hash phrase = 00 11 22 33 74 65 73 74
  * sha-1 hash = af30b67b3c0e3fcd1d80ba679770f3947f6edd8d
- * salt = 00 11 22 33, wachtwoord = "tëst", hash phrase = 00 11 22 33 74 c3 ab 73 74
+ * salt = 00 11 22 33, wachtwoord = "tÃ«st", hash phrase = 00 11 22 33 74 c3 ab 73 74
  * sha-1 hash = d49a8431ec274a1433b7fdda34e4de0b2784b812
  */
 public class SecurityRealm implements SecurityRealmInterface {
@@ -125,7 +125,7 @@ public class SecurityRealm implements SecurityRealmInterface {
         String salt = "00112233";
         String phrase = "test";
         System.out.println(getHexSha1(salt, phrase).equals("af30b67b3c0e3fcd1d80ba679770f3947f6edd8d"));
-        phrase = "tëst";
+        phrase = "tÃ«st";
         System.out.println(getHexSha1(salt, phrase).equals("d49a8431ec274a1433b7fdda34e4de0b2784b812"));
     }*/
 
