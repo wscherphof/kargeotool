@@ -18,6 +18,7 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
+        <script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script>
         
 
         
@@ -497,6 +498,81 @@
 
     setOnload(function() { document.getElementById("walapparaatnummer").focus(); });
 
+    var layer = null;
+    var roaEquId = null;
+    var actGroIds = null;
+    var actIds = null;
+    function showSelected(rseqId, agIds, aIds){
+        var sldstring = "${absoluteURLPrefix}";
+        sldstring += "<html:rewrite page="/SldServlet" module=""/>";//"http://localhost:8084/SldGeneratorGeo-ov/SldServlet"; // XXX servlet in webapp en hier html:rewrite gerbuiken
+
+        if(rseqId != undefined){
+            roaEquId = rseqId;
+        }
+
+        if(agIds != undefined){
+            actGroIds = agIds;
+        }
+
+        if(aIds != undefined){
+            actIds = aIds;
+        }
+        // sldstring = "http://localhost:8084/geo-ov/SldServlet";
+        if(document.getElementById("showSelected").checked) {
+            parameterGehad = false;
+
+            // bouw de sld string op
+            sldstring = addToSldstring(rseqId, "rseq", sldstring);
+            sldstring = addToSldstring(agIds, "ag", sldstring);
+            sldstring = addToSldstring(aIds, "a", sldstring);
+        }
+        console.log(sldstring);
+        flamingo.callMethod("map_kar_layer","setConfig","<LayerOGWMS sld=\""+sldstring+"\"/>",true);
+    }
+
+    var parameterGehad = false;
+    // HACK: Flamingo escaped de ampersands niet goed, dus worden ze nu hier alvast vervangen door %26
+    // TODO: als leeg is, dan niet parameter vullen
+    function addToSldstring(lijst, typeVis, sldstring){
+        if(parameterGehad){
+            sldstring +="%26"+ typeVis + "VisibleValues=";
+        }else{
+            sldstring +="?"+ typeVis + "VisibleValues=";
+            parameterGehad = true;
+        }
+        if(lijst instanceof Array){
+            if(lijst.length >0){
+                var eerste = true;
+                for(var i = 0 ; i < lijst.length ; i++){
+                    if(eerste){
+                        sldstring += lijst[i];
+                        eerste = false;
+                    }else{
+                        sldstring += ","+lijst[i];
+                    }
+                }
+            }
+        }else{
+            sldstring += lijst;
+        }
+
+        return sldstring;
+    }
+
+    function toggleVisibleSelected(){
+
+
+        if(!document.getElementById("showSelected").checked) {
+            showSelected();
+
+        }
+        if(document.getElementById("showSelected").checked) {
+     
+            showSelected( roaEquId, actGroIds, actIds);
+        }
+        flamingo_updateKarLayer();
+    }
+
    
 </script>
 
@@ -511,9 +587,9 @@
         </div>
         <div id="objectTree"></div>
         <div id="options">
-            <input id="zoomButton" type="button" value="Zoom naar object" title="Zoom in op een geselecteerd object uit de objectenboom. Met Auto-zoom aangevinkt wordt direct ingezoomd op een geselecteerd object. Het zoomniveau is instelbaar door de minimale ‘diameter’ (in meters) op te geven van het gebied rond het object. Klik na het wijzigen van de diameter op Zoom naar object om te zoomen naar het opgegeven niveau." onclick="options_zoomToObject();">
+            <input id="zoomButton" type="button" value="Zoom naar object" title="Zoom in op een geselecteerd object uit de objectenboom. Met Auto-zoom aangevinkt wordt direct ingezoomd op een geselecteerd object. Het zoomniveau is instelbaar door de minimale ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“diameterÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ (in meters) op te geven van het gebied rond het object. Klik na het wijzigen van de diameter op Zoom naar object om te zoomen naar het opgegeven niveau." onclick="options_zoomToObject();">
             <label><input id="autoZoom" type="checkbox" value="autoZoom" checked="true">Auto-zoom</label>
-            <input id="zoomExtent" name="zoomExtent" type="text" value="375" size="2" maxlength="4" style="text-align: right"> m
+            <input id="zoomExtent" name="zoomExtent" type="text" value="375" size="2" maxlength="4" style="text-align: right"> <label><input id="showSelected" type="checkbox" value="showSelected" onclick="toggleVisibleSelected()">Toon geselecteerden</label>
             <br>
             <b>Nieuwe:</b>
             <input id="newRseq" type="button" value="Walapparatuur" title="Selecteer deze optie voor het toevoegen van een nieuw walapparaat. Het is niet mogelijk signaalgroepen of triggerpunten aan te maken zonder eerst een walapparaat te selecteren of aan te maken." onclick="newRseq()">

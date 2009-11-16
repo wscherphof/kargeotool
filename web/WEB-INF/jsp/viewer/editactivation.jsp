@@ -14,8 +14,13 @@
 </c:if>
 
 <script type="text/javascript">
-    parent.flamingo_updateKarLayer();
     parent.flamingo_cancelEdit();
+
+    var agIds = <%= request.getAttribute("ActivationGroupIds")%>;
+    var aIds = <%= request.getAttribute("ActivationIds")%>;
+    var rseqId = <%= request.getAttribute("RoadSideEquipmentId")%>;
+    parent.showSelected( rseqId, agIds, aIds);
+    parent.flamingo_updateKarLayer();
 
     <c:if test="${notEditable}">
         parent.notEditable();
