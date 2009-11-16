@@ -29,6 +29,7 @@
             <fmc:LayerOGWMS
                 id="kar_layer"
                 url="http://b3p-demoserver/cgi-bin/mapserv.exe?map=e:/maps/transmodel_connexxion_edit.map&amp;Service=WMS"
+                sld="http://b3p-demoserver:8084/geo-ov/SldServlet"
                 srs="EPSG:28992"
                 layers="buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen"
                 showerrors="true"
