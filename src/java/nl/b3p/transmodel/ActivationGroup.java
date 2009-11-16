@@ -268,4 +268,15 @@ public class ActivationGroup implements EditorTreeObject {
             activation.setValidator(validator);
         }
     }
+
+    public List<Integer> getActivationIds(){
+        List<Integer> aIds = new ArrayList<Integer>();
+
+        List as = this.activations;
+        for (Iterator<Activation> it = as.iterator(); it.hasNext();) {
+            Activation activation = it.next();
+            aIds.add(activation.getId());
+        }
+        return aIds;
+    }
 }

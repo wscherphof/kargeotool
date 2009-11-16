@@ -2,6 +2,7 @@ package nl.b3p.kar.struts;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -26,6 +27,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
+import org.json.JSONArray;
 
 public final class ActivationAction extends TreeItemAction {
 
@@ -157,6 +159,19 @@ public final class ActivationAction extends TreeItemAction {
         if(em.contains(activation)) {
             request.setAttribute("activationGroup", activation.getActivationGroup());
             activation.getActivationGroup().getRoadsideEquipment().getDataOwner().getName();
+
+            JSONArray rseqId = new JSONArray();
+            rseqId.put(activation.getActivationGroup().getRoadsideEquipment().getId());
+            request.setAttribute("RoadSideEquipmentId",rseqId.toString());
+
+            JSONArray agIds = new JSONArray();
+            agIds.put(activation.getActivationGroup().getId());
+            request.setAttribute("ActivationGroupIds", agIds.toString());
+
+            JSONArray aIds = new JSONArray();
+            aIds.put(activation.getId());
+            request.setAttribute("ActivationIds", aIds.toString());
+
         } else {
             /* Hier komen we na klik op "nieuw triggerpunt" en ook bij save van nieuwe */
             ActivationGroup ag = getActivationGroup(form, request);

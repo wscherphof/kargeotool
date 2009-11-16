@@ -3,10 +3,12 @@ package nl.b3p.transmodel;
 import com.vividsolutions.jts.geom.Point;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -238,6 +240,17 @@ public class RoadsideEquipment implements EditorTreeObject {
 
     public void setActivationGroups(Set activationGroups) {
         this.activationGroups = activationGroups;
+    }
+
+    public List<Integer> getActivationGroupIds(){
+        List<Integer> agIds = new ArrayList<Integer>();
+
+        Set ags = this.activationGroups;
+        for (Iterator<ActivationGroup> it = ags.iterator(); it.hasNext();) {
+            ActivationGroup activationGroup = it.next();
+            agIds.add(activationGroup.getId());
+        }
+        return agIds;
     }
 
 

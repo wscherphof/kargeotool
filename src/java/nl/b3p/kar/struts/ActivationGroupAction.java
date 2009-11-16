@@ -2,6 +2,7 @@ package nl.b3p.kar.struts;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
+import org.json.JSONArray;
 
 public final class ActivationGroupAction extends TreeItemAction {
 
@@ -173,12 +175,26 @@ public final class ActivationGroupAction extends TreeItemAction {
     protected void createLists(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws HibernateException, Exception {
         
         request.setAttribute("activationGroup", ag);
-
+        
         if(getEntityManager().contains(ag)) {
             request.setAttribute("rseq", ag.getRoadsideEquipment());
             ag.getRoadsideEquipment().getDataOwner().getName();
 
             request.setAttribute("activationCount", ag.getActivations().size());
+
+            
+
+            JSONArray rseqId = new JSONArray();
+            rseqId.put(ag.getRoadsideEquipment().getId());
+            request.setAttribute("RoadSideEquipmentId",rseqId.toString());
+            
+            JSONArray agIds = new JSONArray();
+            agIds.put(ag.getId());
+            request.setAttribute("ActivationGroupIds", agIds.toString());
+
+            JSONArray aIds = new JSONArray(ag.getActivationIds());
+            request.setAttribute("ActivationIds", aIds.toString());
+
         } else {
             /* Hier komen we na klik op "nieuwe signaalgroep" en ook bij save van nieuwe */
             RoadsideEquipment rseq = getRseq(form, request);
@@ -189,6 +205,8 @@ public final class ActivationGroupAction extends TreeItemAction {
                 rseq.getDataOwner().getName();
             }
         }
+
+
     }
 
     protected void populateForm(ActivationGroup ag, DynaValidatorForm form, HttpServletRequest request) throws Exception {

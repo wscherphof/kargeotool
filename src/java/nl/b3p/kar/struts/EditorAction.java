@@ -3,6 +3,7 @@ package nl.b3p.kar.struts;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class EditorAction extends BaseDatabaseAction {
@@ -39,6 +39,7 @@ public class EditorAction extends BaseDatabaseAction {
     }
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm dynaForm, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.setAttribute("absoluteURLPrefix", new URL(request.getScheme(), request.getServerName(), request.getServerPort(), "/"));
         return mapping.findForward("editor");
     }
 

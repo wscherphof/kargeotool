@@ -2,6 +2,7 @@ package nl.b3p.kar.struts;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +19,7 @@ import nl.b3p.commons.services.FormUtils;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.Role;
+import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.DataOwner;
 import nl.b3p.transmodel.RoadsideEquipment;
 import org.apache.struts.action.ActionErrors;
@@ -26,6 +28,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.HibernateException;
+import org.json.JSONArray;
 
 public final class RoadsideEquipmentAction extends TreeItemAction {
 
@@ -41,7 +44,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
-        if(rseq == null) {
+        if (rseq == null) {
             addMessage(request, "error.notfound");
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
@@ -63,7 +66,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
     public ActionForward save(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
         RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
-        if(rseq == null) {
+        if (rseq == null) {
             addMessage(request, "error.notfound");
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
@@ -71,7 +74,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         createLists(rseq, form, request);
 
         ActionErrors errors = form.validate(mapping, request);
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             addMessages(request, errors);
             return getDefaultForward(mapping, request);
         }
@@ -79,14 +82,14 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         /* check hier en niet in populateObject(), omdat nodig is voor auth check */
         Integer daoId = FormUtils.StringToInteger(form.getString("dataOwner"));
         DataOwner dao = daoId == null ? null : em.find(DataOwner.class, daoId);
-        if(dao == null) {
+        if (dao == null) {
             addMessage(request, "errors.required", "Databeheerder");
             return mapping.findForward(SUCCESS);
         }
 
-        if(!request.isUserInRole(Role.BEHEERDER)) {
+        if (!request.isUserInRole(Role.BEHEERDER)) {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
-            if(!g.canEditDataOwner(dao)) {
+            if (!g.canEditDataOwner(dao)) {
                 addMessage(request, "error.dataowner.uneditable", dao.getName());
                 return mapping.findForward(SUCCESS);
             }
@@ -98,7 +101,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         populateObject(rseq, form, request, mapping);
 
         boolean newObject = rseq.getId() == null;
-        if(newObject) {
+        if (newObject) {
             em.persist(rseq);
         }
 
@@ -116,7 +119,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         EntityManager em = getEntityManager();
         RoadsideEquipment rseq = null;
         Integer id = FormUtils.StringToInteger(form.getString("id"));
-        if(null == id && createNew) {
+        if (null == id && createNew) {
             rseq = new RoadsideEquipment();
         } else if (null != id) {
             rseq = (RoadsideEquipment) em.find(RoadsideEquipment.class, id);
@@ -129,33 +132,52 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
 
         request.setAttribute("roadsideEquipment", rseq);
 
-        if(em.contains(rseq)) {
+        if (em.contains(rseq)) {
             request.setAttribute("activationGroupCount",
                     rseq.getActivationGroups().size());
             rseq.getDataOwner().getName();
+
+
+            JSONArray rseqId = new JSONArray();
+            rseqId.put(rseq.getId());
+            request.setAttribute("RoadSideEquipmentId", rseqId.toString());
+
+            JSONArray agIds = new JSONArray();
+            agIds.put(rseq.getActivationGroupIds());
+            request.setAttribute("ActivationGroupIds", agIds.toString());
+
+            List<Integer> aIds = new ArrayList<Integer>();
+            Set<ActivationGroup> ags = rseq.getActivationGroups();
+            for (Iterator<ActivationGroup> it = ags.iterator(); it.hasNext();) {
+                ActivationGroup activationGroup = it.next();
+                aIds.addAll(activationGroup.getActivationIds());
+            }
+
+            JSONArray aIdsJson = new JSONArray();
+            aIdsJson.put(aIds);
+            request.setAttribute("ActivationIds", aIdsJson.toString());
         }
         List dataOwners;
-        if(request.isUserInRole(Role.BEHEERDER)) {
-            dataOwners = em.createQuery("from DataOwner where type = :type order by id")
-                .setParameter("type", DataOwner.TYPE_ROOW)
-                .getResultList();
+        if (request.isUserInRole(Role.BEHEERDER)) {
+            dataOwners = em.createQuery("from DataOwner where type = :type order by id").setParameter("type", DataOwner.TYPE_ROOW).getResultList();
         } else {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             Set dataOwnersUnsorted = g.getEditableDataOwners();
             dataOwners = new ArrayList();
             for (Iterator<DataOwner> it = dataOwnersUnsorted.iterator(); it.hasNext();) {
                 DataOwner dao = it.next();
-                if(dao.getType().equals(DataOwner.TYPE_ROOW)) {
+                if (dao.getType().equals(DataOwner.TYPE_ROOW)) {
                     dataOwners.add(dao);
                 }
             }
-            Collections.sort(dataOwners,  new Comparator() {
-            public int compare(Object o1, Object o2) {
-                DataOwner lhs = (DataOwner)o1;
-                DataOwner rhs = (DataOwner)o2;
-                return lhs.getId().compareTo(rhs.getId());
-            }
-        });
+            Collections.sort(dataOwners, new Comparator() {
+
+                public int compare(Object o1, Object o2) {
+                    DataOwner lhs = (DataOwner) o1;
+                    DataOwner rhs = (DataOwner) o2;
+                    return lhs.getId().compareTo(rhs.getId());
+                }
+            });
         }
         request.setAttribute("dataOwners", dataOwners);
     }
@@ -172,7 +194,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         form.set("installationDate", FormUtils.DateToString(rseq.getInstallationDate(), null));
         form.set("selectiveDetectionLoop", rseq.isSelectiveDetectionLoop() ? "true" : "false");
 
-        if(!request.isUserInRole(Role.BEHEERDER)) {
+        if (!request.isUserInRole(Role.BEHEERDER)) {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             DataOwner dao = rseq.getDataOwner();
             request.setAttribute("notEditable", !g.canEditDataOwner(dao));
@@ -197,8 +219,8 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         rseq.setUpdateTime(new Date());
 
         String location = FormUtils.nullIfEmpty(form.getString("location"));
-        if(location != null) {
-            if("delete".equals(location)) {
+        if (location != null) {
+            if ("delete".equals(location)) {
                 rseq.setLocation(null);
             } else {
                 String[] xy = location.split(" ");
@@ -207,22 +229,22 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             }
         }
     }
-    
+
     public ActionForward delete(ActionMapping mapping, DynaValidatorForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         EntityManager em = getEntityManager();
 
         RoadsideEquipment rseq = getRoadsideEquipment(form, request, true);
-        if(rseq == null) {
+        if (rseq == null) {
             addMessage(request, "error.notfound");
             request.setAttribute(HIDE_FORM, Boolean.TRUE);
             return mapping.findForward(SUCCESS);
         }
         createLists(rseq, form, request);
 
-        if(!request.isUserInRole(Role.BEHEERDER)) {
+        if (!request.isUserInRole(Role.BEHEERDER)) {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             DataOwner dao = rseq.getDataOwner();
-            if(!g.canEditDataOwner(dao)) {
+            if (!g.canEditDataOwner(dao)) {
                 addMessage(request, "error.dataowner.uneditable", dao.getName());
                 return mapping.findForward(SUCCESS);
             }
@@ -243,15 +265,15 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
-        if(!request.isUserInRole(Role.BEHEERDER)) {
+        if (!request.isUserInRole(Role.BEHEERDER)) {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             DataOwner dao = rseq.getDataOwner();
-            if(!g.canValidateDataOwner(dao)) {
+            if (!g.canValidateDataOwner(dao)) {
                 addMessage(request, "error.dataowner.unvalidatable", dao.getName());
                 return mapping.findForward(SUCCESS);
             }
         }
-        if("true".equals(form.getString("validated"))) {
+        if ("true".equals(form.getString("validated"))) {
             rseq.setValidator(request.getRemoteUser());
             rseq.setValidationTime(new Date());
         } else {
@@ -271,16 +293,16 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
             addMessage(request, "error.notfound");
             return mapping.findForward(SUCCESS);
         }
-        if(!request.isUserInRole(Role.BEHEERDER)) {
+        if (!request.isUserInRole(Role.BEHEERDER)) {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             DataOwner dao = rseq.getDataOwner();
-            if(!g.canValidateDataOwner(dao)) {
+            if (!g.canValidateDataOwner(dao)) {
                 addMessage(request, "error.dataowner.unvalidatable", dao.getName());
                 return mapping.findForward(SUCCESS);
             }
         }
 
-        if("true".equals(form.getString("validatedAll"))) {
+        if ("true".equals(form.getString("validatedAll"))) {
             rseq.validateAll(request.getRemoteUser(), new Date());
         } else {
             rseq.validateAll(null, null);
@@ -291,5 +313,4 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         populateForm(rseq, form, request);
         return mapping.findForward(SUCCESS);
     }
-
 }
