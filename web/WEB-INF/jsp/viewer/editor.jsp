@@ -416,8 +416,19 @@
             }
             
             if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
+                if(data.walapparatuur != undefined && document.getElementById("showSelected").checked){
+                    data.walapparatuur = isRequestedIdFiltered("rseq", data.walapparatuur);
+                }
+
+                if(data.signaalgroepen != undefined && document.getElementById("showSelected").checked){
+                    data.signaalgroepen = isRequestedIdFiltered("ag", data.signaalgroepen);
+                }
+
+                if(data.triggerpunten != undefined && document.getElementById("showSelected").checked){
+                    data.triggerpunten = isRequestedIdFiltered("a", data.triggerpunten);
+                }
                 document.getElementById("loading").style.visibility = "visible";
-                    Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
+                Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }
         }
     }
@@ -498,6 +509,42 @@
 
     setOnload(function() { document.getElementById("walapparaatnummer").focus(); });
 
+    function isRequestedIdFiltered(type, lijst){
+        if(type=="rseq"){
+            for(var i = 0 ; i < lijst.length ; i++){
+                if(lijst[i].id != roaEquId){
+                    lijst.splice(i,1);
+                    i--;
+                }
+            }
+            return lijst;
+        }
+
+        if(type=="ag"){
+            for(var i = 0 ; i < lijst.length ; i++){
+                for( var j = 0 ; j < actGroIds.length ; j++ ){
+                    if(lijst[i].id != actGroIds[i]){
+                        lijst.splice(i,1);
+                        i--;
+                    }
+                }
+            }
+            return lijst;
+        }
+
+        if(type=="a"){
+            for(var i = 0 ; i < lijst.length ; i++){
+                for( var j = 0 ; j < actIds.length ; j++ ){
+                    if(lijst[i].id != actIds[i]){
+                        lijst.splice(i,1);
+                        i--;
+                    }
+                }
+            }
+            return lijst;
+        }
+    }
+
     var layer = null;
     var roaEquId = null;
     var actGroIds = null;
@@ -560,11 +607,8 @@
     }
 
     function toggleVisibleSelected(){
-
-
         if(!document.getElementById("showSelected").checked) {
             showSelected();
-
         }
         if(document.getElementById("showSelected").checked) {
      
