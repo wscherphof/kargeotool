@@ -24,14 +24,23 @@ projection
   "init=epsg:28992" 
 end
 
-outputformat
-  name png
-  driver "GD/PNG"
-  mimetype "image/png"
-  imagemode RGBA
-  extension "png"
-  transparent on
-end
+#outputformat
+#  name png
+#  driver "GD/PNG"
+#  mimetype "image/png"
+#  imagemode RGBA
+#  extension "png"
+#  transparent on
+#end
+
+OUTPUTFORMAT
+	NAME png
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGBA
+	EXTENSION "png"
+	TRANSPARENT ON
+END
 
 legend
   status on
@@ -68,6 +77,7 @@ layer
   metadata
     "wms_title" "buslijnen"
     "gml_include_items" "all"
+    "wfs_featureid" "oid"
   end
   type line
   dump true
@@ -75,7 +85,7 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992"
+  data "the_geom from (select j.oid,l.name,l.publicnumber,j.lineplanningnumber,j.code,j.destinationcode,j.direction,j.the_geom from jopa j left join line l on (j.lineplanningnumber = l.planningnumber)) as bla using srid=28992 using unique oid"
   projection
     "init=epsg:28992"
   end
@@ -311,15 +321,35 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
-  data "stop_line_location from (select id,kar_signal_group,stop_line_location,case leave_announcement when 'true' then 'ag-rood.gif' else 'ag.gif' end as symbol, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
+  #data "stop_line_location from (select id,kar_signal_group,stop_line_location,case leave_announcement when 'true' then 'ag-rood.gif' else 'ag.gif' end as symbol, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
+  data "stop_line_location from (select id,kar_signal_group,stop_line_location,leave_announcement, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
   end
   labelitem kar_signal_group
+  classitem leave_announcement
   class 
     name "Signaalgroep"
+    expression "false"
     style      
-      symbol [symbol]
+      symbol "ag.gif"
+    end
+    label
+        type truetype
+        font "arial"
+        antialias true
+        size 10
+        color 255 255 255
+        offset -2 -2
+        outlinecolor 0 0 0
+	position ur
+    end
+  end
+  class 
+    name "Signaalgroep/uitmeldpunt"
+    expression "true"
+    style      
+      symbol "ag-rood.gif"
     end
     label
         type truetype
