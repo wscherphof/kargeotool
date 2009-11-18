@@ -50,7 +50,6 @@
 									<DisplacementX>-15</DisplacementX>
 									<DisplacementY>-25</DisplacementY>
 								</Displacement>
-								<!--Rotation>20</Rotation-->
 							</PointPlacement>
 						</LabelPlacement>
 					</TextSymbolizer>
@@ -98,7 +97,7 @@
 								<AnchorPointY>0</AnchorPointY>
 							</AnchorPoint>
 							<Displacement>
-								<DisplacementX>-30</DisplacementX>
+								<DisplacementX>-15</DisplacementX>
 								<DisplacementY>-25</DisplacementY>
 							</Displacement>
 						</PointPlacement>
@@ -220,6 +219,36 @@
 						<Size>20.0</Size>
 					</Graphic>
 				</PointSymbolizer>
+				<TextSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>locatedAt</ogc:PropertyName>
+						</Geometry>
+						<Label>unit_number</Label>
+						<Font>
+							<CssParameter name="font-family">arial</CssParameter>
+							<CssParameter name="font-size">10</CssParameter>
+							<CssParameter name="font-type">truetype</CssParameter>
+						</Font>
+						<Fill>
+							<CssParameter name="fill">#FFFFFF</CssParameter>
+						</Fill>
+						<Halo>
+							<Radius>2</Radius>
+							<Fill><CssParameter name="fill">#009900</CssParameter></Fill>
+						</Halo>
+						<LabelPlacement>
+							<PointPlacement>
+								<AnchorPoint>
+									<AnchorPointX>0</AnchorPointX>
+									<AnchorPointY>0</AnchorPointY>
+								</AnchorPoint>
+								<Displacement>
+									<DisplacementX>-15</DisplacementX>
+									<DisplacementY>-25</DisplacementY>
+								</Displacement>
+							</PointPlacement>
+						</LabelPlacement>
+					</TextSymbolizer>
 				</Rule>
 				<Rule>
 					<ogc:Filter>
@@ -240,6 +269,36 @@
 						<Size>15.0</Size>
 					</Graphic>
 				</PointSymbolizer>
+				<TextSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>locatedAt</ogc:PropertyName>
+						</Geometry>
+						<Label>unit_number</Label>
+						<Font>
+							<CssParameter name="font-family">arial</CssParameter>
+							<CssParameter name="font-size">10</CssParameter>
+							<CssParameter name="font-type">truetype</CssParameter>
+						</Font>
+						<Fill>
+							<CssParameter name="fill">#FFFFFF</CssParameter>
+						</Fill>
+						<Halo>
+							<Radius>2</Radius>
+							<Fill><CssParameter name="fill">#009900</CssParameter></Fill>
+						</Halo>
+						<LabelPlacement>
+							<PointPlacement>
+								<AnchorPoint>
+									<AnchorPointX>0</AnchorPointX>
+									<AnchorPointY>0</AnchorPointY>
+								</AnchorPoint>
+								<Displacement>
+									<DisplacementX>-15</DisplacementX>
+									<DisplacementY>-25</DisplacementY>
+								</Displacement>
+							</PointPlacement>
+						</LabelPlacement>
+					</TextSymbolizer>
 				</Rule>
 				<Rule>
 					<ogc:Filter>
@@ -260,36 +319,38 @@
 						<Size>15.0</Size>
 					</Graphic>
 				</PointSymbolizer>
+				<TextSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>locatedAt</ogc:PropertyName>
+						</Geometry>
+						<Label>unit_number</Label>
+						<Font>
+							<CssParameter name="font-family">arial</CssParameter>
+							<CssParameter name="font-size">10</CssParameter>
+							<CssParameter name="font-type">truetype</CssParameter>
+						</Font>
+						<Fill>
+							<CssParameter name="fill">#FFFFFF</CssParameter>
+						</Fill>
+						<Halo>
+							<Radius>2</Radius>
+							<Fill><CssParameter name="fill">#009900</CssParameter></Fill>
+						</Halo>
+						<LabelPlacement>
+							<PointPlacement>
+								<AnchorPoint>
+									<AnchorPointX>0</AnchorPointX>
+									<AnchorPointY>0</AnchorPointY>
+								</AnchorPoint>
+								<Displacement>
+									<DisplacementX>-15</DisplacementX>
+									<DisplacementY>-25</DisplacementY>
+								</Displacement>
+							</PointPlacement>
+						</LabelPlacement>
+					</TextSymbolizer>
 				</Rule>
 			</FeatureTypeStyle>
 		</UserStyle>
 	</NamedLayer>
-
-	<!--NamedLayer>
-		<Name>buslijnen</Name>
-		<UserStyle>
-			<Title>Buslijnen</Title>
-			<FeatureTypeStyle>
-				<Rule>
-					<ogc:Filter>
-						<ogc:PropertyIsEqualTo>
-							<ogc:PropertyName>publicnumber</ogc:PropertyName>
-							<ogc:Literal>4</ogc:Literal>
-						</ogc:PropertyIsEqualTo>
-					</ogc:Filter>
-					<LineSymbolizer>
-						<Geometry>
-							<ogc:PropertyName>center-line</ogc:PropertyName>
-						</Geometry>
-						<Stroke>
-							<CssParameter name="stroke">#FF0000</CssParameter>
-							<CssParameter name="stroke-width">3</CssParameter>
-						</Stroke>
-					</LineSymbolizer>
-					
-				</Rule>
-			</FeatureTypeStyle>
-		</UserStyle>
-	</NamedLayer-->
-
 </StyledLayerDescriptor>
