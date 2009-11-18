@@ -77,7 +77,7 @@ public class GebruikersAction extends BaseDatabaseAction {
         EntityManager em = getEntityManager();
         request.setAttribute("gebruikers", em.createQuery("from Gebruiker order by id").getResultList());
         request.setAttribute("availableRoles", em.createQuery("from Role order by id").getResultList());
-        List dataOwners = em.createQuery("from DataOwner where type = :type order by id")
+        List dataOwners = em.createQuery("from DataOwner where type = :type order by name")
                 .setParameter("type", DataOwner.TYPE_ROOW)
                 .getResultList();
         request.setAttribute("dataOwners", dataOwners);

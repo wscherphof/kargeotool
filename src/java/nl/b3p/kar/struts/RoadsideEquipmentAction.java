@@ -159,7 +159,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
         }
         List dataOwners;
         if (request.isUserInRole(Role.BEHEERDER)) {
-            dataOwners = em.createQuery("from DataOwner where type = :type order by id").setParameter("type", DataOwner.TYPE_ROOW).getResultList();
+            dataOwners = em.createQuery("from DataOwner where type = :type order by name").setParameter("type", DataOwner.TYPE_ROOW).getResultList();
         } else {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
             Set dataOwnersUnsorted = g.getEditableDataOwners();
@@ -175,7 +175,7 @@ public final class RoadsideEquipmentAction extends TreeItemAction {
                 public int compare(Object o1, Object o2) {
                     DataOwner lhs = (DataOwner) o1;
                     DataOwner rhs = (DataOwner) o2;
-                    return lhs.getId().compareTo(rhs.getId());
+                    return lhs.getName().compareTo(rhs.getName());
                 }
             });
         }
