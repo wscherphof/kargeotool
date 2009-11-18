@@ -62,6 +62,7 @@
     }
 
     function treeItemClick(item) {
+        showSelected(roaEquId, actGroIds, actIds);
         flamingo_hideIdentifyIcon();
         tree_selectObject(item);
         form_editObject(item);
