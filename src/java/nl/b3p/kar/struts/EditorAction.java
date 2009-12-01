@@ -11,11 +11,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.b3p.commons.struts.ExtendedMethodProperties;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Role;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
@@ -39,6 +42,17 @@ public class EditorAction extends BaseDatabaseAction {
     }
 
     public ActionForward unspecified(ActionMapping mapping, DynaValidatorForm dynaForm, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        boolean isBeheerder = request.isUserInRole(Role.BEHEERDER);
+
+        Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
+        Set s =g.getEditableDataOwners();
+        if(s.size() >= 1 || isBeheerder){
+            request.setAttribute("magWalapparaatMaken", "true");
+        }else{
+            request.setAttribute("magWalapparaatMaken", "false");
+        }
+
         request.setAttribute("absoluteURLPrefix", new URL(request.getScheme(), request.getServerName(), request.getServerPort(), "/"));
         return mapping.findForward("editor");
     }

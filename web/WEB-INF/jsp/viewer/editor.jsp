@@ -496,7 +496,7 @@
         flamingo_hideLayers("bushaltes,buslijnen");
     }
 
-    function  walapparaatnummerKeyPressed(e) {
+    function walapparaatnummerKeyPressed(e) {
         if(e.keyCode == 0xd) {
             zoekWalapparatuur();
         }
@@ -508,7 +508,15 @@
         Editor.getRseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
     }
 
-    setOnload(function() { document.getElementById("walapparaatnummer").focus(); });
+    setOnload(function() 
+    {
+        document.getElementById("walapparaatnummer").focus();
+        if("${magWalapparaatMaken}" == "true"){
+            document.getElementById("newRseq").disabled = false;
+        }else{
+            document.getElementById("newRseq").disabled = true;
+        }
+    });
 
     function isRequestedIdFiltered(type, lijst){
         if(type=="rseq"){
