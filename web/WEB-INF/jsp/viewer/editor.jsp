@@ -12,6 +12,7 @@
         <title><fmt:message key="index.title"/></title>
         <script language="JavaScript" type="text/JavaScript" src="<html:rewrite page="/js/validation.jsp" module=""/>"></script>
         <link rel="stylesheet" href="<html:rewrite page="/styles/geo-ov.css" module=""/>" type="text/css" media="screen" />
+        <link rel="stylesheet" href="<html:rewrite page="/styles/jquery-ui-1.7.2.custom.css" module=""/>" type="text/css" media="screen" />
         <script type="text/javascript" src="<html:rewrite page="/js/json2.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/utils.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
@@ -19,7 +20,9 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         <script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script>
-        
+        <script type="text/javascript" src="<html:rewrite page="/js/jquery-1.3.2.min.js" module=""/>"</script>
+	<script type="text/javascript" src="<html:rewrite page="/js/jquery-ui-1.7.2.custom.min.js" module=""/>"</script>
+
 
         
         <!--[if lte IE 6]>
@@ -30,9 +33,13 @@
 
     </head>
     <body class="editor" id="editorBody">
+
         <tiles:insert definition="headerlinks"/>
 
 <script type="text/javascript">
+
+   
+
     function testSelecteerObject() {
         var obj = prompt("Geef object aan als type:idnr, dus rseq:1, ag:23, a:456", "rseq:67");
         if(obj == null) { /* no input, do nothing */
@@ -412,8 +419,14 @@
 
     function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
         if("map_kar_layer" == layer) {
-            if(data.bushaltes_symbol != undefined || data.buslijnen != undefined) {
-                flamingo.callMethod("info", "show");
+
+            if(data.buslijnen != undefined){
+                makeBuslijnenUnique(data);
+            }
+            if(data.bushaltes_symbol != undefined ) {
+                //flamingo.callMethod("info", "show");
+                generatePopupBushaltes(data.bushaltes_symbol);
+
             }
             
             if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
@@ -625,6 +638,109 @@
         flamingo_updateKarLayer();
     }
 
+    function makeBuslijnenUnique(data){
+        var buslijnen = data.buslijnen;
+        for(var i = 0 ; i < buslijnen.length; i++){
+            for(var j = 0 ; j < buslijnen.length; j++){
+                if( j != i){
+                    if(buslijnen[j].destinationcode == buslijnen[i].destinationcode && buslijnen[j].lineplanningnumber == buslijnen[i].lineplanningnumber &&
+                            buslijnen[j].name == buslijnen[i].name && buslijnen[j].direction == buslijnen[i].direction && buslijnen[j].publicnumber == buslijnen[i].publicnumber){
+                            buslijnen.splice(i,1);
+                            i--;
+                            break;
+                    }
+
+                }
+            }
+        }
+        generatePopupBuslijnen(buslijnen);
+    }
+
+    function generatePopupBuslijnen(buslijnen){
+
+        if(!document.getElementById('popupWindow')) {
+            //Root
+            var popupDiv = document.createElement('div');
+            popupDiv.styleClass = 'popup_Window';
+            popupDiv.id = 'popupWindow';
+
+            var popupWindowBackground = document.createElement('div');
+            popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
+            popupWindowBackground.id = 'popupWindow_Windowbackground';
+
+            document.body.appendChild(popupDiv);
+            document.body.appendChild(popupWindowBackground);
+
+            popupDiv.title = 'Buslijnen';
+            popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
+            //popupDiv.innerHTML = '<strong>Content</strong> van de div';
+            $("#popupWindow").dialog({height: 350, width: 400});
+        } else {
+            var popupDiv = document.getElementById('popupWindow');
+            popupDiv.title = 'Buslijnen';
+            //popupDiv.innerHTML = '<strong>Content</strong> van de div';
+            popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
+            $("#popupWindow").dialog('open');
+        }
+    }
+
+    function generateBuslijnenHtml(buslijnen, htmlObject){
+        htmlObject = "";
+        for( var i = 0 ; i < buslijnen.length ; i++){
+            var buslijn = buslijnen[i];
+            htmlObject += "<h2>Buslijn</h2><br>";
+            htmlObject += buslijn.publicnumber + " (" + buslijn.direction + "): " + buslijn.name + "<br>&nbsp;";
+        }
+
+        return htmlObject;
+    }
+
+    function generatePopupBushaltes(bushaltes){
+
+        if(!document.getElementById('popupWindowHaltes')) {
+            //Root
+            var popupDiv = document.createElement('div');
+            popupDiv.styleClass = 'popup_Window';
+            popupDiv.id = 'popupWindowHaltes';
+
+            var popupWindowBackground = document.createElement('div');
+            popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
+            popupWindowBackground.id = 'popupWindow_Windowbackground';
+
+            document.body.appendChild(popupDiv);
+            document.body.appendChild(popupWindowBackground);
+
+            popupDiv.title = 'Bushaltes';
+            popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
+            $("#popupWindowHaltes").dialog({height: 350, width: 400, left: 400});
+        } else {
+            var popupDiv = document.getElementById('popupWindowHaltes');
+            popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
+            $("#popupWindowHaltes").dialog('open');
+        }
+    }
+
+    function generateBushalteHtml(bushaltes, htmlObject){
+        htmlObject = "";
+        /*
+         *  validfrom:\t\t[validfrom]
+                    dataowner:\t[dataowner]
+                    code:     \t\t[code]
+                    name:     \t\t[name]</textformat></span>
+         */
+        for( var i = 0 ; i < bushaltes.length ; i++){
+            var bushalte = bushaltes[i];
+            htmlObject += "<h2>Bushalte</h2><br><table border='0'>";
+            htmlObject += "<tr><td>validfrom:</td><td>" + bushalte.validfrom + "</td></tr>";
+            htmlObject += "<tr><td>dataowner:</td><td>" + bushalte.dataowner + "</td></tr>";
+            htmlObject += "<tr><td>code:</td><td>" + bushalte.code + "</td></tr>";
+            htmlObject += "<tr><td>name:</td><td>" + bushalte.name + "</td></tr></table><br>&nbsp;";
+        }
+
+        return htmlObject;
+    }
+
+
    
 </script>
 
@@ -663,7 +779,8 @@
     <div id="flashcontent" style="width: 100%; height: 100%;"></div>
 	<script type="text/javascript">
 		var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
-		so.write("flashcontent");
+                so.addParam("wmode", "transparent");
+                so.write("flashcontent");
 		var flamingo = document.getElementById("flamingo");
 	</script>
 </div>
