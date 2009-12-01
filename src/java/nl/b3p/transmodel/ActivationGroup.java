@@ -239,7 +239,7 @@ public class ActivationGroup implements EditorTreeObject {
                 richting = "Linksaf, rechtsaf";
                 break;
             default:
-                richting = "Onbekend";
+                richting = "Richting ongedefinieerd";
                 break;
         }
         j.put("icon", isLeaveAnnouncement() ? "stop" : "nostop");

@@ -103,12 +103,8 @@
 </script>
                 <table cellspacing="0" cellpadding="0" title="Selecteer de rijrichtingen die mogelijk zijn bij de signaalgroep.">
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onclick="onbekendChanged()"/></td>
-                        <td>
-                            <label for="onbekend">
-                                Onbekend (complexe kruising, handmatig bepalen)
-                            </label>
-                        </td>
+                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onclick="richtingChanged()"/></td>
+                        <td><label for="rechtsaf">Rechtsaf</label></td>
                     </tr>
                     <tr>
                         <td style="vertical-align: top"><html:multibox styleId="rechtdoor" property="directionAtIntersection" value="rechtdoor" onclick="richtingChanged()"/></td>
@@ -119,8 +115,12 @@
                         <td><label for="linksaf">Linksaf</label></td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top"><html:multibox styleId="rechtsaf" property="directionAtIntersection" value="rechtsaf" onclick="richtingChanged()"/></td>
-                        <td><label for="rechtsaf">Rechtsaf</label></td>
+                        <td style="vertical-align: top"><html:multibox styleId="onbekend" property="directionAtIntersection" value="onbekend" onclick="onbekendChanged()"/></td>
+                        <td>
+                            <label for="onbekend">
+                                Richting ongedefinieerd (complexe kruising, handmatig bepalen)
+                            </label>
+                        </td>
                     </tr>
                 </table>
             </td>

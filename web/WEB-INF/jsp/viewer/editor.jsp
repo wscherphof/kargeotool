@@ -574,7 +574,6 @@
             sldstring = addToSldstring(agIds, "ag", sldstring);
             sldstring = addToSldstring(aIds, "a", sldstring);
         }
-        console.log(sldstring);
         flamingo.callMethod("map_kar_layer","setConfig","<LayerOGWMS sld=\""+sldstring+"\"/>",true);
     }
 
