@@ -27,7 +27,7 @@
         <filter-class>nl.b3p.commons.services.HttpInfoMDCLoggerFilter</filter-class>
         <init-param>
             <param-name>createSession</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
         </init-param>
     </filter>
     <filter>
