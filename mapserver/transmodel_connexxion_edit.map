@@ -6,8 +6,6 @@ extent 12000 304000 280000 620000
 units meters
 imagecolor 255 255 255
 fontset "fonts/fonts.list"
-CONFIG "MS_ERRORFILE" "c:/tomcat/logs/ms_error.txt"
-debug 0
 
 web
   metadata
