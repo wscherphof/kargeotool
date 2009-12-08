@@ -38,7 +38,7 @@
                 
             >
                 <layer id="signaalgroepen" maptip="Signaalgroep: [kar_signal_group] [richting]"/>
-                <layer id="triggerpunten" maptip="Afstand tot stopstreep: [kar_distance_till_stop_line] Type: [type_activation] Signaal groep: [kar_signal_group] Walapparaat: [unit_number] [richting]"/>
+                <layer id="triggerpunten" maptip="[type_activation] voor [unit_number] sg [kar_signal_group] [richting]"/>
             </fmc:LayerOGWMS>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
             <fmc:LayerOGWMS id="topografie" minscale="50" url="http://kaart.nederlandacceptatie.risicokaart.nl/wmsconnector/com.esri.wms.Esrimap/ondergrond_nl_acc?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
