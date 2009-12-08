@@ -20,8 +20,8 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         <script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script>
-        <script type="text/javascript" src="<html:rewrite page="/js/jquery-1.3.2.min.js" module=""/>"</script>
-	<script type="text/javascript" src="<html:rewrite page="/js/jquery-ui-1.7.2.custom.min.js" module=""/>"</script>
+        <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
+	<script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
 
 
         
@@ -668,8 +668,8 @@
             popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
             popupWindowBackground.id = 'popupWindow_Windowbackground';
 
-            document.body.appendChild(popupDiv);
-            document.body.appendChild(popupWindowBackground);
+            $("body").append($(popupDiv));
+            $("body").append($(popupWindowBackground));
 
             popupDiv.title = 'Buslijnen';
             popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
