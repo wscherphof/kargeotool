@@ -430,15 +430,15 @@
             }
             
             if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
-                if(data.walapparatuur != undefined && document.getElementById("showSelected").checked){
+                if(data.walapparatuur != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
                     data.walapparatuur = isRequestedIdFiltered("rseq", data.walapparatuur);
                 }
 
-                if(data.signaalgroepen != undefined && document.getElementById("showSelected").checked){
+                if(data.signaalgroepen != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
                     data.signaalgroepen = isRequestedIdFiltered("ag", data.signaalgroepen);
                 }
 
-                if(data.triggerpunten != undefined && document.getElementById("showSelected").checked){
+                if(data.triggerpunten != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
                     data.triggerpunten = isRequestedIdFiltered("a", data.triggerpunten);
                 }
                 document.getElementById("loading").style.visibility = "visible";
@@ -628,14 +628,17 @@
     }
 
     function toggleVisibleSelected(){
+        
         if(!document.getElementById("showSelected").checked) {
             showSelected();
         }
-        if(document.getElementById("showSelected").checked) {
+        if(document.getElementById("showSelected").checked && selectedObject != undefined) {
      
             showSelected( roaEquId, actGroIds, actIds);
         }
-        flamingo_updateKarLayer();
+        if(selectedObject != undefined){
+            flamingo_updateKarLayer();
+        }
     }
 
     function makeBuslijnenUnique(data){
@@ -707,8 +710,8 @@
             popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
             popupWindowBackground.id = 'popupWindow_Windowbackground';
 
-            document.body.appendChild(popupDiv);
-            document.body.appendChild(popupWindowBackground);
+            $("body").append($(popupDiv));
+            $("body").append($(popupWindowBackground));
 
             popupDiv.title = 'Bushaltes';
             popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
