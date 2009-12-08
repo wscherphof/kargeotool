@@ -321,8 +321,7 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
-  #data "stop_line_location from (select id,kar_signal_group,stop_line_location,case leave_announcement when 'true' then 'ag-rood.gif' else 'ag.gif' end as symbol, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
-  data "stop_line_location from (select id,kar_signal_group,stop_line_location,leave_announcement, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
+  data "stop_line_location from (select id,kar_signal_group,stop_line_location,case leave_announcement when true then 'true' else 'false' end as leave_announcement, case direction_at_intersection when 1 then 'Rechtsaf' when 2 then 'Rechtdoor' when 3 then 'Linksaf' when 4 then 'Rechtsaf, rechtdoor, linksaf' when 5 then 'Rechtsaf, rechtdoor' when 6 then 'Rechtdoor, linksaf' when 7 then 'Linksaf, rechtsaf' else 'Onbekend' end as richting from activation_group) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
   end
