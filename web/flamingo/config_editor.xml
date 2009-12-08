@@ -35,7 +35,7 @@
                 showerrors="true"
                 query_layers="triggerpunten,walapparatuur,signaalgroepen,bushaltes,buslijnen"
                 MAPTIP_LAYERS="signaalgroepen,triggerpunten"
-                
+                maptip_feature_count="2"
             >
                 <layer id="signaalgroepen" maptip="Signaalgroep: [kar_signal_group] [richting]"/>
                 <layer id="triggerpunten" maptip="[type_activation] voor [unit_number] sg [kar_signal_group] [richting]"/>
