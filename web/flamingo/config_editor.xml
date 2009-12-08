@@ -41,8 +41,8 @@
                 <layer id="triggerpunten" maptip="Afstand tot stopstreep: [kar_distance_till_stop_line] Type: [type_activation] Signaal groep: [kar_signal_group] Walapparaat: [unit_number] [richting]"/>
             </fmc:LayerOGWMS>
             <fmc:LayerIdentifyIcon id="identifyicon"/>
-            <fmc:LayerOGWMS id="osm" minscale="50" url="http://osm.kaartenbalie.nl/wms/mapserver-scale?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
-            <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://public-wms.kaartenbalie.nl/wms/aerogrid?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
+            <fmc:LayerOGWMS id="topografie" minscale="50" url="http://kaart.nederlandacceptatie.risicokaart.nl/wmsconnector/com.esri.wms.Esrimap/ondergrond_nl_acc?Service=WMS" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
+            <fmc:LayerOGWMS id="luchtfoto" maxscale="50" url="http://luchtfoto.services.gbo-provincies.nl/mapserv.cgi?map=nl.map" srs="EPSG:28992" layers="#ALL#" showerrors="true"/>
         </fmc:Map>
         <fmc:Maptip id="maptip" listento="map"/>
     </fmc:Container>
@@ -68,7 +68,7 @@
                 <symbol dx="0" dy="0" symbolurl="http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/>
             </group>
             <group label="Achtergrond" open="true">
-                <item label="Openstreetmap" canhide="true" listento="osm"/>
+                <item label="Topografie" canhide="true" listento="topografie"/>
                 <item label="Luchtfoto" canhide="true" listento="luchtfoto"/>
             </group>
         </fmc:Legend>
