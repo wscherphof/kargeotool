@@ -586,7 +586,7 @@
         if(aIds != undefined){
             actIds = aIds;
         }
-        // sldstring = "http://localhost:8084/geo-ov/SldServlet";
+         sldstring = "http://x13.b3p.nl:8082/geo-ov/SldServlet";
         if(document.getElementById("showSelected").checked) {
             parameterGehad = false;
 
