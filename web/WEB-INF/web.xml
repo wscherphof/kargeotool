@@ -61,6 +61,10 @@
             <param-name>debug</param-name>
             <param-value>false</param-value>
         </init-param>
+        <init-param>
+            <param-name>crossDomainSessionSecurity</param-name>
+            <param-value>false</param-value>
+        </init-param>
         <load-on-startup>3</load-on-startup>
     </servlet>
 
