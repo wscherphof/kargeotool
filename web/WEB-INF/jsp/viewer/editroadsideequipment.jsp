@@ -70,8 +70,8 @@
                     <c:if test="${empty form.id}">
                         <html:option value=""/>
                     </c:if>
-                    <c:forEach var="do" items="${dataOwners}">
-                        <html:option value="${do.id}"><c:out value="${do.name}"/></html:option>
+                    <c:forEach items="${dataOwners}" var="dataOwner">
+                        <html:option value="${dataOwner.id}"><c:out value="${dataOwner.name}"/></html:option>
                     </c:forEach>
                 </html:select>
             </td>
