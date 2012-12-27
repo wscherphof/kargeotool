@@ -5,18 +5,15 @@ status on
 extent 12000 304000 280000 620000
 units meters
 imagecolor 255 255 255
-fontset "fonts/fonts.list"
+fontset "fonts.list"
 
 
 web
   metadata
-    "wms_title"				"Transmodel Connexxion"
-    "wfs_title"				"Transmodel Connexxion"
-    "wms_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit"
-    "wfs_onlineresource"		"http://public-wms.kaartenbalie.nl/wms/transmodel_connexxion_edit"
-    "wms_srs"				"EPSG:28992"
-    "wfs_srs"				"EPSG:28992"
-    "wfs_extent"			"12000 304000 280000 620000"
+    "ows_title"				"Transmodel Connexxion"
+    "ows_onlineresource"		"http://x13.b3p.nl:8082/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map"
+    "ows_srs"				"EPSG:28992"
+    "ows_extent"			"12000 304000 280000 620000"
     "ows_schemas_location"		"http://schemas.opengeospatial.net"
   end
   imagepath "/tmp"
@@ -51,7 +48,7 @@ legend
   
   label
     type truetype
-    font "verdana"
+    font "freesans"
     antialias false # werkt niet
     size 8
     color 0 0 0
@@ -68,7 +65,7 @@ end
 symbol
   name "pijl"
   type truetype
-  font "arial"
+  font "freesans"
   character ">"
   antialias true
   gap -50
@@ -126,7 +123,7 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,name,code,dataowner,validfrom from point where name is not null) as bla using srid=28992"
+  data "point_geom from (select oid,point_geom,name,code,dataowner,validfrom from point where name is not null) as bla using srid=28992 using unique oid"
   projection
     "init=epsg:28992"
   end
@@ -153,7 +150,7 @@ layer
   status off
   connectiontype postgis
   connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992"
+  data "point_geom from (select oid,point_geom,name from point where name is not null) as bla using srid=28992 using unique oid"
   projection
     "init=epsg:28992"
   end
@@ -164,7 +161,7 @@ layer
     end
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 8
         color 2 2 2
@@ -260,7 +257,7 @@ layer
     end 
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 10
         color 255 255 255
@@ -277,7 +274,7 @@ layer
     end 
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 10
         color 255 255 255
@@ -294,7 +291,7 @@ layer
     end 
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 10
         color 255 255 255
@@ -338,7 +335,7 @@ layer
     end
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 10
         color 255 255 255
@@ -355,7 +352,7 @@ layer
     end
     label
         type truetype
-        font "arial"
+        font "freesans"
         antialias true
         size 10
         color 255 255 255
