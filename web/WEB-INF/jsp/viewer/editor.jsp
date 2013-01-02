@@ -21,7 +21,9 @@
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         <script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
-	<script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
+        <script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
+        <script type="text/javascript" src="<html:rewrite page='/openlayers/OpenLayers.js' module=''/>"></script>
+        <script type="text/javascript" src="<html:rewrite page="/js/OpenLayersController.js" module=""/>"></script>
 
 
         
@@ -779,12 +781,11 @@
 </div>
 
 <div id="kaart">
-    <div id="flashcontent" style="width: 100%; height: 100%;"></div>
+    <div id="map" style="width: 100%; height: 100%;"></div>
 	<script type="text/javascript">
-		var so = new SWFObject("<html:rewrite module="" page="/flamingo/flamingo.swf"/>?config=/config_editor.xml", "flamingo", "100%", "100%", "8", "#FFFFFF");
-                so.addParam("wmode", "transparent");
-                so.write("flashcontent");
-		var flamingo = document.getElementById("flamingo");
+      var oc = new ol();
+      oc.createMap('map');
+      oc.addLayer();
 	</script>
 </div>
 
