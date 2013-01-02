@@ -785,7 +785,8 @@
 	<script type="text/javascript">
       var oc = new ol();
       oc.createMap('map');
-      oc.addLayer();
+      oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', 'png?LAYERS=IPOlufo');
+      oc.addLayer("WMS","OpenLayers WMS","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen');
 	</script>
 </div>
 

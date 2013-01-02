@@ -11,6 +11,7 @@ function ol (){
             maxExtent: maxBounds,
             srs: 'epsg:28992', 
             allOverlays: true,
+            resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
             theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
             units : 'm',
             controls : [new OpenLayers.Control.PanZoomBar(), new OpenLayers.Control.Navigation(), this.panel]
@@ -80,25 +81,32 @@ function ol (){
     },
     /**
      * Add a layer. Assumed is that everything is in epsg:28992, units in meters and the maxextent is The Netherlands
+     * @param type The type of the layer [WMS/TMS]
      * @param name The name of the layer
      * @param url The url to the service
      * @param layers The layers of the service which must be retrieved
+     * @param extension Optional parameter to indicate the extension (type)
      */
-    this.addLayer = function (name, url, layers){
-         var wms = new OpenLayers.Layer.WMS(
-            "OpenLayers WMS",
-            "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",
-            {
-                'layers':'buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen',
-                'transparent': true
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                transitionEffect: 'resize'
+    this.addLayer = function (type,name, url, layers,extension){
+        var layer;
+        if(type == 'WMS'){
+            layer = new OpenLayers.Layer.WMS(name,url,{'layers':layers,'transparent': true},{singleTile: true,ratio: 1,transitionEffect: 'resize'});
+        }else if (type == "TMS" ){
+            if(!extension){
+                extension = 'png';
             }
-        );
-        this.map.addLayer(wms);
-        this.map.zoomToMaxExtent();
+            layer = new OpenLayers.Layer.TMS(name, url,{
+                layername:layers, 
+                type: extension,
+                serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
+                tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
+            });
+        }else{
+            console.log("Type " + type + " not known.");
+        }
+        if(layer){
+            this.map.addLayer(layer);
+            this.map.zoomToMaxExtent();
+        }
     }
 }
