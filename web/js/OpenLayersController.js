@@ -87,7 +87,7 @@ function ol (){
      * @param layers The layers of the service which must be retrieved
      * @param extension Optional parameter to indicate the extension (type)
      */
-    this.addLayer = function (type,name, url, layers,extension){
+    this.addLayer = function (type,name, url, layers,visible,extension){
         var layer;
         if(type == 'WMS'){
             layer = new OpenLayers.Layer.WMS(name,url,{'layers':layers,'transparent': true},{singleTile: true,ratio: 1,transitionEffect: 'resize'});
@@ -105,8 +105,23 @@ function ol (){
             console.log("Type " + type + " not known.");
         }
         if(layer){
+            layer.setVisibility(visible);
             this.map.addLayer(layer);
             this.map.zoomToMaxExtent();
+        }
+    },
+    this.isLayerVisible = function (name){
+        var lyrs = this.map.getLayersByName(name);
+        if(lyrs && lyrs.length > 0){
+            return lyrs[0].visibility;
+        }
+        return false;
+    },
+    this.setLayerVisible = function (name,vis){
+        var lyrs = this.map.getLayersByName(name);
+        if(lyrs && lyrs.length > 0){
+            var layer = lyrs[0];
+            layer.setVisibility(vis);
         }
     }
 }

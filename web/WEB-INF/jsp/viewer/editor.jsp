@@ -781,13 +781,34 @@
 </div>
 
 <div id="kaart">
-    <div id="map" style="width: 100%; height: 100%;"></div>
+    <div id="map" style="width: 80%; height: 100%;float:left;"></div>
+    <div id="legend" style="width:20%; height:100%;float:right;">
+        <strong>VRI-informatie</strong><br/>
+        <input type="checkbox" checked="checked" onchange="toggleLayer('walapparatuur');"/>Walapparatuur<br/>
+        <input type="checkbox" checked="checked" onchange="toggleLayer('signaalgroepen');"/>Signaalgroepen<br/>
+        <input type="checkbox" checked="checked" onchange="toggleLayer('triggerpunten');"/>Triggerpunten<br/>
+        <strong>OV-informatie</strong><br/>
+        <input type="checkbox" onchange="toggleLayer('buslijnen');"/>Buslijnen<br/>
+        <input type="checkbox" onchange="toggleLayer('bushaltes');"/>Bushaltes<br/>
+        <strong>Achtergrond</strong><br/>
+        <input type="checkbox" onchange="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
+        <input type="checkbox" checked="checked" onchange="toggleLayer('BRT');"/>BRT<br/>
+        
+    </div>
 	<script type="text/javascript">
       var oc = new ol();
       oc.createMap('map');
-     // oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', 'png?LAYERS=IPOlufo');
-      oc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', 'png8');
-      oc.addLayer("WMS","OpenLayers WMS","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen,bushaltes,triggerpunten,walapparatuur,signaalgroepen');
+      oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
+      oc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
+      oc.addLayer("WMS","walapparatuur","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'walapparatuur', true);
+      oc.addLayer("WMS","signaalgroepen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'signaalgroepen', true);
+      oc.addLayer("WMS","triggerpunten","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'triggerpunten', true);
+      oc.addLayer("WMS","buslijnen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen', false);
+      oc.addLayer("WMS","bushaltes","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'bushaltes', false);
+      
+      function toggleLayer(layer){
+          oc.setLayerVisible(layer,!oc.isLayerVisible(layer));
+      }
 	</script>
 </div>
 
