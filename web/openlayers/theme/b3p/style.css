@@ -48,10 +48,10 @@
 .olControlPanel .olControlb_bufferItemActive{
     background-image: url("img/buffer_tool.png");
 }
-.olControlPanel .olControlidentifyItemActive{
+.olControlIdentifyItemActive{
     background-image: url("img/identify_on.png");
 }
-.olControlPanel .olControlidentifyItemInactive{
+.olControlIdentifyItemInactive{
     background-image: url("img/identify_off.png");
 }
 
