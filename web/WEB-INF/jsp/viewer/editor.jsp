@@ -19,7 +19,7 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
-        <script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script>
+        <%--script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script--%>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/openlayers/OpenLayers.js' module=''/>"></script>
@@ -72,7 +72,7 @@
 
     function treeItemClick(item) {
         showSelected(roaEquId, actGroIds, actIds);
-        flamingo_hideIdentifyIcon();
+        //flamingo_hideIdentifyIcon();
         tree_selectObject(item);
         form_editObject(item);
         if(document.getElementById("autoZoom").checked) {
@@ -216,7 +216,7 @@
 
     function deselectObject() {
         if(selectedObject != undefined) {
-            flamingo_hideIdentifyIcon();   
+            //flamingo_hideIdentifyIcon();   
             container = treeview_getLabelContainerNodeForItemId("objectTree", selectedObject.id);
             container.className = "node";
         }
@@ -264,14 +264,14 @@
                 var zoomBorder = getZoomBorder();
                 var xy = selectedObject.point.split(", ");
                 var x = parseInt(xy[0]); var y = parseInt(xy[1]);
-                flamingo_moveToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
+                oc.zoomToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
             }
         }
     }
 
     function zoomToEnvelope(envelope) {
         var zoomBorder = getZoomBorder();
-        flamingo_moveToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
+        oc.zoomToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
     }
 
     /* Aangeroepen door form in iframe na crud actie */
@@ -426,7 +426,7 @@
                 makeBuslijnenUnique(data);
             }
             if(data.bushaltes_symbol != undefined ) {
-                //flamingo.callMethod("info", "show");
+                ////flamingo.callMethod("info", "show");
                 generatePopupBushaltes(data.bushaltes_symbol);
 
             }
@@ -450,17 +450,17 @@
     }
 
     function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
-        flamingo.callMethod("location", "show");
+        //flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
     function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
-        flamingo.callMethod("location", "show");
+        //flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
     function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
-        flamingo.callMethod("location", "show");
+        //flamingo.callMethod("location", "show");
         window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
     }
 
@@ -471,40 +471,36 @@
     // geometryType is Point, PointAtDistance, ...
 
     function flamingo_editMapCreateNewGeometry(editLayer, geometryType, geometry) {
-        flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
+        //flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
     }
 
     function flamingo_editMapDrawNewGeometry(editLayer,geometryType) {
-        flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
+        //flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
     }
 
     function flamingo_removeAllFeatures(editLayer) {
-        flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
-    }
-
-    function flamingo_moveToExtent(minx, miny, maxx, maxy){
-        flamingo.callMethod("map", "moveToExtent", {minx: minx, miny: miny,  maxx: maxx, maxy: maxy}, 0);
+        ////flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
     }
 
     function flamingo_cancelEdit() {
-        flamingo_removeAllFeatures("draw_walapparatuur");
+        /*flamingo_removeAllFeatures("draw_walapparatuur");
         flamingo_removeAllFeatures("draw_signaalgroepen");
         flamingo_removeAllFeatures("draw_triggerpunten");
-        flamingo.callMethod("location", "hide");
-        flamingo.callMethod("gis", "setCreateGeometry", null);
+        //flamingo.callMethod("location", "hide");
+        //flamingo.callMethod("gis", "setCreateGeometry", null);*/
     }
 
     function flamingo_updateKarLayer() {
-        flamingo.callMethod("map_kar_layer", "update", true);
+        //flamingo.callMethod("map_kar_layer", "update", true);
     }
 
     function flamingo_hideIdentifyIcon() {
-        flamingo.callMethod("map_identifyicon", "hide");
+        //flamingo.callMethod("map_identifyicon", "hide");
     }
     
     function flamingo_hideLayers(layers) {
-        flamingo.callMethod("map_kar_layer", "setVisible", false, layers);
-        <%-- niet nodig bij onInit; flamingo.callMethod("map_kar_layer", "update", true); --%>
+        //flamingo.callMethod("map_kar_layer", "setVisible", false, layers);
+        <%-- niet nodig bij onInit; //flamingo.callMethod("map_kar_layer", "update", true); --%>
     }
 
     function flamingo_map_kar_layer_onInit() {
@@ -597,7 +593,7 @@
             sldstring = addToSldstring(agIds, "ag", sldstring);
             sldstring = addToSldstring(aIds, "a", sldstring);
         }
-        flamingo.callMethod("map_kar_layer","setConfig","<LayerOGWMS sld=\""+sldstring+"\"/>",true);
+        //flamingo.callMethod("map_kar_layer","setConfig","<LayerOGWMS sld=\""+sldstring+"\"/>",true);
     }
 
     var parameterGehad = false;
