@@ -40,8 +40,6 @@
 
 <script type="text/javascript">
 
-   
-
     function testSelecteerObject() {
         var obj = prompt("Geef object aan als type:idnr, dus rseq:1, ag:23, a:456", "rseq:67");
         if(obj == null) { /* no input, do nothing */
@@ -494,15 +492,6 @@
     function flamingo_hideIdentifyIcon() {
         //flamingo.callMethod("map_identifyicon", "hide");
     }
-    
-    function flamingo_hideLayers(layers) {
-        //flamingo.callMethod("map_kar_layer", "setVisible", false, layers);
-        <%-- niet nodig bij onInit; //flamingo.callMethod("map_kar_layer", "update", true); --%>
-    }
-
-    function flamingo_map_kar_layer_onInit() {
-        flamingo_hideLayers("bushaltes,buslijnen");
-    }
 
     function walapparaatnummerKeyPressed(e) {
         if(e.keyCode == 0xd) {
@@ -583,37 +572,23 @@
         }
          sldstring = "http://x13.b3p.nl:8082/geo-ov/SldServlet";
         if(document.getElementById("showSelected").checked) {
-            parameterGehad = false;
-
             // bouw de sld string op
-            sldstring = addToSldstring(rseqId, "rseq", sldstring);
-            sldstring = addToSldstring(agIds, "ag", sldstring);
-            sldstring = addToSldstring(aIds, "a", sldstring);
+            var walsld = addToSldstring(rseqId, "rseq", sldstring);
+            var signsld = addToSldstring(agIds, "ag", sldstring);
+            var trigsld = addToSldstring(aIds, "a", sldstring);
+            oc.addSldToKargis(walsld,trigsld,signsld);
+        }else{
+            oc.removeSldFromKargis();
         }
-        //flamingo.callMethod("map_kar_layer","setConfig","<LayerOGWMS sld=\""+sldstring+"\"/>",true);
     }
 
-    var parameterGehad = false;
-    // HACK: Flamingo escaped de ampersands niet goed, dus worden ze nu hier alvast vervangen door %26
     // TODO: als leeg is, dan niet parameter vullen
     function addToSldstring(lijst, typeVis, sldstring){
-        if(parameterGehad){
-            sldstring +="%26"+ typeVis + "VisibleValues=";
-        }else{
-            sldstring +="?"+ typeVis + "VisibleValues=";
-            parameterGehad = true;
-        }
+        sldstring +="?"+ typeVis + "VisibleValues=";
+      
         if(lijst instanceof Array){
             if(lijst.length >0){
-                var eerste = true;
-                for(var i = 0 ; i < lijst.length ; i++){
-                    if(eerste){
-                        sldstring += lijst[i];
-                        eerste = false;
-                    }else{
-                        sldstring += ","+lijst[i];
-                    }
-                }
+                sldstring += lijst.join(',');
             }
         }else{
             sldstring += lijst;
@@ -632,7 +607,7 @@
             showSelected( roaEquId, actGroIds, actIds);
         }
         if(selectedObject != undefined){
-            oc.update();
+           // oc.update();
         }
     }
 

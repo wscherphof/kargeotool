@@ -164,5 +164,34 @@ function ol (){
             var layer = this.map.layers[key];
             layer.redraw();
         }
+    },
+    this.addSldToKargis = function (walsld,trigsld, signsld){
+        var wal = this.map.getLayersByName("walapparatuur")[0];
+        var trig = this.map.getLayersByName("triggerpunten")[0];
+        var sign = this.map.getLayersByName("signaalgroepen")[0];
+        wal.mergeNewParams({
+            sld:walsld
+        });
+        trig.mergeNewParams({
+            sld:trigsld
+        });
+        sign.mergeNewParams({
+            sld:signsld
+        });
+    },
+    this.removeSldFromKargis = function (){
+        var wal = this.map.getLayersByName("walapparatuur")[0];
+        var trig = this.map.getLayersByName("triggerpunten")[0];
+        var sign = this.map.getLayersByName("signaalgroepen")[0];
+        wal.mergeNewParams({
+            sld:null
+        });
+        trig.mergeNewParams({
+            sld:null
+        });
+        sign.mergeNewParams({
+            sld:null
+        });
+        
     }
 }
