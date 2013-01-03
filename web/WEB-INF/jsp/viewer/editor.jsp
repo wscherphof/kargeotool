@@ -490,9 +490,6 @@
         //flamingo.callMethod("gis", "setCreateGeometry", null);*/
     }
 
-    function flamingo_updateKarLayer() {
-        //flamingo.callMethod("map_kar_layer", "update", true);
-    }
 
     function flamingo_hideIdentifyIcon() {
         //flamingo.callMethod("map_identifyicon", "hide");
@@ -635,7 +632,7 @@
             showSelected( roaEquId, actGroIds, actIds);
         }
         if(selectedObject != undefined){
-            flamingo_updateKarLayer();
+            oc.update();
         }
     }
 

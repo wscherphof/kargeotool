@@ -22,7 +22,7 @@
     
     parent.showSelected( rseqId, agIds, aIds);
 
-    parent.flamingo_updateKarLayer();
+    parent.oc.update();
 
     <c:if test="${notEditable}">
         parent.notEditable();

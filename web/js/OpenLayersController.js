@@ -156,8 +156,13 @@ function ol (){
             layer.setVisibility(vis);
         }
     },
-    
     this.zoomToExtent = function (minx,miny,maxx,maxy){
         this.map.zoomToExtent([minx,miny,maxx,maxy]);
+    },
+    this.update = function (){
+        for ( var key in this.map.layers ){
+            var layer = this.map.layers[key];
+            layer.redraw();
+        }
     }
 }
