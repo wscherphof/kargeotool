@@ -250,7 +250,10 @@ public class ActivationGroup implements EditorTreeObject {
                 JSONArray children = new JSONArray();
                 j.put("children", children);
                 for (Iterator it = getActivations().iterator(); it.hasNext();) {
-                    children.put(((Activation) it.next()).serializeToJson(request));
+                    Activation act = ((Activation)it.next());
+                    if(act!=null){
+                        children.put(act.serializeToJson(request));
+                    }
                 }
             }
         }
