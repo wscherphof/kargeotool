@@ -1,6 +1,7 @@
 function ol (){
     this.map = null;
     this.panel = null;
+    this.gfi = null;
     // Make the map
     this.createMap = function(domId){
         this.panel = new OpenLayers.Control.Panel();
@@ -78,6 +79,37 @@ function ol (){
             }
         });
         this.panel.addControls (measureTool);
+        this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
+            drillDown: true,
+            infoFormat: "application/vnd.ogc.gml"
+        });
+        this.gfi.events.register("getfeatureinfo",this,this.raiseOnDataEvent);
+        this.map.addControl(this.gfi);
+        
+        var frameworkOptions = {
+            displayClass: "olControlIdentify",
+            type: OpenLayers.Control.TYPE_TOOL,
+            title: "Selecteer een feature"
+        };        
+        var identifyButton= new OpenLayers.Control(frameworkOptions);
+        this.panel.addControls(identifyButton);
+        
+        identifyButton.events.register("activate",this,function(){
+            this.gfi.activate();
+        });
+        identifyButton.events.register("deactivate",this,function(){
+            this.gfi.deactivate();
+        });
+    },
+    this.raiseOnDataEvent = function(evt){
+        var stub = new Object();          
+        var walapparatuur = new Array();
+        walapparatuur[0] = {
+            id: "424"
+        };
+        
+        stub.walapparatuur = walapparatuur;
+        flamingo_map_onIdentifyData(null,"map_kar_layer",stub);
     },
     /**
      * Add a layer. Assumed is that everything is in epsg:28992, units in meters and the maxextent is The Netherlands
@@ -123,5 +155,9 @@ function ol (){
             var layer = lyrs[0];
             layer.setVisibility(vis);
         }
+    },
+    
+    this.zoomToExtent = function (minx,miny,maxx,maxy){
+        this.map.zoomToExtent([minx,miny,maxx,maxy]);
     }
 }
