@@ -785,11 +785,16 @@
     <div id="legend" style="width:20%; height:100%;float:right;">
         <strong>VRI-informatie</strong><br/>
         <input type="checkbox" checked="checked" onchange="toggleLayer('walapparatuur');"/>Walapparatuur<br/>
+        <div id="walapparatuur"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/></div>
         <input type="checkbox" checked="checked" onchange="toggleLayer('signaalgroepen');"/>Signaalgroepen<br/>
+        <div id="signaalgroepen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/></div>
         <input type="checkbox" checked="checked" onchange="toggleLayer('triggerpunten');"/>Triggerpunten<br/>
+        <div id="triggerpunten"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/></div>
         <strong>OV-informatie</strong><br/>
         <input type="checkbox" onchange="toggleLayer('buslijnen');"/>Buslijnen<br/>
+        <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
         <input type="checkbox" onchange="toggleLayer('bushaltes');"/>Bushaltes<br/>
+        <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div>
         <strong>Achtergrond</strong><br/>
         <input type="checkbox" onchange="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
         <input type="checkbox" checked="checked" onchange="toggleLayer('BRT');"/>BRT<br/>
@@ -807,7 +812,14 @@
       oc.addLayer("WMS","bushaltes","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'bushaltes', false);
       
       function toggleLayer(layer){
-          oc.setLayerVisible(layer,!oc.isLayerVisible(layer));
+          var legend = document.getElementById(layer);
+          var visible = oc.isLayerVisible(layer);
+          
+          oc.setLayerVisible(layer,!visible);
+          if(legend){
+              var attr = !visible ?  'block' : 'none' ;
+              legend.setAttribute("style", 'display:' +attr);
+          }
       }
 	</script>
 </div>
