@@ -1,7 +1,7 @@
 package nl.b3p.transmodel;
 
 public class DataOwner {
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private String code;
     private String type;
     private String name;

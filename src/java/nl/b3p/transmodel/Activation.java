@@ -41,7 +41,7 @@ public class Activation implements EditorTreeObject, Cloneable {
     /* Vooraanmelding */
     //public static final Integer COMMAND_TYPE_PRE_ANNOUNCEMENT = 3;
 
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private ActivationGroup activationGroup;
     private Integer index;
     private Date validFrom;

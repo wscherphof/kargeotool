@@ -16,7 +16,7 @@ import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.DataOwner;
 
 public class Gebruiker implements Principal {
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private String username;
     private String passwordsalt;
     private String passwordhash;

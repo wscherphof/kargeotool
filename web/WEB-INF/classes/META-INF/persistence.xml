@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+    <persistence-unit name="karGisPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <properties>
+            <property name="hibernate.connection.username" value="geo_ov"/>
+            <property name="hibernate.connection.driver_class" value="org.postgis.DriverWrapper"/>
+            <property name="hibernate.connection.password" value="xXxXxXxXxXx"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://x13.b3p.nl/geo_ov"/>
+            <property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+            <property name="hibernate.dialect" value="org.hibernatespatial.postgis.PostgisDialect"/>
+            <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>
+            <!--property name="hibernate.show_sql" value="true"/-->
+            <property name="hibernate.c3p0.max_size" value="100"/>
+            <property name="hibernate.c3p0.timeout" value="60"/>
+            <property name="hibernate.c3p0.idle_test_period" value="100"/>
+            <property name="hibernate.c3p0.min_size" value="0"/>
+        </properties>
+    
+        <class>nl.b3p.kar.hibernate.Gebruiker</class>
+        <class>nl.b3p.kar.hibernate.GebruikerDataOwnerRights</class>
+        <class>nl.b3p.kar.hibernate.Role</class>
+        <class>nl.b3p.transmodel.Activation</class>
+        <class>nl.b3p.transmodel.ActivationGroup</class>
+        <class>nl.b3p.transmodel.DataOwner</class>
+        <class>nl.b3p.transmodel.RoadsideEquipment</class>
+    </persistence-unit>
+</persistence>

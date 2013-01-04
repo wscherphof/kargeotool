@@ -17,7 +17,7 @@ public class ActivationGroup implements EditorTreeObject {
     /* "Priority ReQuest Automatic" */
 
     public static final String TYPE_PRQA = "PRQA";
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private RoadsideEquipment roadsideEquipment;
     private int karSignalGroup;
     private Date validFrom;

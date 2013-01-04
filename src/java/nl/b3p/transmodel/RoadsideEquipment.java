@@ -25,7 +25,7 @@ public class RoadsideEquipment implements EditorTreeObject {
     public static final String TYPE_CLOSE = "CLOSE"; /* afsluiting/poller/slagboom */
     public static final String TYPE_PIU = "PIU";     /* Passenger Information Unit (halteprocessor) */
 
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private DataOwner dataOwner;
     private int unitNumber;
     private Date validFrom;
@@ -204,7 +204,7 @@ public class RoadsideEquipment implements EditorTreeObject {
             j.put("editable", true);
         } else {
             Gebruiker g = Gebruiker.getNonTransientPrincipal(request);
-            j.put("editable", g.canEditDataOwner(getDataOwner()));
+            j.put("editable", g == null ? false : g.canEditDataOwner(getDataOwner()));
         }
         j.put("description", getDescription());
         j.put("rseqType", getType());

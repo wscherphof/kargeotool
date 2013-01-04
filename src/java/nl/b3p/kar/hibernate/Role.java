@@ -17,7 +17,7 @@ public class Role {
     public static final String BEHEERDER = "beheerder";
     public static final String GEBRUIKER = "gebruiker";
     
-    private Integer id;
+    @javax.persistence.Id private Integer id;
     private String role;
 
     /**
