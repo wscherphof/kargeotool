@@ -127,6 +127,10 @@ public class Gebruiker implements Principal {
         this.roles = roles;
     }
 
+    public boolean isBeheerder() {
+        return isInRole(Role.BEHEERDER);
+    }
+    
     public boolean isInRole(String roleName) {
         for(Iterator it = getRoles().iterator(); it.hasNext();) {
             Role r = (Role)it.next();
