@@ -6,6 +6,7 @@ function ol (){
     this.dragFeature = null;
     this.point = null;
     this.line = null;
+    this.identifyButton = null;
     // Make the map
     this.createMap = function(domId){
         this.panel = new OpenLayers.Control.Panel();
@@ -27,11 +28,14 @@ function ol (){
         this.vectorLayer = new OpenLayers.Layer.Vector('edit',{
             geometryTypes : ["Point"]
         });
+        var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
-            displayClass: 'olControlDrawFeaturePoint'
+            displayClass: 'olControlDrawFeaturePoint',
+            featureAdded: function(feature ) {me.drawFeature(feature);}
         });
         this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
-            displayClass: 'olControlDrawFeaturePath'
+            displayClass: 'olControlDrawFeaturePath',
+            featureAdded: function (feature){me.drawFeature(feature);}
         });
         
         // The modifyfeature control allows us to edit and select features.
@@ -113,13 +117,13 @@ function ol (){
             type: OpenLayers.Control.TYPE_TOOL,
             title: "Selecteer een feature"
         };        
-        var identifyButton= new OpenLayers.Control(frameworkOptions);
-        this.panel.addControls(identifyButton);
+        this.identifyButton= new OpenLayers.Control(frameworkOptions);
+        this.panel.addControls(this.identifyButton);
         
-        identifyButton.events.register("activate",this,function(){
+        this.identifyButton.events.register("activate",this,function(){
             this.gfi.activate();
         });
-        identifyButton.events.register("deactivate",this,function(){
+        this.identifyButton.events.register("deactivate",this,function(){
             this.gfi.deactivate();
         });
     },
@@ -132,6 +136,7 @@ function ol (){
         
         stub.walapparatuur = walapparatuur;
         flamingo_map_onIdentifyData(null,"map_kar_layer",stub);
+        this.identifyButton.deactivate();
     },
     /**
      * Add a layer. Assumed is that everything is in epsg:28992, units in meters and the maxextent is The Netherlands
@@ -185,7 +190,7 @@ function ol (){
     this.update = function (){
         for ( var key in this.map.layers ){
             var layer = this.map.layers[key];
-            layer.redraw();
+            layer.redraw(true);
         }
     },
     this.addSldToKargis = function (walsld,trigsld, signsld){
@@ -246,6 +251,10 @@ function ol (){
     },
     this.dragComplete = function (feature){
         geometryDrawUpdate(feature.geometry.toString());
+    },
+    this.drawFeature = function (feature){
+        geometryDrawUpdate (feature.geometry.toString());
+        this.point.deactivate();
     }
     
 }

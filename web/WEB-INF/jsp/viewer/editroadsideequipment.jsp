@@ -16,7 +16,7 @@
 <script type="text/javascript">
     parent.flamingo_cancelEdit();
 
-    var agIds = ${ActivationGroupIds}; <%= request.getAttribute("ActivationGroupIds")%>;
+    var agIds = <%= request.getAttribute("ActivationGroupIds")%>;
     var aIds = <%= request.getAttribute("ActivationIds")%>;
     var rseqId = <%= request.getAttribute("RoadSideEquipmentId")%>;
     

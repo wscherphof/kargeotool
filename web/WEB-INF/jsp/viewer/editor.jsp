@@ -19,13 +19,10 @@
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
-        <%--script type='text/javascript' src='<html:rewrite page="/js/flamingo/FlamingoController.js" module=""/>'></script--%>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/openlayers/OpenLayers.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/js/OpenLayersController.js" module=""/>"></script>
-
-
         
         <!--[if lte IE 6]>
             <link href="<html:rewrite page="/styles/geo-ov-ie6.css" module=""/>" rel="stylesheet" media="screen" type="text/css" />
@@ -322,7 +319,6 @@
 
     /* Aangeroepen door form in iframe */
     function selectLocationClicked(currentLocation, geometryType) {
-
         if(currentLocation != null) {
             addGeometry(geometryType, currentLocation);
         } else {
@@ -341,7 +337,6 @@
      * gebruikt voor recursieve aanroep.
      */
     function findTreeItemParents(root, needle, crumbs) {
-
         if(root == needle) {
             /* needle gevonden, return array met parent items */
             return crumbs ? crumbs : []; /* indien eerste aanroep return lege array */
@@ -424,9 +419,7 @@
                 makeBuslijnenUnique(data);
             }
             if(data.bushaltes_symbol != undefined ) {
-                ////flamingo.callMethod("info", "show");
                 generatePopupBushaltes(data.bushaltes_symbol);
-
             }
             
             if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
@@ -445,11 +438,6 @@
                 Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
             }
         }
-    }
-
-    function flamingo_drawMap_onGeometryDrawFinished(obj, geometry) {
-        //flamingo.callMethod("location", "show");
-        window.frames["form"].flamingo_onGeometryDrawFinished(obj, geometry);
     }
 
     function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
