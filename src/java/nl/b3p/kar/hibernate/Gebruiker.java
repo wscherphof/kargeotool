@@ -24,7 +24,7 @@ public class Gebruiker implements Principal {
     private String email;
     private String phone;
     private String position;
-    private Set roles;
+    private Set roles = new HashSet();
     private Map<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new HashMap<DataOwner, GebruikerDataOwnerRights>();
 
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {

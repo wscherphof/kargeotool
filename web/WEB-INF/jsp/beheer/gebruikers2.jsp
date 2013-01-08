@@ -125,11 +125,11 @@
             </tr>
             <tr>
                 <td><fmt:message key="gebruiker.fullName"/></td>
-                <td><stripes:text name="gebruiker.fullName" size="30"/></td>
+                <td><stripes:text name="gebruiker.fullname" size="30"/></td>
             </tr>
             <tr>
                 <td><fmt:message key="gebruiker.email"/></td>
-                <td><stripes-dynattr:text name="email" size="30" type="email"/></td>
+                <td><stripes-dynattr:text name="gebruiker.email" size="30" type="email"/></td>
             </tr>
             <tr>
                 <td><fmt:message key="gebruiker.password"/></td>
@@ -161,8 +161,8 @@
                             document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
                         }
                     </script>
-                    <c:forEach var="r" items="${availableRoles}">
-                        <html:radio property="role" value="${r.role}" styleId="role_${r.role}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/><br>
+                    <c:forEach var="r" items="${actionBean.allRoles}">
+                        <label><stripes:radio name="role" value="${r.id}" id="role_${r.role}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/><br>
                     </c:forEach>
                 </td>
 
@@ -214,7 +214,6 @@
     var usedDataOwners = {};
 
     var codeNameSeparator = " - ";
-
 
     function initAvailableDataOwners() {
 
