@@ -47,7 +47,7 @@
         }
 
         function newLocationClicked() {
-            parent.selectLocationClicked('${layer}', null, '${geometryType}');
+            parent.selectLocationClicked(null, '${geometryType}');
             document.getElementById("locationStatus").innerHTML = "Klik op een plek op de kaart...";
             document.getElementById("reset").style.display = "inline";
             document.getElementById("newLocation").style.display = "none";
@@ -58,7 +58,7 @@
             if(newLocation != null) {
                 loc = [newLocation.x, newLocation.y];
             }
-            parent.selectLocationClicked('${layer}', loc, '${geometryType}');
+            parent.selectLocationClicked(loc, '${geometryType}');
             document.getElementById("locationStatus").innerHTML = "Verplaats het punt in de kaart...";
             document.getElementById("reset").style.display = "inline";
             document.getElementById("changeLocation").style.display = "none";

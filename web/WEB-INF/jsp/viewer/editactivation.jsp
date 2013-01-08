@@ -45,7 +45,6 @@
 
 <c:set var="point" value="${activation.locationString}" scope="request"/>
 <c:set var="geometryType" value="PointAtDistance" scope="request"/>
-<c:set var="layer" value="draw_triggerpunten" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
 <c:set var="focus" value="commandType" scope="request"/>

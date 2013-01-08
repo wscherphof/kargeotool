@@ -39,7 +39,6 @@ function ol (){
             onComplete : this.dragComplete
         });
         
-        
         this.map.addControl(this.point);
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);

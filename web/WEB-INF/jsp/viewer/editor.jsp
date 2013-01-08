@@ -321,12 +321,12 @@
     }
 
     /* Aangeroepen door form in iframe */
-    function selectLocationClicked(editLayer, currentLocation, geometryType) {
+    function selectLocationClicked(currentLocation, geometryType) {
 
         if(currentLocation != null) {
-            flamingo_editMapCreateNewGeometry(editLayer, geometryType, currentLocation);
+            addGeometry(geometryType, currentLocation);
         } else {
-            flamingo_editMapDrawNewGeometry(editLayer, geometryType);
+            drawNewGeometry( geometryType);
         }
     }
 
@@ -468,37 +468,29 @@
 
     // geometryType is Point, PointAtDistance, ...
 
-    function flamingo_editMapCreateNewGeometry(editLayer, geometryType, geometry) {
+    function addGeometry(geometryType, geometry) {
         if(geometryType == "Point"){
             this.oc.drawPoint(geometry);
         }else{
             this.oc.drawLine(geometry);
         }
-        //flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
     }
 
-    function flamingo_editMapDrawNewGeometry(editLayer,geometryType) {
+    function drawNewGeometry(geometryType) {
         if(geometryType == "Point"){
             this.oc.drawPoint();
         }else{
             this.oc.drawLine();
         }
-        //flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
     }
 
     function flamingo_removeAllFeatures(editLayer) {
         this.oc.removeAllFeatures();
-        ////flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
     }
 
     function flamingo_cancelEdit() {
-        
         this.oc.removeAllFeatures();
-        /*flamingo_removeAllFeatures("draw_walapparatuur");
-        flamingo_removeAllFeatures("draw_signaalgroepen");
-        flamingo_removeAllFeatures("draw_triggerpunten");
-        //flamingo.callMethod("location", "hide");
-        //flamingo.callMethod("gis", "setCreateGeometry", null);*/
+        // hide location
     }
 
 

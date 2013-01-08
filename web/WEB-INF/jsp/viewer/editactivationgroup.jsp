@@ -52,7 +52,6 @@
     </c:if>
 <c:set var="point" value="${activationGroup.stopLineLocationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
-<c:set var="layer" value="draw_signaalgroepen" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
 <c:set var="focus" value="karSignalGroup" scope="request"/>

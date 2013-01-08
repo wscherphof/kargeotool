@@ -53,7 +53,6 @@
     
 <c:set var="point" value="${roadsideEquipment.locationString}" scope="request"/>
 <c:set var="geometryType" value="Point" scope="request"/>
-<c:set var="layer" value="draw_walapparatuur" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
 <c:set var="focus" value="unitNumber" scope="request"/>
