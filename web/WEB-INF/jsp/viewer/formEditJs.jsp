@@ -83,10 +83,10 @@
         }
 
         function flamingo_onGeometryDrawFinished(obj, geometry) {
-            flamingo_onGeometryDrawUpdate(obj, geometry);
+            geometryDrawUpdate(geometry);
         }
 
-        function flamingo_onGeometryDrawUpdate(obj, geometry) {
+        function geometryDrawUpdate(geometry) {
             if(geometry.indexOf("POINT") == 0) {
                 var xy = geometry.slice(6, geometry.length-1);
                 xy = xy.split(' ');

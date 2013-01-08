@@ -1,7 +1,11 @@
 function ol (){
     this.map = null;
     this.panel = null;
+    this.vectorLayer = null;
     this.gfi = null;
+    this.dragFeature = null;
+    this.point = null;
+    this.line = null;
     // Make the map
     this.createMap = function(domId){
         this.panel = new OpenLayers.Control.Panel();
@@ -20,7 +24,26 @@ function ol (){
         
         this.map = new OpenLayers.Map(domId,opt);
         this.createControls();
-       
+        this.vectorLayer = new OpenLayers.Layer.Vector('edit',{
+            geometryTypes : ["Point"]
+        });
+        this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
+            displayClass: 'olControlDrawFeaturePoint'
+        });
+        this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
+            displayClass: 'olControlDrawFeaturePath'
+        });
+        
+        // The modifyfeature control allows us to edit and select features.
+        this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
+            onComplete : this.dragComplete
+        });
+        
+        
+        this.map.addControl(this.point);
+        this.map.addControl(this.line);
+        this.map.addControl(this.dragFeature);
+        this.map.addLayer(this.vectorLayer);
     },
     /**
      * Private nethod which adds all the controls
@@ -139,6 +162,7 @@ function ol (){
         if(layer){
             layer.setVisibility(visible);
             this.map.addLayer(layer);
+            this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
             this.map.zoomToMaxExtent();
         }
     },
@@ -193,5 +217,36 @@ function ol (){
             sld:null
         });
         
+    },
+    /**
+     * All the vectorlayer functions
+     * 
+     */
+    this.drawPoint = function(wkt){
+        if(wkt){
+            var olFeature = new OpenLayers.Geometry.Point(wkt[0],wkt[1]);
+            geometryDrawUpdate(olFeature.toString());
+            this.point.drawFeature(olFeature);
+        }else{
+            this.point.activate();
+        }
+        this.dragFeature.activate();
+    },
+    this.drawLine = function(wkt){
+        if(wkt){
+            var olFeature = new OpenLayers.Geometry.fromWKT(wkt);
+            this.line.drawFeature(olFeature);
+        }else{
+            this.line.activate();
+        }
+        this.dragFeature.activate();
+    },
+    this.removeAllFeatures = function(){
+        this.vectorLayer.removeAllFeatures();
+        this.dragFeature.deactivate();
+    },
+    this.dragComplete = function (feature){
+        geometryDrawUpdate(feature.geometry.toString());
     }
+    
 }

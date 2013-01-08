@@ -457,9 +457,9 @@
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
-    function flamingo_drawMap_onGeometryDrawUpdate(obj, geometry) {
+    function geometryDrawUpdate( geometry) {//flamingo_drawMap_onGeometryDrawUpdate
         //flamingo.callMethod("location", "show");
-        window.frames["form"].flamingo_onGeometryDrawUpdate(obj, geometry);
+        window.frames["form"].geometryDrawUpdate( geometry);
     }
 
     /* Flamingo callMethod wrappers */
@@ -469,18 +469,31 @@
     // geometryType is Point, PointAtDistance, ...
 
     function flamingo_editMapCreateNewGeometry(editLayer, geometryType, geometry) {
+        if(geometryType == "Point"){
+            this.oc.drawPoint(geometry);
+        }else{
+            this.oc.drawLine(geometry);
+        }
         //flamingo.callMethod(editMap, "editMapCreateNewGeometry", editLayer, geometryType, geometry);
     }
 
     function flamingo_editMapDrawNewGeometry(editLayer,geometryType) {
+        if(geometryType == "Point"){
+            this.oc.drawPoint();
+        }else{
+            this.oc.drawLine();
+        }
         //flamingo.callMethod(editMap, "editMapDrawNewGeometry", editLayer, geometryType);
     }
 
     function flamingo_removeAllFeatures(editLayer) {
+        this.oc.removeAllFeatures();
         ////flamingo.callMethod(editMap, "removeAllFeatures", editLayer);
     }
 
     function flamingo_cancelEdit() {
+        
+        this.oc.removeAllFeatures();
         /*flamingo_removeAllFeatures("draw_walapparatuur");
         flamingo_removeAllFeatures("draw_signaalgroepen");
         flamingo_removeAllFeatures("draw_triggerpunten");
