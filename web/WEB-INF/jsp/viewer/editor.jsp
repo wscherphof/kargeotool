@@ -408,8 +408,6 @@
         window.frames["form"].location = "<html:rewrite page="/activation.do?new=t"/>" + "&agId=" + agId;
     }
 
-    /* Flamingo event handlers */
-
     function onIdentifyData( layer, data) {
         if("map_kar_layer" == layer) {
 
@@ -447,8 +445,6 @@
         //flamingo.callMethod("location", "show");
         window.frames["form"].geometryDrawUpdate( geometry);
     }
-
-    /* Flamingo callMethod wrappers */
 
     var editMap = "drawMap";
 
