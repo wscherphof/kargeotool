@@ -44,7 +44,7 @@
     </c:if>
 
 <c:set var="point" value="${activation.locationString}" scope="request"/>
-<c:set var="geometryType" value="PointAtDistance" scope="request"/>
+<c:set var="geometryType" value="Point" scope="request"/>
 <tiles:insert page="/WEB-INF/jsp/viewer/formEditJs.jsp"/>
 
 <c:set var="focus" value="commandType" scope="request"/>

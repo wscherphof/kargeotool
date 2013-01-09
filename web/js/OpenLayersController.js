@@ -20,7 +20,7 @@ function ol (){
             resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
             theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
             units : 'm',
-            controls : [new OpenLayers.Control.PanZoomBar(), new OpenLayers.Control.Navigation(), this.panel]
+            controls : [this.panel]
         };
         
         this.map = new OpenLayers.Map(domId,opt);
@@ -59,7 +59,8 @@ function ol (){
         this.map.addControl(navHist);
         this.panel.addControls( navHist.previous);
         this.panel.addControls( navHist.next);
-        this.map.addControl( new OpenLayers.Control.MousePosition({numDigits: 2}));
+        this.map.addControl( new OpenLayers.Control.MousePosition({numDigits: 2}));        
+        this.map.addControl(new OpenLayers.Control.PanZoomBar());
         
         var options = new Object();
         options["persist"]=true;
