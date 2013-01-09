@@ -1,6 +1,6 @@
 package nl.b3p.transmodel;
 
-public class DataOwner {
+public class DataOwner implements Comparable {
     @javax.persistence.Id private Integer id;
     private String code;
     private String type;
@@ -68,4 +68,8 @@ public class DataOwner {
     public void setValidationRequired(boolean validationRequired) {
         this.validationRequired = validationRequired;
     }
+    
+    public int compareTo(Object rhs) {
+        return getId().compareTo(((DataOwner)rhs).getId());
+    }    
 }

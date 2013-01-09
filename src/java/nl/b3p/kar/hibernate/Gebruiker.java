@@ -3,17 +3,19 @@ package nl.b3p.kar.hibernate;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.DataOwner;
+import org.stripesstuff.stripersist.Stripersist;
 
 public class Gebruiker implements Principal {
     @javax.persistence.Id private Integer id;
@@ -25,7 +27,7 @@ public class Gebruiker implements Principal {
     private String phone;
     private String position;
     private Set roles = new HashSet();
-    private Map<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new HashMap<DataOwner, GebruikerDataOwnerRights>();
+    private SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner, GebruikerDataOwnerRights>();
 
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String salt = SecurityRealm.generateHexSalt(request);
@@ -145,7 +147,7 @@ public class Gebruiker implements Principal {
         return dataOwnerRights;
     }
 
-    public void setDataOwnerRights(Map<DataOwner, GebruikerDataOwnerRights> dataOwnerRights) {
+    public void setDataOwnerRights(SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights) {
         this.dataOwnerRights = dataOwnerRights;
     }
 
@@ -171,7 +173,7 @@ public class Gebruiker implements Principal {
     }
 
     public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean validatable) throws Exception {
-        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
+        EntityManager em = Stripersist.getEntityManager();
         GebruikerDataOwnerRights dor = getDataOwnerRights().get(dao);
         if(dor == null) {
             dor = new GebruikerDataOwnerRights();

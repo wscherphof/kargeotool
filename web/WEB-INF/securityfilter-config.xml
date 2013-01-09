@@ -28,6 +28,30 @@
             <role-name>beheerder</role-name>
         </auth-constraint>
     </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>viewer stripes</web-resource-name>
+            <url-pattern>/action/*</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>gebruiker</role-name>
+            <role-name>beheerder</role-name>
+        </auth-constraint>
+    </security-constraint>    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>beheer stripes</web-resource-name>
+            <url-pattern>/action/beheer/*</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>beheerder</role-name>
+        </auth-constraint>
+    </security-constraint>    
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
