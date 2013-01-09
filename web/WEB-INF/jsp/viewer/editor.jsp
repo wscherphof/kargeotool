@@ -476,7 +476,7 @@
         this.oc.removeAllFeatures();
     }
 
-    function flamingo_cancelEdit() {
+    function cancelEdit() {
         this.oc.removeAllFeatures();
         // hide location
     }

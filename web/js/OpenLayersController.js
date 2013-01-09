@@ -143,11 +143,11 @@ function ol (){
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
         
-        var ovmLayer = new OpenLayers.Layer.TMS('BR1T', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
+        var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
             layername:'brtachtergrondkaart', 
             type: 'png8',
             isBaseLayer:true,
-            serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
+            serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76],
             tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
         });
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);

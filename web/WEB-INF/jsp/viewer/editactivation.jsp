@@ -14,7 +14,7 @@
 </c:if>
 
 <script type="text/javascript">
-    parent.flamingo_cancelEdit();
+    parent.cancelEdit();
 
     var agIds = <%= request.getAttribute("ActivationGroupIds")%>;
     var aIds = <%= request.getAttribute("ActivationIds")%>;

@@ -29,10 +29,10 @@
             parent.flamingo.callMethod("map_kar_layer", "update");
         </c:if>
 
-        parent.flamingo_cancelEdit();
+        parent.cancelEdit();
 
         function resetClicked() {
-            parent.flamingo_cancelEdit();
+            parent.cancelEdit();
             newLocation = null;
             document.forms[0].location.value = "";
             document.getElementById("locationStatus").innerHTML = savedLocationStatusHtml;
