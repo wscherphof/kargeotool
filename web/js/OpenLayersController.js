@@ -241,8 +241,8 @@ function ol (){
         this.map.zoomToExtent([minx,miny,maxx,maxy]);
     },
     this.update = function (){
-        for ( var key in this.map.layers ){
-            var layer = this.map.layers[key];
+        for ( var i = 0 ; i< this.map.layers.length ;i++ ){
+            var layer = this.map.layers[i];
             layer.redraw(true);
         }
     },
