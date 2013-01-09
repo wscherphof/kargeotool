@@ -24,36 +24,27 @@ function ol (){
         };
         
         this.map = new OpenLayers.Map(domId,opt);
-        this.createControls();
         this.vectorLayer = new OpenLayers.Layer.Vector('edit',{
             geometryTypes : ["Point"]
         });
-        var me = this;
-        this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
-            displayClass: 'olControlDrawFeaturePoint',
-            featureAdded: function(feature ) {me.drawFeature(feature);}
-        });
-        this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
-            displayClass: 'olControlDrawFeaturePath',
-            featureAdded: function (feature){me.drawFeature(feature);}
-        });
-        
-        // The modifyfeature control allows us to edit and select features.
-        this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
-            onComplete : this.dragComplete
-        });
-        
-        this.map.addControl(this.point);
-        this.map.addControl(this.line);
-        this.map.addControl(this.dragFeature);
         this.map.addLayer(this.vectorLayer);
+        this.createControls();
     },
     /**
      * Private nethod which adds all the controls
      */
     this.createControls = function (){
-        this.panel.addControls(new OpenLayers.Control.DragPan()); 
-        this.panel.addControls(new OpenLayers.Control.ZoomBox()); 
+        var dg = new OpenLayers.Control.DragPan();
+        var zb = new OpenLayers.Control.ZoomBox()
+        this.panel.addControls(dg);
+        this.panel.addControls(zb); 
+        var nav = new OpenLayers.Control.Navigation({
+            dragPan: dg,
+            zoomBox: zb
+        });
+        dg.activate();
+        this.map.addControl(nav);;
+        
         this.panel.addControls( new OpenLayers.Control.ZoomToMaxExtent()); 
         var navHist = new OpenLayers.Control.NavigationHistory();
         this.map.addControl(navHist);
@@ -127,6 +118,25 @@ function ol (){
         this.identifyButton.events.register("deactivate",this,function(){
             this.gfi.deactivate();
         });
+        
+        var me = this;
+        this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
+            displayClass: 'olControlDrawFeaturePoint',
+            featureAdded: function(feature ) {me.drawFeature(feature);}
+        });
+        this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
+            displayClass: 'olControlDrawFeaturePath',
+            featureAdded: function (feature){me.drawFeature(feature);}
+        });
+        
+        // The modifyfeature control allows us to edit and select features.
+        this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
+            onComplete : this.dragComplete
+        });
+        
+        this.map.addControl(this.point);
+        this.map.addControl(this.line);
+        this.map.addControl(this.dragFeature);
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          
@@ -136,7 +146,7 @@ function ol (){
         };
         
         stub.walapparatuur = walapparatuur;
-        flamingo_map_onIdentifyData(null,"map_kar_layer",stub);
+        onIdentifyData("map_kar_layer",stub);
         this.identifyButton.deactivate();
     },
     /**

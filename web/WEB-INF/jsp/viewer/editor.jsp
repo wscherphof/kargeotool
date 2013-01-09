@@ -412,7 +412,7 @@
 
     /* Flamingo event handlers */
 
-    function flamingo_map_onIdentifyData(map, layer, data, identifyextent, nridentified, total) {
+    function onIdentifyData( layer, data) {
         if("map_kar_layer" == layer) {
 
             if(data.buslijnen != undefined){
