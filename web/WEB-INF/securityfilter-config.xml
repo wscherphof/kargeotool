@@ -9,7 +9,6 @@
         <web-resource-collection>
             <web-resource-name>viewer</web-resource-name>
             <url-pattern>/viewer/*</url-pattern>
-            <url-pattern>/flamingo/*</url-pattern>
             <http-method>POST</http-method>
             <http-method>GET</http-method>
         </web-resource-collection>

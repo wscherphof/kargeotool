@@ -26,7 +26,7 @@
         var newLocation;
 
         <c:if test="${locationUpdated}">
-            parent.flamingo.callMethod("map_kar_layer", "update");
+            parent.oc.update();
         </c:if>
 
         parent.cancelEdit();
