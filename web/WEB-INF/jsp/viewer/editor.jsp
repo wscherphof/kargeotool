@@ -743,6 +743,7 @@
 
 <div id="kaart">
     <div id="map" style="width: 80%; height: 100%;float:left;"></div>
+    <div id="overview" style="width:19%;border:1px solid #000; float:right; height:300px;overflow:hidden;"></div>
     <div id="legend" style="width:20%;float:right;"> 
         <br/>
         <strong>VRI-informatie</strong><br/>
@@ -761,7 +762,7 @@
         <input type="checkbox" onchange="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
         <input type="checkbox" checked="checked" onchange="toggleLayer('BRT');"/>BRT<br/>
     </div>
-    <div id="search" style="width:20%; float:left;">
+    <div id="search" style="width:20%;float:left;">
         <br/>
         <hr style="border:1px #000 dotted;"/>
         <strong>Zoek</strong><br/>
@@ -770,8 +771,8 @@
 	<script type="text/javascript">
       var oc = new ol();
       oc.createMap('map');
-      oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
       oc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
+      oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
       oc.addLayer("WMS","walapparatuur","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'walapparatuur', true);
       oc.addLayer("WMS","signaalgroepen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'signaalgroepen', true);
       oc.addLayer("WMS","triggerpunten","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'triggerpunten', true);

@@ -7,6 +7,7 @@ function ol (){
     this.point = null;
     this.line = null;
     this.identifyButton = null;
+    this.overview = null;
     // Make the map
     this.createMap = function(domId){
         this.panel = new OpenLayers.Control.Panel();
@@ -37,13 +38,13 @@ function ol (){
         var dg = new OpenLayers.Control.DragPan();
         var zb = new OpenLayers.Control.ZoomBox()
         this.panel.addControls(dg);
-        this.panel.addControls(zb); 
+        this.panel.addControls(zb);  
         var nav = new OpenLayers.Control.Navigation({
             dragPan: dg,
             zoomBox: zb
         });
         dg.activate();
-        this.map.addControl(nav);;
+        this.map.addControl(nav);
         
         this.panel.addControls( new OpenLayers.Control.ZoomToMaxExtent()); 
         var navHist = new OpenLayers.Control.NavigationHistory();
@@ -122,11 +123,15 @@ function ol (){
         var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
             displayClass: 'olControlDrawFeaturePoint',
-            featureAdded: function(feature ) {me.drawFeature(feature);}
+            featureAdded: function(feature ) {
+                me.drawFeature(feature);
+            }
         });
         this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
             displayClass: 'olControlDrawFeaturePath',
-            featureAdded: function (feature){me.drawFeature(feature);}
+            featureAdded: function (feature){
+                me.drawFeature(feature);
+            }
         });
         
         // The modifyfeature control allows us to edit and select features.
@@ -137,6 +142,33 @@ function ol (){
         this.map.addControl(this.point);
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
+        
+        var ovmLayer = new OpenLayers.Layer.TMS('BR1T', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
+            layername:'brtachtergrondkaart', 
+            type: 'png8',
+            isBaseLayer:true,
+            serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
+            tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
+        });
+        var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
+        var ovEl = $('#overview');
+        var height = ovEl.height() > 300 ? 300 : ovEl.height() ;
+        this.overview = new OpenLayers.Control.OverviewMap({
+            layers: [ovmLayer],
+            mapOptions: {
+                projection: new OpenLayers.Projection("EPSG:28992"),
+                maxExtent: maxBounds,
+                srs: 'epsg:28992', 
+                resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88],
+                theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
+                units : 'm'
+            },
+            size: new OpenLayers.Size( ovEl.width(),  height),
+            div: ovEl[0]
+        });
+        this.map.addControl(this.overview);
+
+        
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          
@@ -155,12 +187,21 @@ function ol (){
      * @param name The name of the layer
      * @param url The url to the service
      * @param layers The layers of the service which must be retrieved
+     * @param visible Indicates whether or not the layer must be visible from start
      * @param extension Optional parameter to indicate the extension (type)
      */
     this.addLayer = function (type,name, url, layers,visible,extension){
         var layer;
         if(type == 'WMS'){
-            layer = new OpenLayers.Layer.WMS(name,url,{'layers':layers,'transparent': true},{singleTile: true,ratio: 1,transitionEffect: 'resize'});
+            layer = new OpenLayers.Layer.WMS(name,url,{
+                'layers':layers,
+                'transparent': true
+            },{
+                singleTile: true,
+                ratio: 1,
+                isBaseLayer: false,
+                transitionEffect: 'resize'
+            });
         }else if (type == "TMS" ){
             if(!extension){
                 extension = 'png';
@@ -168,6 +209,7 @@ function ol (){
             layer = new OpenLayers.Layer.TMS(name, url,{
                 layername:layers, 
                 type: extension,
+                isBaseLayer:false,
                 serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
                 tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
             });
