@@ -67,7 +67,6 @@
 
     function treeItemClick(item) {
         showSelected(roaEquId, actGroIds, actIds);
-        //flamingo_hideIdentifyIcon();
         tree_selectObject(item);
         form_editObject(item);
         if(document.getElementById("autoZoom").checked) {
@@ -211,7 +210,6 @@
 
     function deselectObject() {
         if(selectedObject != undefined) {
-            //flamingo_hideIdentifyIcon();   
             container = treeview_getLabelContainerNodeForItemId("objectTree", selectedObject.id);
             container.className = "node";
         }
@@ -445,7 +443,7 @@
         window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
     }
 
-    function geometryDrawUpdate( geometry) {//flamingo_drawMap_onGeometryDrawUpdate
+    function geometryDrawUpdate( geometry) {
         //flamingo.callMethod("location", "show");
         window.frames["form"].geometryDrawUpdate( geometry);
     }
@@ -472,18 +470,9 @@
         }
     }
 
-    function flamingo_removeAllFeatures(editLayer) {
-        this.oc.removeAllFeatures();
-    }
-
     function cancelEdit() {
         this.oc.removeAllFeatures();
         // hide location
-    }
-
-
-    function flamingo_hideIdentifyIcon() {
-        //flamingo.callMethod("map_identifyicon", "hide");
     }
 
     function walapparaatnummerKeyPressed(e) {
