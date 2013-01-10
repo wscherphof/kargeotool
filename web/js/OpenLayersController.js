@@ -30,6 +30,9 @@ function ol (){
         });
         this.map.addLayer(this.vectorLayer);
         this.createControls();
+        
+        OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
+        OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
     },
     /**
      * Private nethod which adds all the controls
@@ -151,8 +154,7 @@ function ol (){
             tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
         });
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
-        var ovEl = $('#overview');
-        var height = ovEl.height() > 300 ? 300 : ovEl.height() ;
+        
         this.overview = new OpenLayers.Control.OverviewMap({
             layers: [ovmLayer],
             mapOptions: {
@@ -162,9 +164,7 @@ function ol (){
                 resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88],
                 theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
                 units : 'm'
-            },
-            size: new OpenLayers.Size( ovEl.width(),  height),
-            div: ovEl[0]
+            }
         });
         this.map.addControl(this.overview);
 
