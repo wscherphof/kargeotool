@@ -18,7 +18,6 @@
         <script type="text/javascript" src="<html:rewrite page="/js/simple_treeview.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/engine.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page="/dwr/interface/Editor.js" module=""/>"></script>
-        <script type="text/javascript" src="<html:rewrite page="/js/swfobject.js" module=""/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/openlayers/OpenLayers.js' module=''/>"></script>
@@ -446,8 +445,6 @@
         window.frames["form"].geometryDrawUpdate( geometry);
     }
 
-    var editMap = "drawMap";
-
     // geometryType is Point, PointAtDistance, ...
 
     function addGeometry(geometryType, geometry) {
@@ -728,7 +725,6 @@
 
 <div id="kaart">
     <div id="map" style="width: 80%; height: 100%;float:left;"></div>
-    <div id="overview" style="width:19%;border:1px solid #000; float:right; height:300px;overflow:hidden;"></div>
     <div id="legend" style="width:20%;float:right;"> 
         <br/>
         <strong>VRI-informatie</strong><br/>
