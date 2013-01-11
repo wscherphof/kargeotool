@@ -36,6 +36,8 @@
         <script type="text/javascript" src="${contextPath}/dwr/interface/Editor.js"></script>
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
         <!--[if IE 7]> <link href="${contextPath}/styles/geo-ov-ie7.css" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
+        
+        <script type="text/javascript" src="${contextPath}/js/ext/ext-all.js"></script>
     </head>
     <body class="editor" id="editorBody">
         <stripes:layout-component name="headerlinks"/>

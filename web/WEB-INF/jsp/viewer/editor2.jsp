@@ -434,7 +434,25 @@
                     function zoekWalapparatuur() {
                         var unitNumber = document.getElementById("walapparaatnummer").value;
                         document.getElementById("loading").style.visibility = "visible";
-                        Editor.getRseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
+                        var url = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
+
+                        Ext.Ajax.request({
+                            url: url,
+                            params :{
+                                unitNumber: unitNumber,
+                                rseqUnitNumberTree: true
+                            },
+                            success: function (response,opts){
+                                console.log(response);
+                                dwr_treeInfoReceived(response.responseText);
+                                var a =0;
+                            },
+                            failure: function (response, opts){
+                                var a =0;
+                            }
+                            
+                        });
+                        // Editor2.rseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
                     }
 
                     setOnload(function() 

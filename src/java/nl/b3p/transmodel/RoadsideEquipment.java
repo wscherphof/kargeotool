@@ -196,7 +196,7 @@ public class RoadsideEquipment implements EditorTreeObject {
     }
 
     public JSONObject serializeToJson(HttpServletRequest request, boolean includeChildren) throws Exception {
-        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
+        //EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         JSONObject j = new JSONObject();
         j.put("type", "rseq");
         j.put("id", "rseq:" + getId());
