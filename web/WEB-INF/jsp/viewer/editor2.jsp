@@ -12,30 +12,6 @@
 
         <script type="text/javascript">
 
-            function testSelecteerObject() {
-                var obj = prompt("Geef object aan als type:idnr, dus rseq:1, ag:23, a:456", "rseq:67");
-                if(obj == null) { /* no input, do nothing */
-                    return;
-                }
-
-                var type, id, valid = false;
-                if(obj != null && obj.split(":").length == 2) {
-                    obj = obj.split(":");
-                    type = obj[0].toLowerCase();
-                    if(type == "rseq" || type == "ag" || type == "a") {
-                        id = parseInt(obj[1], 10);
-                        valid = !isNaN(id);
-                    }
-                }
-                if(!valid) {
-                    alert("Ongeldige invoer");
-                } else {
-                    document.getElementById("loading").style.visibility = "visible";
-                    Editor.getObjectTree(type, id, dwr_treeInfoReceived);
-                }        
-            }
-
-
             function setStatus(what, status) {
                 document.getElementById(what + "Status").innerHTML = escapeHTML(status);
             }
@@ -207,461 +183,467 @@
                 function form_editObject(object) {
                     var url;
                     switch(object.type) {
-                        case "a" : url = "${contextPath}/activation.do"; break;
-                            case "ag": url = "${contextPath}/activationGroup.do"; break;
-                                case "rseq": url = "${contextPath}/roadsideEquipment.do"; break;
-                                }
-                                url = url + "?id=" + object.id.split(":")[1];
-                                //setStatus("form", "form laden voor object " + object.id + ": " + url);
-                                window.frames["form"].location = url;
-                            }
+                        case "a" : 
+                            url = "${contextPath}/viewer/activation.do"; 
+                            break;
+                        case "ag": 
+                            url = "${contextPath}/viewer/activationGroup.do"; 
+                            break;
+                        case "rseq": 
+                            url = "${contextPath}/viewer/roadsideEquipment.do"; 
+                            break;
+                        }
+                        url += "?id=" + object.id.split(":")[1];
+                        //setStatus("form", "form laden voor object " + object.id + ": " + url);
+                        window.frames["form"].location = url;
+                    }
 
-                            function getZoomBorder() {
-                                var text = document.getElementById("zoomExtent").value;
-                                var zoomExtent = parseInt(text);
-                                if(isNaN(zoomExtent) || zoomExtent < 10 || zoomExtent > 9999) {
-                                    zoomExtent = 375;
-                                    document.getElementById("zoomExtent").value = zoomExtent + "";
-                                }
-                                return zoomExtent / 2.0;
-                            }
+                    function getZoomBorder() {
+                        var text = document.getElementById("zoomExtent").value;
+                        var zoomExtent = parseInt(text);
+                        if(isNaN(zoomExtent) || zoomExtent < 10 || zoomExtent > 9999) {
+                            zoomExtent = 375;
+                            document.getElementById("zoomExtent").value = zoomExtent + "";
+                        }
+                        return zoomExtent / 2.0;
+                    }
 
-                            function options_zoomToObject() {
-                                if(selectedObject != undefined && selectedObject != null) {
-                                    if(selectedObject.point) {
-                                        var zoomBorder = getZoomBorder();
-                                        var xy = selectedObject.point.split(", ");
-                                        var x = parseInt(xy[0]); var y = parseInt(xy[1]);
-                                        oc.zoomToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
-                                    }
-                                }
-                            }
-
-                            function zoomToEnvelope(envelope) {
+                    function options_zoomToObject() {
+                        if(selectedObject != undefined && selectedObject != null) {
+                            if(selectedObject.point) {
                                 var zoomBorder = getZoomBorder();
-                                oc.zoomToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
+                                var xy = selectedObject.point.split(", ");
+                                var x = parseInt(xy[0]); var y = parseInt(xy[1]);
+                                oc.zoomToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
+                            }
+                        }
+                    }
+
+                    function zoomToEnvelope(envelope) {
+                        var zoomBorder = getZoomBorder();
+                        oc.zoomToExtent(envelope.minX - zoomBorder, envelope.minY - zoomBorder, envelope.maxX + zoomBorder, envelope.maxY + zoomBorder);
+                    }
+
+                    /* Aangeroepen door form in iframe na crud actie */
+                    function treeUpdate(cmd) {
+                        cmd = eval("(" + cmd + ")");
+
+                        var parentItem;
+                        if(cmd.parentId == null) {
+                            parentItem = tree;
+                        } else {
+                            parentItem = treeview_findItem(tree, cmd.parentId);
+                        }
+
+                        if(cmd.action == "remove") {
+                            if(selectedObject.id == cmd.id) {
+                                deselectObject();
                             }
 
-                            /* Aangeroepen door form in iframe na crud actie */
-                            function treeUpdate(cmd) {
-                                cmd = eval("(" + cmd + ")");
-
-                                var parentItem;
-                                if(cmd.parentId == null) {
-                                    parentItem = tree;
-                                } else {
-                                    parentItem = treeview_findItem(tree, cmd.parentId);
-                                }
-
-                                if(cmd.action == "remove") {
-                                    if(selectedObject.id == cmd.id) {
-                                        deselectObject();
-                                    }
-
-                                    var item = treeview_findItem(tree, cmd.id);
-                                    var index = parentItem.children.indexOf(item);
-                                    parentItem.children.splice(index,1);
-                                    if(item.type == "a") {
+                            var item = treeview_findItem(tree, cmd.id);
+                            var index = parentItem.children.indexOf(item);
+                            parentItem.children.splice(index,1);
+                            if(item.type == "a") {
             <%-- Update indexes van activations in lijst van ActivationGroup,
                  dit is bij verwijderen van activation in Action ook gedaan
             --%>
-                                        for(var i = index; i < parentItem.children.length;  i++) {
-                                            parentItem.children[i].index--;
-                                        }
-                                    }
-                                    refreshTreeview();
-                                } else if(cmd.action == "update") {
-                                    var item = treeview_findItem(tree, cmd.id);
-                                    var index = parentItem.children.indexOf(item);
-                                    /* children zitten niet in cmd.object, hou gewoon oude aan */
-                                    var oldItemChildren = parentItem.children[index].children;
-                                    cmd.object.children = oldItemChildren;
-                                    parentItem.children[index] = cmd.object;
-                                    refreshTreeview();
-                                    tree_selectObject(cmd.object);
-                                } else if(cmd.action == "insert") {
-                                    /* Altijd als laatste child inserten */
-                                    if(parentItem.children == undefined) {
-                                        parentItem.children = [];
-                                    }
-                                    parentItem.children[parentItem.children.length] = cmd.object;
-                                    refreshTreeview();
-                                    tree_selectObject(cmd.object);
+                                for(var i = index; i < parentItem.children.length;  i++) {
+                                    parentItem.children[i].index--;
                                 }
                             }
-
-                            /* Aangeroepen door form in iframe */
-                            function selectLocationClicked(currentLocation, geometryType) {
-                                if(currentLocation != null) {
-                                    addGeometry(geometryType, currentLocation);
-                                } else {
-                                    drawNewGeometry( geometryType);
-                                }
+                            refreshTreeview();
+                        } else if(cmd.action == "update") {
+                            var item = treeview_findItem(tree, cmd.id);
+                            var index = parentItem.children.indexOf(item);
+                            /* children zitten niet in cmd.object, hou gewoon oude aan */
+                            var oldItemChildren = parentItem.children[index].children;
+                            cmd.object.children = oldItemChildren;
+                            parentItem.children[index] = cmd.object;
+                            refreshTreeview();
+                            tree_selectObject(cmd.object);
+                        } else if(cmd.action == "insert") {
+                            /* Altijd als laatste child inserten */
+                            if(parentItem.children == undefined) {
+                                parentItem.children = [];
                             }
+                            parentItem.children[parentItem.children.length] = cmd.object;
+                            refreshTreeview();
+                            tree_selectObject(cmd.object);
+                        }
+                    }
 
-                            function newRseq() {
-                                deselectObject();
-                                window.frames["form"].location = "${contextPath}/roadsideEquipment.do?new=t";
+                    /* Aangeroepen door form in iframe */
+                    function selectLocationClicked(currentLocation, geometryType) {
+                        if(currentLocation != null) {
+                            addGeometry(geometryType, currentLocation);
+                        } else {
+                            drawNewGeometry( geometryType);
+                        }
+                    }
+
+                    function newRseq() {
+                        deselectObject();
+                        window.frames["form"].location = "${contextPath}/roadsideEquipment.do?new=t";
+                    }
+
+                    /* Zoek in een tree naar een item en return een array van parent items, beginnende
+                     * bij de parent het hoogst in de tree.
+                     * Aanroep met alleen de eerste twee argumenten, het derde argument wordt
+                     * gebruikt voor recursieve aanroep.
+                     */
+                    function findTreeItemParents(root, needle, crumbs) {
+                        if(root == needle) {
+                            /* needle gevonden, return array met parent items */
+                            return crumbs ? crumbs : []; /* indien eerste aanroep return lege array */
+                        }
+
+                        if(root == undefined || root.children == undefined) {
+                            return null;
+                        }
+
+                        if(crumbs == undefined) {
+                            /* eerste aanroep */
+                            crumbs = [root];
+                        } else {
+                            /* voeg root toe als parent item */
+                            crumbs.push(root);
+                        }
+
+                        for(var i = 0; i < root.children.length; i++) {
+                            var recursedCrumbs = findTreeItemParents(root.children[i], needle, crumbs.slice());
+                            if(recursedCrumbs != null) {
+                                return recursedCrumbs;
                             }
+                        }
+                        return null;
+                    }
 
-                            /* Zoek in een tree naar een item en return een array van parent items, beginnende
-                             * bij de parent het hoogst in de tree.
-                             * Aanroep met alleen de eerste twee argumenten, het derde argument wordt
-                             * gebruikt voor recursieve aanroep.
-                             */
-                            function findTreeItemParents(root, needle, crumbs) {
-                                if(root == needle) {
-                                    /* needle gevonden, return array met parent items */
-                                    return crumbs ? crumbs : []; /* indien eerste aanroep return lege array */
-                                }
-
-                                if(root == undefined || root.children == undefined) {
-                                    return null;
-                                }
-
-                                if(crumbs == undefined) {
-                                    /* eerste aanroep */
-                                    crumbs = [root];
-                                } else {
-                                    /* voeg root toe als parent item */
-                                    crumbs.push(root);
-                                }
-
-                                for(var i = 0; i < root.children.length; i++) {
-                                    var recursedCrumbs = findTreeItemParents(root.children[i], needle, crumbs.slice());
-                                    if(recursedCrumbs != null) {
-                                        return recursedCrumbs;
-                                    }
-                                }
-                                return null;
+                    function newAg() {
+                        if(selectedObject == "undefined") {
+                            alert("Geen object geselecteerd");
+                            return;
+                        }
+                        var rseq;
+                        if(selectedObject.type == "rseq") {
+                            rseq = selectedObject;
+                        } else {
+                            var parents = findTreeItemParents(tree, selectedObject);
+                            /* parents[0] is tree, daaronder moet altijd de rseq te vinden zijn */
+                            if(parents.length < 2) {
+                                alert("Interne fout: kan geen rseq parent vinden van selectedObject");
                             }
+                            rseq = parents[1];
+                        }
+                        var rseqId = rseq.id.split(":")[1];
+                        deselectObject();
+                        window.frames["form"].location = "${contextPath}/activationGroup.do?new=t" + "&rseqId=" + rseqId;
+                    }
 
-                            function newAg() {
-                                if(selectedObject == "undefined") {
-                                    alert("Geen object geselecteerd");
-                                    return;
-                                }
-                                var rseq;
-                                if(selectedObject.type == "rseq") {
-                                    rseq = selectedObject;
-                                } else {
-                                    var parents = findTreeItemParents(tree, selectedObject);
-                                    /* parents[0] is tree, daaronder moet altijd de rseq te vinden zijn */
-                                    if(parents.length < 2) {
-                                        alert("Interne fout: kan geen rseq parent vinden van selectedObject");
-                                    }
-                                    rseq = parents[1];
-                                }
-                                var rseqId = rseq.id.split(":")[1];
-                                deselectObject();
-                                window.frames["form"].location = "${contextPath}/activationGroup.do?new=t" + "&rseqId=" + rseqId;
+                    function newA() {
+                        if(selectedObject == "undefined") {
+                            alert("Geen object geselecteerd");
+                            return;
+                        }
+                        if(selectedObject.type == "rseq") {
+                            alert("Geen signaalgroep geselecteerd");
+                            return;
+                        }
+                        var ag;
+                        if(selectedObject.type == "ag") {
+                            ag = selectedObject;
+
+                        } else {
+                            var parents = findTreeItemParents(tree, selectedObject);
+                            /* parents[0] is tree, daaronder rseq, daaronder moet altijd de ag te vinden zijn */
+                            if(parents.length < 3) {
+                                alert("Interne fout: kan geen ag parent vinden van selectedObject");
                             }
+                            ag = parents[2];
+                        }
+                        var agId = ag.id.split(":")[1];
+                        deselectObject();
+                        window.frames["form"].location = "${contextPath}/activation.do?new=t" + "&agId=" + agId;
+                    }
 
-                            function newA() {
-                                if(selectedObject == "undefined") {
-                                    alert("Geen object geselecteerd");
-                                    return;
-                                }
-                                if(selectedObject.type == "rseq") {
-                                    alert("Geen signaalgroep geselecteerd");
-                                    return;
-                                }
-                                var ag;
-                                if(selectedObject.type == "ag") {
-                                    ag = selectedObject;
+                    function onIdentifyData( layer, data) {
+                        if("map_kar_layer" == layer) {
 
-                                } else {
-                                    var parents = findTreeItemParents(tree, selectedObject);
-                                    /* parents[0] is tree, daaronder rseq, daaronder moet altijd de ag te vinden zijn */
-                                    if(parents.length < 3) {
-                                        alert("Interne fout: kan geen ag parent vinden van selectedObject");
-                                    }
-                                    ag = parents[2];
-                                }
-                                var agId = ag.id.split(":")[1];
-                                deselectObject();
-                                window.frames["form"].location = "${contextPath}/activation.do?new=t" + "&agId=" + agId;
+                            if(data.buslijnen != undefined){
+                                makeBuslijnenUnique(data);
                             }
-
-                            function onIdentifyData( layer, data) {
-                                if("map_kar_layer" == layer) {
-
-                                    if(data.buslijnen != undefined){
-                                        makeBuslijnenUnique(data);
-                                    }
-                                    if(data.bushaltes_symbol != undefined ) {
-                                        generatePopupBushaltes(data.bushaltes_symbol);
-                                    }
+                            if(data.bushaltes_symbol != undefined ) {
+                                generatePopupBushaltes(data.bushaltes_symbol);
+                            }
             
-                                    if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
-                                        if(data.walapparatuur != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
-                                            data.walapparatuur = isRequestedIdFiltered("rseq", data.walapparatuur);
-                                        }
-
-                                        if(data.signaalgroepen != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
-                                            data.signaalgroepen = isRequestedIdFiltered("ag", data.signaalgroepen);
-                                        }
-
-                                        if(data.triggerpunten != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
-                                            data.triggerpunten = isRequestedIdFiltered("a", data.triggerpunten);
-                                        }
-                                        document.getElementById("loading").style.visibility = "visible";
-                                        Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
-                                    }
+                            if(data.triggerpunten != undefined || data.signaalgroepen != undefined || data.walapparatuur != undefined) {
+                                if(data.walapparatuur != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
+                                    data.walapparatuur = isRequestedIdFiltered("rseq", data.walapparatuur);
                                 }
-                            }
 
-                            function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
-                                //flamingo.callMethod("location", "show");
-                                window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
-                            }
-
-                            function geometryDrawUpdate( geometry) {
-                                //flamingo.callMethod("location", "show");
-                                window.frames["form"].geometryDrawUpdate( geometry);
-                            }
-
-                            // geometryType is Point, PointAtDistance, ...
-                            function addGeometry(geometryType, geometry) {
-                                if(geometryType == "Point"){
-                                    this.oc.drawPoint(geometry);
-                                }else{
-                                    this.oc.drawLine(geometry);
+                                if(data.signaalgroepen != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
+                                    data.signaalgroepen = isRequestedIdFiltered("ag", data.signaalgroepen);
                                 }
-                            }
 
-                            function drawNewGeometry(geometryType) {
-                                if(geometryType == "Point"){
-                                    this.oc.drawPoint();
-                                }else{
-                                    this.oc.drawLine();
+                                if(data.triggerpunten != undefined && document.getElementById("showSelected").checked && selectedObject != undefined){
+                                    data.triggerpunten = isRequestedIdFiltered("a", data.triggerpunten);
                                 }
-                            }
-
-                            function cancelEdit() {
-                                this.oc.removeAllFeatures();
-                                // hide location
-                            }
-
-                            function walapparaatnummerKeyPressed(e) {
-                                if(e.keyCode == 0xd) {
-                                    zoekWalapparatuur();
-                                }
-                            }
-
-                            function zoekWalapparatuur() {
-                                var unitNumber = document.getElementById("walapparaatnummer").value;
                                 document.getElementById("loading").style.visibility = "visible";
-                                Editor.getRseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
+                                Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
                             }
+                        }
+                    }
 
-                            setOnload(function() 
-                            {
-                                document.getElementById("walapparaatnummer").focus();
-                                if("${magWalapparaatMaken}" == "true"){
-                                    document.getElementById("newRseq").disabled = false;
-                                }else{
-                                    document.getElementById("newRseq").disabled = true;
-                                }
-                            });
+                    function flamingo_drawMap_onCreatePointAtDistanceFinished(obj, geometry, pathLength) {
+                        //flamingo.callMethod("location", "show");
+                        window.frames["form"].flamingo_onCreatePointAtDistanceFinished(obj, geometry, pathLength);
+                    }
 
-                            function isRequestedIdFiltered(type, lijst){
-                                if(type=="rseq"){
-                                    for(var i = 0 ; i < lijst.length ; i++){
-                                        if(lijst[i].id != roaEquId){
-                                            lijst.splice(i,1);
-                                            i--;
-                                        }
-                                    }
-                                    return lijst;
-                                }
+                    function geometryDrawUpdate( geometry) {
+                        //flamingo.callMethod("location", "show");
+                        window.frames["form"].geometryDrawUpdate( geometry);
+                    }
 
-                                if(type=="ag"){
-                                    for(var i = 0 ; i < lijst.length ; i++){
-                                        for( var j = 0 ; j < actGroIds.length ; j++ ){
-                                            if(lijst[i].id != actGroIds[i]){
-                                                lijst.splice(i,1);
-                                                i--;
-                                            }
-                                        }
-                                    }
-                                    return lijst;
-                                }
+                    // geometryType is Point, PointAtDistance, ...
+                    function addGeometry(geometryType, geometry) {
+                        if(geometryType == "Point"){
+                            this.oc.drawPoint(geometry);
+                        }else{
+                            this.oc.drawLine(geometry);
+                        }
+                    }
 
-                                if(type=="a"){
-                                    for(var i = 0 ; i < lijst.length ; i++){
-                                        for( var j = 0 ; j < actIds.length ; j++ ){
-                                            if(lijst[i].id != actIds[i]){
-                                                lijst.splice(i,1);
-                                                i--;
-                                            }
-                                        }
-                                    }
-                                    return lijst;
-                                }
-                            }
+                    function drawNewGeometry(geometryType) {
+                        if(geometryType == "Point"){
+                            this.oc.drawPoint();
+                        }else{
+                            this.oc.drawLine();
+                        }
+                    }
 
-                            var layer = null;
-                            var roaEquId = null;
-                            var actGroIds = null;
-                            var actIds = null;
-                            function showSelected(rseqId, agIds, aIds){
-                                var sldstring = "${absoluteURLPrefix}";
-                                sldstring += "${contextPath}/SldServlet";//"http://localhost:8084/SldGeneratorGeo-ov/SldServlet"; // XXX servlet in webapp en hier html:rewrite gerbuiken
+                    function cancelEdit() {
+                        this.oc.removeAllFeatures();
+                        // hide location
+                    }
 
-                                if(rseqId != undefined){
-                                    roaEquId = rseqId;
-                                }
+                    function walapparaatnummerKeyPressed(e) {
+                        if(e.keyCode == 0xd) {
+                            zoekWalapparatuur();
+                        }
+                    }
 
-                                if(agIds != undefined){
-                                    actGroIds = agIds;
-                                }
+                    function zoekWalapparatuur() {
+                        var unitNumber = document.getElementById("walapparaatnummer").value;
+                        document.getElementById("loading").style.visibility = "visible";
+                        Editor.getRseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
+                    }
 
-                                if(aIds != undefined){
-                                    actIds = aIds;
-                                }
-                                sldstring = "http://x13.b3p.nl:8082/geo-ov/SldServlet";
-                                if(document.getElementById("showSelected").checked) {
-                                    // bouw de sld string op
-                                    var walsld = addToSldstring(rseqId, "rseq", sldstring);
-                                    var signsld = addToSldstring(agIds, "ag", sldstring);
-                                    var trigsld = addToSldstring(aIds, "a", sldstring);
-                                    oc.addSldToKargis(walsld,trigsld,signsld);
-                                }else{
-                                    oc.removeSldFromKargis();
+                    setOnload(function() 
+                    {
+                        document.getElementById("walapparaatnummer").focus();
+                        if("${magWalapparaatMaken}" == "true"){
+                            document.getElementById("newRseq").disabled = false;
+                        }else{
+                            document.getElementById("newRseq").disabled = true;
+                        }
+                    });
+
+                    function isRequestedIdFiltered(type, lijst){
+                        if(type=="rseq"){
+                            for(var i = 0 ; i < lijst.length ; i++){
+                                if(lijst[i].id != roaEquId){
+                                    lijst.splice(i,1);
+                                    i--;
                                 }
                             }
+                            return lijst;
+                        }
 
-                            // TODO: als leeg is, dan niet parameter vullen
-                            function addToSldstring(lijst, typeVis, sldstring){
-                                sldstring +="?"+ typeVis + "VisibleValues=";
+                        if(type=="ag"){
+                            for(var i = 0 ; i < lijst.length ; i++){
+                                for( var j = 0 ; j < actGroIds.length ; j++ ){
+                                    if(lijst[i].id != actGroIds[i]){
+                                        lijst.splice(i,1);
+                                        i--;
+                                    }
+                                }
+                            }
+                            return lijst;
+                        }
+
+                        if(type=="a"){
+                            for(var i = 0 ; i < lijst.length ; i++){
+                                for( var j = 0 ; j < actIds.length ; j++ ){
+                                    if(lijst[i].id != actIds[i]){
+                                        lijst.splice(i,1);
+                                        i--;
+                                    }
+                                }
+                            }
+                            return lijst;
+                        }
+                    }
+
+                    var layer = null;
+                    var roaEquId = null;
+                    var actGroIds = null;
+                    var actIds = null;
+                    function showSelected(rseqId, agIds, aIds){
+                        var sldstring = "${absoluteURLPrefix}";
+                        sldstring += "${contextPath}/SldServlet";//"http://localhost:8084/SldGeneratorGeo-ov/SldServlet"; // XXX servlet in webapp en hier html:rewrite gerbuiken
+
+                        if(rseqId != undefined){
+                            roaEquId = rseqId;
+                        }
+
+                        if(agIds != undefined){
+                            actGroIds = agIds;
+                        }
+
+                        if(aIds != undefined){
+                            actIds = aIds;
+                        }
+                        sldstring = "http://x13.b3p.nl:8082/geo-ov/SldServlet";
+                        if(document.getElementById("showSelected").checked) {
+                            // bouw de sld string op
+                            var walsld = addToSldstring(rseqId, "rseq", sldstring);
+                            var signsld = addToSldstring(agIds, "ag", sldstring);
+                            var trigsld = addToSldstring(aIds, "a", sldstring);
+                            oc.addSldToKargis(walsld,trigsld,signsld);
+                        }else{
+                            oc.removeSldFromKargis();
+                        }
+                    }
+
+                    // TODO: als leeg is, dan niet parameter vullen
+                    function addToSldstring(lijst, typeVis, sldstring){
+                        sldstring +="?"+ typeVis + "VisibleValues=";
       
-                                if(lijst instanceof Array){
-                                    if(lijst.length >0){
-                                        sldstring += lijst.join(',');
-                                    }
-                                }else{
-                                    sldstring += lijst;
-                                }
-
-                                return sldstring;
+                        if(lijst instanceof Array){
+                            if(lijst.length >0){
+                                sldstring += lijst.join(',');
                             }
+                        }else{
+                            sldstring += lijst;
+                        }
 
-                            function toggleVisibleSelected(){
+                        return sldstring;
+                    }
+
+                    function toggleVisibleSelected(){
         
-                                if(!document.getElementById("showSelected").checked) {
-                                    showSelected();
-                                }
-                                if(document.getElementById("showSelected").checked && selectedObject != undefined) {
+                        if(!document.getElementById("showSelected").checked) {
+                            showSelected();
+                        }
+                        if(document.getElementById("showSelected").checked && selectedObject != undefined) {
      
-                                    showSelected( roaEquId, actGroIds, actIds);
-                                }
-                                if(selectedObject != undefined){
-                                    // oc.update();
-                                }
-                            }
+                            showSelected( roaEquId, actGroIds, actIds);
+                        }
+                        if(selectedObject != undefined){
+                            // oc.update();
+                        }
+                    }
 
-                            function makeBuslijnenUnique(data){
-                                var buslijnen = data.buslijnen;
-                                for(var i = 0 ; i < buslijnen.length; i++){
-                                    for(var j = 0 ; j < buslijnen.length; j++){
-                                        if( j != i){
-                                            if(buslijnen[j].destinationcode == buslijnen[i].destinationcode && buslijnen[j].lineplanningnumber == buslijnen[i].lineplanningnumber &&
-                                                buslijnen[j].name == buslijnen[i].name && buslijnen[j].direction == buslijnen[i].direction && buslijnen[j].publicnumber == buslijnen[i].publicnumber){
-                                                buslijnen.splice(i,1);
-                                                i--;
-                                                break;
-                                            }
-
-                                        }
+                    function makeBuslijnenUnique(data){
+                        var buslijnen = data.buslijnen;
+                        for(var i = 0 ; i < buslijnen.length; i++){
+                            for(var j = 0 ; j < buslijnen.length; j++){
+                                if( j != i){
+                                    if(buslijnen[j].destinationcode == buslijnen[i].destinationcode && buslijnen[j].lineplanningnumber == buslijnen[i].lineplanningnumber &&
+                                        buslijnen[j].name == buslijnen[i].name && buslijnen[j].direction == buslijnen[i].direction && buslijnen[j].publicnumber == buslijnen[i].publicnumber){
+                                        buslijnen.splice(i,1);
+                                        i--;
+                                        break;
                                     }
-                                }
-                                generatePopupBuslijnen(buslijnen);
-                            }
 
-                            function generatePopupBuslijnen(buslijnen){
-
-                                if(!document.getElementById('popupWindow')) {
-                                    //Root
-                                    var popupDiv = document.createElement('div');
-                                    popupDiv.styleClass = 'popup_Window';
-                                    popupDiv.id = 'popupWindow';
-
-                                    var popupWindowBackground = document.createElement('div');
-                                    popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
-                                    popupWindowBackground.id = 'popupWindow_Windowbackground';
-
-                                    $("body").append($(popupDiv));
-                                    $("body").append($(popupWindowBackground));
-
-                                    popupDiv.title = 'Buslijnen';
-                                    popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
-                                    //popupDiv.innerHTML = '<strong>Content</strong> van de div';
-                                    $("#popupWindow").dialog({height: 350, width: 400});
-                                } else {
-                                    var popupDiv = document.getElementById('popupWindow');
-                                    popupDiv.title = 'Buslijnen';
-                                    //popupDiv.innerHTML = '<strong>Content</strong> van de div';
-                                    popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
-                                    $("#popupWindow").dialog('open');
                                 }
                             }
+                        }
+                        generatePopupBuslijnen(buslijnen);
+                    }
 
-                            function generateBuslijnenHtml(buslijnen, htmlObject){
-                                htmlObject = "";
-                                for( var i = 0 ; i < buslijnen.length ; i++){
-                                    var buslijn = buslijnen[i];
-                                    htmlObject += "<h2>Buslijn</h2><br>";
-                                    htmlObject += buslijn.publicnumber + " (" + buslijn.direction + "): " + buslijn.name + "<br>&nbsp;";
-                                }
+                    function generatePopupBuslijnen(buslijnen){
 
-                                return htmlObject;
-                            }
+                        if(!document.getElementById('popupWindow')) {
+                            //Root
+                            var popupDiv = document.createElement('div');
+                            popupDiv.styleClass = 'popup_Window';
+                            popupDiv.id = 'popupWindow';
 
-                            function generatePopupBushaltes(bushaltes){
+                            var popupWindowBackground = document.createElement('div');
+                            popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
+                            popupWindowBackground.id = 'popupWindow_Windowbackground';
 
-                                if(!document.getElementById('popupWindowHaltes')) {
-                                    //Root
-                                    var popupDiv = document.createElement('div');
-                                    popupDiv.styleClass = 'popup_Window';
-                                    popupDiv.id = 'popupWindowHaltes';
+                            $("body").append($(popupDiv));
+                            $("body").append($(popupWindowBackground));
 
-                                    var popupWindowBackground = document.createElement('div');
-                                    popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
-                                    popupWindowBackground.id = 'popupWindow_Windowbackground';
+                            popupDiv.title = 'Buslijnen';
+                            popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
+                            //popupDiv.innerHTML = '<strong>Content</strong> van de div';
+                            $("#popupWindow").dialog({height: 350, width: 400});
+                        } else {
+                            var popupDiv = document.getElementById('popupWindow');
+                            popupDiv.title = 'Buslijnen';
+                            //popupDiv.innerHTML = '<strong>Content</strong> van de div';
+                            popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
+                            $("#popupWindow").dialog('open');
+                        }
+                    }
 
-                                    $("body").append($(popupDiv));
-                                    $("body").append($(popupWindowBackground));
+                    function generateBuslijnenHtml(buslijnen, htmlObject){
+                        htmlObject = "";
+                        for( var i = 0 ; i < buslijnen.length ; i++){
+                            var buslijn = buslijnen[i];
+                            htmlObject += "<h2>Buslijn</h2><br>";
+                            htmlObject += buslijn.publicnumber + " (" + buslijn.direction + "): " + buslijn.name + "<br>&nbsp;";
+                        }
 
-                                    popupDiv.title = 'Bushaltes';
-                                    popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
-                                    $("#popupWindowHaltes").dialog({height: 350, width: 400, left: 400});
-                                } else {
-                                    var popupDiv = document.getElementById('popupWindowHaltes');
-                                    popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
-                                    $("#popupWindowHaltes").dialog('open');
-                                }
-                            }
+                        return htmlObject;
+                    }
 
-                            function generateBushalteHtml(bushaltes, htmlObject){
-                                htmlObject = "";
-                                /*
-                                 *  validfrom:\t\t[validfrom]
+                    function generatePopupBushaltes(bushaltes){
+
+                        if(!document.getElementById('popupWindowHaltes')) {
+                            //Root
+                            var popupDiv = document.createElement('div');
+                            popupDiv.styleClass = 'popup_Window';
+                            popupDiv.id = 'popupWindowHaltes';
+
+                            var popupWindowBackground = document.createElement('div');
+                            popupWindowBackground.styleClass = 'popupWindow_Windowbackground';
+                            popupWindowBackground.id = 'popupWindow_Windowbackground';
+
+                            $("body").append($(popupDiv));
+                            $("body").append($(popupWindowBackground));
+
+                            popupDiv.title = 'Bushaltes';
+                            popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
+                            $("#popupWindowHaltes").dialog({height: 350, width: 400, left: 400});
+                        } else {
+                            var popupDiv = document.getElementById('popupWindowHaltes');
+                            popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
+                            $("#popupWindowHaltes").dialog('open');
+                        }
+                    }
+
+                    function generateBushalteHtml(bushaltes, htmlObject){
+                        htmlObject = "";
+                        /*
+                         *  validfrom:\t\t[validfrom]
                         dataowner:\t[dataowner]
                         code:     \t\t[code]
                         name:     \t\t[name]</textformat></span>
-                                 */
-                                for( var i = 0 ; i < bushaltes.length ; i++){
-                                    var bushalte = bushaltes[i];
-                                    htmlObject += "<h2>Bushalte</h2><br><table border='0'>";
-                                    htmlObject += "<tr><td>validfrom:</td><td>" + bushalte.validfrom + "</td></tr>";
-                                    htmlObject += "<tr><td>dataowner:</td><td>" + bushalte.dataowner + "</td></tr>";
-                                    htmlObject += "<tr><td>code:</td><td>" + bushalte.code + "</td></tr>";
-                                    htmlObject += "<tr><td>name:</td><td>" + bushalte.name + "</td></tr></table><br>&nbsp;";
-                                }
+                         */
+                        for( var i = 0 ; i < bushaltes.length ; i++){
+                            var bushalte = bushaltes[i];
+                            htmlObject += "<h2>Bushalte</h2><br><table border='0'>";
+                            htmlObject += "<tr><td>validfrom:</td><td>" + bushalte.validfrom + "</td></tr>";
+                            htmlObject += "<tr><td>dataowner:</td><td>" + bushalte.dataowner + "</td></tr>";
+                            htmlObject += "<tr><td>code:</td><td>" + bushalte.code + "</td></tr>";
+                            htmlObject += "<tr><td>name:</td><td>" + bushalte.name + "</td></tr></table><br>&nbsp;";
+                        }
 
-                                return htmlObject;
-                            }
+                        return htmlObject;
+                    }
 
 
    
@@ -726,26 +708,26 @@
                 <input type="text" id="searchField"/>
             </div>
             <script type="text/javascript">
-                var oc = new ol();
-                oc.createMap('map');
-                oc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
-                oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
-                oc.addLayer("WMS","walapparatuur","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'walapparatuur', true);
-                oc.addLayer("WMS","signaalgroepen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'signaalgroepen', true);
-                oc.addLayer("WMS","triggerpunten","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'triggerpunten', true);
-                oc.addLayer("WMS","buslijnen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen', false);
-                oc.addLayer("WMS","bushaltes","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'bushaltes', false);
+                    var oc = new ol();
+                    oc.createMap('map');
+                    oc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
+                    oc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
+                    oc.addLayer("WMS","walapparatuur","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'walapparatuur', true);
+                    oc.addLayer("WMS","signaalgroepen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'signaalgroepen', true);
+                    oc.addLayer("WMS","triggerpunten","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'triggerpunten', true);
+                    oc.addLayer("WMS","buslijnen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen', false);
+                    oc.addLayer("WMS","bushaltes","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'bushaltes', false);
 
-                function toggleLayer(layer){
-                    var legend = document.getElementById(layer);
-                    var visible = oc.isLayerVisible(layer);
+                    function toggleLayer(layer){
+                        var legend = document.getElementById(layer);
+                        var visible = oc.isLayerVisible(layer);
 
-                    oc.setLayerVisible(layer,!visible);
-                    if(legend){
-                        var attr = !visible ?  'block' : 'none' ;
-                        legend.setAttribute("style", 'display:' +attr);
+                        oc.setLayerVisible(layer,!visible);
+                        if(legend){
+                            var attr = !visible ?  'block' : 'none' ;
+                            legend.setAttribute("style", 'display:' +attr);
+                        }
                     }
-                }
             </script>
         </div>
 
