@@ -456,16 +456,12 @@
                                 rseqUnitNumberTree: true
                             },
                             success: function (response,opts){
-                                console.log(response);
                                 dwr_treeInfoReceived(response.responseText);
-                                var a =0;
                             },
                             failure: function (response, opts){
-                                var a =0;
+                                alert("Fout bij het zoeken naar een walapparaat.")
                             }
-                            
                         });
-                        // Editor2.rseqUnitNumberTree(unitNumber, dwr_treeInfoReceived);
                     }
 
                     setOnload(function() 
