@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
@@ -33,6 +34,8 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
     private boolean magWalapparaatMaken;
     @Validate
     private Integer unitNumber;
+    @Validate
+    private JSONObject layers;
 
     @DefaultHandler
     public Resolution view() throws Exception {
@@ -49,6 +52,58 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
             magWalapparaatMaken = false;
         }
         return new ForwardResolution(JSP);
+    }
+
+    public Resolution getIdentifyTree() throws Exception {
+        List objects = new ArrayList();
+
+        objects.addAll(getFeatureListEntities(layers, "walapparatuur", RoadsideEquipment.class));
+        objects.addAll(getFeatureListEntities(layers, "signaalgroepen", ActivationGroup.class));
+        objects.addAll(getFeatureListEntities(layers, "triggerpunten", Activation.class));
+
+        if (objects.isEmpty()) {
+            return new StreamingResolution("application/json", "error: no objects found");
+        }
+
+        Envelope envelope = new Envelope();
+        for (Iterator it = objects.iterator(); it.hasNext();) {
+            Object obj = it.next();
+            Coordinate c = getObjectCoordinate(obj);
+            if (c != null) {
+                envelope.expandToInclude(c);
+            }
+        }
+        JSONObject info = new JSONObject();
+        if (!envelope.isNull()) {
+            info.put("envelope", "{minX: " + envelope.getMinX() + ", maxX: " + envelope.getMaxX()
+                    + ", minY: " + envelope.getMinY() + ", maxY: " + envelope.getMaxY() + "}");
+        }
+        if (objects.size() == 1) {
+            info.put("selectedObject", ((EditorTreeObject) objects.get(0)).serializeToJson(context.getRequest(), false));
+        }
+        info.put("tree", buildObjectTree(objects));
+        return new StreamingResolution("application/json",info.toString());
+    }
+
+    private List getFeatureListEntities(JSONObject layers, String layerName, Class entityClass) throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+
+        if (!layers.has(layerName)) {
+            return new ArrayList();
+        }
+        JSONArray features = layers.getJSONArray(layerName);
+        List ids = new ArrayList();
+        for (int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            ids.add(feature.getInt("id"));
+        }
+        List objects = new ArrayList();
+        if (!ids.isEmpty()) {
+            objects = em.createQuery("from " + entityClass.getName() + " where id in (:ids)")
+                    .setParameter("ids", ids)
+                    .getResultList();
+        }
+        return objects;
     }
 
     public Resolution rseqUnitNumberTree() throws Exception {
@@ -148,6 +203,14 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setUnitNumber(Integer unitNumber) {
         this.unitNumber = unitNumber;
+    }
+
+    public JSONObject getLayers() {
+        return layers;
+    }
+
+    public void setLayers(JSONObject layers) {
+        this.layers = layers;
     }
 
     public boolean isMagWalapparaatMaken() {

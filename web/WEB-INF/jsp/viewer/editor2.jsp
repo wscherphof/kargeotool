@@ -388,7 +388,20 @@
                                     data.triggerpunten = isRequestedIdFiltered("a", data.triggerpunten);
                                 }
                                 document.getElementById("loading").style.visibility = "visible";
-                                Editor.getIdentifyTree(JSON.stringify(data), dwr_treeInfoReceived);
+                                var url = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
+                                Ext.Ajax.request({
+                                    url:url,
+                                    params: {
+                                        layers: JSON.stringify(data),
+                                        'getIdentifyTree' : true
+                                    },
+                                    success: function (response){
+                                        dwr_treeInfoReceived(response.responseText);
+                                    },
+                                    failure: function (response){
+                                        alert("Ophalen resultaten mislukt.");
+                                    }
+                                });
                             }
                         }
                     }
