@@ -8,6 +8,7 @@ function ol (){
     this.line = null;
     this.identifyButton = null;
     this.overview = null;
+    this.menuContext = null;
     // Make the map
     this.createMap = function(domId){
         this.panel = new OpenLayers.Control.Panel();
@@ -29,7 +30,7 @@ function ol (){
             geometryTypes : ["Point"]
         });
         this.map.addLayer(this.vectorLayer);
-        this.createControls();
+        this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
         OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
@@ -37,7 +38,7 @@ function ol (){
     /**
      * Private nethod which adds all the controls
      */
-    this.createControls = function (){
+    this.createControls = function (domId){
         var dg = new OpenLayers.Control.DragPan();
         var zb = new OpenLayers.Control.ZoomBox()
         this.panel.addControls(dg);
@@ -54,7 +55,9 @@ function ol (){
         this.map.addControl(navHist);
         this.panel.addControls( navHist.previous);
         this.panel.addControls( navHist.next);
-        this.map.addControl( new OpenLayers.Control.MousePosition({numDigits: 2}));        
+        this.map.addControl( new OpenLayers.Control.MousePosition({
+            numDigits: 2
+        }));        
         this.map.addControl(new OpenLayers.Control.PanZoomBar());
         
         var options = new Object();
@@ -102,7 +105,8 @@ function ol (){
         });
         this.panel.addControls (measureTool);
         this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
-            drillDown: true,
+            //drillDown: true,
+            url: "localhost:8084/geo-ov/action/viewer/editor?gfi=true",
             infoFormat: "application/vnd.ogc.gml"
         });
         this.gfi.events.register("getfeatureinfo",this,this.raiseOnDataEvent);
@@ -167,7 +171,65 @@ function ol (){
             }
         });
         this.map.addControl(this.overview);
-
+        this.menuContext = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+         //renderTo: domId,
+            items: [
+                {
+                    id: 'addVRI',
+                    text: 'Voeg wallapparaat toe'
+                },
+                {
+                    id: 'addSignalGroup',
+                    text: 'Voeg signaalgroep toe'
+                }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    var pos = {
+                        x: menu.x,
+                        y: menu.y
+                    }
+                            var lonlat = this.map.getLonLatFromPixel(pos);
+                    switch (item.id) {
+                        case 'addVRI':
+                            
+                            alert("VRI toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                            break;
+                        case 'addSignalGroup':
+                            alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat)
+                            break;
+                    }
+                },
+                scope:me
+            }
+        });
+          // Get control of the right-click event:
+        //document.getElementById(domId).
+            document.oncontextmenu = function(e){
+         e = e?e:window.event;
+         if (e.preventDefault) e.preventDefault(); // For non-IE browsers.
+         else return false; // For IE browsers.
+        };
+        var oClick = new OpenLayers.Control.Click({
+            rightclick: function (evt){
+                var x = evt.clientX;
+                var y = evt.clientY;
+                //var a = this.events.getMousePosition(evt) 
+                //Correct with mapposition
+                var mapPos = Ext.get(domId).getXY();
+              //  x -= mapPos[0];
+              //  y -= mapPos[1];
+                me.menuContext.showAt(x, y);
+                return false;
+            },
+            includeXY:true
+        });
+        
+   
+        this.map.addControl(oClick);
+        oClick.activate();
         
     },
     this.raiseOnDataEvent = function(evt){
@@ -311,3 +373,53 @@ function ol (){
     }
     
 }
+
+
+
+/**
+ * Create a Click controller
+ * @param options
+ * @param options.handlerOptions options passed to the OpenLayers.Handler.Click
+ * @param options.click the function that is called on a single click (optional)
+ * @param options.dblclick the function that is called on a dubble click (optional)
+ */
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
+    defaultHandlerOptions: {
+        'single': true,
+        'double': false,
+        'stopSingle': false,
+        'stopDouble': false
+    },
+    handleRightClicks:true,
+    initialize: function(options) {
+        this.handlerOptions = OpenLayers.Util.extend(
+            {}, this.defaultHandlerOptions
+        );
+        Ext.apply(this.handlerOptions,options.handlerOptions);
+        OpenLayers.Control.prototype.initialize.apply(
+            this, arguments
+        );
+        if (options.click){
+            this.onClick=options.click;
+        }
+        if (options.dblclick){
+            this.onDblclick=options.dblclick;
+        }
+        if (options.rightclick){
+            this.onRightclick=options.rightclick;
+        }
+        this.handler = new OpenLayers.Handler.Click(
+            this, {
+                'click': this.onClick,
+                'dblclick': this.onDblclick,
+                'rightclick' : this.onRightclick
+            }, this.handlerOptions
+        );
+    },
+    onClick: function(evt) {        
+    },
+    onDblclick: function(evt) {          
+    },
+    onRightclick : function (evt){
+    }
+});

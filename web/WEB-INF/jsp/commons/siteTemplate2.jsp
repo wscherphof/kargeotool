@@ -34,6 +34,7 @@
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/dwr/engine.js"></script>
         <script type="text/javascript" src="${contextPath}/dwr/interface/Editor.js"></script>
+        <link rel="stylesheet" href="${contextPath}/styles/ext-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
         <!--[if IE 7]> <link href="${contextPath}/styles/geo-ov-ie7.css" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
         
