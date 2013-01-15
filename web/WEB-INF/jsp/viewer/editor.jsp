@@ -21,6 +21,8 @@
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-1.3.2.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/js/jquery-ui-1.7.2.custom.min.js' module=''/>"></script>
         <script type="text/javascript" src="<html:rewrite page='/openlayers/OpenLayers.js' module=''/>"></script>
+        <script type="text/javascript" src="<html:rewrite page='/js/ext/ext-all.js' module=''/>"></script>
+        <link rel="stylesheet" href="<html:rewrite page='/styles/ext-all.css' module=''/>" type="text/css" media="screen" />
         <script type="text/javascript" src="<html:rewrite page="/js/OpenLayersController.js" module=""/>"></script>
         
         <!--[if lte IE 6]>

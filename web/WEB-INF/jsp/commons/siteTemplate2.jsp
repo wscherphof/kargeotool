@@ -42,9 +42,9 @@
     </head>
     <body class="editor" id="editorBody">
         <stripes:layout-component name="headerlinks"/>
-        <!--div id="contentcontainer">
+        <div id="contentcontainer">
             <stripes:layout-component name="content"/>
-        </div-->
+        </div>
     </body>
 </html>
 </stripes:layout-definition>

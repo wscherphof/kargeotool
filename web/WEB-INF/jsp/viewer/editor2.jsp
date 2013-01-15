@@ -182,18 +182,19 @@
 
                 function form_editObject(object) {
                     var url;
+                    var id = object.id.split(":")[1];
                     switch(object.type) {
                         case "a" : 
-                            url = "${contextPath}/viewer/activation.do"; 
+                            url = "${contextPath}/viewer/activation.do?id="+id; 
                             break;
                         case "ag": 
-                            url = "${contextPath}/viewer/activationGroup.do"; 
+                            url = "${contextPath}/viewer/activationGroup.do?id=" +id; 
                             break;
                         case "rseq": 
-                            url = "${contextPath}/viewer/roadsideEquipment.do"; 
+                            //url = "${contextPath}/viewer/roadsideEquipment.do"; 
+                            url = "${contextPath}/action/edit/roadsideequiment?rseq="+id; 
                             break;
                         }
-                        url += "?id=" + object.id.split(":")[1];
                         //setStatus("form", "form laden voor object " + object.id + ": " + url);
                         window.frames["form"].location = url;
                     }
@@ -283,7 +284,8 @@
 
                     function newRseq() {
                         deselectObject();
-                        window.frames["form"].location = "${contextPath}/roadsideEquipment.do?new=t";
+                        //window.frames["form"].location = "${contextPath}/roadsideEquipment.do?new=t";
+                        window.frames["form"].location = "${contextPath}/action/edit/roadsideequiment?new=t";
                     }
 
                     /* Zoek in een tree naar een item en return een array van parent items, beginnende
