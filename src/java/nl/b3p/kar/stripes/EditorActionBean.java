@@ -2,6 +2,7 @@ package nl.b3p.kar.stripes;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -136,7 +137,7 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
             info.put("selectedObject", ((EditorTreeObject) rseqs.get(0)).serializeToJson(context.getRequest(), false));
         }
         info.put("tree", buildObjectTree(rseqs));
-        return new StreamingResolution("application/json", info.toString());
+        return new StreamingResolution("application/json",  new StringReader(info.toString()));
     }
 
     private JSONObject buildObjectTree(List objects) throws Exception {
