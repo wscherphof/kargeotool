@@ -1,11 +1,13 @@
 package nl.b3p.kar.stripes;
 
-import javax.annotation.security.RolesAllowed;
+import java.util.List;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.VehicleType;
 import nl.b3p.transmodel.ActivationGroup;
+import org.apache.catalina.tribes.util.Arrays;
 import org.stripesstuff.stripersist.EntityTypeConverter;
 import org.stripesstuff.stripersist.Stripersist;
 
@@ -51,7 +53,9 @@ public class MyStripesActionBean implements ActionBean {
         
         EntityManager em = Stripersist.getEntityManager();
         
-        return new StreamingResolution("text/plain", "It works! " + (g == null ? "-" : g.getFullname()) + ", " + (ag == null ? "-" : ag.getUpdateTime()));
+        List<VehicleType> vehicleTypes = em.createQuery("from VehicleType order by nummer").getResultList();
+                
+        return new StreamingResolution("text/plain", "It works! Gebruiker: " + (g == null ? "-" : g.getFullname()) + ", " + (ag == null ? "-" : ag.getUpdateTime()) + "\nVehicle types: " + vehicleTypes);
         
     }
     

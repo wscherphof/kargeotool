@@ -18,13 +18,13 @@
             <property name="hibernate.c3p0.idle_test_period" value="100"/>
             <property name="hibernate.c3p0.min_size" value="0"/>
         </properties>
-    
-        <class>nl.b3p.kar.hibernate.Gebruiker</class>
+
+        <!--class>nl.b3p.kar.hibernate.Gebruiker</class>
         <class>nl.b3p.kar.hibernate.GebruikerDataOwnerRights</class>
         <class>nl.b3p.kar.hibernate.Role</class>
         <class>nl.b3p.transmodel.Activation</class>
         <class>nl.b3p.transmodel.ActivationGroup</class>
         <class>nl.b3p.transmodel.DataOwner</class>
-        <class>nl.b3p.transmodel.RoadsideEquipment</class>
+        <class>nl.b3p.transmodel.RoadsideEquipment</class-->
     </persistence-unit>
 </persistence>
