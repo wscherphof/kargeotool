@@ -191,10 +191,9 @@ function ol (){
                         x: menu.x,
                         y: menu.y
                     }
-                            var lonlat = this.map.getLonLatFromPixel(pos);
+                    var lonlat = this.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addVRI':
-                            
                             alert("VRI toevoegen op " + lonlat.lon + ", " + lonlat.lat);
                             break;
                         case 'addSignalGroup':
@@ -205,12 +204,12 @@ function ol (){
                 scope:me
             }
         });
-          // Get control of the right-click event:
-        //document.getElementById(domId).
-            document.oncontextmenu = function(e){
-         e = e?e:window.event;
-         if (e.preventDefault) e.preventDefault(); // For non-IE browsers.
-         else return false; // For IE browsers.
+        // Get control of the right-click event:
+        document.oncontextmenu = function(e){
+            e = e?e:window.event;
+            if (e.preventDefault) 
+                e.preventDefault(); // For non-IE browsers.
+            else return false; // For IE browsers.
         };
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
