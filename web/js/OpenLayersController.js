@@ -184,8 +184,7 @@ function ol (){
             items: [
             {
                 id: 'addVRI',
-                text: 'Voeg wallapparaat toe',
-                disabled: true
+                text: 'Voeg wallapparaat toe'
             }
             ],
             listeners: {
@@ -457,12 +456,12 @@ function ol (){
             var type = this.activeFeature.$className;
             var menu = this.menuContext[type];
             if(menu){
-                return menu
+                return menu;
             }else{
-                return null;
+                return this.menuContext["standaard"];
             }
         }else{
-            return null
+            return this.menuContext["standaard"];
         }
     }
     
