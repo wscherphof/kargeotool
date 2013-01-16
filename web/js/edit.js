@@ -2,6 +2,31 @@ function setStatus(what, status) {
     document.getElementById(what + "Status").innerHTML = escapeHTML(status);
 }
 
+function requestEditableFeatures(){   
+    Ext.Ajax.request({
+        url:editorActionBeanUrl,
+        method: 'GET',
+        scope: this,
+        params: {
+            'rseqInfo2' : true,
+            unitNumber :9999
+        },
+        success: function (response){
+            var msg = Ext.JSON.decode(response.responseText);
+            if(msg.success){
+                this.oc.removeAllFeatures();
+                this.oc.addFeatures(msg.rseq);
+                this.oc.addFeatures(msg.points);
+            }else{
+                alert("Ophalen resultaten mislukt.");
+            }
+        },
+        failure: function (response){
+            alert("Ophalen resultaten mislukt.");
+        }
+    });
+}
+
 function treeItemClick(item) {
     showSelected(roaEquId, actGroIds, actIds);
     tree_selectObject(item);
@@ -13,7 +38,7 @@ function treeItemClick(item) {
 
 /* beetje een hack, gaat er vanuit dat tree depth-first (dus na rseq de
 daar onder horende ag en a) opbouwt...
- */
+*/
 var editableGlobal = false;
 
 function createLabel(container, item) {
@@ -56,7 +81,9 @@ function createLabel(container, item) {
     container.appendChild(a);
 }
 
-var tree = {"id": "root"}; /* root van items */
+var tree = {
+    "id": "root"
+}; /* root van items */
 var objectTreeOpts; /* options van tree */
 var selectedObject;
 
@@ -96,7 +123,7 @@ function dwr_treeInfoReceived(info) {
 
     if(info.toLowerCase().indexOf("error") == 0) {
         if(info.toLowerCase().indexOf("no objects found") != -1) {
-            //alert("Geen objecten gevonden op deze locatie");
+        //alert("Geen objecten gevonden op deze locatie");
         } else {
             alert(info);
         }
@@ -120,7 +147,7 @@ function dwr_treeInfoReceived(info) {
             options_zoomToObject();
         }
     } else {
-        //setStatus("tree", "Meerdere objecten op locatie");
+    //setStatus("tree", "Meerdere objecten op locatie");
     }
     if(obj.envelope != undefined) {
         zoomToEnvelope(eval("(" + obj.envelope + ")"));
@@ -171,22 +198,22 @@ function form_editObject(object) {
     var id = object.id.split(":")[1];
     var af = null;
     switch(object.type) {
-        case "a" : 
+        case "a" :
             af =Ext.create("ActivationGroup",{
-               id: id 
+                id: id 
             });
             url = contextPath + "/viewer/activation.do?id="+id; 
             break;
-        case "ag": 
+        case "ag":
             af =Ext.create("SignalGroup",{
-               id: id 
+                id: id 
             });
             url = contextPath + "/viewer/activationGroup.do?id=" +id; 
             break;
-        case "rseq": 
+        case "rseq":
             url = contextPath + "/viewer/roadsideEquipment.do?id="+id; 
             af =Ext.create("VRI",{
-               id: id 
+                id: id 
             });
             //url = contextPath + "/action/edit/roadsideequiment?rseq="+id; 
             break;
@@ -213,7 +240,8 @@ function options_zoomToObject() {
         if(selectedObject.point) {
             var zoomBorder = getZoomBorder();
             var xy = selectedObject.point.split(", ");
-            var x = parseInt(xy[0]); var y = parseInt(xy[1]);
+            var x = parseInt(xy[0]);
+            var y = parseInt(xy[1]);
             oc.zoomToExtent(x - zoomBorder, y - zoomBorder, x + zoomBorder, y + zoomBorder);
         }
     }
@@ -246,7 +274,7 @@ function treeUpdate(cmd) {
         if(item.type == "a") {
             /* Update indexes van activations in lijst van ActivationGroup,
             dit is bij verwijderen van activation in Action ook gedaan
-             */
+ */
             for(var i = index; i < parentItem.children.length;  i++) {
                 parentItem.children[i].index--;
             }
@@ -288,10 +316,10 @@ function newRseq() {
 }
 
 /* Zoek in een tree naar een item en return een array van parent items, beginnende
- * bij de parent het hoogst in de tree.
- * Aanroep met alleen de eerste twee argumenten, het derde argument wordt
- * gebruikt voor recursieve aanroep.
- */
+* bij de parent het hoogst in de tree.
+* Aanroep met alleen de eerste twee argumenten, het derde argument wordt
+* gebruikt voor recursieve aanroep.
+*/
 function findTreeItemParents(root, needle, crumbs) {
     if(root == needle) {
         /* needle gevonden, return array met parent items */
@@ -392,6 +420,7 @@ function onIdentifyData( layer, data) {
             
             Ext.Ajax.request({
                 url:editorActionBeanUrl,
+                method: 'GET',
                 params: {
                     layers: JSON.stringify(data),
                     'getIdentifyTree' : true
@@ -436,7 +465,7 @@ function drawNewGeometry(geometryType) {
 
 function cancelEdit() {
     this.oc.removeAllFeatures();
-    // hide location
+// hide location
 }
 
 function walapparaatnummerKeyPressed(e) {
@@ -557,7 +586,7 @@ function toggleVisibleSelected(){
         showSelected( roaEquId, actGroIds, actIds);
     }
     if(selectedObject != undefined){
-        // oc.update();
+    // oc.update();
     }
 }
 
@@ -597,7 +626,10 @@ function generatePopupBuslijnen(buslijnen){
         popupDiv.title = 'Buslijnen';
         popupDiv.innerHTML = generateBuslijnenHtml(buslijnen, popupDiv.innerHTML);
         //popupDiv.innerHTML = '<strong>Content</strong> van de div';
-        $("#popupWindow").dialog({height: 350, width: 400});
+        $("#popupWindow").dialog({
+            height: 350, 
+            width: 400
+        });
     } else {
         var popupDiv = document.getElementById('popupWindow');
         popupDiv.title = 'Buslijnen';
@@ -635,7 +667,11 @@ function generatePopupBushaltes(bushaltes){
 
         popupDiv.title = 'Bushaltes';
         popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
-        $("#popupWindowHaltes").dialog({height: 350, width: 400, left: 400});
+        $("#popupWindowHaltes").dialog({
+            height: 350, 
+            width: 400, 
+            left: 400
+        });
     } else {
         var popupDiv = document.getElementById('popupWindowHaltes');
         popupDiv.innerHTML = generateBushalteHtml(bushaltes, popupDiv.innerHTML);
@@ -646,11 +682,11 @@ function generatePopupBushaltes(bushaltes){
 function generateBushalteHtml(bushaltes, htmlObject){
     htmlObject = "";
     /*
-     *  validfrom:\t\t[validfrom]
+*  validfrom:\t\t[validfrom]
                         dataowner:\t[dataowner]
                         code:     \t\t[code]
                         name:     \t\t[name]</textformat></span>
-     */
+*/
     for( var i = 0 ; i < bushaltes.length ; i++){
         var bushalte = bushaltes[i];
         htmlObject += "<h2>Bushalte</h2><br><table border='0'>";

@@ -18,7 +18,7 @@ Ext.define('SignalGroup', {
     ]
 });
 
-Ext.define('ActivationGroup', {
+Ext.define('TriggerPoint', {
     extend:  'Ext.data.Model',
     fields: [
         {name: 'id',  type: 'int'},

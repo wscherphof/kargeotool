@@ -2,6 +2,7 @@ function ol (){
     this.map = null;
     this.panel = null;
     this.vectorLayer = null;
+    this.geojson_format = null;
     this.gfi = null;
     this.dragFeature = null;
     this.point = null;
@@ -27,15 +28,39 @@ function ol (){
         };
         
         this.map = new OpenLayers.Map(domId,opt);
-        this.vectorLayer = new OpenLayers.Layer.Vector('edit',{
-            geometryTypes : ["Point"]
+        this.vectorLayer = new OpenLayers.Layer.Vector("Points", {
+            styleMap: new OpenLayers.StyleMap( {
+                "default": style,
+                "select": selectstyle
+            })
+        }
+        );
+            
+        var highlight = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
+            highlightOnly: true,
+            hover:true
         });
+        this.map.addControl(highlight);
+        highlight.activate();
+        var selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
+            clickout: true,
+            scope:this,
+            onSelect : function (feature){
+                this.setActiveFeature(feature);
+            }
+        });
+
+        this.map.addControl(selectCtrl);
+        selectCtrl.activate();
+        
+        this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
         this.createControls(domId);
         this.createContextMenus(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
         OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
+        requestEditableFeatures();
     },
     /**
      * Private nethod which adds all the controls
@@ -277,8 +302,8 @@ function ol (){
         
         this.menuContext ={
             "standaard" : standaard,
-            "SignalGroup" : signalGroup,
-            "VRI" : vri
+            "CheckInPoint" : signalGroup,
+            "CROSSING" : vri
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -291,16 +316,14 @@ function ol (){
             rightclick: function (evt){
                 var x = evt.clientX;
                 var y = evt.clientY;
-                //var a = this.events.getMousePosition(evt) 
-                //Correct with mapposition
-                var mapPos = Ext.get(domId).getXY();
-                //  x -= mapPos[0];
-                //  y -= mapPos[1];
                 var context = me.getMenuContext();
                 if(context){
                     context.showAt(x, y);
                 }
                 return false;
+            },
+            click: function (evt){
+                me.deactivateContextMenu();
             },
             includeXY:true
         });
@@ -308,6 +331,17 @@ function ol (){
    
         this.map.addControl(oClick);
         oClick.activate();
+        
+        this.map.events.register("moveend",this,function(){
+            this.deactivateContextMenu();
+        });
+    },
+    this.deactivateContextMenu = function(){
+        for (var key in this.menuContext){
+            var mc = this.menuContext[key];
+            mc.hide();
+        }
+        
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          
@@ -453,7 +487,7 @@ function ol (){
     },
     this.getMenuContext = function (){
         if(this.activeFeature){
-            var type = this.activeFeature.$className;
+            var type = this.activeFeature.data.type;
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
@@ -463,11 +497,88 @@ function ol (){
         }else{
             return this.menuContext["standaard"];
         }
+    },
+    this.addFeatures = function(features){
+        // this.removeAllFeatures();
+        this.vectorLayer.addFeatures(this.geojson_format.read(features));
     }
     
 }
+var style = new OpenLayers.Style(
+// the first argument is a base symbolizer
+// all other symbolizers in rules will extend this one
+{
+    graphicWidth: 21,
+    graphicHeight: 21,
+    graphicYOffset: -28, // shift graphic up 28 pixels
+    label: "${label}" // label will be foo attribute value
+},
+// the second argument will include all rules
+{
+    rules: [
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "CROSSING"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/vri.png"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"CheckInPoint"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/ag.gif"
+        }
+    })
+    ]
+}
+);
 
-
+var selectstyle = new OpenLayers.Style(
+// the first argument is a base symbolizer
+// all other symbolizers in rules will extend this one
+{
+    graphicWidth: 35,
+    graphicHeight: 35,
+    graphicYOffset: -28, // shift graphic up 28 pixels
+    label: "${label}" 
+},
+// the second argument will include all rules
+{
+    rules: [
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "CROSSING"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/vri.png"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"CheckInPoint"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/ag.gif"
+        }
+    })
+    ]
+}
+);
 
 /**
  * Create a Click controller

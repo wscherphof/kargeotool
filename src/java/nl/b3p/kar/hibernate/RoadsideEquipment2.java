@@ -251,6 +251,7 @@ public class RoadsideEquipment2 {
             JSONObject p = new JSONObject();
             p.put("id", ap2.getId());
             p.put("label", ap2.getLabel());
+            p.put("type", "CheckInPoint");  // Dummy type. For prototyping
             p.put("nummer", ap2.getNummer());
             gj.put("properties", p);
             f.put(gj);
