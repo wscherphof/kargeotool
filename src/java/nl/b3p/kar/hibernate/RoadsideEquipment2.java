@@ -2,8 +2,11 @@ package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
@@ -244,6 +247,19 @@ public class RoadsideEquipment2 {
         JSONObject gjc = new JSONObject();
         gjc.put("type","FeatureCollection");
         JSONArray f = new JSONArray();
+        
+        Map<ActivationPoint2,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
+        for(Movement m: movements) {
+            for(MovementActivationPoint map: m.getPoints()) {
+                List<MovementActivationPoint> maps = mapsByAp2.get(map.getPoint());
+                if(maps == null) {
+                    maps = new ArrayList();
+                    mapsByAp2.put(map.getPoint(), maps);
+                }
+                maps.add(map);                
+            }
+        }
+        
         for(ActivationPoint2 ap2: points) {
             JSONObject gj = new JSONObject();
             gj.put("type","Feature");
@@ -253,6 +269,51 @@ public class RoadsideEquipment2 {
             p.put("label", ap2.getLabel());
             p.put("type", "CheckInPoint");  // Dummy type. For prototyping
             p.put("nummer", ap2.getNummer());
+            
+            // Zoek soort punt op, wordt in movement.points bepaald maar is 
+            // voor alle movements die dit punt gebruiken altijd hetzelfde
+            // soort (combi beginEndOrActivation en commandType)
+            
+            
+            List<MovementActivationPoint> maps = mapsByAp2.get(ap2);
+            String ap2type = null;
+            
+            SortedSet<Integer> movementNumbers = new TreeSet();
+            SortedSet<Integer> signalGroupNumbers = new TreeSet();
+            
+            if(maps != null && !maps.isEmpty()) {
+                // de waardes beginEndOrActivation en karCommandType moeten voor
+                // alle MAP's voor deze AP2 hetzelfde zijn
+                MovementActivationPoint map1 = maps.get(0);
+                 ap2type = map1.getBeginEndOrActivation();
+                if(map1.getSignal() != null) {
+                    assert(MovementActivationPoint.ACTIVATION.equals(ap2type));
+                    ap2type = ap2type + "_" + map1.getSignal().getKarCommandType();
+                }
+                
+                for(MovementActivationPoint map: maps) {
+                    movementNumbers.add(map.getMovement().getNummer());
+                    if(map.getSignal() != null) {
+                        signalGroupNumbers.add(map.getSignal().getSignalGroupNumber());
+                    }
+                    if(MovementActivationPoint.END.equals(ap2type)) {
+                        for(int i = map.getMovement().getPoints().size()-1;  i >= 0; i--) {
+                            ActivationPointSignal aps = map.getMovement().getPoints().get(i).getSignal();
+                            if(aps != null) {
+                                signalGroupNumbers.add(aps.getSignalGroupNumber());
+                            }
+                        }
+                    }
+                }
+            }
+            p.put("type", ap2type);
+            JSONArray mns = new JSONArray();
+            for(Integer i: movementNumbers) { mns.put(i); };
+            p.put("movementNumbers", mns);
+            JSONArray sgns = new JSONArray();
+            for(Integer i: signalGroupNumbers) { sgns.put(i); };
+            p.put("signalGroupNumbers", sgns);
+            
             gj.put("properties", p);
             f.put(gj);
         }

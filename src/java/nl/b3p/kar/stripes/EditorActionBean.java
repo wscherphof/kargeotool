@@ -160,7 +160,7 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
             log.error("rseqInfo2 exception", e);
             info.put("error", ExceptionUtils.getMessage(e));            
         }
-        return new StreamingResolution("application/json",  new StringReader(info.toString()));
+        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
     }
     
 

@@ -56,13 +56,13 @@ insert into activation_point_signal(distance_till_stop_line,kar_command_type,tri
 update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,1) and point = find_ap2_id(9999,'K2');
 insert into activation_point_signal(distance_till_stop_line,kar_command_type,trigger_type,signal_group_number) values
   (200,1,'STANDARD',1);
-update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,2) and point = find_ap2_id(9999,'K2');
+update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,2) and point = find_ap2_id(9999,'A');
 insert into activation_point_signal(distance_till_stop_line,kar_command_type,trigger_type,signal_group_number) values
   (-5,2,'STANDARD',1);
 update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,2) and point = find_ap2_id(9999,'K2');
 insert into activation_point_signal(distance_till_stop_line,kar_command_type,trigger_type,signal_group_number) values
   (200,1,'STANDARD',2);
-update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,3) and point = find_ap2_id(9999,'K1');
+update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,3) and point = find_ap2_id(9999,'A');
 insert into activation_point_signal(distance_till_stop_line,kar_command_type,trigger_type,signal_group_number) values
   (-5,2,'STANDARD',2);
 update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,3) and point = find_ap2_id(9999,'K1');
