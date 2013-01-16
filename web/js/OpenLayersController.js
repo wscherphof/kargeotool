@@ -304,7 +304,11 @@ function ol (){
         
         this.menuContext ={
             "standaard" : standaard,
-            "CheckInPoint" : signalGroup,
+            "ACTIVATION_1" : signalGroup,
+            "ACTIVATION_2" : signalGroup,
+            "ACTIVATION_3" : signalGroup,
+            "END" : signalGroup,
+            "BEGIN" : signalGroup,
             "CROSSING" : vri
         };
         // Get control of the right-click event:
