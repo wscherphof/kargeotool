@@ -227,6 +227,50 @@ layer
   processing "CLOSE_CONNECTION=DEFER"
 end
 
+
+layer
+  name activation_point2
+  metadata
+    "ows_title" "activation_point2"
+    "gml_include_items" "all"     
+    "ows_srs"  "EPSG:28992"
+    "gml_featureid" "id"
+  end
+  type point
+  dump true
+  template bla
+  tolerance 10  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
+  data "location from (select * from activation_point2) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  labelitem "label"
+  class 
+    name ""
+    style      
+	color 255 0 0
+	outlinecolor 255 255 255
+	symbol "circle"
+	size 5
+    end
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 8
+        color 2 2 2
+        outlinecolor 255 255 255
+        buffer 2
+	force true
+	position auto
+    end      
+  end	
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
 layer
   name walapparatuur
   metadata
@@ -286,6 +330,83 @@ layer
   class 
     name "Halteprocessor"
     expression "PIU"
+    style      
+      symbol "piu.gif"      
+    end 
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 10
+        color 255 255 255
+        outlinecolor 0 150 0
+        offset -2 -2
+	position ur
+    end     
+  end
+  
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+
+layer
+  name roadside_equipment2
+  metadata
+    "ows_title" "roadside_equipment2"
+    "gml_include_items" "all"     
+    "ows_srs"  "EPSG:28992"
+    "gml_featureid" "id"
+  end
+  type point
+  dump true
+  template bla
+  tolerance 10  
+  status off
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
+  data "location from (select * from roadside_equipment2) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  classitem "type"
+  labelitem kar_address
+  CLASS 
+    NAME "VRI"
+    expression "CROSSING"
+    style      
+      symbol "vri.gif"      
+    end 
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 10
+        color 255 255 255
+        outlinecolor 0 150 0
+        offset -3 -3
+	position ur
+    end      
+  end  
+  class 
+    name "BAR"
+    expression "BAR"
+    style      
+      symbol "close.gif"      
+    end 
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 10
+        color 255 255 255
+        outlinecolor 0 150 0
+        offset -2 -2
+	position ur
+    end      
+  end
+  class 
+    name "GUARD"
+    expression "GUARD"
     style      
       symbol "piu.gif"      
     end 

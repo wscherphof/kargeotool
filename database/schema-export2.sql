@@ -4,6 +4,7 @@
         label varchar(255),
         location bytea not null,
         nummer int4 not null,
+        roadside_equipment int8 not null,
         primary key (id)
     );
 
@@ -33,7 +34,7 @@
     create table movement (
         id  bigserial not null,
         nummer int4,
-        roadside_equipment int8,
+        roadside_equipment int8 not null,
         primary key (id)
     );
 
@@ -74,6 +75,11 @@
         omschrijving varchar(255),
         primary key (nummer)
     );
+
+    alter table activation_point2 
+        add constraint FKFEE893EBFFF56DCE 
+        foreign key (roadside_equipment) 
+        references roadside_equipment2;
 
     alter table activation_point_signal_vehicle_types 
         add constraint FKCB1C4C67860074FF 

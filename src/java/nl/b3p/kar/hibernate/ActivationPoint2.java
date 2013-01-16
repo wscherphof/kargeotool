@@ -2,7 +2,6 @@ package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
 import javax.persistence.*;
-import nl.b3p.transmodel.DataOwner;
 
 /**
  * Entity voor persisteren van een Activation Point zoals bedoeld in BISON 
@@ -11,7 +10,7 @@ import nl.b3p.transmodel.DataOwner;
  * @author Matthijs Laan
  */
 @Entity
-public class ActivationPoint2 {
+public class ActivationPoint2 implements Comparable {
     
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
@@ -21,6 +20,12 @@ public class ActivationPoint2 {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Roadside equipment waarbij deze movement hoort.
+     */
+    @ManyToOne(optional=false)
+    private RoadsideEquipment2 roadsideEquipment;
+    
     /**
      * Nummer van het activation point binnen een enkele VRI.
      */
@@ -47,6 +52,14 @@ public class ActivationPoint2 {
         this.id = id;
     }
 
+    public RoadsideEquipment2 getRoadsideEquipment() {
+        return roadsideEquipment;
+    }
+
+    public void setRoadsideEquipment(RoadsideEquipment2 roadsideEquipment) {
+        this.roadsideEquipment = roadsideEquipment;
+    }
+
     public Integer getNummer() {
         return nummer;
     }
@@ -71,5 +84,8 @@ public class ActivationPoint2 {
         this.label = label;
     }
     //</editor-fold>
-    
+
+    public int compareTo(Object t) {
+        return nummer.compareTo(((ActivationPoint2)t).nummer);
+    }    
 }

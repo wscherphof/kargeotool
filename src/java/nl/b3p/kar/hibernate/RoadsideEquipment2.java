@@ -102,6 +102,10 @@ public class RoadsideEquipment2 {
     @OneToMany(cascade=CascadeType.PERSIST, mappedBy="roadsideEquipment") 
     @Sort(type=SortType.NATURAL)
     private SortedSet<Movement> movements = new TreeSet<Movement>();
+    
+    @OneToMany(cascade=CascadeType.PERSIST, mappedBy="roadsideEquipment") 
+    @Sort(type=SortType.NATURAL)
+    private SortedSet<ActivationPoint2> points = new TreeSet<ActivationPoint2>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {
@@ -198,6 +202,14 @@ public class RoadsideEquipment2 {
 
     public void setMovements(SortedSet<Movement> movements) {
         this.movements = movements;
+    }
+
+    public SortedSet<ActivationPoint2> getPoints() {
+        return points;
+    }
+
+    public void setPoints(SortedSet<ActivationPoint2> points) {
+        this.points = points;
     }
     //</editor-fold>
     

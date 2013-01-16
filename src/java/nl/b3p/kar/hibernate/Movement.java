@@ -22,7 +22,7 @@ public class Movement implements Comparable {
     /**
      * Roadside equipment waarbij deze movement hoort.
      */
-    @ManyToOne
+    @ManyToOne(optional=false)
     private RoadsideEquipment2 roadsideEquipment;
 
     /**
