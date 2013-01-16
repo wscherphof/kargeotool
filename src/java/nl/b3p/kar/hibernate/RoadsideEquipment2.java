@@ -1,5 +1,6 @@
 package nl.b3p.kar.hibernate;
 
+import com.vividsolutions.jts.geom.Point;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
@@ -45,6 +46,8 @@ public class RoadsideEquipment2 {
     
     @ManyToOne(optional=false)
     private DataOwner2 dataOwner;
+    
+    private Point location;
     
     /**
      * Het KAR adres (SID) van het verkeerssysteem. Verplicht voor Kv9.
@@ -171,6 +174,30 @@ public class RoadsideEquipment2 {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public List<KarAttributes> getKarAttributes() {
+        return karAttributes;
+    }
+
+    public void setKarAttributes(List<KarAttributes> karAttributes) {
+        this.karAttributes = karAttributes;
+    }
+
+    public SortedSet<Movement> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(SortedSet<Movement> movements) {
+        this.movements = movements;
     }
     //</editor-fold>
     

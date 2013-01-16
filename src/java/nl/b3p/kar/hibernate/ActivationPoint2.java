@@ -20,12 +20,6 @@ public class ActivationPoint2 {
     @Id 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-    
-    /**
-     * Wegbeheerder welke het verkeerssysteem beheert.
-     */
-    @ManyToOne(optional=false)
-    private DataOwner dataOwner;
 
     /**
      * Nummer van het activation point binnen een enkele VRI.
@@ -51,14 +45,6 @@ public class ActivationPoint2 {
     
     public void setId(Long id) {
         this.id = id;
-    }
-    
-    public DataOwner getDataOwner() {
-        return dataOwner;
-    }
-    
-    public void setDataOwner(DataOwner dataOwner) {
-        this.dataOwner = dataOwner;
     }
 
     public Integer getNummer() {

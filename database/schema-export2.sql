@@ -4,7 +4,6 @@
         label varchar(255),
         location bytea not null,
         nummer int4 not null,
-        data_owner serial not null,
         primary key (id)
     );
 
@@ -52,6 +51,7 @@
         crossing_code varchar(255),
         description varchar(255),
         kar_address int4,
+        location bytea,
         town varchar(50),
         type varchar(255),
         valid_from date,
@@ -74,11 +74,6 @@
         omschrijving varchar(255),
         primary key (nummer)
     );
-
-    alter table activation_point2 
-        add constraint FKFEE893EB686F78F9 
-        foreign key (data_owner) 
-        references data_owner;
 
     alter table activation_point_signal_vehicle_types 
         add constraint FKCB1C4C67860074FF 
