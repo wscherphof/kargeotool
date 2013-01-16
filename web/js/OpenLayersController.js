@@ -31,13 +31,15 @@ function ol (){
         this.vectorLayer = new OpenLayers.Layer.Vector("Points", {
             styleMap: new OpenLayers.StyleMap( {
                 "default": style,
-                "select": selectstyle
+                "select": selectstyle,
+                "temporary" : tempstyle
             })
         }
         );
             
         var highlight = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
             highlightOnly: true,
+            renderIntent: "temporary",
             hover:true
         });
         this.map.addControl(highlight);
@@ -532,10 +534,50 @@ var style = new OpenLayers.Style(
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.EQUAL_TO,
             property: "type",
-            value:"CheckInPoint"
+            value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/ag.gif"
+            externalGraphic: "../../images/treeview/radio_groen.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_2"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_rood.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_3"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_blauw.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"END"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/minus.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"BEGIN"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/plus.gif"
         }
     })
     ]
@@ -570,10 +612,129 @@ var selectstyle = new OpenLayers.Style(
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.EQUAL_TO,
             property: "type",
-            value:"CheckInPoint"
+            value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/ag.gif"
+            externalGraphic: "../../images/treeview/radio_groen.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_2"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_rood.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_3"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_blauw.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"END"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/minus.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"BEGIN"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/plus.gif"
+        }
+    })
+    ]
+}
+);
+
+
+var tempstyle = new OpenLayers.Style(
+// the first argument is a base symbolizer
+// all other symbolizers in rules will extend this one
+{
+    graphicWidth: 35,
+    graphicHeight: 35,
+    graphicYOffset: -28, // shift graphic up 28 pixels
+    label: "${label}" 
+},
+// the second argument will include all rules
+{
+    rules: [
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "CROSSING"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/vri.png"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_1"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_groen.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_2"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_rood.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_3"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_blauw.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"END"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/minus.gif"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"BEGIN"
+        }),
+        symbolizer: {
+            externalGraphic: "../../images/treeview/plus.gif"
         }
     })
     ]
