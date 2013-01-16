@@ -1,13 +1,18 @@
 package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
+import nl.b3p.geojson.GeoJSON;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 /**
  *
  * @author Matthijs Laan
@@ -47,6 +52,7 @@ public class RoadsideEquipment2 {
     @ManyToOne(optional=false)
     private DataOwner2 dataOwner;
     
+    @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
     private Point location;
     
     /**
@@ -212,5 +218,45 @@ public class RoadsideEquipment2 {
         this.points = points;
     }
     //</editor-fold>
+    
+    public JSONObject getRseqGeoJSON() throws JSONException {
+        JSONObject gj = new JSONObject();
+        gj.put("type","Feature");
+        gj.put("geometry", GeoJSON.toGeoJSON(location));
+        JSONObject p = new JSONObject();
+        p.put("crossingCode", crossingCode);
+        p.put("description", description);
+        p.put("karAddress", karAddress);
+        p.put("town", town);
+        p.put("type", type);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        p.put("validFrom", sdf.format(validFrom));
+        p.put("dataOwner", dataOwner.getCode());
+        p.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
+        
+        // geen kar attributes
+        
+        gj.put("properties", p);
+        return gj;
+    }
+    
+    public JSONObject getPointsGeoJSON() throws JSONException {
+        JSONObject gjc = new JSONObject();
+        gjc.put("type","FeatureCollection");
+        JSONArray f = new JSONArray();
+        for(ActivationPoint2 ap2: points) {
+            JSONObject gj = new JSONObject();
+            gj.put("type","Feature");
+            gj.put("geometry", GeoJSON.toGeoJSON(ap2.getLocation()));
+            JSONObject p = new JSONObject();
+            p.put("id", ap2.getId());
+            p.put("label", ap2.getLabel());
+            p.put("nummer", ap2.getNummer());
+            gj.put("properties", p);
+            f.put(gj);
+        }
+        gjc.put("features", f);
+        return gjc;
+    }
     
 }

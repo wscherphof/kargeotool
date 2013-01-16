@@ -36,6 +36,7 @@ public class ActivationPoint2 implements Comparable {
      * Geografische locatie van het activation point.
      */
     @Basic(optional=false)
+    @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
     private Point location;
     
     /**

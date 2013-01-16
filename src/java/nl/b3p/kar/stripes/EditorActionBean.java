@@ -8,16 +8,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
-import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.*;
 import nl.b3p.kar.struts.EditorTreeObject;
 import nl.b3p.transmodel.Activation;
 import nl.b3p.transmodel.ActivationGroup;
 import nl.b3p.transmodel.RoadsideEquipment;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
@@ -29,6 +31,7 @@ import org.stripesstuff.stripersist.Stripersist;
 @StrictBinding
 @UrlBinding("/action/viewer/editor")
 public class EditorActionBean implements ActionBean, ValidationErrorHandler {
+    private static final Log log = LogFactory.getLog(EditorActionBean.class);
 
     private static final String JSP = "/WEB-INF/jsp/viewer/editor2.jsp";
     private ActionBeanContext context;
@@ -139,6 +142,27 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
         info.put("tree", buildObjectTree(rseqs));
         return new StreamingResolution("application/json",  new StringReader(info.toString()));
     }
+    
+    public Resolution rseqInfo2() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+        
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            RoadsideEquipment2 rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
+                    .setParameter("un", unitNumber)
+                    .getSingleResult();
+        
+            info.put("rseq",rseq2.getRseqGeoJSON());
+            info.put("points",rseq2.getPointsGeoJSON());
+            info.put("success", Boolean.TRUE);
+        } catch(Exception e) {
+            log.error("rseqInfo2 exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));            
+        }
+        return new StreamingResolution("application/json",  new StringReader(info.toString()));
+    }
+    
 
     private JSONObject buildObjectTree(List objects) throws Exception {
         List roots = new ArrayList();
