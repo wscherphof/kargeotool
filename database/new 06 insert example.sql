@@ -13,6 +13,10 @@ language sql immutable;
 insert into roadside_equipment2(crossing_code, description, kar_address, town, "type", location, valid_from, data_owner) values
   ('VB123', 'Kruispunt Amsterdamsestraatweg / Marnixlaan', 9999, 'Utrecht', 'CROSSING', geomfromtext('POINT(134790 457481)',28992),'2012-01-16', 'B3P');
 
+insert into roadside_equipment2_kar_attributes(roadside_equipment2,command_type,service_type,used_attributes_mask,list_index) values
+ (find_rseq2_id(9999),1,'PT',1+2+4+32+64,0),
+ (find_rseq2_id(9999),2,'PT',1+64,1);
+
 insert into activation_point2(label, nummer, location, roadside_equipment) values
   ('A',   1, geomfromtext('POINT(134844 457431)',28992),find_rseq2_id(9999)),
   ('B',   2, geomfromtext('POINT(134750 457439)',28992),find_rseq2_id(9999)),
@@ -32,7 +36,6 @@ insert into activation_point2(label, nummer, location, roadside_equipment) value
   
 insert into movement(nummer, roadside_equipment) select
   unnest(ARRAY[1,2,3,4,5,6,7,8,9,10,11,12]), (find_rseq2_id(9999));
-
 
 insert into movement_activation_point(begin_end_or_activation, movement, point) values
   ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'A')),
@@ -64,3 +67,4 @@ insert into activation_point_signal(distance_till_stop_line,kar_command_type,tri
   (-5,2,'STANDARD',2);
 update movement_activation_point set signal = lastval() where movement = find_mvmt_id(9999,3) and point = find_ap2_id(9999,'K1');
 
+insert into activation_point_signal_vehicle_types select id, 1 from activation_point_signal;
