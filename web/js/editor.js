@@ -10,7 +10,7 @@ Ext.define("Editor", {
     constructor: function(domId, mapfilePath) {
         this.domId = domId;
         
-        this.startLocationHash = this.parseHash();
+        this.startLocationHash = this.parseLocationHash();
         
         this.createOpenLayersController(mapfilePath);   
         var haveCenterInHash = this.setCenterFromLocationHash();
@@ -59,14 +59,14 @@ Ext.define("Editor", {
         });
     },
     
-    parseHash: function() {
+    parseLocationHash: function() {
         var hash = window.location.hash;
         hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
         return Ext.Object.fromQueryString(hash);
     },
     
     updateLocationHash: function(objToMerge) {
-        var hash = this.parseHash();
+        var hash = this.parseLocationHash();
         window.location.hash = Ext.Object.toQueryString(Ext.Object.merge(hash, objToMerge));
     },
     
