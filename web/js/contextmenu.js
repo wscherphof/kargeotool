@@ -121,12 +121,12 @@ function ContextMenu (){
         
         this.menuContext ={
             "standaard" : standaard,
-            "ACTIVATION_1" : signalGroup,
-            "ACTIVATION_2" : signalGroup,
+            "Point" : signalGroup,
+            /*"ACTIVATION_2" : signalGroup,
             "ACTIVATION_3" : signalGroup,
             "END" : signalGroup,
-            "BEGIN" : signalGroup,
-            "CROSSING" : vri
+            "BEGIN" : signalGroup,*/
+            "RSEQ" : vri
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -137,9 +137,8 @@ function ContextMenu (){
         };
     },
     this.getMenuContext = function (){
-        // XXX
-        if(editor.olc.activeFeature){
-            var type = editor.olc.activeFeature.data.type;
+        if(editor.selectedObject){
+            var type = editor.selectedObject.$className;
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
