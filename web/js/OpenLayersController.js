@@ -531,7 +531,16 @@ var style = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/vri.png"
+            externalGraphic: "../../images/treeview/vri.png",
+            label: "${description}"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        elseFilter: true,
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_zwart.gif"
         }
     }),
     new OpenLayers.Rule({   
@@ -612,6 +621,14 @@ var selectstyle = new OpenLayers.Style(
             externalGraphic: "../../images/treeview/vri.png"
         }
     }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        elseFilter: true,
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_zwart.gif"
+        }
+    }),
     new OpenLayers.Rule({   
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -689,6 +706,14 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: "../../images/treeview/vri.png"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        elseFilter: true,
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: "../../images/treeview/radio_zwart.gif"
         }
     }),
     new OpenLayers.Rule({   
