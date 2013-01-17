@@ -13,6 +13,31 @@ Ext.define('RSEQ', {
     },
     constructor: function(config) {        
         this.initConfig(config);    
+    },
+    toGeoJSON : function (){
+        var points = new Array();
+        for (var i = 0 ; i < this.points.length; i++){
+            var point = this.points[i].toGeoJSON();
+            points.push(point);
+        }
+        points.push({
+            type: "Feature",
+            geometry: this.location,
+            properties:{
+                id: this.id,
+                description:this.description,
+                validFrom:this.validFrom,
+                karAddress:this.karAddress,
+                dataOwner:this.dataOwner,
+                town:this.town,
+                type:this.type
+            }
+        });
+        var json = {
+            "type" : "FeatureCollection",
+            "features" :points
+        };
+        return json;
     }
 });
 
@@ -28,6 +53,21 @@ Ext.define('Point', {
     },
     constructor: function(config) {        
         this.initConfig(config);    
+    },
+    toGeoJSON : function(){
+        var json = {
+            type: "Feature",
+            geometry : this.geometry,
+            properties:{
+                id: this.id,
+                label:this.label,
+                movementNumbers:this.movementNumbers,
+                type:this.type,
+                nummer:this.nummer,
+                signalGroupNumbers:this.signalGroupNumbers
+            }
+        };
+        return json;
     }
 });
 
@@ -57,31 +97,6 @@ Ext.define('Movement', {
         this.initConfig(config);    
     }
 });
-
-function testModels(){
-    Ext.Ajax.request({
-        url:editorActionBeanUrl,
-        method: 'GET',
-        scope: this,
-        params: {
-            'rseqJSON' : true,
-            unitNumber :9999
-        },
-        success: function (response){
-            var msg = Ext.JSON.decode(response.responseText);
-            if(msg.success){
-                var rJson = msg.roadsideEquipment;
-                var rseq = makeRseq(rJson);
-                var a = 0;
-            }else{
-                alert("Ophalen resultaten mislukt.");
-            }
-        },
-        failure: function (response){
-            alert("Ophalen resultaten mislukt.");
-        }
-    });
-}
 
 function makeRseq (json){
     var rseq = Ext.create("RSEQ",json);

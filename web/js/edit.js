@@ -8,15 +8,15 @@ function requestEditableFeatures(){
         method: 'GET',
         scope: this,
         params: {
-            'rseqInfo2' : true,
+            'rseqJSON' : true,
             unitNumber :9999
         },
         success: function (response){
             var msg = Ext.JSON.decode(response.responseText);
             if(msg.success){
-                editor.olc.removeAllFeatures();
-                editor.olc.addFeatures(msg.rseq);
-                editor.olc.addFeatures(msg.points);
+                var rJson = msg.roadsideEquipment;
+                var rseq = makeRseq(rJson);
+                editor.olc.addFeatures(rseq.toGeoJSON());
             }else{
                 alert("Ophalen resultaten mislukt.");
             }
