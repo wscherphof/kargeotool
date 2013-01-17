@@ -38,31 +38,12 @@ function ol (){
         }
         );
             
-        var highlight = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
-            highlightOnly: true,
-            renderIntent: "temporary",
-            hover:true
-        });
-        this.map.addControl(highlight);
-        highlight.activate();
-        var selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
-            clickout: true,
-            scope:this,
-            onSelect : function (feature){
-                this.setActiveFeature(feature);
-            }
-        });
-
-        this.map.addControl(selectCtrl);
-        selectCtrl.activate();
-        
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
         this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
         OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
-        requestEditableFeatures();
     },
     /**
      * Private nethod which adds all the controls
@@ -218,9 +199,26 @@ function ol (){
             includeXY:true
         });
         
-   
         this.map.addControl(oClick);
         oClick.activate();
+        
+        var highlight = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
+            highlightOnly: true,
+            renderIntent: "temporary",
+            hover:true
+        });
+        this.map.addControl(highlight);
+        highlight.activate();
+        var selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
+            clickout: true,
+            scope:this,
+            onSelect : function (feature){
+                editor.setSelectedObject(feature.data.id);
+            }
+        });
+
+        this.map.addControl(selectCtrl);
+        selectCtrl.activate();
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          

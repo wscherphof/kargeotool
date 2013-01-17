@@ -14,6 +14,22 @@ Ext.define('RSEQ', {
     constructor: function(config) {        
         this.initConfig(config);    
     },
+    getPointById : function (id){
+        for (var i = 0 ; i < this.points.length ;i++){
+            if(this.points[i].getId() == id){
+                return this.points[i];
+            }
+        }
+        return null;
+    },
+    getMovementById : function (id){
+        for (var i = 0 ; i < this.movements.length ;i++){
+            if(this.movements[i].getId() == id){
+                return this.movements[i];
+            }
+        }
+        return null;
+    },
     toGeoJSON : function (){
         var points = new Array();
         for (var i = 0 ; i < this.points.length; i++){

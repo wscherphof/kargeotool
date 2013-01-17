@@ -2,31 +2,6 @@ function setStatus(what, status) {
     document.getElementById(what + "Status").innerHTML = escapeHTML(status);
 }
 
-function requestEditableFeatures(){   
-    Ext.Ajax.request({
-        url:editorActionBeanUrl,
-        method: 'GET',
-        scope: this,
-        params: {
-            'rseqJSON' : true,
-            unitNumber :9999
-        },
-        success: function (response){
-            var msg = Ext.JSON.decode(response.responseText);
-            if(msg.success){
-                var rJson = msg.roadsideEquipment;
-                var rseq = makeRseq(rJson);
-                editor.olc.addFeatures(rseq.toGeoJSON());
-            }else{
-                alert("Ophalen resultaten mislukt.");
-            }
-        },
-        failure: function (response){
-            alert("Ophalen resultaten mislukt.");
-        }
-    });
-}
-
 function treeItemClick(item) {
     showSelected(roaEquId, actGroIds, actIds);
     tree_selectObject(item);

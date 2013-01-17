@@ -7,6 +7,9 @@ Ext.define("Editor", {
     
     startLocationHash: null,
     
+    activeRseq: null,
+    selectedObject:null,
+    
     constructor: function(domId, mapfilePath) {
         this.domId = domId;
         
@@ -26,11 +29,13 @@ Ext.define("Editor", {
                     this.olc.map.setCenter(new OpenLayers.LonLat(
                         this.rseq.location.x,
                         this.rseq.location.y), 
-                        14 /* bepaal zoomniveau op basis van extent rseq location en alle point locations) */
+                    14 /* bepaal zoomniveau op basis van extent rseq location en alle point locations) */
                     );
                 }
             }
         }
+        
+        this.loadRseqInfo(9999);
     },
     
     createOpenLayersController: function() {
@@ -98,6 +103,48 @@ Ext.define("Editor", {
      */
     loadRseqInfo: function(id) {
         console.log("laad rseq met id " + id);
+        
+        Ext.Ajax.request({
+            url:editorActionBeanUrl,
+            method: 'GET',
+            scope: this,
+            params: {
+                'rseqJSON' : true,
+                unitNumber :id
+            },
+            success: function (response){
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var rJson = msg.roadsideEquipment;
+                    var rseq = makeRseq(rJson);
+                    editor.olc.removeAllFeatures();
+                    editor.olc.addFeatures(rseq.toGeoJSON());
+                    this.setActiveRseq(rseq);
+                }else{
+                    alert("Ophalen resultaten mislukt.");
+                }
+            },
+            failure: function (response){
+                alert("Ophalen resultaten mislukt.");
+            }
+        });
+    },
+    setActiveRseq : function (rseq){
+        this.activeRseq = rseq;
+    },
+    setSelectedObject : function (id){
+        if(this.activeRseq){
+            if(this.activeRseq.getId() == id){
+                this.selectedObject = this.activeRseq;
+            }else{
+                var point = this.activeRseq.getPointById(id);
+                if (point){
+                    this.selectedObject = point;
+                }else{
+                    alert("Object niet gevonden.")
+                }
+            }
+        }
     }
     
 });
