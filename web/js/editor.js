@@ -13,12 +13,23 @@ Ext.define("Editor", {
         this.startLocationHash = this.parseHash();
         
         this.createOpenLayersController(mapfilePath);   
-        this.setCenterFromLocationHash();
+        var haveCenterInHash = this.setCenterFromLocationHash();
         
         this.createContextMenu();
         
         if(this.startLocationHash.rseq) {
             this.loadRseqInfo(parseInt(this.startLocationHash.rseq));
+
+            // Toekomstige code voor aanroep met alleen rseq in hash zonder x,y,zoom
+            var onRseqLoaded = function() {
+                if(!haveCenterInHash) {
+                    this.olc.map.setCenter(new OpenLayers.LonLat(
+                        this.rseq.location.x,
+                        this.rseq.location.y), 
+                        14 /* bepaal zoomniveau op basis van extent rseq location en alle point locations) */
+                    );
+                }
+            }
         }
     },
     
@@ -79,8 +90,10 @@ Ext.define("Editor", {
         var hash = this.startLocationHash;
         if(hash.x && hash.y && hash.zoom) {
             this.olc.map.setCenter(new OpenLayers.LonLat(hash.x, hash.y), hash.zoom);
+            return true;
         } else {
             this.olc.map.zoomToMaxExtent();
+            return true;
         }
     },
     
