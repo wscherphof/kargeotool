@@ -113,7 +113,7 @@
                 
                 function toggleLayer(layer) {
                     var legend = document.getElementById(layer);
-                    var visible = oc.isLayerVisible(layer);
+                    var visible = editor.olc.isLayerVisible(layer);
 
                     editor.olc.setLayerVisible(layer,!visible);
                     if(legend){
