@@ -33,6 +33,12 @@ function ContextMenu (){
             renderTo: Ext.getBody(),
             items: [
             {
+                id: 'editVRI',
+                text: 'Bewerkt wallapparaat'
+            },{
+                xtype: 'menuseparator'
+            },
+            {
                 id: 'addSignalGroup',
                 text: 'Voeg signaalgroep toe'
             }
@@ -43,10 +49,13 @@ function ContextMenu (){
                         x: menu.x,
                         y: menu.y
                     }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
+                    var lonlat = oc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addSignalGroup':
-                            alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat)
+                            alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                            break;
+                        case 'editVRI':
+                            this.openPopup();
                             break;
                     }
                 },
@@ -58,6 +67,13 @@ function ContextMenu (){
             floating: true,
             renderTo: Ext.getBody(),
             items: [
+                
+            {
+                id: 'edit',
+                text: 'Bewerkt punt'
+            },{
+                xtype: 'menuseparator'
+            },
             {
                 id: 'addEndPoint',
                 text: 'Voeg eindpunt toe'
@@ -82,16 +98,19 @@ function ContextMenu (){
                         x: menu.x,
                         y: menu.y
                     }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
+                    var lonlat = oc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addEndPoint':
-                            alert("Eindpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
+                            alert("Eindpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
                             break;
                         case 'addCheckinPoint':
-                            alert("Inmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
+                            alert("Inmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
                             break;
                         case 'addCheckoutPoint':
-                            alert("Uitmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
+                            alert("Uitmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                            break;
+                        case 'edit':
+                            this.openPopup();
                             break;
                     }
                 },
@@ -134,6 +153,21 @@ function ContextMenu (){
             var mc = this.menuContext[key];
             mc.hide();
         }
-        
+    },
+    this.openPopup = function (){
+        Ext.create('Ext.window.Window', {
+            title: 'Hello',
+            height: 200,
+            width: 400,
+            layout: 'fit',
+            items: {  // Let's put an empty grid in just to illustrate fit layout
+                xtype: 'grid',
+                border: false,
+                columns: [{
+                    header: 'World'
+                }],                 // One header just for show. There's no data,
+                store: Ext.create('Ext.data.ArrayStore', {}) // A dummy empty data store
+            }
+        }).show();
     }
 }
