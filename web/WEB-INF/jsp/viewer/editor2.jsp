@@ -71,9 +71,8 @@
         </div>
         
         <div id="rightbar">
-            <div id="legend"> 
-                <br/>
-                <strong>VRI-informatie</strong><br/>
+            <div id="legend">
+                <strong>VRI-informatie</strong><br/><br />
                 <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/>Walapparatuur<br/>
                 <div id="walapparatuur"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/></div>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('signaalgroepen');"/>Signaalgroepen<br/>
