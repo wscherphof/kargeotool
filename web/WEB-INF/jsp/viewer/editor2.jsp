@@ -92,6 +92,7 @@
                 <strong>Zoek</strong><br/>
                 <input type="text" id="searchField"/>
             </div>
+            <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
                 
                 var imgPath = "<c:url value="/images/"/>";
@@ -100,6 +101,22 @@
                     vri: imgPath + 'treeview/vri.png'
                 };
                 
+                var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map";
+                
+                var editor = Ext.create(Editor, "map", mapfilePath);
+                
+                function toggleLayer(layer) {
+                    var legend = document.getElementById(layer);
+                    var visible = oc.isLayerVisible(layer);
+
+                    editor.olc.setLayerVisible(layer,!visible);
+                    if(legend){
+                        var attr = !visible ?  'block' : 'none' ;
+                        legend.setAttribute("style", 'display:' +attr);
+                    }
+                }
+                
+/*                
                 var domId = 'map';
                 var oc = new ol();
                 var cm = new ContextMenu();
@@ -118,7 +135,6 @@
                 if(!oc.setCenterFromHash()) {
                     oc.map.zoomToMaxExtent();
                 }
-                    
 
                 function toggleLayer(layer){
                     var legend = document.getElementById(layer);
@@ -130,6 +146,7 @@
                         legend.setAttribute("style", 'display:' +attr);
                     }
                 }
+*/                    
             </script>
         </div>
 

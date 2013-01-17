@@ -240,18 +240,19 @@ function ol (){
         });
         this.map.addControl(this.overview);
            
+        // XXX in ContextMenu
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var x = evt.clientX;
                 var y = evt.clientY;
-                var context = cm.getMenuContext();
+                var context = editor.contextMenu.getMenuContext();
                 if(context){
                     context.showAt(x, y);
                 }
                 return false;
             },
             click: function (evt){
-                cm.deactivateContextMenu();
+                editor.contextMenu.deactivateContextMenu();
             },
             includeXY:true
         });
@@ -259,10 +260,6 @@ function ol (){
    
         this.map.addControl(oClick);
         oClick.activate();
-        
-        this.map.events.register("moveend",document,function(){
-            cm.deactivateContextMenu();
-        });
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          

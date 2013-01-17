@@ -137,8 +137,9 @@ function ContextMenu (){
         };
     },
     this.getMenuContext = function (){
-        if(oc.activeFeature){
-            var type = oc.activeFeature.data.type;
+        // XXX
+        if(editor.olc.activeFeature){
+            var type = editor.olc.activeFeature.data.type;
             var menu = this.menuContext[type];
             if(menu){
                 return menu;

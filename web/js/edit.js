@@ -14,9 +14,9 @@ function requestEditableFeatures(){
         success: function (response){
             var msg = Ext.JSON.decode(response.responseText);
             if(msg.success){
-                this.oc.removeAllFeatures();
-                this.oc.addFeatures(msg.rseq);
-                this.oc.addFeatures(msg.points);
+                editor.olc.removeAllFeatures();
+                editor.olc.addFeatures(msg.rseq);
+                editor.olc.addFeatures(msg.points);
             }else{
                 alert("Ophalen resultaten mislukt.");
             }
@@ -449,22 +449,22 @@ function geometryDrawUpdate( geometry) {
 // geometryType is Point, PointAtDistance, ...
 function addGeometry(geometryType, geometry) {
     if(geometryType == "Point"){
-        this.oc.drawPoint(geometry);
+        editor.olc.drawPoint(geometry);
     }else{
-        this.oc.drawLine(geometry);
+        editor.olc.drawLine(geometry);
     }
 }
 
 function drawNewGeometry(geometryType) {
     if(geometryType == "Point"){
-        this.oc.drawPoint();
+        editor.olc.drawPoint();
     }else{
-        this.oc.drawLine();
+        editor.olc.drawLine();
     }
 }
 
 function cancelEdit() {
-    this.oc.removeAllFeatures();
+    editor.olc.removeAllFeatures();
 // hide location
 }
 
