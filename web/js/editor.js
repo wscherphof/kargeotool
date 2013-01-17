@@ -47,11 +47,7 @@ Ext.define("Editor", {
         this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', false);
         this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', false);
         
-        this.olc.map.events.on({
-            "moveend": this.updateCenterInLocationHash,
-            "zoomend": this.updateCenterInLocationHash,
-            scope: this
-        });        
+        this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
     
     createContextMenu: function() {
