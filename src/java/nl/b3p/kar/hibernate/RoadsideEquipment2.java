@@ -3,12 +3,16 @@ package nl.b3p.kar.hibernate;
 import com.vividsolutions.jts.geom.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.*;
 import nl.b3p.geojson.GeoJSON;
 import org.hibernate.annotations.Sort;
@@ -321,4 +325,135 @@ public class RoadsideEquipment2 {
         return gjc;
     }
     
+    public JSONObject getJSON() throws JSONException {
+        JSONObject j = new JSONObject();
+        j.put("id", id);
+        j.put("dataOwner", dataOwner.getCode());
+        j.put("crossingCode", crossingCode);
+        j.put("description", description);
+        j.put("karAddress", karAddress);
+        j.put("town", town);
+        j.put("type", type);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        j.put("validFrom", sdf.format(validFrom));
+        j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
+        j.put("location", GeoJSON.toGeoJSON(location));
+        
+        JSONArray jmvmts = new JSONArray();
+        j.put("movements", jmvmts);
+        for(Movement m: movements) {
+            JSONObject jm = new JSONObject();
+            jmvmts.put(jm);
+            jm.put("id", m.getId());
+            jm.put("nummer", m.getNummer());
+            
+            JSONArray maps = new JSONArray();
+            jm.put("maps", maps);
+            for(MovementActivationPoint map: m.getPoints()) {
+                JSONObject jmap = new JSONObject();
+                maps.put(jmap);
+                jmap.put("id", map.getId());
+                jmap.put("beginEndOrActivation", map.getBeginEndOrActivation());
+                jmap.put("pointId", map.getPoint().getId());
+                ActivationPointSignal signal = map.getSignal();
+                if(signal != null) {
+                    jmap.put("distanceTillStopLine", signal.getDistanceTillStopLine());
+                    jmap.put("commandType", signal.getKarCommandType());
+                    jmap.put("signalGroupNumber", signal.getSignalGroupNumber());
+                    jmap.put("virtualLocalLoopNumber", signal.getVirtualLocalLoopNumber());
+                    jmap.put("triggerType", signal.getTriggerType());
+                    JSONObject jvt = new JSONObject();
+                    for(VehicleType vt: signal.getVehicleTypes()) {
+                        jvt.put(vt.getNummer()+"", Boolean.TRUE);
+                    }
+                    jmap.put("vehicleTypes", jvt);
+                }
+            }
+        }
+        
+        Map<ActivationPoint2,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
+        for(Movement m: movements) {
+            for(MovementActivationPoint map: m.getPoints()) {
+                List<MovementActivationPoint> maps = mapsByAp2.get(map.getPoint());
+                if(maps == null) {
+                    maps = new ArrayList();
+                    mapsByAp2.put(map.getPoint(), maps);
+                }
+                maps.add(map);                
+            }
+        }
+
+        List<JSONObject> jpoints = new ArrayList();
+        
+        for(ActivationPoint2 ap2: points) {
+            JSONObject pj = new JSONObject();
+            pj.put("id",ap2.getId());
+            pj.put("geometry", GeoJSON.toGeoJSON(ap2.getLocation()));
+            pj.put("label", ap2.getLabel());
+            pj.put("nummer", ap2.getNummer());
+            
+            // Zoek soort punt op, wordt in movement.points bepaald maar is 
+            // voor alle movements die dit punt gebruiken altijd hetzelfde
+            // soort (combi beginEndOrActivation en commandType)
+            
+            List<MovementActivationPoint> maps = mapsByAp2.get(ap2);
+            String ap2type = null;
+            
+            SortedSet<Integer> movementNumbers = new TreeSet();
+            SortedSet<Integer> signalGroupNumbers = new TreeSet();
+            
+            if(maps != null && !maps.isEmpty()) {
+                // de waardes beginEndOrActivation en karCommandType moeten voor
+                // alle MAP's voor deze AP2 hetzelfde zijn
+                MovementActivationPoint map1 = maps.get(0);
+                 ap2type = map1.getBeginEndOrActivation();
+                if(map1.getSignal() != null) {
+                    assert(MovementActivationPoint.ACTIVATION.equals(ap2type));
+                    ap2type = ap2type + "_" + map1.getSignal().getKarCommandType();
+                }
+                
+                for(MovementActivationPoint map: maps) {
+                    movementNumbers.add(map.getMovement().getNummer());
+                    if(map.getSignal() != null) {
+                        signalGroupNumbers.add(map.getSignal().getSignalGroupNumber());
+                    }
+                    if(MovementActivationPoint.END.equals(ap2type)) {
+                        for(MovementActivationPoint map2: map.getMovement().getPoints()) {
+                            ActivationPointSignal aps = map2.getSignal();
+                            if(aps != null) {
+                                signalGroupNumbers.add(aps.getSignalGroupNumber());
+                            }
+                        }
+                    }
+                }
+            }
+            pj.put("type", ap2type);
+            JSONArray mns = new JSONArray();
+            for(Integer i: movementNumbers) { mns.put(i); };
+            pj.put("movementNumbers", mns);
+            JSONArray sgns = new JSONArray();
+            for(Integer i: signalGroupNumbers) { sgns.put(i); };
+            pj.put("signalGroupNumbers", sgns);
+            
+            jpoints.add(pj);
+            Collections.sort(jpoints, new Comparator<JSONObject>() {
+                public int compare(JSONObject lhs, JSONObject rhs) {
+                    try {
+                        return new Integer(lhs.getInt("nummer")).compareTo(rhs.getInt("nummer"));
+                    } catch (JSONException ex) {
+                        return 0;
+                    }
+                }
+            });
+            
+            JSONArray jp = new JSONArray();
+            for(JSONObject jo: jpoints) {
+                jp.put(jo);
+            }
+            j.put("points", jp);
+            
+        }       
+        
+        return j;
+    }
 }

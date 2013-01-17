@@ -163,6 +163,26 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
         return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
     }
     
+    public Resolution rseqJSON() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+        
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            RoadsideEquipment2 rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
+                    .setParameter("un", unitNumber)
+                    .getSingleResult();
+
+            info.put("roadsideEquipment",rseq2.getJSON());
+            
+            info.put("success", Boolean.TRUE);
+        } catch(Exception e) {
+            log.error("rseqJSON exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));            
+        }
+        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
+    }
+    
 
     private JSONObject buildObjectTree(List objects) throws Exception {
         List roots = new ArrayList();
