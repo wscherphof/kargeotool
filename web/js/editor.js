@@ -5,9 +5,16 @@ Ext.define("Editor", {
     olc: null,
     contextMenu: null,
     
+    startLocationHash: null,
+    
     constructor: function(domId, mapfilePath) {
         this.domId = domId;
-        this.createOpenLayersController(mapfilePath);    
+        
+        this.startLocationHash = this.parseHash();
+        
+        this.createOpenLayersController(mapfilePath);   
+        this.setCenterFromLocationHash();
+        
         this.createContextMenu();
     },
     
@@ -24,10 +31,12 @@ Ext.define("Editor", {
         this.olc.addLayer("WMS","triggerpunten",mapfilePath,'triggerpunten', false);
         this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', false);
         this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', false);
-               
-        if(!this.olc.setCenterFromHash()) {
-            this.olc.map.zoomToMaxExtent();
-        }
+        
+        this.olc.map.events.on({
+            "moveend": this.updateCenterInLocationHash,
+            "zoomend": this.updateCenterInLocationHash,
+            scope: this
+        });        
     },
     
     createContextMenu: function() {
@@ -37,6 +46,38 @@ Ext.define("Editor", {
         this.olc.map.events.register("moveend", this, function() {
             this.contextMenu.deactivateContextMenu();
         });
+    },
+    
+    parseHash: function() {
+        var hash = window.location.hash;
+        hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
+        return Ext.Object.fromQueryString(hash);
+    },
+    
+    updateLocationHash: function(objToMerge) {
+        var hash = this.parseHash();
+        window.location.hash = Ext.Object.toQueryString(Ext.Object.merge(hash, objToMerge));
+    },
+    
+    updateCenterInLocationHash: function() {
+        this.updateLocationHash({
+            x: this.olc.map.getCenter().lon,
+            y: this.olc.map.getCenter().lat,
+            zoom: this.olc.map.getZoom()
+        });
+    },          
+
+    /**
+     * Aanroepen na het toevoegen van layers. De window.location.hash is 
+     * opgeslagen voordat deze na zoomend en moveend events is aangepast.
+     */
+    setCenterFromLocationHash: function() {
+        var hash = this.startLocationHash;
+        if(hash.x && hash.y && hash.zoom) {
+            this.olc.map.setCenter(new OpenLayers.LonLat(hash.x, hash.y), hash.zoom);
+        } else {
+            this.olc.map.zoomToMaxExtent();
+        }
     },
     
     /**
