@@ -1,4 +1,5 @@
 Ext.onReady(function() {
+    Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
     var viewport = Ext.create('Ext.Viewport', {
         layout: 'border',
         defaultType: 'panel',

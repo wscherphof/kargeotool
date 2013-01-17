@@ -294,10 +294,69 @@ td.disabled {
     overflow: scroll;
 }
 
-#contextinfo {
+#contextinfo, #rightbar {
     padding: 5px;
 }
 
-#rightbar {
-    padding: 5px;
+.description {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.formedit {
+    margin-top: 15px;
+}
+
+.edittable {
+    margin-top: 10px;
+}
+
+.edittable .left td {
+    padding-bottom: 5px;
+    padding-right: 5px;
+}
+
+.edittable .right {
+    padding-left: 10px;
+}
+
+#gebruikerScroller {
+    max-height: 180px;
+    overflow: auto;
+    width: 750px;
+    border: 1px solid;
+}
+
+#gebruikerScroller table, .tableheader {
+    font-size: 8pt;
+    border-collapse: collapse;
+    border: 0px;
+}
+
+.tableheader {
+    width: 750px;
+}
+
+.tableheader th {
+    border: 1px solid;
+    border-bottom: 0px none;
+    padding: 3px;
+    font-weight: bold;
+}
+
+#gebruikerScroller table td, #gebruikerScroller table th {
+    border: 1px solid;
+    padding: 3px;
+}
+
+#gebruikerScroller table tr:first-child td {
+    border-top: 0px;
+}
+
+#gebruikerScroller table tr:last-child td {
+    border-bottom: 0px;
+}
+
+#gebruikerScroller table td:first-child {
+    border-left: 0px;
 }
