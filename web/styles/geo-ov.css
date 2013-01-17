@@ -294,7 +294,7 @@ td.disabled {
     overflow: scroll;
 }
 
-#contextinfo, #rightbar {
+#searchform, #contextinfo, #rightbar, #form {
     padding: 5px;
 }
 

@@ -31,6 +31,10 @@
 
         <div id="leftbar">
             
+            <div id="searchform">
+                Zoeken
+            </div>
+            
             <div id="contextinfo">
                 Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()});">
                 <p>
@@ -60,6 +64,7 @@
 
             <div id="form">
                 <div id="formContainer">
+                    Formcontainer
                     <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
                     <iframe frameborder="0" name="form" src="${contextPath}/empty.jsp"></iframe>
                 </div>

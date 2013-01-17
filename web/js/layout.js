@@ -30,18 +30,29 @@ Ext.onReady(function() {
                 minWidth: 0,
                 maxWidth: 500,
                 contentEl: 'leftbar',
-                layout: 'vbox',
-                defaultType: 'container',
+                layout: {
+                    type: 'accordion',
+                    align: 'stretch',
+                    multi: true
+                },
+                defaultType: 'panel',
+                defaults: {
+                    border: 0,
+                    width: '100%',
+                    flex: 1
+                },
                 items: [
                     {
+                        contentEl: 'searchform',
+                        title: 'Zoeken'
+                    },
+                    {
                         contentEl: 'contextinfo',
-                        flex: 1,
-                        width: '100%'
+                        title: 'Context'
                     },
                     {
                         contentEl: 'form',
-                        height: 426,
-                        width: '100%'
+                        title: 'Info'
                     }
                 ]
             },
