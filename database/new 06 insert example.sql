@@ -37,16 +37,16 @@ insert into activation_point2(label, nummer, location, roadside_equipment) value
 insert into movement(nummer, roadside_equipment) select
   unnest(ARRAY[1,2,3,4,5,6,7,8,9,10,11,12]), (find_rseq2_id(9999));
 
-insert into movement_activation_point(begin_end_or_activation, movement, point) values
-  ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'A')),
-  ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'K2')),
-  (       'END',find_mvmt_id(9999,1),find_ap2_id(9999,'Z')),
-  ('ACTIVATION',find_mvmt_id(9999,2),find_ap2_id(9999,'A')),
-  ('ACTIVATION',find_mvmt_id(9999,2),find_ap2_id(9999,'K2')),
-  (       'END',find_mvmt_id(9999,2),find_ap2_id(9999,'Y')),
-  ('ACTIVATION',find_mvmt_id(9999,3),find_ap2_id(9999,'A')),
-  ('ACTIVATION',find_mvmt_id(9999,3),find_ap2_id(9999,'K1')),
-  (       'END',find_mvmt_id(9999,3),find_ap2_id(9999,'X'));
+insert into movement_activation_point(begin_end_or_activation, movement, point,list_index) values
+  ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'A'),0),
+  ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'K2'),1),
+  (       'END',find_mvmt_id(9999,1),find_ap2_id(9999,'Z'),2),
+  ('ACTIVATION',find_mvmt_id(9999,2),find_ap2_id(9999,'A'),0),
+  ('ACTIVATION',find_mvmt_id(9999,2),find_ap2_id(9999,'K2'),1),
+  (       'END',find_mvmt_id(9999,2),find_ap2_id(9999,'Y'),2),
+  ('ACTIVATION',find_mvmt_id(9999,3),find_ap2_id(9999,'A'),0),
+  ('ACTIVATION',find_mvmt_id(9999,3),find_ap2_id(9999,'K1'),1),
+  (       'END',find_mvmt_id(9999,3),find_ap2_id(9999,'X'),2);
   
 insert into activation_point_signal(distance_till_stop_line,kar_command_type,trigger_type,signal_group_number) values
   (200,1,'STANDARD',1);

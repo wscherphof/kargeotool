@@ -34,6 +34,7 @@ public class Movement implements Comparable {
      * Geordende lijst met punten (begin, eind en meldpunten) voor deze movement.
      */
     @OneToMany(cascade= CascadeType.PERSIST, mappedBy="movement")
+    @OrderColumn(name="list_index")    
     private List<MovementActivationPoint> points;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
