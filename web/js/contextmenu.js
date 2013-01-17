@@ -18,7 +18,7 @@ function ContextMenu (){
                         x: menu.x,
                         y: menu.y
                     }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addVRI':
                             alert("VRI toevoegen op " + lonlat.lon + ", " + lonlat.lat);
@@ -50,7 +50,7 @@ function ContextMenu (){
                         x: menu.x,
                         y: menu.y
                     }
-                    var lonlat = oc.map.getLonLatFromPixel(pos);
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addSignalGroup':
                             alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat);
@@ -99,7 +99,7 @@ function ContextMenu (){
                         x: menu.x,
                         y: menu.y
                     }
-                    var lonlat = oc.map.getLonLatFromPixel(pos);
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addEndPoint':
                             alert("Eindpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
