@@ -1,5 +1,6 @@
 package nl.b3p.kar.hibernate;
 
+import javax.persistence.*;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -15,10 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
 import nl.b3p.kar.persistence.MyEMFDatabase;
 import nl.b3p.transmodel.DataOwner;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.stripesstuff.stripersist.Stripersist;
 
+@Entity
 public class Gebruiker implements Principal {
-    @javax.persistence.Id private Integer id;
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Integer id;
+    
+    @Column(unique=true, nullable=false)
     private String username;
     private String passwordsalt;
     private String passwordhash;
@@ -26,7 +34,14 @@ public class Gebruiker implements Principal {
     private String email;
     private String phone;
     private String position;
-    private Set roles = new HashSet();
+    
+    @ManyToMany
+    @JoinTable(joinColumns=@JoinColumn(name="gebruiker"), inverseJoinColumns=@JoinColumn(name="role"))
+    private Set<Role> roles = new HashSet();
+    
+    @OneToMany(mappedBy="gebruiker")
+    @MapKeyJoinColumn(name="data_owner")
+    @Sort(type=SortType.NATURAL)
     private SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner, GebruikerDataOwnerRights>();
 
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -115,17 +130,11 @@ public class Gebruiker implements Principal {
         this.position = position;
     }   
 
-    /**
-     * @return the roles
-     */
-    public Set getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    /**
-     * @param roles the roles to set
-     */
-    public void setRoles(Set roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 

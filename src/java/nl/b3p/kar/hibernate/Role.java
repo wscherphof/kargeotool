@@ -5,19 +5,16 @@
 
 package nl.b3p.kar.hibernate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import nl.b3p.kar.persistence.MyEMFDatabase;
+import javax.persistence.*;
 
-/**
- *
- * @author Roy
- */
+@Entity
 public class Role {
     public static final String BEHEERDER = "beheerder";
     public static final String GEBRUIKER = "gebruiker";
     
-    @javax.persistence.Id private Integer id;
+    @Id
+    private Integer id;
+    
     private String role;
 
     /**
@@ -48,6 +45,8 @@ public class Role {
     }
 
     public static Role findByName(String role) throws Exception {
+        return null;
+/*        
         EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
         Role r = null;
         try {
@@ -59,5 +58,6 @@ public class Role {
             // ...
         }
         return r;
+        */
     }
 }

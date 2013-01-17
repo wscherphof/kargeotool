@@ -9,7 +9,7 @@
       </generator>
     </id>
     <natural-id mutable="true">
-      <many-to-one name="dataOwner" not-null="false"/>
+      <!--many-to-one name="dataOwner" not-null="false"/-->
       <property name="unitNumber" not-null="false"/>
       <property name="validFrom" not-null="false"/>
     </natural-id>
@@ -87,7 +87,7 @@
     <property name="validator"/>
     <property name="validationTime"/>
   </class>
-  <class name="nl.b3p.transmodel.DataOwner">
+  <!--class name="nl.b3p.transmodel.DataOwner">
     <id name="id">
       <column name="id" sql-type="serial"/>
       <generator class="native">
@@ -101,5 +101,5 @@
     <property name="name" not-null="true"/>
     <property name="description"/>
     <property name="validationRequired" not-null="true"/>
-  </class>
+  </class-->
 </hibernate-mapping>

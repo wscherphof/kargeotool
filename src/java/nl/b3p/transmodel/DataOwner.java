@@ -1,7 +1,11 @@
 package nl.b3p.transmodel;
 
+import javax.persistence.*;
+
+@Entity
 public class DataOwner implements Comparable {
-    @javax.persistence.Id private Integer id;
+    @Id
+    private Integer id;
     private String code;
     private String type;
     private String name;
