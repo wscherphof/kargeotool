@@ -7,9 +7,9 @@
         <%@include file="/WEB-INF/jsp/commons/headerlinks2.jsp" %>
 
     </stripes:layout-component>
-    <stripes:layout-component name="content">        
-    <!--[if IE 7]> <link href="${contextPath}/styles/geo-ov-ie7.css" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
+    <stripes:layout-component name="content">
 
+        <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript">
 
           
@@ -66,9 +66,12 @@
         </div>
 
         <div id="kaart">
-            <div id="map" style="width: 80%; height: 100%;float:left;"></div>
+            <div id="map" style="width: 100%; height: 100%;"></div>
             <!--div id="overview" style="width:19%;border:1px solid #000; float:right; height:300px;overflow:hidden;"></div-->
-            <div id="legend" style="width:20%;float:right;"> 
+        </div>
+        
+        <div id="rightbar">
+            <div id="legend"> 
                 <br/>
                 <strong>VRI-informatie</strong><br/>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/>Walapparatuur<br/>
@@ -86,12 +89,13 @@
                 <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/>BRT<br/>
             </div>
-            <div id="search" style="width:20%;float:left;">
+            <div id="search">
                 <br/>
                 <hr style="border:1px #000 dotted;"/>
                 <strong>Zoek</strong><br/>
                 <input type="text" id="searchField"/>
             </div>
+            
             <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
                 

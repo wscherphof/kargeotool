@@ -14,19 +14,20 @@
         <script src="${contextPath}/js/jquery-1.3.2.min.js"></script>
         <script src="${contextPath}/js/jquery-ui-1.7.2.custom.min.js"></script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/ext/ext-all.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
-        <!--[if IE 7]> <link href="${contextPath}/styles/geo-ov-ie7.css" rel="stylesheet" media="screen" type="text/css" /> <![endif]-->
         
     </head>
     <body class="editor" id="editorBody">
-        <stripes:layout-component name="headerlinks"/>
-        <div id="contentcontainer">
-            <stripes:layout-component name="content"/>
+        <div id="viewportcontainer">
+            <stripes:layout-component name="headerlinks"/>
+            <div id="contentcontainer">
+                <stripes:layout-component name="content"/>
+            </div>
         </div>
     </body>
 </html>

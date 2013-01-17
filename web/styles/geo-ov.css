@@ -29,15 +29,14 @@ body.form {
 }
 
 #header {
-    margin: 0px;
-    height: 20px;
     background-color: #E32D21;
-    padding: 5px;
-    padding-left: 15px;
     color: white;
     border-bottom: 1px solid #DDDDDD;
     font-size: 12pt;
     font-weight: bold;
+    height: 30px;
+    padding: 5px;
+    padding-left: 15px;
 }
 
 #headerLinks {
@@ -51,19 +50,10 @@ body.form {
 
 #objectTree {
     overflow: auto;
-    
     background-color: white;
     border: 1px solid #DDDDDD;
-
-    width: auto;
-    height: auto;
-    position: absolute;
-    left: 3px;
-    right: 3px;
-    top: 60px;
-    bottom: 50px;
-
-    min-height: 60px;
+    width: 100%;
+    height: 100%;
 }
 
 #objectTree a.uneditable {
@@ -147,46 +137,17 @@ td.disabled {
     overflow: auto;
 }
 
-#leftbar {
-    margin: 0px;
-    width: 200px;
-    position: absolute;
-    top: 30px;
-    left: 0px;
-    bottom: 0px;
-    min-height: 822px;
-}
-
 #tree {
     background-color: #F5F5F5;
     border: 1px solid #DDDDDD;
-    margin: 0px;
-    padding: 0px;
-    height: auto;
-    width: 100%;
-    bottom: 436px;
-    position: absolute;
-    left: 5px;
-    top: 5px;
     min-height: 170px;
-}
-
-#treeTop {
-    position: absolute;
-    left: 3px;
-    top: 0px;
+    height: 100%;
     width: 100%;
-    height: 50px;
 }
 
 #treeTitel {
     background-color: #DDDDDD;
-    padding: 5px;
     font-weight: bold;
-    margin: 0px;
-    margin-left: -3px;
-    margin-right: 3px;
-    margin-bottom: 3px;
 }
 
 #treeTop input {
@@ -204,10 +165,6 @@ td.disabled {
 
 #options {
     border: none;
-    margin: 0px;
-    position: absolute;
-    left: 3px;
-    bottom: 15px;
     width: 100%;
     height: 30px;    
 }
@@ -215,29 +172,13 @@ td.disabled {
 #form {
     border: 1px solid #DDDDDD;
     background-color: #F5F5F5;
-    margin: 0px;
-    padding: 0px;
     width: 100%;
-    height: 426px;
-    position: absolute;
-    left: 5px;
-    bottom: 5px;
+    height: 100%;
 }
 
 #kaart {
     background-color: #F5F5F5;
     border: 1px solid #DDDDDD;
-    margin: 0px;
-    padding: 0px;
-    width: auto;
-    height: auto;
-    left: 215px;
-    position: absolute;
-    top: 35px;
-    bottom: 5px;
-    right: 5px;
-    min-height: 810px;
-    min-width: 575px;
 }
 
 #flashcontent {
@@ -248,26 +189,8 @@ td.disabled {
     min-height: 810px;
 }
 
-#formContainer {
-	margin: 0px;
-	padding: 0px;
-    position: absolute;
-    left: 3px;
-    bottom: 3px;
-    right: 3px;
-    top: 3px;
-    width: 98.5%;
-    height: 98.5%;
-}
-
-#form iframe {
-    width: 100%;
-    height: 100%;
-}
-
 #contentcontainer, #content {
     margin: 5px;
-    height: auto;
 }
 
 .loginImage {
@@ -367,4 +290,10 @@ td.disabled {
 }
 .popup_Window{
     overflow: scroll;
+}
+
+/* styles for ext layout */
+#kaart {
+    width: 100%;
+    height: 100%;
 }
