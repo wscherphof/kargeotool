@@ -16,6 +16,10 @@ Ext.define("Editor", {
         this.setCenterFromLocationHash();
         
         this.createContextMenu();
+        
+        if(this.startLocationHash.rseq) {
+            this.loadRseqInfo(parseInt(this.startLocationHash.rseq));
+        }
     },
     
     createOpenLayersController: function() {
@@ -84,7 +88,7 @@ Ext.define("Editor", {
      * Called from GUI.
      */
     loadRseqInfo: function(id) {
-        
+        console.log("laad rseq met id " + id);
     }
     
 });

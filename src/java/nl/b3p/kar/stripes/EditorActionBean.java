@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.stripesstuff.stripersist.EntityTypeConverter;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
@@ -38,6 +39,10 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
     private boolean magWalapparaatMaken;
     @Validate
     private Integer unitNumber;
+    
+    @Validate
+    private RoadsideEquipment2 rseq;
+    
     @Validate
     private JSONObject layers;
 
@@ -149,9 +154,15 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            RoadsideEquipment2 rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
+            RoadsideEquipment2 rseq2;
+            
+            if(rseq != null) {
+                rseq2 = rseq;
+            } else {
+                rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
                     .setParameter("un", unitNumber)
                     .getSingleResult();
+            }
         
             info.put("rseq",rseq2.getRseqGeoJSON());
             info.put("points",rseq2.getPointsGeoJSON());
@@ -169,9 +180,15 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            RoadsideEquipment2 rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
+            RoadsideEquipment2 rseq2;
+            
+            if(rseq != null) {
+                rseq2 = rseq;
+            } else {
+                rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
                     .setParameter("un", unitNumber)
                     .getSingleResult();
+            }
 
             info.put("roadsideEquipment",rseq2.getJSON());
             
@@ -267,6 +284,14 @@ public class EditorActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setMagWalapparaatMaken(boolean magWalapparaatMaken) {
         this.magWalapparaatMaken = magWalapparaatMaken;
+    }
+
+    public RoadsideEquipment2 getRseq() {
+        return rseq;
+    }
+
+    public void setRseq(RoadsideEquipment2 rseq) {
+        this.rseq = rseq;
     }
     // </editor-fold>
 }
