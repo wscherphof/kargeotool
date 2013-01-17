@@ -1,13 +1,21 @@
-function ContextMenu (){
-    this.menuContext = null;
-    this.createMenus = function(){
+
+Ext.define("ContextMenu", {
+    
+    menuContext: null,
+    editor: null,
+    
+    constructor: function(editor) {
+        this.editor = editor;
+    },
+    
+    createMenus: function() {
         var me = this;
         var standaard = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'addVRI',
+                id: 'addRseq',
                 text: 'Hier verkeerssysteem toevoegen',
                 icon: karTheme.vri
             }
@@ -20,8 +28,8 @@ function ContextMenu (){
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'addVRI':
-                            alert("VRI toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                        case 'addRseq':
+                            alert("Rseq toevoegen op " + lonlat.lon + ", " + lonlat.lat);
                             break;
                     }
                 },
@@ -34,8 +42,9 @@ function ContextMenu (){
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editVRI',
-                text: 'Bewerkt wallapparaat'
+                id: 'editRseq',
+                text: 'Bewerken...',
+                icon: contextPath + "/images/silk/table_edit.png"
             },{
                 xtype: 'menuseparator'
             },
@@ -55,8 +64,8 @@ function ContextMenu (){
                         case 'addSignalGroup':
                             alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat);
                             break;
-                        case 'editVRI':
-                            this.openPopup();
+                        case 'editRseq':
+                            this.editor.editRseq();
                             break;
                     }
                 },
@@ -136,7 +145,7 @@ function ContextMenu (){
             else return false; // For IE browsers.
         };
     },
-    this.getMenuContext = function (){
+    getMenuContext: function() {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
             var menu = this.menuContext[type];
@@ -149,13 +158,13 @@ function ContextMenu (){
             return this.menuContext["standaard"];
         }
     },
-    this.deactivateContextMenu = function(){
+    deactivateContextMenu: function() {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
             mc.hide();
         }
     },
-    this.openPopup = function (){
+    openPopup: function() {
         Ext.create('Ext.window.Window', {
             title: 'Hello',
             height: 200,
@@ -171,4 +180,4 @@ function ContextMenu (){
             }
         }).show();
     }
-}
+});

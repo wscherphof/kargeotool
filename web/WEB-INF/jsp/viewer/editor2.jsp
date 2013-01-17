@@ -30,8 +30,10 @@
         </script>
 
         <div id="leftbar">
-
+            
             <div id="contextinfo">
+                Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()});">
+                <p>
                 Huidig geselecteerde VRI: <span id="context_vri"></span>
                 
             </div>

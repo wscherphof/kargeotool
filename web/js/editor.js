@@ -21,7 +21,7 @@ Ext.define("Editor", {
         this.createContextMenu();
         
         if(this.startLocationHash.rseq) {
-            this.loadRseqInfo(parseInt(this.startLocationHash.rseq));
+            this.loadRseqInfo({rseq: parseInt(this.startLocationHash.rseq)});
 
             // Toekomstige code voor aanroep met alleen rseq in hash zonder x,y,zoom
             var onRseqLoaded = function() {
@@ -34,8 +34,6 @@ Ext.define("Editor", {
                 }
             }
         }
-        
-        this.loadRseqInfo(9999);
     },
     
     createOpenLayersController: function() {
@@ -56,7 +54,7 @@ Ext.define("Editor", {
     },
     
     createContextMenu: function() {
-        this.contextMenu = new ContextMenu();
+        this.contextMenu = new ContextMenu(this);
         this.contextMenu.createMenus(this.domId);        
         
         this.olc.map.events.register("moveend", this, function() {
@@ -101,17 +99,15 @@ Ext.define("Editor", {
     /**
      * Called from GUI.
      */
-    loadRseqInfo: function(id) {
-        console.log("laad rseq met id " + id);
+    loadRseqInfo: function(query) {
         
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
             scope: this,
-            params: {
-                'rseqJSON' : true,
-                unitNumber :id
-            },
+            params: Ext.Object.merge(query, {
+                'rseqJSON' : true
+            }),
             success: function (response){
                 var msg = Ext.JSON.decode(response.responseText);
                 if(msg.success){
@@ -145,6 +141,23 @@ Ext.define("Editor", {
                 }
             }
         }
+    },
+    
+    editRseq: function() {
+        Ext.create('Ext.window.Window', {
+            title: 'Bewerken VRI met KAR adres 39876',
+            height: 200,
+            width: 400,
+            layout: 'fit',
+            items: {  // Let's put an empty grid in just to illustrate fit layout
+                xtype: 'grid',
+                border: false,
+                columns: [{
+                    header: 'World'
+                }],                 // One header just for show. There's no data,
+                store: Ext.create('Ext.data.ArrayStore', {}) // A dummy empty data store
+            }
+        }).show();
     }
     
 });
