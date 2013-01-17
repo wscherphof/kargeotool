@@ -149,7 +149,7 @@ td.disabled {
 
 #leftbar {
     margin: 0px;
-    width: 375px;
+    width: 200px;
     position: absolute;
     top: 30px;
     left: 0px;
@@ -231,7 +231,7 @@ td.disabled {
     padding: 0px;
     width: auto;
     height: auto;
-    left: 385px;
+    left: 215px;
     position: absolute;
     top: 35px;
     bottom: 5px;
