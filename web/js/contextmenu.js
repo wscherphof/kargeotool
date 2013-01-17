@@ -8,7 +8,8 @@ function ContextMenu (){
             items: [
             {
                 id: 'addVRI',
-                text: 'Voeg wallapparaat toe'
+                text: 'Hier verkeerssysteem toevoegen',
+                icon: karTheme.vri
             }
             ],
             listeners: {

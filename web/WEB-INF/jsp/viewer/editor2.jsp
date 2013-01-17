@@ -16,7 +16,7 @@
             var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
             var contextPath = "${contextPath}";
    
-
+/*
             setOnload(function() 
             {
                 document.getElementById("walapparaatnummer").focus();
@@ -26,11 +26,17 @@
                     document.getElementById("newRseq").disabled = true;
                 }
             });
+            */
         </script>
 
         <div id="leftbar">
 
-            <div id="tree">
+            <div id="contextinfo">
+                Huidig geselecteerde VRI: <span id="context_vri"></span>
+                
+            </div>
+            
+            <%--div id="tree">
                 <div id="treeTop">
                     <div id="treeTitel">Objectenboom</div>
                     <div id="loading"><html:img page="/images/ajax-loader.gif" module=""/></div>
@@ -48,7 +54,7 @@
                     <input id="newAg" type="button" value="Signaalgroep" title="Selecteer deze optie voor het vastleggen van de stopstreep (van signaalgroep) bij de geselecteerde VRI. (Het is niet mogelijk een signaalgroep aan te maken zonder eerst een walapparaat te selecteren of aan te maken.)" disabled="true" onclick="newAg()">
                     <input id="newA" type="button" value="Triggerpunt" title="Selecteer deze optie voor het koppelen van een nieuw triggerpunt aan de geselecteerde signaalgroep. (Het is niet mogelijk een triggerpunt aan te maken zonder eerst een signaalgroep te selecteren of aan te maken.)" disabled="true" onclick="newA()">
                 </div>
-            </div>
+            </div--%>
 
             <div id="form">
                 <div id="formContainer">
@@ -87,6 +93,13 @@
                 <input type="text" id="searchField"/>
             </div>
             <script type="text/javascript">
+                
+                var imgPath = "<c:url value="/images/"/>";
+                
+                var karTheme = {
+                    vri: imgPath + 'treeview/vri.png'
+                };
+                
                 var domId = 'map';
                 var oc = new ol();
                 var cm = new ContextMenu();
@@ -101,6 +114,11 @@
                 oc.addLayer("WMS","triggerpunten","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'triggerpunten', false);
                 oc.addLayer("WMS","buslijnen","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'buslijnen', false);
                 oc.addLayer("WMS","bushaltes","http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map",'bushaltes', false);
+                
+                if(!oc.setCenterFromHash()) {
+                    oc.map.zoomToMaxExtent();
+                }
+                    
 
                 function toggleLayer(layer){
                     var legend = document.getElementById(layer);

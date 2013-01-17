@@ -10,11 +10,45 @@ function ol (){
     this.identifyButton = null;
     this.overview = null;
     this.activeFeature = null;
+    
+    this.startHash = null;
+    
+    this.parseHash = function() {
+        var hash = window.location.hash;
+        hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
+        return Ext.Object.fromQueryString(hash);
+    };
+    
+    this.updateHash = function() {
+        var hash = this.parseHash();
+        window.location.hash = Ext.Object.toQueryString(Ext.Object.merge(hash, {
+            x: this.map.getCenter().lon,
+            y: this.map.getCenter().lat,
+            zoom: this.map.getZoom()
+        }));
+    };
+    
+    /**
+     * Aanroepen na het toevoegen van layers. De window.location.hash is 
+     * opgeslagen voordat deze na zoomend en moveend events is aangepast.
+     */
+    this.setCenterFromHash = function() {
+        var hash = this.startHash;
+        if(hash.x && hash.y && hash.zoom) {
+            this.map.setCenter(new OpenLayers.LonLat(hash.x, hash.y), hash.zoom);
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
     // Make the map
     this.createMap = function(domId){
+        this.startHash = this.parseHash();
+        
         this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
-        
+                
         var opt = {
             projection: new OpenLayers.Projection("EPSG:28992"),
             maxExtent: maxBounds,
@@ -27,6 +61,13 @@ function ol (){
         };
         
         this.map = new OpenLayers.Map(domId,opt);
+        
+        this.map.events.on({
+            "moveend": this.updateHash,
+            "zoomend": this.updateHash,
+            scope: this
+        });
+        
         this.vectorLayer = new OpenLayers.Layer.Vector("Points", {
             styleMap: new OpenLayers.StyleMap( {
                 "default": style,
@@ -273,7 +314,6 @@ function ol (){
             layer.setVisibility(visible);
             this.map.addLayer(layer);
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
-            this.map.zoomToMaxExtent();
         }
     },
     this.isLayerVisible = function (name){
