@@ -122,11 +122,11 @@ function ContextMenu (){
         this.menuContext ={
             "standaard" : standaard,
             "Point" : signalGroup,
-            /*"ACTIVATION_2" : signalGroup,
+            "ACTIVATION_2" : signalGroup,
             "ACTIVATION_3" : signalGroup,
             "END" : signalGroup,
-            "BEGIN" : signalGroup,*/
-            "RSEQ" : vri
+            "BEGIN" : signalGroup,
+            "CROSSING" : vri
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -138,7 +138,7 @@ function ContextMenu (){
     },
     this.getMenuContext = function (){
         if(editor.selectedObject){
-            var type = editor.selectedObject.$className;
+            var type = editor.selectedObject.getType();
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
