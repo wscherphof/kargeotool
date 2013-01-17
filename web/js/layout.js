@@ -33,28 +33,9 @@ Ext.onReady(function() {
                 defaultType: 'container',
                 items: [
                     {
-                        contentEl: 'tree',
+                        contentEl: 'contextinfo',
                         flex: 1,
-                        width: '100%',
-                        layout: 'vbox',
-                        defaultType: 'container',
-                        items: [
-                            {
-                                contentEl: 'treeTop',
-                                height: 50,
-                                width: '100%'
-                            },
-                            {
-                                contentEl: 'objectTree',
-                                flex: 1,
-                                width: '100%'
-                            },
-                            {
-                                contentEl: 'options',
-                                height: 50,
-                                width: '100%'
-                            }
-                        ]
+                        width: '100%'
                     },
                     {
                         contentEl: 'form',

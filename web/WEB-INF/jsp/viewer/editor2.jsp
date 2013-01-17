@@ -107,7 +107,10 @@
                 
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map";
                 
-                var editor = Ext.create(Editor, "map", mapfilePath);
+                var editor = null;
+                Ext.onReady(function() {
+                    editor = Ext.create(Editor, "map", mapfilePath);    
+                });
                 
                 function toggleLayer(layer) {
                     var legend = document.getElementById(layer);
