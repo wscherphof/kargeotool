@@ -9,7 +9,6 @@ function ol (){
     this.line = null;
     this.identifyButton = null;
     this.overview = null;
-    this.menuContext = null;
     this.activeFeature = null;
     // Make the map
     this.createMap = function(domId){
@@ -58,7 +57,6 @@ function ol (){
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
         this.createControls(domId);
-        this.createContextMenus(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
         OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
@@ -200,136 +198,19 @@ function ol (){
             }
         });
         this.map.addControl(this.overview);
-    },
-    
-    this.createContextMenus = function(domId){
-        this.menuContext = null;
-        var me = this;
-        var standaard = Ext.create ("Ext.menu.Menu",{
-            floating: true,
-            renderTo: Ext.getBody(),
-            items: [
-            {
-                id: 'addVRI',
-                text: 'Voeg wallapparaat toe'
-            }
-            ],
-            listeners: {
-                click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x,
-                        y: menu.y
-                    }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
-                        case 'addVRI':
-                            alert("VRI toevoegen op " + lonlat.lon + ", " + lonlat.lat);
-                            break;
-                    }
-                },
-                scope:me
-            }
-        });
-        
-        var vri = Ext.create ("Ext.menu.Menu",{
-            floating: true,
-            renderTo: Ext.getBody(),
-            items: [
-            {
-                id: 'addSignalGroup',
-                text: 'Voeg signaalgroep toe'
-            }
-            ],
-            listeners: {
-                click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x,
-                        y: menu.y
-                    }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
-                        case 'addSignalGroup':
-                            alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat)
-                            break;
-                    }
-                },
-                scope:me
-            }
-        });
-        
-        var signalGroup = Ext.create ("Ext.menu.Menu",{
-            floating: true,
-            renderTo: Ext.getBody(),
-            items: [
-            {
-                id: 'addEndPoint',
-                text: 'Voeg eindpunt toe'
-            },
-            {
-                id: 'addCheckinPoint',
-                text: 'Voeg inmeldpunt toe'
-            },
-            {
-                id: 'addCheckoutPoint',
-                text: 'Voeg uitmeldpunt toe'
-            },
-            {
-                id: 'showPath',
-                text: 'Laat pad zien',
-                xtype: 'menucheckitem'
-            }
-            ],
-            listeners: {
-                click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x,
-                        y: menu.y
-                    }
-                    var lonlat = this.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
-                        case 'addEndPoint':
-                            alert("Eindpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
-                            break;
-                        case 'addCheckinPoint':
-                            alert("Inmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
-                            break;
-                        case 'addCheckoutPoint':
-                            alert("Uitmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat)
-                            break;
-                    }
-                },
-                scope:me
-            }
-        });
-        
-        this.menuContext ={
-            "standaard" : standaard,
-            "ACTIVATION_1" : signalGroup,
-            "ACTIVATION_2" : signalGroup,
-            "ACTIVATION_3" : signalGroup,
-            "END" : signalGroup,
-            "BEGIN" : signalGroup,
-            "CROSSING" : vri
-        };
-        // Get control of the right-click event:
-        document.oncontextmenu = function(e){
-            e = e?e:window.event;
-            if (e.preventDefault) 
-                e.preventDefault(); // For non-IE browsers.
-            else return false; // For IE browsers.
-        };
+           
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var x = evt.clientX;
                 var y = evt.clientY;
-                var context = me.getMenuContext();
+                var context = cm.getMenuContext();
                 if(context){
                     context.showAt(x, y);
                 }
                 return false;
             },
             click: function (evt){
-                me.deactivateContextMenu();
+                cm.deactivateContextMenu();
             },
             includeXY:true
         });
@@ -338,16 +219,9 @@ function ol (){
         this.map.addControl(oClick);
         oClick.activate();
         
-        this.map.events.register("moveend",this,function(){
-            this.deactivateContextMenu();
+        this.map.events.register("moveend",document,function(){
+            cm.deactivateContextMenu();
         });
-    },
-    this.deactivateContextMenu = function(){
-        for (var key in this.menuContext){
-            var mc = this.menuContext[key];
-            mc.hide();
-        }
-        
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          
@@ -491,24 +365,9 @@ function ol (){
     this.setActiveFeature = function (feature){
         this.activeFeature = feature;
     },
-    this.getMenuContext = function (){
-        if(this.activeFeature){
-            var type = this.activeFeature.data.type;
-            var menu = this.menuContext[type];
-            if(menu){
-                return menu;
-            }else{
-                return this.menuContext["standaard"];
-            }
-        }else{
-            return this.menuContext["standaard"];
-        }
-    },
     this.addFeatures = function(features){
-        // this.removeAllFeatures();
         this.vectorLayer.addFeatures(this.geojson_format.read(features));
     }
-    
 }
 var style = new OpenLayers.Style(
 // the first argument is a base symbolizer
@@ -769,7 +628,6 @@ var tempstyle = new OpenLayers.Style(
     ]
 }
 );
-
 /**
  * Create a Click controller
  * @param options
