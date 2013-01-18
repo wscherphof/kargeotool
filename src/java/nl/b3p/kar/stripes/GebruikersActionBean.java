@@ -30,7 +30,7 @@ import org.stripesstuff.stripersist.Stripersist;
 @StrictBinding
 @UrlBinding("/action/beheer/gebruikers")
 public class GebruikersActionBean implements ActionBean, ValidationErrorHandler {
-    private static final String JSP = "/WEB-INF/jsp/beheer/gebruikers2.jsp";
+    private static final String JSP = "/WEB-INF/jsp/beheer/gebruikers.jsp";
     
     private ActionBeanContext context;
     
