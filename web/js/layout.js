@@ -26,7 +26,7 @@ Ext.onReady(function() {
                 animCollapse: true,
                 collapsible: true,
                 split: true,
-                width: 375,
+                width: 250,
                 minWidth: 0,
                 maxWidth: 500,
                 contentEl: 'leftbar',
