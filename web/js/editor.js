@@ -1,6 +1,6 @@
 
 
-Ext.define("Editor", {
+var Editor = Ext.extend(Ext.util.Observable, {
     domId: null,
     olc: null,
     contextMenu: null,
@@ -11,6 +11,12 @@ Ext.define("Editor", {
     selectedObject:null,
     
     constructor: function(domId, mapfilePath) {
+        
+        this.addEvents(
+            'activeRseqChanged'
+        );
+        Editor.constructor.call(this);
+        
         this.domId = domId;
         
         this.startLocationHash = this.parseLocationHash();
@@ -101,6 +107,10 @@ Ext.define("Editor", {
      */
     loadRseqInfo: function(query) {
         
+        // Clear huidige geselecteerde
+        this.activeRseq = null;
+        this.fireEvent('activeRseqChanged', this.activeRseq);
+        
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
@@ -113,9 +123,11 @@ Ext.define("Editor", {
                 if(msg.success){
                     var rJson = msg.roadsideEquipment;
                     var rseq = makeRseq(rJson);
+                    this.setActiveRseq(rseq);
+                    
+                    // Dit misschien in listener
                     editor.olc.removeAllFeatures();
                     editor.olc.addFeatures(rseq.toGeoJSON());
-                    this.setActiveRseq(rseq);
                 }else{
                     alert("Ophalen resultaten mislukt.");
                 }
@@ -127,6 +139,7 @@ Ext.define("Editor", {
     },
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
+        this.fireEvent('activeRseqChanged', this.activeRseq);
     },
     setSelectedObject : function (id){
         if(this.activeRseq){
