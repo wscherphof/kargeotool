@@ -214,6 +214,9 @@ function ol (){
             scope:this,
             onSelect : function (feature){
                 editor.setSelectedObject(feature.data.id);
+            },
+            onUnselect : function(){
+                editor.setSelectedObject(null);
             }
         });
 

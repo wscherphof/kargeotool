@@ -18,9 +18,11 @@ Ext.define('RSEQ', {
         this.initConfig(config);    
     },
     getPointById : function (id){
-        for (var i = 0 ; i < this.points.length ;i++){
-            if(this.points[i].getId() == id){
-                return this.points[i];
+        if(this.points){
+            for (var i = 0 ; i < this.points.length ;i++){
+                if(this.points[i].getId() == id){
+                    return this.points[i];
+                }
             }
         }
         return null;

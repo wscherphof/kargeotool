@@ -137,9 +137,11 @@ Ext.define("Editor", {
                 if (point){
                     this.selectedObject = point;
                 }else{
-                    alert("Object niet gevonden.")
+                    this.selectedObject = null;
                 }
             }
+        }else{
+            this.selectedObject = null;
         }
     },
     
