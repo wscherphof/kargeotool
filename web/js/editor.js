@@ -1,6 +1,10 @@
 
 
-var Editor = Ext.extend(Ext.util.Observable, {
+Ext.define("Editor", {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    
     domId: null,
     olc: null,
     contextMenu: null,
@@ -8,18 +12,23 @@ var Editor = Ext.extend(Ext.util.Observable, {
     startLocationHash: null,
     
     activeRseq: null,
-    rseqWindow: null,
+    activeRseqInfoPanel: null,
+    rseqEditWindow: null,
     
     selectedObject:null,
     
     constructor: function(domId, mapfilePath) {
+
+        this.mixins.observable.constructor.call(this, {});
         
         this.addEvents(
-            'activeRseqChanged'
+            'activeRseqChanged',
+            'activeRseqUpdated'
         );
-        Editor.constructor.call(this);
         
         this.domId = domId;
+        
+        this.activeRseqInfoPanel = Ext.create(ActiveRseqInfoPanel, "rseqInfoPanel", this);
         
         this.startLocationHash = this.parseLocationHash();
         
@@ -172,10 +181,9 @@ var Editor = Ext.extend(Ext.util.Observable, {
             return;
         }
         
-        if(this.rseqWindow != null) {
-            this.rseqWindow.close();
-            this.rseqWindow.destroy();
-            this.rseqWindow = null;
+        if(this.rseqEditWindow != null) {
+            this.rseqEditWindow.destroy();
+            this.rseqEditWindow = null;
         }   
         
         var type = {
@@ -185,7 +193,7 @@ var Editor = Ext.extend(Ext.util.Observable, {
             "BAR": "afsluittingssysteem"
         };
         var me = this;
-        me.rseqWindow = Ext.create('Ext.window.Window', {
+        me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 330,
             width: 450,
@@ -263,12 +271,18 @@ var Editor = Ext.extend(Ext.util.Observable, {
                     text: 'OK',
                     handler: function() {
                         Ext.Object.merge(rseq, this.up('form').getForm().getValues());
-                        this.up('window').close();
-                        me.rseqWindow.destroy();
-                        me.rseqWindow = null;
+                        if(rseq == me.activeRseq) {
+                            me.fireEvent("activeRseqUpdated", rseq);
+                        }
+                        me.rseqEditWindow.destroy();
+                        me.rseqEditWindow = null;
                     }
                 },{
-                    text: 'Annuleren'
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.rseqEditWindow.destroy();
+                        me.rseqEditWindow = null;
+                    }
                 }]
             }
         }).show();
@@ -290,4 +304,21 @@ var Editor = Ext.extend(Ext.util.Observable, {
         }
     }
     
+});
+
+Ext.define("ActiveRseqInfoPanel", {
+    domId: null,
+    editor: null,
+    
+    constructor: function(domId, editor) {
+        this.domId = domId;
+        this.editor = editor;
+        editor.on("activeRseqChanged", this.updateRseqInfoPanel, this);
+        editor.on("activeRseqUpdated", this.updateRseqInfoPanel, this);
+    },
+    
+    updateRseqInfoPanel: function(rseq) {
+        Ext.get("context_vri").setHTML(rseq == null ? "" : rseq.karAddress);
+    }
+        
 });

@@ -35,7 +35,7 @@
                 Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()});">
             </div>
             
-            <div id="contextinfo">
+            <div id="rseqInfoPanel">
                 Huidig geselecteerde VRI: <span id="context_vri"></span>
                 
             </div>

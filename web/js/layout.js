@@ -47,8 +47,8 @@ Ext.onReady(function() {
                         title: 'Zoeken'
                     },
                     {
-                        contentEl: 'contextinfo',
-                        title: 'Context'
+                        contentEl: 'rseqInfoPanel',
+                        title: 'Overzicht verkeerssysteem'
                     },
                     {
                         contentEl: 'form',
