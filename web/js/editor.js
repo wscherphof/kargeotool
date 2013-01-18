@@ -8,6 +8,8 @@ var Editor = Ext.extend(Ext.util.Observable, {
     startLocationHash: null,
     
     activeRseq: null,
+    rseqWindow: null,
+    
     selectedObject:null,
     
     constructor: function(domId, mapfilePath) {
@@ -169,13 +171,21 @@ var Editor = Ext.extend(Ext.util.Observable, {
             console.log("editRseq() maar geen activeRseq!");
             return;
         }
+        
+        if(this.rseqWindow != null) {
+            this.rseqWindow.close();
+            this.rseqWindow.destroy();
+            this.rseqWindow = null;
+        }   
+        
         var type = {
             "": "nieuw verkeerssysteem",
             "CROSSING": "VRI",
             "GUARD": "bewakingssysteem nadering voertuig",
             "BAR": "afsluittingssysteem"
         };
-        Ext.create('Ext.window.Window', {
+        var me = this;
+        me.rseqWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 330,
             width: 450,
@@ -254,6 +264,8 @@ var Editor = Ext.extend(Ext.util.Observable, {
                     handler: function() {
                         Ext.Object.merge(rseq, this.up('form').getForm().getValues());
                         this.up('window').close();
+                        me.rseqWindow.destroy();
+                        me.rseqWindow = null;
                     }
                 },{
                     text: 'Annuleren'
