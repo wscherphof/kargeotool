@@ -11,7 +11,10 @@ Ext.define('RSEQ', {
         town:null,
         type:null
     },
-    constructor: function(config) {        
+    constructor: function(config) {     
+        if(!config.description){
+            config.description = "";
+        }
         this.initConfig(config);    
     },
     getPointById : function (id){
@@ -32,9 +35,11 @@ Ext.define('RSEQ', {
     },
     toGeoJSON : function (){
         var points = new Array();
-        for (var i = 0 ; i < this.points.length; i++){
-            var point = this.points[i].toGeoJSON();
-            points.push(point);
+        if(this.points){
+            for (var i = 0 ; i < this.points.length; i++){
+                var point = this.points[i].toGeoJSON();
+                points.push(point);
+            }
         }
         points.push({
             type: "Feature",
@@ -68,6 +73,9 @@ Ext.define('Point', {
         signalGroupNumbers:null
     },
     constructor: function(config) {        
+        if(!config.label){
+            config.label = "";
+        }
         this.initConfig(config);    
     },
     toGeoJSON : function(){

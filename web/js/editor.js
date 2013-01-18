@@ -158,6 +158,18 @@ Ext.define("Editor", {
                 store: Ext.create('Ext.data.ArrayStore', {}) // A dummy empty data store
             }
         }).show();
+    },
+    
+    addObject : function (className, location,properties){
+        var geomName = "location";
+        if(className != "RSEQ"){
+            geomName = "geometry";
+        }
+        properties[geomName] = location;
+        var newRseq = Ext.create(className,properties);
+        var geo = newRseq.toGeoJSON();
+        this.olc.addFeatures(geo);
+        this.setActiveRseq(newRseq);
     }
     
 });

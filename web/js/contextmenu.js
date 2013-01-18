@@ -23,13 +23,16 @@ Ext.define("ContextMenu", {
             listeners: {
                 click: function(menu,item,e, opts) {
                     var pos = {
-                        x: menu.x,
+                        x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addRseq':
-                            alert("Rseq toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                            editor.addObject("RSEQ", {
+                                type: "Point",
+                                coordinates: [lonlat.lon, lonlat.lat]
+                            },{type:"CROSSING",id: Ext.id()});
                             break;
                     }
                 },
@@ -56,7 +59,7 @@ Ext.define("ContextMenu", {
             listeners: {
                 click: function(menu,item,e, opts) {
                     var pos = {
-                        x: menu.x,
+                        x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
@@ -105,7 +108,7 @@ Ext.define("ContextMenu", {
             listeners: {
                 click: function(menu,item,e, opts) {
                     var pos = {
-                        x: menu.x,
+                        x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
