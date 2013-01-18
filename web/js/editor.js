@@ -177,21 +177,53 @@ var Editor = Ext.extend(Ext.util.Observable, {
         };
         Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 200,
+            height: 600,
             width: 400,
+            icon: karTheme['vri'],
             layout: 'fit',
             items: {  
-                xtype: 'panel',
+                xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
-                    labelWidth: 75
+                    labelWidth: 150
                 },
                 defaultType: 'textfield',
                 defaults: {
                     anchor: '100%'
                 },
                 items: [{
+                    xtype: 'fieldcontainer',
+                    fieldLabel: 'Soort verkeerssysteem',
+                    defaultType: 'radiofield',
+                    value: rseq.type,
+                    layout: 'vbox',               
+                    items: [{
+                        name: 'type',
+                        inputValue: 'CROSSING',
+                        checked: rseq.type == 'CROSSING',
+                        boxLabel: type['CROSSING']
+                    },{
+                        name: 'type',
+                        inputValue: 'GUARD',
+                        checked: rseq.type == 'GUARD',
+                        boxLabel: type['GUARD']
+                    },{
+                        name: 'type',
+                        inputValue: 'BAR',
+                        checked: rseq.type == 'BAR',
+                        boxLabel: type['BAR']
+                    }]
+                },{
+                    fieldLabel: 'Beheerder',
+                    name: 'dataOwner',
+                    allowBlank: false,
+                    value: rseq.dataOwner
+                },{
+                    fieldLabel: 'Beheerdersaanduiding',
+                    name: 'crossingCode',
+                    value: rseq.crossingCode
+                },{
                     fieldLabel: 'Omschrijving',
                     name: 'desc',
                     allowBlank: false
