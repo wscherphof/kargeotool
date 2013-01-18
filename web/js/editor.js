@@ -177,8 +177,8 @@ var Editor = Ext.extend(Ext.util.Observable, {
         };
         Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 600,
-            width: 400,
+            height: 330,
+            width: 450,
             icon: karTheme['vri'],
             layout: 'fit',
             items: {  
@@ -224,16 +224,37 @@ var Editor = Ext.extend(Ext.util.Observable, {
                     name: 'crossingCode',
                     value: rseq.crossingCode
                 },{
-                    fieldLabel: 'Omschrijving',
-                    name: 'desc',
-                    allowBlank: false
-                },{
                     fieldLabel: 'KAR adres',
                     name: 'karAddress',
+                    value: rseq.karAddress
+                },{
+                    fieldLabel: 'Omschrijving',
+                    name: 'description',
+                    value: rseq.description,
                     allowBlank: false
+                },{
+                    fieldLabel: 'Plaats',
+                    name: 'town',
+                    value: rseq.town
+                },{
+                    xtype: 'datefield',
+                    format: 'Y-m-d',
+                    fieldLabel: 'Geldig vanaf',
+                    name: 'validFrom',
+                    value: rseq.validFrom
+                },{
+                    xtype: 'datefield',
+                    format: 'Y-m-d',
+                    fieldLabel: 'Geldig tot',
+                    name: 'validUntil',
+                    value: rseq.validUntil
                 }],
                 buttons: [{
-                    text: 'OK'
+                    text: 'OK',
+                    handler: function() {
+                        Ext.Object.merge(rseq, this.up('form').getForm().getValues());
+                        this.up('window').close();
+                    }
                 },{
                     text: 'Annuleren'
                 }]

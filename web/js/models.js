@@ -6,6 +6,7 @@ Ext.define('RSEQ', {
         validFrom:null,
         movements:null,
         karAddress:null,
+        crossingCode: null,
         dataOwner:null,
         points:null,
         town:null,
@@ -58,6 +59,7 @@ Ext.define('RSEQ', {
                 validFrom:this.validFrom,
                 karAddress:this.karAddress,
                 dataOwner:this.dataOwner,
+                crossingCode: this.crossingCode,
                 town:this.town,
                 type:this.type
             }
