@@ -140,6 +140,7 @@ var Editor = Ext.extend(Ext.util.Observable, {
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
         this.fireEvent('activeRseqChanged', this.activeRseq);
+        console.log("activeRseq: ", rseq);
     },
     setSelectedObject : function (id){
         if(this.activeRseq){
@@ -159,18 +160,47 @@ var Editor = Ext.extend(Ext.util.Observable, {
     },
     
     editRseq: function() {
+        var rseq = this.activeRseq;
+        if(rseq == null) {
+            console.log("editRseq() maar geen activeRseq!");
+            return;
+        }
+        var type = {
+            "": "nieuw verkeerssysteem",
+            "CROSSING": "VRI",
+            "GUARD": "bewakingssysteem nadering voertuig",
+            "BAR": "afsluittingssysteem"
+        };
         Ext.create('Ext.window.Window', {
-            title: 'Bewerken VRI met KAR adres 39876',
+            title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 200,
             width: 400,
             layout: 'fit',
-            items: {  // Let's put an empty grid in just to illustrate fit layout
-                xtype: 'grid',
-                border: false,
-                columns: [{
-                    header: 'World'
-                }],                 // One header just for show. There's no data,
-                store: Ext.create('Ext.data.ArrayStore', {}) // A dummy empty data store
+            items: {  
+                xtype: 'panel',
+                bodyStyle: 'padding: 5px 5px 0',
+                fieldDefaults: {
+                    msgTarget: 'side',
+                    labelWidth: 75
+                },
+                defaultType: 'textfield',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    fieldLabel: 'Omschrijving',
+                    name: 'desc',
+                    allowBlank: false
+                },{
+                    fieldLabel: 'KAR adres',
+                    name: 'karAddress',
+                    allowBlank: false
+                }],
+                buttons: [{
+                    text: 'OK'
+                },{
+                    text: 'Annuleren'
+                }]
             }
         }).show();
     },
