@@ -139,6 +139,10 @@ var Editor = Ext.extend(Ext.util.Observable, {
     },
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
+        var olFeature = this.olc.vectorLayer.getFeaturesByAttribute("id",rseq.getId())[0];
+        if(olFeature){
+            this.olc.selectCtrl.select(olFeature)
+        }
         this.fireEvent('activeRseqChanged', this.activeRseq);
         console.log("activeRseq: ", rseq);
     },
@@ -211,10 +215,14 @@ var Editor = Ext.extend(Ext.util.Observable, {
             geomName = "geometry";
         }
         properties[geomName] = location;
-        var newRseq = Ext.create(className,properties);
-        var geo = newRseq.toGeoJSON();
+        var newObject = Ext.create(className,properties);
+        var geo = newObject.toGeoJSON();
         this.olc.addFeatures(geo);
-        this.setActiveRseq(newRseq);
+        if(newObject.$className == "RSEQ"){
+            this.setActiveRseq(newObject);
+        }else{
+            this.activeRseq.addPoint(newObject);
+        }
     }
     
 });

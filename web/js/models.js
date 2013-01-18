@@ -35,6 +35,12 @@ Ext.define('RSEQ', {
         }
         return null;
     },
+    addPoint : function (point){
+        if(!this.points){
+            this.points = new Array();
+        }
+        this.points.push(point);
+    },
     toGeoJSON : function (){
         var points = new Array();
         if(this.points){

@@ -10,6 +10,7 @@ function ol (){
     this.identifyButton = null;
     this.overview = null;
     this.activeFeature = null;
+    this.selectCtrl = null;
     
     // Make the map
     this.createMap = function(domId){
@@ -209,7 +210,7 @@ function ol (){
         });
         this.map.addControl(highlight);
         highlight.activate();
-        var selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
+        this.selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
             clickout: true,
             scope:this,
             onSelect : function (feature){
@@ -220,8 +221,8 @@ function ol (){
             }
         });
 
-        this.map.addControl(selectCtrl);
-        selectCtrl.activate();
+        this.map.addControl(this.selectCtrl);
+        this.selectCtrl.activate();
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          

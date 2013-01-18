@@ -1,6 +1,4 @@
-
 Ext.define("ContextMenu", {
-    
     menuContext: null,
     editor: null,
     
@@ -40,43 +38,9 @@ Ext.define("ContextMenu", {
             }
         });
         
-        var vri = Ext.create ("Ext.menu.Menu",{
-            floating: true,
-            renderTo: Ext.getBody(),
-            items: [
-            {
-                id: 'editRseq',
-                text: 'Bewerken...',
-                icon: contextPath + "/images/silk/table_edit.png"
-            },{
-                xtype: 'menuseparator'
-            },
-            {
-                id: 'addSignalGroup',
-                text: 'Voeg signaalgroep toe'
-            }
-            ],
-            listeners: {
-                click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x - Ext.get(editor.domId).getX(),
-                        y: menu.y
-                    }
-                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
-                        case 'addSignalGroup':
-                            alert("Signaalgroep toevoegen op " + lonlat.lon + ", " + lonlat.lat);
-                            break;
-                        case 'editRseq':
-                            this.editor.editRseq();
-                            break;
-                    }
-                },
-                scope:me
-            }
-        });
         
-        var signalGroup = Ext.create ("Ext.menu.Menu",{
+        
+        var vri = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -88,21 +52,24 @@ Ext.define("ContextMenu", {
                 xtype: 'menuseparator'
             },
             {
+                id: 'addCheckoutPoint',
+                text: 'Voeg uitmeldpunt toe'
+            },
+            {
                 id: 'addEndPoint',
                 text: 'Voeg eindpunt toe'
             },
             {
                 id: 'addCheckinPoint',
                 text: 'Voeg inmeldpunt toe'
-            },
-            {
-                id: 'addCheckoutPoint',
-                text: 'Voeg uitmeldpunt toe'
+            },{
+                xtype: 'menuseparator'
             },
             {
                 id: 'showPath',
                 text: 'Laat pad zien',
-                xtype: 'menucheckitem'
+                xtype: 'menucheckitem',
+                disabled:true
             }
             ],
             listeners: {
@@ -114,13 +81,22 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addEndPoint':
-                            alert("Eindpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                            editor.addObject("Point", {
+                                type: "Point",
+                                coordinates: [lonlat.lon, lonlat.lat]
+                            },{type:"END",id: Ext.id()});
                             break;
                         case 'addCheckinPoint':
-                            alert("Inmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                             editor.addObject("Point", {
+                                type: "Point",
+                                coordinates: [lonlat.lon, lonlat.lat]
+                            },{type:"ACTIVATION_1",id: Ext.id()});
                             break;
                         case 'addCheckoutPoint':
-                            alert("Uitmeldpunt toevoegen op " + lonlat.lon + ", " + lonlat.lat);
+                             editor.addObject("Point", {
+                                type: "Point",
+                                coordinates: [lonlat.lon, lonlat.lat]
+                            },{type:"ACTIVATION_2",id: Ext.id()});
                             break;
                         case 'edit':
                             this.openPopup();
@@ -133,11 +109,11 @@ Ext.define("ContextMenu", {
         
         this.menuContext ={
             "standaard" : standaard,
-            "Point" : signalGroup,
-            "ACTIVATION_2" : signalGroup,
-            "ACTIVATION_3" : signalGroup,
-            "END" : signalGroup,
-            "BEGIN" : signalGroup,
+            "Point" : vri,
+            "ACTIVATION_2" : vri,
+            "ACTIVATION_3" : vri,
+            "END" : vri,
+            "BEGIN" : vri,
             "CROSSING" : vri
         };
         // Get control of the right-click event:
