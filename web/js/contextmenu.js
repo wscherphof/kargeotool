@@ -83,31 +83,13 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addEndPoint':
-                            editor.addObject("Point", {
-                                type: "Point",
-                                coordinates: [lonlat.lon, lonlat.lat]
-                            },{
-                                type:"END",
-                                id: Ext.id()
-                            });
+                            editor.addEndpoint();
                             break;
                         case 'addCheckinPoint':
-                            editor.addObject("Point", {
-                                type: "Point",
-                                coordinates: [lonlat.lon, lonlat.lat]
-                            },{
-                                type:"ACTIVATION_1",
-                                id: Ext.id()
-                            });
+                            editor.addCheckinPoint();
                             break;
                         case 'addCheckoutPoint':
-                            editor.addObject("Point", {
-                                type: "Point",
-                                coordinates: [lonlat.lon, lonlat.lat]
-                            },{
-                                type:"ACTIVATION_2",
-                                id: Ext.id()
-                            });
+                            editor.addCheckoutPoint();
                             break;
                         case 'editRseq':
                             this.editor.editSelectedObject();

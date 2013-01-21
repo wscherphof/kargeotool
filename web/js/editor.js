@@ -1,5 +1,3 @@
-
-
 Ext.define("Editor", {
     mixins: {
         observable: 'Ext.util.Observable'
@@ -19,6 +17,8 @@ Ext.define("Editor", {
     activationPointEditWindow: null,
     
     selectedObject:null,
+    
+    currentEditAction: null,
     
     constructor: function(domId, mapfilePath) {
 
@@ -382,6 +382,9 @@ Ext.define("Editor", {
         if(className != "RSEQ"){
             geomName = "geometry";
         }
+        if(!properties){
+            properties = {};
+        }
         properties[geomName] = location;
         var newObject = Ext.create(className,properties);
         var geo = newObject.toGeoJSON();
@@ -391,6 +394,37 @@ Ext.define("Editor", {
         }else{
             this.activeRseq.addPoint(newObject);
         }
+    },
+    
+    addEndpoint : function(){
+        this.currentEditAction = "END";
+        this.addPoint();
+    },
+    addCheckinPoint : function(){
+        this.currentEditAction = "ACTIVATION_1";
+        this.addPoint();
+    },
+    addCheckoutPoint : function(){
+        this.currentEditAction = "ACTIVATION_2";
+        this.addPoint();
+    },
+    addPoint : function(){
+        var geomName = this.selectedObject.$className == "RSEQ" ? "location" : "geometry";
+        var startX = this.selectedObject[geomName].coordinates[0];
+        var startY = this.selectedObject[geomName].coordinates[1];
+        this.olc.drawLineFromPoint(startX,startY);
+    },
+    pointFinished : function(point){
+        var geom = {
+            type: "Point",
+            coordinates: [point.x,point.y]
+        };
+        var properties = {
+            type: this.currentEditAction,
+            id: Ext.id()
+        };
+        this.addObject("Point", geom,properties);
+        this.currentEditAction = null;
     }
     
 });

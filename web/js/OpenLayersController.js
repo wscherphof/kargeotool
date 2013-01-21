@@ -146,11 +146,9 @@ function ol (){
             }
         });
         this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
-            displayClass: 'olControlDrawFeaturePath',
-            featureAdded: function (feature){
-                me.drawFeature(feature);
-            }
+            displayClass: 'olControlDrawFeaturePath'
         });
+        this.line.events.register('featureadded', me, me.drawFeature);
         
         // The modifyfeature control allows us to edit and select features.
         this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
@@ -224,7 +222,7 @@ function ol (){
         this.selectCtrl.activate();
     },
     this.selectFeature = function(id,className){
-        var olFeature = this.vectorLayer.getFeaturesByAttribute("id",id)[0];
+        var olFeature = null;
         if(className=="RSEQ"){
             olFeature = this.vectorLayer.getFeaturesByAttribute("className",className)[0];
         }else{
@@ -372,6 +370,16 @@ function ol (){
         }
         this.dragFeature.activate();
     },
+    this.drawLineFromPoint = function (x,y){
+        var lonlat = new OpenLayers.LonLat (x,y);
+        var pixel = this.map.getPixelFromLonLat(lonlat);
+        var evt = {
+            xy: pixel
+        }
+        this.line.activate();
+        this.line.handler.mousedown(evt);
+        this.line.handler.mouseup(evt);
+    },
     this.removeAllFeatures = function(){
         this.vectorLayer.removeAllFeatures();
         this.dragFeature.deactivate();
@@ -379,9 +387,13 @@ function ol (){
     this.dragComplete = function (feature){
         geometryDrawUpdate(feature.geometry.toString());
     },
-    this.drawFeature = function (feature){
-        geometryDrawUpdate (feature.geometry.toString());
+    this.drawFeature = function (object){
+        var feature =object.feature;
+        var lastPoint = feature.geometry.components[feature.geometry.components.length-1];
         this.point.deactivate();
+        this.line.deactivate();
+        editor.pointFinished(lastPoint);
+        // TODO fire event geometry updated
     },
     this.setActiveFeature = function (feature){
         this.activeFeature = feature;
