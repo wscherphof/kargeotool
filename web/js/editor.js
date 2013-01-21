@@ -24,7 +24,7 @@ Ext.define("Editor", {
         this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated'
-        );
+            );
         
         this.domId = domId;
         
@@ -38,7 +38,9 @@ Ext.define("Editor", {
         this.createContextMenu();
         
         if(this.startLocationHash.rseq) {
-            this.loadRseqInfo({rseq: parseInt(this.startLocationHash.rseq)});
+            this.loadRseqInfo({
+                rseq: parseInt(this.startLocationHash.rseq)
+                });
 
             // Toekomstige code voor aanroep met alleen rseq in hash zonder x,y,zoom
             var onRseqLoaded = function() {
@@ -61,8 +63,8 @@ Ext.define("Editor", {
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
         this.olc.addLayer("WMS","walapparatuur",mapfilePath,'walapparatuur', false);
         this.olc.addLayer("WMS","signaalgroepen",mapfilePath,'signaalgroepen', false);
-        //this.olc.addLayer("WMS","roadside_equipment2",mapfilePath,'roadside_equipment2', false);
-        //this.olc.addLayer("WMS","activation_point2",mapfilePath,'activation_point2', false);
+        //this.olc.addLayer("WMS","roadside_equipment2",mapfilePath,'roadside_equipment2', true);
+        //this.olc.addLayer("WMS","activation_point2",mapfilePath,'activation_point2', true);
         this.olc.addLayer("WMS","triggerpunten",mapfilePath,'triggerpunten', false);
         this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', false);
         this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', false);
@@ -134,11 +136,11 @@ Ext.define("Editor", {
                 if(msg.success){
                     var rJson = msg.roadsideEquipment;
                     var rseq = makeRseq(rJson);
-                    this.setActiveRseq(rseq);
                     
                     // Dit misschien in listener
                     editor.olc.removeAllFeatures();
                     editor.olc.addFeatures(rseq.toGeoJSON());
+                    this.setActiveRseq(rseq);
                 }else{
                     alert("Ophalen resultaten mislukt.");
                 }
@@ -150,27 +152,33 @@ Ext.define("Editor", {
     },
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
-        var olFeature = this.olc.vectorLayer.getFeaturesByAttribute("id",rseq.getId())[0];
-        if(olFeature){
-            this.olc.selectCtrl.select(olFeature)
-        }
+        this.olc.selectFeature(rseq.getId(),"RSEQ");
         this.fireEvent('activeRseqChanged', this.activeRseq);
         console.log("activeRseq: ", rseq);
     },
-    setSelectedObject : function (id){
+    setSelectedObject : function (olFeature){
+        if(!olFeature){
+            this.selectedObject = null;
+            return;
+        }
         if(this.activeRseq){
-            if(this.activeRseq.getId() == id){
+            if(olFeature.data.className == "RSEQ"){
                 this.selectedObject = this.activeRseq;
-            }else{
-                var point = this.activeRseq.getPointById(id);
+            }else { // Point
+                var point = this.activeRseq.getPointById(olFeature.data.id);
                 if (point){
-                    this.selectedObject = point;
+                    if(this.selectedObject && this.selectedObject.getId() == olFeature.data.id ){ // Check if there are changes to the selectedObject. If not, then return
+                        return;
+                    }else{
+                        this.selectedObject = point;
+                    }
                 }else{
-                    this.selectedObject = null;
+                    alert("Selected object bestaat niet");
                 }
             }
-        }else{
-            this.selectedObject = null;
+            if(this.selectedObject){
+                this.olc.selectFeature(olFeature.data.id, olFeature.data.className);
+            }
         }
     },
     

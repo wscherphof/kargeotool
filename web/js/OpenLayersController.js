@@ -214,7 +214,7 @@ function ol (){
             clickout: true,
             scope:this,
             onSelect : function (feature){
-                editor.setSelectedObject(feature.data.id);
+                editor.setSelectedObject(feature);
             },
             onUnselect : function(){
                 editor.setSelectedObject(null);
@@ -222,6 +222,28 @@ function ol (){
         });
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
+    },
+    this.selectFeature = function(id,className){
+        var olFeature = this.vectorLayer.getFeaturesByAttribute("id",id)[0];
+        if(className=="RSEQ"){
+            olFeature = this.vectorLayer.getFeaturesByAttribute("className",className)[0];
+        }else{
+            // Haal alle features op voor het id: dit kunnen punten en een rseq zijn
+            var all =this.vectorLayer.getFeaturesByAttribute("id",id);
+            for(var i = 0 ; i < all.length ;i++){
+                var f = all[i];
+                if(f.data.className == "Point"){
+                    // Eerste zal altijd de goede zijn vanwege serial id in db
+                    olFeature = f;
+                    break;
+                }
+            }
+        }
+        
+        if(olFeature && (this.vectorLayer.selectedFeatures.length==0||this.vectorLayer.selectedFeatures[0].data.id != id)){
+            this.selectCtrl.unselectAll();
+            this.selectCtrl.select(olFeature)
+        }
     },
     this.raiseOnDataEvent = function(evt){
         var stub = new Object();          

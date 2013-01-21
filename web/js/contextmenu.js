@@ -120,7 +120,7 @@ Ext.define("ContextMenu", {
         
         this.menuContext ={
             "standaard" : standaard,
-            "Point" : vri,
+            "ACTIVATION_1" : vri,
             "ACTIVATION_2" : vri,
             "ACTIVATION_3" : vri,
             "END" : vri,
@@ -133,6 +133,7 @@ Ext.define("ContextMenu", {
             
             var f = editor.olc.vectorLayer.getFeatureFromEvent(e);
             if(f){
+                editor.setSelectedObject(f);
                 var x = e.clientX;
                 var y = e.clientY;
                 editor.contextMenu.show(x,y);

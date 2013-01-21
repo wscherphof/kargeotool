@@ -61,7 +61,8 @@ Ext.define('RSEQ', {
                 dataOwner:this.dataOwner,
                 crossingCode: this.crossingCode,
                 town:this.town,
-                type:this.type
+                type:this.type,
+                className: this.$className
             }
         });
         var json = {
@@ -98,7 +99,8 @@ Ext.define('Point', {
                 movementNumbers:this.movementNumbers,
                 type:this.type,
                 nummer:this.nummer,
-                signalGroupNumbers:this.signalGroupNumbers
+                signalGroupNumbers:this.signalGroupNumbers,
+                className: this.$className
             }
         };
         return json;
