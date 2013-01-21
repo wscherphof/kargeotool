@@ -100,6 +100,9 @@
                     editor = Ext.create(Editor, "map", mapfilePath);    
                 });
                 
+                var vehicleTypes = ${actionBean.vehicleTypesJSON};
+                var dataOwners = ${actionBean.dataOwnersJSON};
+                
                 function toggleLayer(layer) {
                     var legend = document.getElementById(layer);
                     var visible = editor.olc.isLayerVisible(layer);

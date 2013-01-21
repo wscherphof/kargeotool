@@ -153,6 +153,23 @@ Ext.define("Editor", {
             }
         });
     },
+    
+    findMovementsForPoint: function(rseq, point) {
+        var movements = [];
+        
+        Ext.Array.each(rseq.getMovements(), function(movement) {
+            Ext.Array.each(movement.getMaps(), function(map) {
+                if(map.pointId == point.id) {
+                    movements.push({
+                        movement: movement,
+                        map: map
+                    });
+                }
+            });
+        });
+        return movements;
+    },
+    
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
         this.olc.selectFeature(rseq.getId(),"RSEQ");
@@ -256,10 +273,19 @@ Ext.define("Editor", {
                         boxLabel: type['BAR']
                     }]
                 },{
+                    xtype: 'combo',
                     fieldLabel: 'Beheerder',
                     name: 'dataOwner',
                     allowBlank: false,
-                    value: rseq.dataOwner
+                    blankText: 'Selecteer een optie',
+                    editable: false,
+                    displayField: 'omschrijving',
+                    valueField: 'code',
+                    value: rseq.dataOwner,
+                    store: Ext.create('Ext.data.Store', {
+                        fields: ['code', 'classificatie', 'companyNumber', 'omschrijving'],
+                        data: dataOwners
+                    })
                 },{
                     fieldLabel: 'Beheerdersaanduiding',
                     name: 'crossingCode',
@@ -400,10 +426,40 @@ Ext.define("Editor", {
         var label = point.getLabel() == null ? "" : point.getLabel();
         var apType = point.getType().split("_")[1];
         var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
+        
+        var movements = this.findMovementsForPoint(rseq, point);
+        
+        if(movements.length == 0) {
+            alert("Kan geen movements vinden voor activation point!");
+            return;
+        }
+        var map = movements[0].map;
+        
+        Ext.define('VehicleType', {
+            extend: 'Ext.data.Model',
+            fields: [
+                {name: 'nummer', type: 'int'},
+                {name: 'omschrijving', type: 'string'}
+            ]
+        });
+        
+        var data = [];
+        var selectedVehicleTypes = [];
+        Ext.Array.each(vehicleTypes, function(vt) {
+            var selected = map.vehicleTypes.hasOwnProperty(vt.nummer);
+            if(selected) {
+                selectedVehicleTypes.push(vt.nummer);
+            }
+            if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
+                data.push(vt);
+            }
+        });
+        var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
+        
         me.activationPointEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + apName + " " + label,
-            height: 130,
-            width: 250,
+            title: 'Bewerken ' + apName.toLowerCase() + " " + label,
+            height: 300,
+            width: 450,
             icon: karTheme[apName],
             layout: 'fit',
             items: {  
@@ -427,6 +483,58 @@ Ext.define("Editor", {
                     name: 'label',
                     value: point.label,
                     id: 'nummerEdit'
+                },{
+                    xtype:'fieldset',
+                    title: 'KAR signaal',
+                    collapsible: false,
+                    defaultType: 'textfield',
+                    layout: 'anchor',
+                    defaults: {
+                        anchor: '100%'
+                    },
+                    items :[{
+                        fieldLabel: 'Afstand tot stopstreep',
+                        name: 'distanceTillStopLine',
+                        value: map.distanceTillStopLine
+                    },{
+                        xtype: 'combo',
+                        fieldLabel: 'Triggertype',
+                        name: 'triggerType',
+                        allowBlank: false,
+                        blankText: 'Selecteer een optie',
+                        editable: false,
+                        displayField: 'desc',
+                        valueField: 'value',
+                        value: map.triggerType,
+                        store: Ext.create('Ext.data.Store', {
+                            fields: ['value', 'desc'],
+                            data: [
+                                {value: 'STANDARD', desc: 'STANDARD: door vervoerder bepaald'},
+                                {value: 'FORCED', desc: 'FORCED: altijd melding'},
+                                {value: 'MANUAL', desc: 'MANUAL: handmatig door chauffeur'}
+                            ]
+                        })   
+                    },{
+                        fieldLabel: 'Signaalgroep',
+                        name: 'signalGroupNumber',
+                        value: map.signalGroupNumber
+                    },{
+                        fieldLabel: 'Virtual local loop number',
+                        name: 'virtualLocalLoopNumber'
+                    },{
+                        xtype: 'combo',
+                        multiSelect: true,
+                        allowBlank: false,
+                        editable: false,
+                        blankText: 'Selecteer een optie',
+                        displayField: 'omschrijving',
+                        valueField: 'nummer',
+                        id: 'pietje',
+                        value:  selectedVehicleTypes,
+                        fieldLabel: 'Voertuigtypes',
+                        name: 'vehicleTypes',
+                        store: vehicleTypesStore
+                    }]
                 }],
                 buttons: [{
                     text: 'OK',

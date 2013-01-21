@@ -1,6 +1,7 @@
 package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
@@ -9,6 +10,7 @@ import nl.b3p.kar.hibernate.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
@@ -33,6 +35,10 @@ public class EditorActionBean implements ActionBean {
     
     @Validate
     private JSONObject layers;
+    
+    private JSONArray vehicleTypesJSON;
+    
+    private JSONArray dataOwnersJSON;
 
     @DefaultHandler
     public Resolution view() throws Exception {
@@ -48,6 +54,25 @@ public class EditorActionBean implements ActionBean {
         } else {
             magWalapparaatMaken = false;
         }
+        
+        vehicleTypesJSON = new JSONArray();
+        for(VehicleType vt: (List<VehicleType>)em.createQuery("from VehicleType order by nummer").getResultList()) {
+            JSONObject jvt = new JSONObject();
+            jvt.put("nummer", vt.getNummer());
+            jvt.put("omschrijving", vt.getOmschrijving());
+            vehicleTypesJSON.put(jvt);
+        }
+        
+        dataOwnersJSON = new JSONArray();
+        for(DataOwner2 dao: (List<DataOwner2>)em.createQuery("from DataOwner2 order by code").getResultList()) {
+            JSONObject jdao = new JSONObject();
+            jdao.put("code", dao.getCode());
+            jdao.put("classificatie", dao.getClassificatie());
+            jdao.put("companyNumber", dao.getCompanyNumber());
+            jdao.put("omschrijving", dao.getOmschrijving());
+            dataOwnersJSON.put(jdao);
+        }
+        
         return new ForwardResolution(JSP);
     }
     
@@ -146,6 +171,22 @@ public class EditorActionBean implements ActionBean {
 
     public void setRseq(RoadsideEquipment2 rseq) {
         this.rseq = rseq;
+    }
+
+    public JSONArray getDataOwnersJSON() {
+        return dataOwnersJSON;
+    }
+
+    public void setDataOwnersJSON(JSONArray dataOwnersJSON) {
+        this.dataOwnersJSON = dataOwnersJSON;
+    }
+
+    public JSONArray getVehicleTypesJSON() {
+        return vehicleTypesJSON;
+    }
+
+    public void setVehicleTypesJSON(JSONArray vehicleTypesJSON) {
+        this.vehicleTypesJSON = vehicleTypesJSON;
     }
     // </editor-fold>
 }
