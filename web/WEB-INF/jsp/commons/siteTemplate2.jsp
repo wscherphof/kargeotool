@@ -7,6 +7,20 @@
     <html>
     <head>
         <title><fmt:message key="index.title"/></title>
+        <script type="text/javascript">
+            var imgPath = "<c:url value="/images/"/>";
+            var karTheme = {
+                vri: imgPath + 'icons/vri.png',
+                wri: imgPath + 'icons/wri.png',
+                blockingSystem: imgPath + 'icons/afsluitingssysteem.png',
+                startPoint: imgPath + '/icons/beginpunt.png',
+                endPoint: imgPath + '/icons/eindpunt.png',
+                point: imgPath + '/icons/radio_zwart.png',
+                preSignInPoint: imgPath + '/icons/radio_blauw.png',
+                signInPoint: imgPath + '/icons/radio_groen.png',
+                signOutPoint: imgPath + '/icons/radio_rood.png'
+            };
+        </script>
         <script type="text/javascript" src="${contextPath}/js/edit.js"></script>
         <script type="text/javascript" src="${contextPath}/js/json2.js"></script>
         <script type="text/javascript" src="${contextPath}/js/utils.js"></script>
@@ -20,7 +34,6 @@
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
-        
     </head>
     <body class="editor" id="editorBody">
         <div id="viewportcontainer">

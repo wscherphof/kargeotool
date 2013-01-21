@@ -103,14 +103,6 @@
             <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
                 
-                var imgPath = "<c:url value="/images/"/>";
-                
-                var karTheme = {
-                    vri: imgPath + 'treeview/vri.png',
-                    endPoint: imgPath + '/treeview/minus.gif',
-                    point: imgPath + '/treeview/radio_zwart.gif'
-                };
-                
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map";
                 
                 var editor = null;

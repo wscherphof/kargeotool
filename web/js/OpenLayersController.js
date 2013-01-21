@@ -394,9 +394,9 @@ var style = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-    graphicWidth: 21,
-    graphicHeight: 21,
-    graphicYOffset: -28, // shift graphic up 28 pixels
+    graphicWidth: 20,
+    graphicHeight: 20,
+    graphicYOffset: -10, // shift graphic up 28 pixels
     label: "${label}" // label will be foo attribute value
 },
 // the second argument will include all rules
@@ -411,7 +411,8 @@ var style = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/vri.png",
+            externalGraphic: karTheme.vri,
+            graphicYOffset: -15,
             label: "${description}"
         }
     }),
@@ -420,7 +421,7 @@ var style = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_zwart.gif"
+            externalGraphic: karTheme.point
         }
     }),
     new OpenLayers.Rule({   
@@ -430,7 +431,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_groen.gif"
+            externalGraphic: karTheme.signInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -440,7 +441,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_rood.gif"
+            externalGraphic: karTheme.signOutPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -450,7 +451,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_blauw.gif"
+            externalGraphic: karTheme.preSignInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -460,7 +461,9 @@ var style = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/minus.gif"
+            externalGraphic: karTheme.endPoint,
+            graphicYOffset: -22,
+            graphicXOffset: -2
         }
     }),
     new OpenLayers.Rule({   
@@ -470,7 +473,9 @@ var style = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/plus.gif"
+            externalGraphic: karTheme.startPoint,
+            graphicYOffset: -22,
+            graphicXOffset: -2
         }
     })
     ]
@@ -483,7 +488,7 @@ var selectstyle = new OpenLayers.Style(
 {
     graphicWidth: 35,
     graphicHeight: 35,
-    graphicYOffset: -28, // shift graphic up 28 pixels
+    graphicYOffset: -20, // shift graphic up 28 pixels
     label: "${label}" 
 },
 // the second argument will include all rules
@@ -498,7 +503,8 @@ var selectstyle = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/vri.png"
+            externalGraphic: karTheme.vri,
+            graphicYOffset: -25
         }
     }),
     new OpenLayers.Rule({
@@ -506,7 +512,7 @@ var selectstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_zwart.gif"
+            externalGraphic: karTheme.point
         }
     }),
     new OpenLayers.Rule({   
@@ -516,7 +522,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_groen.gif"
+            externalGraphic: karTheme.signInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -526,7 +532,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_rood.gif"
+            externalGraphic: karTheme.signOutPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -536,7 +542,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_blauw.gif"
+            externalGraphic: karTheme.preSignInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -546,7 +552,9 @@ var selectstyle = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/minus.gif"
+            externalGraphic: karTheme.endPoint,
+            graphicYOffset: -35,
+            graphicXOffset: -2
         }
     }),
     new OpenLayers.Rule({   
@@ -556,7 +564,9 @@ var selectstyle = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/plus.gif"
+            externalGraphic: karTheme.startPoint,
+            graphicYOffset: -35,
+            graphicXOffset: -2
         }
     })
     ]
@@ -570,7 +580,7 @@ var tempstyle = new OpenLayers.Style(
 {
     graphicWidth: 35,
     graphicHeight: 35,
-    graphicYOffset: -28, // shift graphic up 28 pixels
+    graphicYOffset: -20, // shift graphic up 28 pixels
     label: "${label}" 
 },
 // the second argument will include all rules
@@ -585,7 +595,8 @@ var tempstyle = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/vri.png"
+            externalGraphic: karTheme.vri,
+            graphicYOffset: -25
         }
     }),
     new OpenLayers.Rule({
@@ -593,7 +604,7 @@ var tempstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_zwart.gif"
+            externalGraphic: karTheme.point
         }
     }),
     new OpenLayers.Rule({   
@@ -603,7 +614,7 @@ var tempstyle = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_groen.gif"
+            externalGraphic: karTheme.signInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -613,7 +624,7 @@ var tempstyle = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_rood.gif"
+            externalGraphic: karTheme.signOutPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -623,7 +634,7 @@ var tempstyle = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/radio_blauw.gif"
+            externalGraphic: karTheme.preSignInPoint
         }
     }),
     new OpenLayers.Rule({   
@@ -633,7 +644,9 @@ var tempstyle = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/minus.gif"
+            externalGraphic: karTheme.endPoint,
+            graphicYOffset: -35,
+            graphicXOffset: -2
         }
     }),
     new OpenLayers.Rule({   
@@ -643,7 +656,9 @@ var tempstyle = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: "../../images/treeview/plus.gif"
+            externalGraphic: karTheme.startPoint,
+            graphicYOffset: -35,
+            graphicXOffset: -2
         }
     })
     ]
