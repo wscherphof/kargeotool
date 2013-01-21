@@ -409,6 +409,7 @@ var style = new OpenLayers.Style(
     graphicWidth: 20,
     graphicHeight: 20,
     graphicYOffset: -10, // shift graphic up 28 pixels
+    labelYOffset: -15,
     label: "${label}" // label will be foo attribute value
 },
 // the second argument will include all rules
@@ -500,7 +501,8 @@ var selectstyle = new OpenLayers.Style(
 {
     graphicWidth: 35,
     graphicHeight: 35,
-    graphicYOffset: -20, // shift graphic up 28 pixels
+    graphicYOffset: -20, 
+    labelYOffset: -20,
     label: "${label}" 
 },
 // the second argument will include all rules
@@ -516,6 +518,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.vri,
+            label: "${description}",
             graphicYOffset: -25
         }
     }),
@@ -592,7 +595,8 @@ var tempstyle = new OpenLayers.Style(
 {
     graphicWidth: 35,
     graphicHeight: 35,
-    graphicYOffset: -20, // shift graphic up 28 pixels
+    graphicYOffset: -20, 
+    labelYOffset: -20,
     label: "${label}" 
 },
 // the second argument will include all rules
@@ -608,6 +612,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.vri,
+            label: "${description}",
             graphicYOffset: -25
         }
     }),
