@@ -106,7 +106,9 @@
                 var imgPath = "<c:url value="/images/"/>";
                 
                 var karTheme = {
-                    vri: imgPath + 'treeview/vri.png'
+                    vri: imgPath + 'treeview/vri.png',
+                    endPoint: imgPath + '/treeview/minus.gif',
+                    point: imgPath + '/treeview/radio_zwart.gif'
                 };
                 
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map";

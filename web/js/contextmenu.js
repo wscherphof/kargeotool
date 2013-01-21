@@ -110,7 +110,7 @@ Ext.define("ContextMenu", {
                             });
                             break;
                         case 'editRseq':
-                            this.editor.editRseq();
+                            this.editor.editSelectedObject();
                             break;
                     }
                 },

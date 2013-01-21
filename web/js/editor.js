@@ -15,6 +15,9 @@ Ext.define("Editor", {
     activeRseqInfoPanel: null,
     rseqEditWindow: null,
     
+    pointEditWindow: null,
+    activationPointEditWindow: null,
+    
     selectedObject:null,
     
     constructor: function(domId, mapfilePath) {
@@ -182,12 +185,25 @@ Ext.define("Editor", {
         }
     },
     
+    editSelectedObject: function() {
+        
+        if(this.selectedObject instanceof RSEQ) {
+            this.editRseq();
+        } else if(this.selectedObject instanceof Point) {
+            
+            var type = this.selectedObject.getType();
+            
+            if(type == null || type == "END") {
+                this.editEndOrOrphanPoint();
+            } else {
+                this.editActivationPoint();
+            }
+        } 
+        
+    },
+    
     editRseq: function() {
-        var rseq = this.activeRseq;
-        if(rseq == null) {
-            console.log("editRseq() maar geen activeRseq!");
-            return;
-        }
+        var rseq = this.selectedObject;
         
         if(this.rseqEditWindow != null) {
             this.rseqEditWindow.destroy();
@@ -294,6 +310,71 @@ Ext.define("Editor", {
                 }]
             }
         }).show();
+    },
+    
+    editEndOrOrphanPoint: function() {
+        var rseq = this.activeRseq;
+        var point = this.selectedObject;
+        
+        if(this.pointEditWindow != null) {
+            this.pointEditWindow.destroy();
+            this.pointEditWindow = null;
+        }   
+        
+        var me = this;
+        var label = point.getLabel() == null ? "" : point.getLabel();
+        me.pointEditWindow = Ext.create('Ext.window.Window', {
+            title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : "eindpunt ") + label,
+            height: 130,
+            width: 250,
+            icon: point.getType() == null ? karTheme.point : karTheme.endPoint,
+            layout: 'fit',
+            items: {  
+                xtype: 'form',
+                bodyStyle: 'padding: 5px 5px 0',
+                fieldDefaults: {
+                    msgTarget: 'side',
+                    labelWidth: 150
+                },
+                defaultType: 'textfield',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    fieldLabel: 'Nummer',
+                    name: 'nummer',
+                    allowBlank: false,
+                    value: point.nummer
+                },{
+                    fieldLabel: 'Label',
+                    name: 'label',
+                    value: point.label,
+                    id: 'nummerEdit'
+                }],
+                buttons: [{
+                    text: 'OK',
+                    handler: function() {
+                        
+                        // TODO check of nummer al gebruikt
+                        
+                        Ext.Object.merge(point, this.up('form').getForm().getValues());
+                        if(rseq == me.activeRseq) {
+                            me.fireEvent("activeRseqUpdated", rseq);
+                        }
+                        me.pointEditWindow.destroy();
+                        me.pointEditWindow = null;
+                    }
+                },{
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.pointEditWindow.destroy();
+                        me.pointEditWindow = null;
+                    }
+                }]
+            }
+        }).show();
+        Ext.getCmp("nummerEdit").selectText(0);
+        Ext.getCmp("nummerEdit").focus(false, 100);
     },
     
     addObject : function (className, location,properties){
