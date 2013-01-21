@@ -400,3 +400,13 @@ td.disabled {
 .x-border-layout-ct {
     background-color: #CCCCCC;
 }
+
+#geocoderesults {
+    margin-top: 10px;
+}
+
+.geocoderesultlink {
+    color: #0000EE;
+    display: block;
+    margin-bottom: 2px;
+}

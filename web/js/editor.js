@@ -507,8 +507,59 @@ Ext.define("Editor", {
         };
         this.addObject("Point", geom,properties);
         this.currentEditAction = null;
+    },
+        
+    /**
+     * Geocode search
+     */
+    geocode: function(address) {
+        var me = this;
+        Ext.Ajax.request({
+            url: 'http://bag42.nl/api/v0/geocode/json',
+            params: {
+                'address': address
+            },
+            method: 'GET',
+            success: function(response) {
+                var result = Ext.JSON.decode(response.responseText);
+                if(result.status === 'OK') {
+                    var resultblock = Ext.get('geocoderesults');
+                    Ext.Array.each(result.results, function(data) {
+                        var address = me.parseAddressComponent(data.address_components);
+                        var addresslink = document.createElement('a');
+                        addresslink.href = '#';
+                        addresslink.className = 'geocoderesultlink';
+                        addresslink.innerHTML = me.createLinkText(address);
+                        var link = Ext.get(addresslink);
+                        link.on('click', function() {
+                            me.zoomToAddress(data.geometry);
+                        });
+                        resultblock.appendChild(link);
+                    });
+                }
+            }
+        });
+    },
+    parseAddressComponent: function(addressComponent) {
+        var address = {
+            street: '',
+            zipcode: '',
+            city: ''
+        };
+        Ext.Array.each(addressComponent, function(data) {
+            if(Ext.Array.contains(data.types, "route")) address.street = data.long_name;
+            if(Ext.Array.contains(data.types, "postcode_code")) address.zipcode = data.long_name;
+            if(Ext.Array.contains(data.types, "locality")) address.city = data.long_name;
+        });
+        return address;
+    },
+    createLinkText: function(address) {
+        var linktext = [];
+        if(address.street !== '') linktext.push(address.street);
+        if(address.zipcode !== '') linktext.push(address.zipcode);
+        if(address.city !== '') linktext.push(address.city);
+        return linktext.join(', ');
     }
-    
 });
 
 Ext.define("ActiveRseqInfoPanel", {

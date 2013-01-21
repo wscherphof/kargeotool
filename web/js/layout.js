@@ -43,7 +43,7 @@ Ext.onReady(function() {
                 animCollapse: true,
                 collapsible: true,
                 split: true,
-                width: 250,
+                width: 275,
                 minWidth: 0,
                 contentEl: 'leftbar',
                 layout: {
@@ -60,6 +60,7 @@ Ext.onReady(function() {
                 items: [
                     {
                         contentEl: 'searchform',
+                        autoScroll: true,
                         title: 'Zoeken'
                     },
                     {
