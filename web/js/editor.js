@@ -194,7 +194,7 @@ Ext.define("Editor", {
             var type = this.selectedObject.getType();
             
             if(type == null || type == "END") {
-                this.editEndOrOrphanPoint();
+                this.editNonActivationPoint();
             } else {
                 this.editActivationPoint();
             }
@@ -211,7 +211,6 @@ Ext.define("Editor", {
         }   
         
         var type = {
-            "": "nieuw verkeerssysteem",
             "CROSSING": "VRI",
             "GUARD": "bewakingssysteem nadering voertuig",
             "BAR": "afsluittingssysteem"
@@ -221,7 +220,7 @@ Ext.define("Editor", {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 330,
             width: 450,
-            icon: karTheme['vri'],
+            icon: karTheme[rseq.type.toLowerCase()],
             layout: 'fit',
             items: {  
                 xtype: 'form',
@@ -294,7 +293,13 @@ Ext.define("Editor", {
                 buttons: [{
                     text: 'OK',
                     handler: function() {
-                        Ext.Object.merge(rseq, this.up('form').getForm().getValues());
+                        var form = this.up('form').getForm();
+                        if(!form.isValid()) {
+                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                            return;
+                        }
+
+                        Ext.Object.merge(rseq, form.getValues());
                         if(rseq == me.activeRseq) {
                             me.fireEvent("activeRseqUpdated", rseq);
                         }
@@ -312,7 +317,7 @@ Ext.define("Editor", {
         }).show();
     },
     
-    editEndOrOrphanPoint: function() {
+    editNonActivationPoint: function() {
         var rseq = this.activeRseq;
         var point = this.selectedObject;
         
@@ -327,7 +332,7 @@ Ext.define("Editor", {
             title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : "eindpunt ") + label,
             height: 130,
             width: 250,
-            icon: point.getType() == null ? karTheme.point : karTheme.endPoint,
+            icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
             layout: 'fit',
             items: {  
                 xtype: 'form',
@@ -354,10 +359,15 @@ Ext.define("Editor", {
                 buttons: [{
                     text: 'OK',
                     handler: function() {
+                        var form = this.up('form').getForm();
+                        if(!form.isValid()) {
+                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                            return;
+                        }
                         
                         // TODO check of nummer al gebruikt
                         
-                        Ext.Object.merge(point, this.up('form').getForm().getValues());
+                        Ext.Object.merge(point, form.getValues());
                         if(rseq == me.activeRseq) {
                             me.fireEvent("activeRseqUpdated", rseq);
                         }
@@ -376,6 +386,78 @@ Ext.define("Editor", {
         Ext.getCmp("nummerEdit").selectText(0);
         Ext.getCmp("nummerEdit").focus(false, 100);
     },
+    
+    editActivationPoint: function() {
+        var rseq = this.activeRseq;
+        var point = this.selectedObject;
+        
+        if(this.activationPointEditWindow != null) {
+            this.activationPointEditWindow.destroy();
+            this.activationPointEditWindow = null;
+        }   
+        
+        var me = this;
+        var label = point.getLabel() == null ? "" : point.getLabel();
+        var apType = point.getType().split("_")[1];
+        var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
+        me.activationPointEditWindow = Ext.create('Ext.window.Window', {
+            title: 'Bewerken ' + apName + " " + label,
+            height: 130,
+            width: 250,
+            icon: karTheme[apName],
+            layout: 'fit',
+            items: {  
+                xtype: 'form',
+                bodyStyle: 'padding: 5px 5px 0',
+                fieldDefaults: {
+                    msgTarget: 'side',
+                    labelWidth: 150
+                },
+                defaultType: 'textfield',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    fieldLabel: 'Nummer',
+                    name: 'nummer',
+                    allowBlank: false,
+                    value: point.nummer
+                },{
+                    fieldLabel: 'Label',
+                    name: 'label',
+                    value: point.label,
+                    id: 'nummerEdit'
+                }],
+                buttons: [{
+                    text: 'OK',
+                    handler: function() {
+                        var form = this.up('form').getForm();
+                        if(!form.isValid()) {
+                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                            return;
+                        }
+                        
+                        // TODO check of nummer al gebruikt
+                        
+                        Ext.Object.merge(point, form.getValues());
+                        if(rseq == me.activeRseq) {
+                            me.fireEvent("activeRseqUpdated", rseq);
+                        }
+                        me.activationPointEditWindow.destroy();
+                        me.activationPointEditWindow = null;
+                    }
+                },{
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.activationPointEditWindow.destroy();
+                        me.activationPointEditWindow = null;
+                    }
+                }]
+            }
+        }).show();
+        Ext.getCmp("nummerEdit").selectText(0);
+        Ext.getCmp("nummerEdit").focus(false, 100);
+    },    
     
     addObject : function (className, location,properties){
         var geomName = "location";

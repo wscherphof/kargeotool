@@ -10,15 +10,17 @@
         <script type="text/javascript">
             var imgPath = "<c:url value="/images/"/>";
             var karTheme = {
-                vri: imgPath + 'icons/vri.png',
-                wri: imgPath + 'icons/wri.png',
-                blockingSystem: imgPath + 'icons/afsluitingssysteem.png',
-                startPoint: imgPath + '/icons/beginpunt.png',
-                endPoint: imgPath + '/icons/eindpunt.png',
-                point: imgPath + '/icons/radio_zwart.png',
-                preSignInPoint: imgPath + '/icons/radio_blauw.png',
-                signInPoint: imgPath + '/icons/radio_groen.png',
-                signOutPoint: imgPath + '/icons/radio_rood.png'
+                crossing:       imgPath + 'icons/vri.png',
+                guard:          imgPath + 'icons/wri.png',
+                bar:            imgPath + 'icons/afsluitingssysteem.png',
+                
+                punt:           imgPath + '/icons/radio_zwart.png',
+                startPunt:      imgPath + '/icons/beginpunt.png',
+                eindPunt:       imgPath + '/icons/eindpunt.png',
+                
+                voorinmeldPunt: imgPath + '/icons/radio_blauw.png',
+                inmeldPunt: imgPath + '/icons/radio_groen.png',
+                uitmeldPunt: imgPath + '/icons/radio_rood.png',
             };
         </script>
         <script type="text/javascript" src="${contextPath}/js/edit.js"></script>

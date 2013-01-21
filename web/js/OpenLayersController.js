@@ -424,7 +424,35 @@ var style = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.vri,
+            externalGraphic: karTheme.crossing,
+            graphicYOffset: -15,
+            label: "${description}"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "GUARD"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.guard,
+            graphicYOffset: -15,
+            label: "${description}"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "BAR"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.bar,
             graphicYOffset: -15,
             label: "${description}"
         }
@@ -434,7 +462,7 @@ var style = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.point
+            externalGraphic: karTheme.punt
         }
     }),
     new OpenLayers.Rule({   
@@ -444,7 +472,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signInPoint
+            externalGraphic: karTheme.inmeldPunt
         }
     }),
     new OpenLayers.Rule({   
@@ -454,7 +482,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signOutPoint
+            externalGraphic: karTheme.uitmeldPunt
         }
     }),
     new OpenLayers.Rule({   
@@ -464,7 +492,7 @@ var style = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: karTheme.preSignInPoint
+            externalGraphic: karTheme.voorinmeldPunt
         }
     }),
     new OpenLayers.Rule({   
@@ -474,7 +502,7 @@ var style = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: karTheme.endPoint,
+            externalGraphic: karTheme.eindPunt,
             graphicYOffset: -22,
             graphicXOffset: -2
         }
@@ -486,7 +514,7 @@ var style = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: karTheme.startPoint,
+            externalGraphic: karTheme.startPunt,
             graphicYOffset: -22,
             graphicXOffset: -2
         }
