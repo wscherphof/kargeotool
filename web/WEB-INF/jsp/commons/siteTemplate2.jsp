@@ -10,17 +10,26 @@
         <script type="text/javascript">
             var imgPath = "<c:url value="/images/"/>";
             var karTheme = {
-                crossing:       imgPath + 'icons/vri.png',
-                guard:          imgPath + 'icons/wri.png',
-                bar:            imgPath + 'icons/afsluitingssysteem.png',
-                
-                punt:           imgPath + '/icons/radio_zwart.png',
-                startPunt:      imgPath + '/icons/beginpunt.png',
-                eindPunt:       imgPath + '/icons/eindpunt.png',
-                
-                voorinmeldPunt: imgPath + '/icons/radio_blauw.png',
-                inmeldPunt: imgPath + '/icons/radio_groen.png',
-                uitmeldPunt: imgPath + '/icons/radio_rood.png',
+                crossing:                imgPath + 'icons/vri.png',
+                crossing_selected:       imgPath + 'icons/vri_selected.png',
+                guard:                   imgPath + 'icons/wri.png',
+                guard_selected:          imgPath + 'icons/wri_selected.png',
+                bar:                     imgPath + 'icons/afsluitingssysteem.png',
+                bar_selected:            imgPath + 'icons/afsluitingssysteem_selected.png',
+
+                punt:                    imgPath + '/icons/radio_zwart.png',
+                punt_selected:           imgPath + '/icons/radio_zwart_selected.png',
+                startPunt:               imgPath + '/icons/beginpunt.png',
+                startPunt_selected:      imgPath + '/icons/beginpunt_selected.png',
+                eindPunt:                imgPath + '/icons/eindpunt.png',
+                eindPunt_selected:       imgPath + '/icons/eindpunt_selected.png',
+
+                voorinmeldPunt:          imgPath + '/icons/radio_blauw.png',
+                voorinmeldPunt_selected: imgPath + '/icons/radio_blauw_selected.png',
+                inmeldPunt:              imgPath + '/icons/radio_groen.png',
+                inmeldPunt_selected:     imgPath + '/icons/radio_groen_selected.png',
+                uitmeldPunt:             imgPath + '/icons/radio_rood.png',
+                uitmeldPunt_selected:    imgPath + '/icons/radio_rood_selected.png'
             };
         </script>
         <script type="text/javascript" src="${contextPath}/js/edit.js"></script>

@@ -406,9 +406,9 @@ var style = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-    graphicWidth: 20,
-    graphicHeight: 20,
-    graphicYOffset: -10, // shift graphic up 28 pixels
+    graphicWidth: 28,
+    graphicHeight: 28,
+    graphicYOffset: -14, // shift graphic up 28 pixels
     labelYOffset: -15,
     label: "${label}" // label will be foo attribute value
 },
@@ -425,7 +425,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.crossing,
-            graphicYOffset: -15,
+            graphicYOffset: -16,
             label: "${description}"
         }
     }),
@@ -439,7 +439,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard,
-            graphicYOffset: -15,
+            graphicYOffset: -16,
             label: "${description}"
         }
     }),
@@ -453,7 +453,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar,
-            graphicYOffset: -15,
+            graphicYOffset: -16,
             label: "${description}"
         }
     }),
@@ -503,8 +503,8 @@ var style = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.eindPunt,
-            graphicYOffset: -22,
-            graphicXOffset: -2
+            graphicYOffset: -25,
+            graphicXOffset: -5
         }
     }),
     new OpenLayers.Rule({   
@@ -515,8 +515,8 @@ var style = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.startPunt,
-            graphicYOffset: -22,
-            graphicXOffset: -2
+            graphicYOffset: -25,
+            graphicXOffset: -5
         }
     })
     ]
@@ -527,9 +527,9 @@ var selectstyle = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-    graphicWidth: 35,
-    graphicHeight: 35,
-    graphicYOffset: -20, 
+    graphicWidth: 37,
+    graphicHeight: 37,
+    graphicYOffset: -21, 
     labelYOffset: -20,
     label: "${label}" 
 },
@@ -545,9 +545,9 @@ var selectstyle = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.vri,
+            externalGraphic: karTheme.vri_selected,
             label: "${description}",
-            graphicYOffset: -25
+            graphicYOffset: -26
         }
     }),
     new OpenLayers.Rule({
@@ -555,7 +555,7 @@ var selectstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.point
+            externalGraphic: karTheme.point_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -565,7 +565,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signInPoint
+            externalGraphic: karTheme.signInPoint_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -575,7 +575,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signOutPoint
+            externalGraphic: karTheme.signOutPoint_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -585,7 +585,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: karTheme.preSignInPoint
+            externalGraphic: karTheme.preSignInPoint_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -595,9 +595,9 @@ var selectstyle = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: karTheme.endPoint,
-            graphicYOffset: -35,
-            graphicXOffset: -2
+            externalGraphic: karTheme.endPoint_selected,
+            graphicYOffset: -33,
+            graphicXOffset: -6
         }
     }),
     new OpenLayers.Rule({   
@@ -607,9 +607,9 @@ var selectstyle = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: karTheme.startPoint,
-            graphicYOffset: -35,
-            graphicXOffset: -2
+            externalGraphic: karTheme.startPoint_selected,
+            graphicYOffset: -33,
+            graphicXOffset: -6
         }
     })
     ]
@@ -621,9 +621,9 @@ var tempstyle = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-    graphicWidth: 35,
-    graphicHeight: 35,
-    graphicYOffset: -20, 
+    graphicWidth: 37,
+    graphicHeight: 37,
+    graphicYOffset: -21, 
     labelYOffset: -20,
     label: "${label}" 
 },
@@ -641,7 +641,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.vri,
             label: "${description}",
-            graphicYOffset: -25
+            graphicYOffset: -26
         }
     }),
     new OpenLayers.Rule({
@@ -690,8 +690,8 @@ var tempstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.endPoint,
-            graphicYOffset: -35,
-            graphicXOffset: -2
+            graphicYOffset: -33,
+            graphicXOffset: -6
         }
     }),
     new OpenLayers.Rule({   
@@ -702,8 +702,8 @@ var tempstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.startPoint,
-            graphicYOffset: -35,
-            graphicXOffset: -2
+            graphicYOffset: -33,
+            graphicXOffset: -6
         }
     })
     ]

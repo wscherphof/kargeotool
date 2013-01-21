@@ -4,7 +4,7 @@
     <head>
         <title></title>
     </head>
-    <body style="background-color: #F5F5F5;">
+    <body>
         &nbsp;
     </body>
 </html>
