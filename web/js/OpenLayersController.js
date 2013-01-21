@@ -188,10 +188,8 @@ function ol (){
             rightclick: function (evt){
                 var x = evt.clientX;
                 var y = evt.clientY;
-                var context = editor.contextMenu.getMenuContext();
-                if(context){
-                    context.showAt(x, y);
-                }
+                editor.contextMenu.show(x,y);
+           
                 return false;
             },
             click: function (evt){
@@ -208,6 +206,8 @@ function ol (){
             renderIntent: "temporary",
             hover:true
         });
+        
+     
         this.map.addControl(highlight);
         highlight.activate();
         this.selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
@@ -220,7 +220,6 @@ function ol (){
                 editor.setSelectedObject(null);
             }
         });
-
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
     },

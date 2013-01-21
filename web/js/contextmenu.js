@@ -30,7 +30,10 @@ Ext.define("ContextMenu", {
                             editor.addObject("RSEQ", {
                                 type: "Point",
                                 coordinates: [lonlat.lon, lonlat.lat]
-                            },{type:"CROSSING",id: Ext.id()});
+                            },{
+                                type:"CROSSING",
+                                id: Ext.id()
+                            });
                             break;
                     }
                 },
@@ -39,15 +42,14 @@ Ext.define("ContextMenu", {
         });
         
         
-        
         var vri = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
-                
             {
-                id: 'edit',
-                text: 'Bewerkt punt'
+                id: 'editRseq',
+                text: 'Bewerken...',
+                icon: contextPath + "/images/silk/table_edit.png"
             },{
                 xtype: 'menuseparator'
             },
@@ -84,22 +86,31 @@ Ext.define("ContextMenu", {
                             editor.addObject("Point", {
                                 type: "Point",
                                 coordinates: [lonlat.lon, lonlat.lat]
-                            },{type:"END",id: Ext.id()});
+                            },{
+                                type:"END",
+                                id: Ext.id()
+                            });
                             break;
                         case 'addCheckinPoint':
-                             editor.addObject("Point", {
+                            editor.addObject("Point", {
                                 type: "Point",
                                 coordinates: [lonlat.lon, lonlat.lat]
-                            },{type:"ACTIVATION_1",id: Ext.id()});
+                            },{
+                                type:"ACTIVATION_1",
+                                id: Ext.id()
+                            });
                             break;
                         case 'addCheckoutPoint':
-                             editor.addObject("Point", {
+                            editor.addObject("Point", {
                                 type: "Point",
                                 coordinates: [lonlat.lon, lonlat.lat]
-                            },{type:"ACTIVATION_2",id: Ext.id()});
+                            },{
+                                type:"ACTIVATION_2",
+                                id: Ext.id()
+                            });
                             break;
-                        case 'edit':
-                            this.openPopup();
+                        case 'editRseq':
+                            this.editor.editRseq();
                             break;
                     }
                 },
@@ -119,10 +130,25 @@ Ext.define("ContextMenu", {
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
             e = e?e:window.event;
+            
+            var f = editor.olc.vectorLayer.getFeatureFromEvent(e);
+            if(f){
+                var x = e.clientX;
+                var y = e.clientY;
+                editor.contextMenu.show(x,y);
+            }
             if (e.preventDefault) 
                 e.preventDefault(); // For non-IE browsers.
-            else return false; // For IE browsers.
+            else {
+                return false; // For IE browsers.
+            }
         };
+    },
+    show : function(x,y){
+        var context = this.getMenuContext();
+        if(context){
+            context.showAt(x, y);
+        }
     },
     getMenuContext: function() {
         if(editor.selectedObject){
