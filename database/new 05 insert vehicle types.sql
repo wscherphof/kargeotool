@@ -12,7 +12,7 @@ insert into vehicle_type(nummer,omschrijving) values
   (7,'Taxi'),
   (69,'Politie niet in uniform'),
   (70,'Marechaussee'),
-  (71,'Hoogwaardig Openbaar Vervoer (HOB) bus'),
+  (71,'Hoogwaardig Openbaar Vervoer (HOV) bus'),
   (99,'Gereserveerd - niet gebruiken');
 
 insert into vehicle_type(nummer,omschrijving)
