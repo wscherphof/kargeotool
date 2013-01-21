@@ -3,14 +3,21 @@
 
 <div id="header">
     <div id="headerLinks">
-        
-        <a href="#" onclick="alert('Nog niet beschikbaar')">Beheer VRI-informatie</a> |
+        <div class="headerlink">
+            <a href="#" onclick="alert('Nog niet beschikbaar')"><img src="<c:url value="/images/"/>/pencil.png" alt="icon" class="navimg" /> Beheer VRI-informatie</a>
+        </div>
         <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">
-            <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean">Beheer gebruikers</stripes:link> |
+            <div class="headerlink">
+                <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean"><img src="<c:url value="/images/"/>/users.png" alt="icon" class="navimg" /> Beheer gebruikers</stripes:link>
+            </div>
         </c:if>
-        <span style="font-weight: normal">Ingelogd als: </span>
-        <c:out value="${pageContext.request.remoteUser}"/> | 
-        <stripes:link href="/logout.jsp">Uitloggen</stripes:link>
+        <div class="headerlink">
+            <span style="font-weight: normal">Ingelogd als: </span>
+            <c:out value="${pageContext.request.remoteUser}"/>
+        </div>
+        <div class="headerlink">
+            <stripes:link href="/logout.jsp"><img src="<c:url value="/images/"/>/exit.png" alt="icon" class="navimg" /> Uitloggen</stripes:link>
+        </div>
     </div>
     <div id="headerTitle">Geo OV platform</div>
 </div>

@@ -77,13 +77,28 @@
         
         <div id="rightbar">
             <div id="legend">
-                <strong>VRI-informatie</strong><br/><br />
-                <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/>Walapparatuur<br/>
-                <div id="walapparatuur"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=walapparatuur&amp;format=image/png"/></div>
-                <input type="checkbox" checked="checked" onclick="toggleLayer('signaalgroepen');"/>Signaalgroepen<br/>
-                <div id="signaalgroepen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/></div>
-                <input type="checkbox" checked="checked" onclick="toggleLayer('triggerpunten');"/>Triggerpunten<br/>
-                <div id="triggerpunten"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=triggerpunten&amp;format=image/png"/></div><br/>
+                <div id="walapparatuur" class="legendseparator">
+                    <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/> Walapparatuur<br/>
+                    <img src="<c:url value="/images/"/>icons/vri.png" alt="VRI" class="legendimg" /> VRI<br />
+                    <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
+                    <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
+                </div>
+                <div id="signaalgroepen" class="legendseparator">
+                    <input type="checkbox" checked="checked" onclick="toggleLayer('signaalgroepen');"/> Signaalgroepen<br/>
+                    <img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
+                </div>
+                <div id="triggerpunten" class="legendseparator">
+                    <input type="checkbox" checked="checked" onclick="toggleLayer('triggerpunten');"/> Triggerpunten<br/>
+                    <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
+                    <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
+                    <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
+                    <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Vooraanmeldpunt" class="legendimg" /> Vooraanmeldpunt<br />
+                </div>
+                <div id="starteindpunten" class="legendseparator">
+                    <input type="checkbox" checked="checked" /> Begin- en eindpunten<br/>
+                    <img src="<c:url value="/images/"/>/icons/beginpunt.png" alt="Beginpunt" class="legendimg" /> Beginpunt<br />
+                    <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
+                </div><br/>
                 <strong>OV-informatie</strong><br/>
                 <input type="checkbox" onclick="toggleLayer('buslijnen');"/>Buslijnen<br/>
                 <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
@@ -93,13 +108,6 @@
                 <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/>BRT<br/>
             </div>
-            <div id="search">
-                <br/>
-                <hr style="border:1px #000 dotted;"/>
-                <strong>Zoek</strong><br/>
-                <input type="text" id="searchField"/>
-            </div>
-            
             <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
                 

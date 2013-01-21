@@ -19,8 +19,25 @@ Ext.onReady(function() {
                 split: true,
                 width: 175,
                 minWidth: 0,
-                maxWidth: 200,
-                contentEl: 'rightbar'
+                contentEl: 'rightbar',
+                layout: {
+                    type: 'accordion',
+                    align: 'stretch',
+                    multi: true,
+                    hideCollapseTool: true,
+                },
+                defaultType: 'panel',
+                defaults: {
+                    border: 0,
+                    width: '100%',
+                    flex: 1
+                },
+                items: [
+                    {
+                        title: 'Legenda',
+                        contentEl: 'legend'
+                    }
+                ]
             }, {
                 region: 'west',
                 animCollapse: true,
@@ -28,7 +45,6 @@ Ext.onReady(function() {
                 split: true,
                 width: 250,
                 minWidth: 0,
-                maxWidth: 500,
                 contentEl: 'leftbar',
                 layout: {
                     type: 'accordion',

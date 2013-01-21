@@ -29,9 +29,9 @@ body.form {
 }
 
 #header {
-    background-color: #E32D21;
-    color: white;
-    border-bottom: 1px solid #DDDDDD;
+    background-color: #D9E7F8;
+    color: Black;
+    border-bottom: 1px solid #99BCE8;
     font-size: 12pt;
     font-weight: bold;
     height: 30px;
@@ -44,8 +44,28 @@ body.form {
     font-size: 10pt;
 }
 
+.headerlink {
+    float: left;
+    border-right: 2px solid #99BCE8;
+    padding-right: 10px;
+    margin-right: 5px;
+    padding-left: 5px;
+}
+
+.headerlink:last-child {
+    border-right: 0px none;
+    margin-right: 0px;
+}
+
 #headerLinks a {
-    color: white;
+    color: black;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.navimg {
+    vertical-align: top;
+    margin-right: 1px;
 }
 
 #objectTree {
@@ -101,22 +121,22 @@ body.form {
 }
 
 #objectTree .icon_a_Onbekend {
-    background-image: url(../images/treeview/radio_zwart.gif);
+    background-image: url(../images/icons/radio_zwart.png);
     width: 19px;
 }
 
 #objectTree .icon_a_Inm {
-    background-image: url(../images/treeview/radio_groen.gif);
+    background-image: url(../images/icons/radio_groen.png);
     width: 19px;
 }
 
 #objectTree .icon_a_Uit {
-    background-image: url(../images/treeview/radio_rood.gif);
+    background-image: url(../images/icons/radio_rood.png);
     width: 19px;
 }
 
 #objectTree .icon_a_Voor {
-    background-image: url(../images/treeview/radio_blauw.gif);
+    background-image: url(../images/icons/radio_blauw.png);
     width: 19px;
 }
 
@@ -359,4 +379,24 @@ td.disabled {
 
 #gebruikerScroller table td:first-child {
     border-left: 0px;
+}
+
+#legend {
+    padding: 5px;
+}
+
+.legendimg {
+    width: 20px;
+    vertical-align: middle;
+    margin-top: 3px;
+    margin-left: 5px;
+    margin-right: 3px;
+}
+
+.legendseparator {
+    margin-bottom: 8px;
+}
+
+.x-border-layout-ct {
+    background-color: #CCCCCC;
 }
