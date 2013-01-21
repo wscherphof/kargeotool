@@ -15,7 +15,7 @@ Ext.define("ContextMenu", {
             {
                 id: 'addRseq',
                 text: 'Hier verkeerssysteem toevoegen',
-                icon: karTheme.vri
+                icon: karTheme.crossing
             }
             ],
             listeners: {
