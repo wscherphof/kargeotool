@@ -495,7 +495,8 @@ var style = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.punt
+            externalGraphic: karTheme.punt,
+            label: ""
         }
     }),
     new OpenLayers.Rule({   
@@ -588,7 +589,8 @@ var selectstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.point_selected
+            externalGraphic: karTheme.point_selected,
+            label: ""
         }
     }),
     new OpenLayers.Rule({   
@@ -682,7 +684,8 @@ var tempstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.point
+            externalGraphic: karTheme.point,
+            label: ""
         }
     }),
     new OpenLayers.Rule({   
