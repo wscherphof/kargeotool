@@ -2,13 +2,19 @@ Ext.define("ContextMenu", {
     menuContext: null,
     editor: null,
     
+    // menu's 
+    vri:null,
+    checkout:null,
+    defaultMenu:null,
+    
     constructor: function(editor) {
         this.editor = editor;
+        this.editor.on("selectedObjectChanged", this.updateStates,this);
     },
     
     createMenus: function() {
         var me = this;
-        var standaard = Ext.create ("Ext.menu.Menu",{
+        this.defaultMenu= Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -42,7 +48,7 @@ Ext.define("ContextMenu", {
         });
         
         
-        var vri = Ext.create ("Ext.menu.Menu",{
+        this.vri = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -56,6 +62,46 @@ Ext.define("ContextMenu", {
             {
                 id: 'addCheckoutPoint',
                 text: 'Voeg uitmeldpunt toe'
+            }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    var pos = {
+                        x: menu.x - Ext.get(editor.domId).getX(),
+                        y: menu.y
+                    }
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    var point= new OpenLayers.Geometry.Point(lonlat.lon,lonlat.lat);
+                    switch (item.id) {
+                        case 'addEndPoint':
+                            editor.addEndpoint(false,point);
+                            break;
+                        case 'addCheckinPoint':
+                            editor.addCheckinPoint(false,point);
+                            break;
+                        case 'addCheckoutPoint':
+                            editor.addCheckoutPoint(false,point);
+                            break;
+                        case 'editRseq':
+                            this.editor.editSelectedObject();
+                            break;
+                    }
+                },
+                scope:me
+            }
+        });
+        
+        this.checkout = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'editCheckout',
+                text: 'Bewerk...',
+                icon: contextPath + "/images/silk/table_edit.png"
+            },{
+                id: "upper",
+                xtype: 'menuseparator'
             },
             {
                 id: 'addEndPoint',
@@ -63,8 +109,10 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'addCheckinPoint',
-                text: 'Voeg inmeldpunt toe'
+                text: 'Voeg inmeldpunt toe',
+                disabled:true
             },{
+                id : "lower",
                 xtype: 'menuseparator'
             },
             {
@@ -83,15 +131,17 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addEndPoint':
-                            editor.addEndpoint();
+                            editor.addEndpoint(true);
+                            Ext.Array.each(menu.items.items,function(name, idx, ori){
+                                if(name.id == "addCheckinPoint"){
+                                    name.setDisabled (false);
+                                }
+                            });
                             break;
                         case 'addCheckinPoint':
-                            editor.addCheckinPoint();
+                            editor.addCheckinPoint(true);
                             break;
-                        case 'addCheckoutPoint':
-                            editor.addCheckoutPoint();
-                            break;
-                        case 'editRseq':
+                        case 'editCheckout':
                             this.editor.editSelectedObject();
                             break;
                     }
@@ -101,13 +151,13 @@ Ext.define("ContextMenu", {
         });
         
         this.menuContext ={
-            "standaard" : standaard,
-            "ACTIVATION_1" : vri,
-            "ACTIVATION_2" : vri,
-            "ACTIVATION_3" : vri,
-            "END" : vri,
-            "BEGIN" : vri,
-            "CROSSING" : vri
+            "standaard" : this.defaultMenu,
+            "ACTIVATION_1" : this.vri,
+            "ACTIVATION_2" : this.checkout ,
+            "ACTIVATION_3" : this.vri,
+            "END" : this.vri,
+            "BEGIN" : this.vri,
+            "CROSSING" : this.vri
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -126,6 +176,9 @@ Ext.define("ContextMenu", {
                 return false; // For IE browsers.
             }
         };
+    },
+    updateStates: function(selectedObject){
+        // TODO update the states according to the selected object
     },
     show : function(x,y){
         var context = this.getMenuContext();
