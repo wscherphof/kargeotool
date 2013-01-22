@@ -582,7 +582,7 @@ Ext.define("Editor", {
         var newObject = Ext.create(className,properties);
         var geo = newObject.toGeoJSON();
         this.olc.addFeatures(geo);
-        if(newObject.$className == "RSEQ"){
+        if(newObject instanceof RSEQ){
             this.setActiveRseq(newObject);
         }else{
             this.activeRseq.addPoint(newObject);
@@ -604,7 +604,7 @@ Ext.define("Editor", {
     },
     addPoint : function(withLine,point){
         if(withLine ){
-            var geomName = this.selectedObject.$className == "RSEQ" ? "location" : "geometry";
+            var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
             var startX = this.selectedObject[geomName].coordinates[0];
             var startY = this.selectedObject[geomName].coordinates[1];
             this.olc.drawLineFromPoint(startX,startY);
