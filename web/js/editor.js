@@ -182,32 +182,31 @@ Ext.define("Editor", {
     setSelectedObject : function (olFeature){
         if(!olFeature){
             this.selectedObject = null;
-            return;
-        }
-        if(this.activeRseq){
-            if(olFeature.data.className == "RSEQ"){
-                this.selectedObject = this.activeRseq;
-            }else { // Point
-                var point = this.activeRseq.getPointById(olFeature.data.id);
-                if (point){
-                    if(this.selectedObject && this.selectedObject.getId() == olFeature.data.id ){ // Check if there are changes to the selectedObject. If not, then return
-                        return;
+        }else{
+            if(this.activeRseq){
+                if(olFeature.data.className == "RSEQ"){
+                    this.selectedObject = this.activeRseq;
+                }else { // Point
+                    var point = this.activeRseq.getPointById(olFeature.data.id);
+                    if (point){
+                        if(this.selectedObject && this.selectedObject.getId() == olFeature.data.id ){ // Check if there are changes to the selectedObject. If not, then return
+                            return;
+                        }else{
+                            this.selectedObject = point;
+                        }
                     }else{
-                        this.selectedObject = point;
+                        alert("Selected object bestaat niet");
                     }
-                }else{
-                    alert("Selected object bestaat niet");
                 }
-            }
-            if(this.selectedObject){
-                this.olc.selectFeature(olFeature.data.id, olFeature.data.className);
+                if(this.selectedObject){
+                    this.olc.selectFeature(olFeature.data.id, olFeature.data.className);
+                }
             }
         }
         this.fireEvent('selectedObjectChanged', this.selectedObject);
     },
     
     editSelectedObject: function() {
-        
         if(this.selectedObject instanceof RSEQ) {
             this.editRseq();
         } else if(this.selectedObject instanceof Point) {
@@ -583,7 +582,16 @@ Ext.define("Editor", {
         Ext.getCmp("nummerEdit").selectText(0);
         Ext.getCmp("nummerEdit").focus(false, 100);
     },    
-    
+    changeGeom : function (className, id, x,y){
+        if(className == "RSEQ"){
+            this.activeRseq.location.coordinates = [x,y];
+        }else{
+            var point = this.activeRseq.getPointById(id);
+            if(point){
+                point.geometry.coordinates = [x,y];
+            }
+        }
+    },
     addObject : function (className, location,properties){
         var geomName = "location";
         if(className != "RSEQ"){

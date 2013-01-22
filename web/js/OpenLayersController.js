@@ -15,6 +15,7 @@ Ext.define("ol", {
     constructor : function(editor){
         this.editor = editor;
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
+        this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
     },
     // Make the map
     createMap : function(domId){
@@ -155,9 +156,23 @@ Ext.define("ol", {
         this.line.events.register('featureadded', me, me.drawFeature);
         
         this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
-            onComplete : this.dragComplete
+            onComplete : me.dragComplete,
+            featureCallbacks:{
+                over: function(feature){
+                    if(editor.selectedObject && feature.data.id == editor.selectedObject.getId()){
+                        this.overFeature(feature);
+                    }
+                }
+            }
         });
         
+        this.dragFeature.handlers['drag'].stopDown = false;
+        this.dragFeature.handlers['drag'].stopUp = false;
+        this.dragFeature.handlers['drag'].stopClick = false;
+        this.dragFeature.handlers['feature'].stopDown = false;
+        this.dragFeature.handlers['feature'].stopUp = false;
+        this.dragFeature.handlers['feature'].stopClick = false;
+
         this.map.addControl(this.point);
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
@@ -250,6 +265,13 @@ Ext.define("ol", {
         if(olFeature && (this.vectorLayer.selectedFeatures.length==0||this.vectorLayer.selectedFeatures[0].data.id != id)){
             this.selectCtrl.unselectAll();
             this.selectCtrl.select(olFeature)
+        }
+    },
+    toggleDragfeature : function (feature){
+        if(feature){
+            this.dragFeature.activate();
+        }else{
+            this.dragFeature.deactivate();
         }
     },
     raiseOnDataEvent : function(evt){
@@ -394,7 +416,9 @@ Ext.define("ol", {
         this.dragFeature.deactivate();
     },
     dragComplete : function (feature){
-        geometryDrawUpdate(feature.geometry.toString());
+        var x = feature.geometry.x;
+        var y = feature.geometry.y;
+        editor.changeGeom(feature.data.className, feature.data.id, x,y);
     },
     drawFeature : function (object){
         var feature =object.feature;
