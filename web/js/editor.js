@@ -235,8 +235,8 @@ Ext.define("Editor", {
         this.fireEvent('movementAdded', movement);
         
     },
-    editRseq: function() {
-        var rseq = this.selectedObject;
+    editRseq: function(newRseq, okHandler) {
+        var rseq = newRseq || this.selectedObject;
         
         if(this.rseqEditWindow != null) {
             this.rseqEditWindow.destroy();
@@ -244,16 +244,18 @@ Ext.define("Editor", {
         }   
         
         var type = {
+            "": "nieuw verkeerssysteem",
             "CROSSING": "VRI",
             "GUARD": "bewakingssysteem nadering voertuig",
             "BAR": "afsluittingssysteem"
         };
         var me = this;
+        var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 330,
             width: 450,
-            icon: karTheme[rseq.type.toLowerCase()],
+            icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
             layout: 'fit',
             items: {  
                 xtype: 'form',
@@ -270,22 +272,21 @@ Ext.define("Editor", {
                     xtype: 'fieldcontainer',
                     fieldLabel: 'Soort verkeerssysteem',
                     defaultType: 'radiofield',
-                    value: rseq.type,
                     layout: 'vbox',               
                     items: [{
                         name: 'type',
                         inputValue: 'CROSSING',
-                        checked: rseq.type == 'CROSSING',
+                        checked: theType == 'CROSSING',
                         boxLabel: type['CROSSING']
                     },{
                         name: 'type',
                         inputValue: 'GUARD',
-                        checked: rseq.type == 'GUARD',
+                        checked: theType == 'GUARD',
                         boxLabel: type['GUARD']
                     },{
                         name: 'type',
                         inputValue: 'BAR',
-                        checked: rseq.type == 'BAR',
+                        checked: theType == 'BAR',
                         boxLabel: type['BAR']
                     }]
                 },{
@@ -347,6 +348,10 @@ Ext.define("Editor", {
                         }
                         me.rseqEditWindow.destroy();
                         me.rseqEditWindow = null;
+                        
+                        if(okHandler) {
+                            okHandler(rseq);
+                        }
                     }
                 },{
                     text: 'Annuleren',
@@ -592,6 +597,32 @@ Ext.define("Editor", {
             }
         }
     },
+    
+    createGeoJSONPoint: function(x, y) {
+        return {
+            type: "Point",
+            coordinates: [x, y]
+        };
+    },
+    
+    addRseq: function(x, y) {
+
+        var newRseq = Ext.create("RSEQ", {
+            location: this.createGeoJSONPoint(x, y),
+            id: Ext.id(),
+            type: ""
+        });
+            
+        var me = this;
+        this.editRseq(newRseq, function() {
+            // Dit misschien in listener
+            editor.olc.removeAllFeatures();
+            editor.olc.addFeatures(newRseq.toGeoJSON());            
+            
+            me.setActiveRseq(newRseq);
+        });
+    },
+    
     addObject : function (className, location,properties){
         var geomName = "location";
         if(className != "RSEQ"){

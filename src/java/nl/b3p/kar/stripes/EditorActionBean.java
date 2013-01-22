@@ -132,6 +132,18 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
     }
     
+    public Resolution saveOrUpdateRseq() throws Exception {
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            
+        } catch(Exception e) {
+            log.error("saveOrUpdateRseq exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));            
+        }
+        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
+    }
+    
     // <editor-fold desc="Getters and Setters">
     public ActionBeanContext getContext() {
         return context;

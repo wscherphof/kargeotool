@@ -33,13 +33,7 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'addRseq':
-                            editor.addObject("RSEQ", {
-                                type: "Point",
-                                coordinates: [lonlat.lon, lonlat.lat]
-                            },{
-                                type:"CROSSING",
-                                id: Ext.id()
-                            });
+                            editor.addRseq(lonlat.lon, lonlat.lat);
                             break;
                     }
                 },
