@@ -10,7 +10,7 @@ Ext.define('RSEQ', {
         dataOwner:null,
         points:null,
         town:null,
-        type:null
+        type:null // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
     },
     constructor: function(config) {     
         if(!config.description){
@@ -41,6 +41,12 @@ Ext.define('RSEQ', {
             this.points = new Array();
         }
         this.points.push(point);
+    },
+    addMovement: function (movement){
+        if(!this.movements){
+            this.movements = new Array();
+        }
+        this.movements.push(movement);
     },
     toGeoJSON : function (){
         var points = new Array();

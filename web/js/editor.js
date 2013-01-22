@@ -28,7 +28,8 @@ Ext.define("Editor", {
             'activeRseqChanged',
             'activeRseqUpdated',
             'selectedObjectChanged',
-            'objectAdded'
+            'objectAdded',
+            'movementAdded'
             );
         
         this.domId = domId;
@@ -221,7 +222,20 @@ Ext.define("Editor", {
         } 
         
     },
-    
+    addMovement: function (checkout, end){
+        var mapEnd = Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: end.getId()
+        });
+        var mapCheckout= Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: checkout.getId()
+        });
+        var movement= Ext.create(Movement,{maps:[mapEnd,mapCheckout]});
+        this.activeRseq.addMovement(movement);
+        this.fireEvent('movementAdded', movement);
+        
+    },
     editRseq: function() {
         var rseq = this.selectedObject;
         
@@ -586,6 +600,9 @@ Ext.define("Editor", {
             this.setActiveRseq(newObject);
         }else{
             this.activeRseq.addPoint(newObject);
+            if(newObject instanceof Point && newObject.getType() == "END" && this.selectedObject.getType() =="ACTIVATION_2"){
+                this.addMovement(this.selectedObject, newObject);
+            }
         }
         this.fireEvent('objectAdded', newObject);
     },
