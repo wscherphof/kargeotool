@@ -137,6 +137,12 @@ Ext.define('Movement', {
     },
     constructor: function(config) {        
         this.initConfig(config);    
+    },
+    addMap : function (map){
+        if(!this.maps){
+            this.maps = new Array();
+        }
+        this.maps.push(map);
     }
 });
 

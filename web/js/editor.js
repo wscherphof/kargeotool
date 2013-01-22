@@ -185,6 +185,31 @@ Ext.define("Editor", {
         });
         return movements;
     },
+    addMovement: function (checkout, end){
+        var mapEnd = Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: end.getId()
+        });
+        var mapCheckout= Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: checkout.getId()
+        });
+        var movement= Ext.create(Movement,{maps:[mapEnd,mapCheckout]});
+        this.activeRseq.addMovement(movement);
+        this.fireEvent('movementAdded', movement);
+        
+    },
+    voegInmeldAanMovement : function(uitmeld, inmeld){
+        var mvnts = this.findMovementsForPoint(this.activeRseq, uitmeld);
+        for ( var i = 0 ; i < mvnts.length ; i++ ){
+            var movement = mvnts[i].movement;
+            var map = Ext.create(MovementActivationPoint,{
+                pointId: inmeld.getId(),
+                beginEndOrActivation: "ACTIVATION"
+            });
+            movement.addMap(map);
+        }
+    },
     
     setActiveRseq : function (rseq){
         this.activeRseq = rseq;
@@ -232,20 +257,6 @@ Ext.define("Editor", {
                 this.editActivationPoint();
             }
         } 
-        
-    },
-    addMovement: function (checkout, end){
-        var mapEnd = Ext.create(MovementActivationPoint,{
-            beginEndOrActivation:"END",
-            pointId: end.getId()
-        });
-        var mapCheckout= Ext.create(MovementActivationPoint,{
-            beginEndOrActivation:"END",
-            pointId: checkout.getId()
-        });
-        var movement= Ext.create(Movement,{maps:[mapEnd,mapCheckout]});
-        this.activeRseq.addMovement(movement);
-        this.fireEvent('movementAdded', movement);
         
     },
     editRseq: function(newRseq, okHandler) {
@@ -654,6 +665,9 @@ Ext.define("Editor", {
             this.activeRseq.addPoint(newObject);
             if(newObject instanceof Point && newObject.getType() == "END" && this.selectedObject.getType() =="ACTIVATION_2"){
                 this.addMovement(this.selectedObject, newObject);
+            }
+            if(newObject instanceof Point && newObject.getType() == "ACTIVATION_1" && this.selectedObject.getType() =="ACTIVATION_2"){
+                this.voegInmeldAanMovement(this.selectedObject, newObject);
             }
         }
         this.fireEvent('objectAdded', newObject);
