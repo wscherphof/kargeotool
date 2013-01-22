@@ -708,6 +708,9 @@ Ext.define("Editor", {
         };
         this.addObject("Point", geom,properties);
         this.currentEditAction = null;
+        
+        this.olc.removeAllFeatures();
+        this.olc.updateVectorLayer();
     },
         
     /**
