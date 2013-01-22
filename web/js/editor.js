@@ -27,7 +27,8 @@ Ext.define("Editor", {
         this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
-            'selectedObjectChanged'
+            'selectedObjectChanged',
+            'objectAdded'
             );
         
         this.domId = domId;
@@ -586,6 +587,7 @@ Ext.define("Editor", {
         }else{
             this.activeRseq.addPoint(newObject);
         }
+        this.fireEvent('objectAdded', newObject);
     },
     
     addEndpoint : function(withLine,point){
