@@ -29,7 +29,8 @@ Ext.define("Editor", {
             'activeRseqUpdated',
             'selectedObjectChanged',
             'objectAdded',
-            'movementAdded'
+            'movementAdded',
+            'movementUpdated'
             );
         
         this.domId = domId;
@@ -208,6 +209,7 @@ Ext.define("Editor", {
                 beginEndOrActivation: "ACTIVATION"
             });
             movement.addMap(map);
+            this.fireEvent('movementUpdated', movement);
         }
     },
     
