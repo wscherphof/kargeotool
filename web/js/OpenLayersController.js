@@ -159,7 +159,7 @@ Ext.define("ol", {
             onComplete : me.dragComplete,
             featureCallbacks:{
                 over: function(feature){
-                    if(editor.selectedObject && feature.data.id == editor.selectedObject.getId()){
+                    if(editor.selectedObject && feature.data.id == editor.selectedObject.getId() && editor.selectedObject.$className == feature.data.className){
                         this.overFeature(feature);
                     }
                 }
@@ -579,9 +579,37 @@ var selectstyle = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.vri_selected,
+            externalGraphic: karTheme.crossing_selected,
             label: "${description}",
             graphicYOffset: -26
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "GUARD"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.guard_selected,
+            graphicYOffset: -16,
+            label: "${description}"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "BAR"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.bar_selected,
+            graphicYOffset: -16,
+            label: "${description}"
         }
     }),
     new OpenLayers.Rule({
@@ -589,7 +617,7 @@ var selectstyle = new OpenLayers.Style(
         elseFilter: true,
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.point_selected,
+            externalGraphic: karTheme.punt_selected,
             label: ""
         }
     }),
@@ -600,7 +628,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_1"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signInPoint_selected
+            externalGraphic: karTheme.inmeldPunt_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -610,7 +638,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_2"
         }),
         symbolizer: {
-            externalGraphic: karTheme.signOutPoint_selected
+            externalGraphic: karTheme.uitmeldPunt_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -620,7 +648,7 @@ var selectstyle = new OpenLayers.Style(
             value:"ACTIVATION_3"
         }),
         symbolizer: {
-            externalGraphic: karTheme.preSignInPoint_selected
+            externalGraphic: karTheme.voorinmeldPunt_selected
         }
     }),
     new OpenLayers.Rule({   
@@ -630,7 +658,7 @@ var selectstyle = new OpenLayers.Style(
             value:"END"
         }),
         symbolizer: {
-            externalGraphic: karTheme.endPoint_selected,
+            externalGraphic: karTheme.eindPunt_selected,
             graphicYOffset: -33,
             graphicXOffset: -6
         }
@@ -642,7 +670,7 @@ var selectstyle = new OpenLayers.Style(
             value:"BEGIN"
         }),
         symbolizer: {
-            externalGraphic: karTheme.startPoint_selected,
+            externalGraphic: karTheme.startPunt_selected,
             graphicYOffset: -33,
             graphicXOffset: -6
         }
@@ -674,7 +702,7 @@ var tempstyle = new OpenLayers.Style(
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
-            externalGraphic: karTheme.vri,
+            externalGraphic: karTheme.crossing,
             label: "${description}",
             graphicYOffset: -26
         }
