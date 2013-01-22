@@ -26,7 +26,8 @@ Ext.define("Editor", {
         
         this.addEvents(
             'activeRseqChanged',
-            'activeRseqUpdated'
+            'activeRseqUpdated',
+            'selectedObjectChanged'
             );
         
         this.domId = domId;
@@ -200,6 +201,7 @@ Ext.define("Editor", {
                 this.olc.selectFeature(olFeature.data.id, olFeature.data.className);
             }
         }
+        this.fireEvent('selectedObjectChanged', this.selectedObject);
     },
     
     editSelectedObject: function() {
@@ -586,23 +588,27 @@ Ext.define("Editor", {
         }
     },
     
-    addEndpoint : function(){
+    addEndpoint : function(withLine,point){
         this.currentEditAction = "END";
-        this.addPoint();
+        this.addPoint(withLine,point);
     },
-    addCheckinPoint : function(){
+    addCheckinPoint : function(withLine,point){
         this.currentEditAction = "ACTIVATION_1";
-        this.addPoint();
+        this.addPoint(withLine,point);
     },
-    addCheckoutPoint : function(){
+    addCheckoutPoint : function(withLine,point){
         this.currentEditAction = "ACTIVATION_2";
-        this.addPoint();
+        this.addPoint(withLine,point);
     },
-    addPoint : function(){
-        var geomName = this.selectedObject.$className == "RSEQ" ? "location" : "geometry";
-        var startX = this.selectedObject[geomName].coordinates[0];
-        var startY = this.selectedObject[geomName].coordinates[1];
-        this.olc.drawLineFromPoint(startX,startY);
+    addPoint : function(withLine,point){
+        if(withLine ){
+            var geomName = this.selectedObject.$className == "RSEQ" ? "location" : "geometry";
+            var startX = this.selectedObject[geomName].coordinates[0];
+            var startY = this.selectedObject[geomName].coordinates[1];
+            this.olc.drawLineFromPoint(startX,startY);
+        }else{
+            this.pointFinished(point);
+        }
     },
     pointFinished : function(point){
         var geom = {
