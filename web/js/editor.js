@@ -124,7 +124,7 @@ Ext.define("Editor", {
     /**
      * Called from GUI.
      */
-    loadRseqInfo: function(query) {
+    loadRseqInfo: function(query, successFunction) {
         
         // Clear huidige geselecteerde
         this.activeRseq = null;
@@ -147,6 +147,9 @@ Ext.define("Editor", {
                     editor.olc.removeAllFeatures();
                     editor.olc.addFeatures(rseq.toGeoJSON());
                     this.setActiveRseq(rseq);
+                    if(successFunction) {
+                        successFunction(rseq);
+                    }
                 }else{
                     alert("Ophalen resultaten mislukt.");
                 }
@@ -155,6 +158,16 @@ Ext.define("Editor", {
                 alert("Ophalen resultaten mislukt.");
             }
         });
+    },
+    
+    zoomToActiveRseq: function() {
+        if(this.activeRseq != null) {
+            this.olc.map.setCenter(new OpenLayers.LonLat(
+                this.activeRseq.location.coordinates[0],
+                this.activeRseq.location.coordinates[1]), 
+                14 /* TODO bepaal zoomniveau op basis van extent rseq location en alle point locations) */
+            );            
+        }
     },
     
     findMovementsForPoint: function(rseq, point) {
@@ -696,6 +709,9 @@ Ext.define("Editor", {
                 var result = Ext.JSON.decode(response.responseText);
                 if(result.status === 'OK') {
                     var resultblock = Ext.get('geocoderesults');
+                    while(resultblock.first()) {
+                        resultblock.first().remove();
+                    }
                     Ext.Array.each(result.results, function(data) {
                         var address = me.parseAddressComponent(data.address_components);
                         var addresslink = document.createElement('a');
@@ -704,7 +720,7 @@ Ext.define("Editor", {
                         addresslink.innerHTML = me.createLinkText(address);
                         var link = Ext.get(addresslink);
                         link.on('click', function() {
-                            me.zoomToAddress(data.geometry);
+                            me.zoomToAddress(data);
                         });
                         resultblock.appendChild(link);
                     });
@@ -712,6 +728,24 @@ Ext.define("Editor", {
             }
         });
     },
+    
+    /**
+     * Na klik op gevonden adres, zoom naar de lokatie ervan.
+     */
+    zoomToAddress: function(data) {
+        
+        var source = new Proj4js.Proj("EPSG:4236");
+        var dest = new Proj4js.Proj("EPSG:28992");
+        var point = new Proj4js.Point(data.geometry.location.lng,data.geometry.location.lat);
+        Proj4js.transform(source,dest,point);
+
+        this.olc.map.setCenter(new OpenLayers.LonLat(
+            point.x,
+            point.y), 
+            14 
+        );
+    },
+    
     parseAddressComponent: function(addressComponent) {
         var address = {
             street: '',

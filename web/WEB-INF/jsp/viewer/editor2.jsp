@@ -9,6 +9,11 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
 
+        <script type="text/javascript" src="${contextPath}/js/proj4js-compressed.js"></script>
+        <script type="text/javascript">
+            Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.237,50.0087,465.658,-0.406857,0.350733,-1.87035,4.0812 +units=m +no_defs";
+            Proj4js.defs["EPSG:4236"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ";                    
+        </script>
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript">
 
@@ -32,7 +37,7 @@
         <div id="leftbar">
             
             <div id="searchform">
-                Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()});"><br />
+                Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()}, function() { editor.zoomToActiveRseq(); } );"><br />
                 Adres zoeken: <input id="geocodeAddressInput" name="geocode_address" value="" size="17"> <input type="button" value="Zoeken" onclick="editor.geocode(Ext.get('geocodeAddressInput').getValue());">
                 <div id="geocoderesults"></div>
             </div>
