@@ -1,19 +1,19 @@
-function ol (){
-    this.map = null;
-    this.panel = null;
-    this.vectorLayer = null;
-    this.geojson_format = null;
-    this.gfi = null;
-    this.dragFeature = null;
-    this.point = null;
-    this.line = null;
-    this.identifyButton = null;
-    this.overview = null;
-    this.activeFeature = null;
-    this.selectCtrl = null;
+Ext.define("ol", {
+    map : null,
+    panel : null,
+    vectorLayer : null,
+    geojson_format : null,
+    gfi : null,
+    dragFeature : null,
+    point : null,
+    line : null,
+    identifyButton : null,
+    overview : null,
+    activeFeature : null,
+    selectCtrl : null,
     
     // Make the map
-    this.createMap = function(domId){
+    createMap : function(domId){
         
         this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
@@ -49,7 +49,7 @@ function ol (){
     /**
      * Private nethod which adds all the controls
      */
-    this.createControls = function (domId){
+    createControls : function (domId){
         var dg = new OpenLayers.Control.DragPan();
         var zb = new OpenLayers.Control.ZoomBox()
         this.panel.addControls(dg);
@@ -150,7 +150,6 @@ function ol (){
         });
         this.line.events.register('featureadded', me, me.drawFeature);
         
-        // The modifyfeature control allows us to edit and select features.
         this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
             onComplete : this.dragComplete
         });
@@ -181,7 +180,6 @@ function ol (){
         });
         this.map.addControl(this.overview);
            
-        // XXX in ContextMenu
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var x = evt.clientX;
@@ -205,7 +203,6 @@ function ol (){
             hover:true
         });
         
-     
         this.map.addControl(highlight);
         highlight.activate();
         this.selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
@@ -221,7 +218,10 @@ function ol (){
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
     },
-    this.selectFeature = function(id,className){
+    updateVectorLayer : function(){
+        
+    },
+    selectFeature : function(id,className){
         var olFeature = null;
         if(className=="RSEQ"){
             olFeature = this.vectorLayer.getFeaturesByAttribute("className",className)[0];
@@ -243,7 +243,7 @@ function ol (){
             this.selectCtrl.select(olFeature)
         }
     },
-    this.raiseOnDataEvent = function(evt){
+    raiseOnDataEvent : function(evt){
         var stub = new Object();          
         var walapparatuur = new Array();
         walapparatuur[0] = {
@@ -263,7 +263,7 @@ function ol (){
      * @param visible Indicates whether or not the layer must be visible from start
      * @param extension Optional parameter to indicate the extension (type)
      */
-    this.addLayer = function (type,name, url, layers,visible,extension){
+    addLayer : function (type,name, url, layers,visible,extension){
         var layer;
         if(type == 'WMS'){
             layer = new OpenLayers.Layer.WMS(name,url,{
@@ -295,30 +295,30 @@ function ol (){
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
         }
     },
-    this.isLayerVisible = function (name){
+    isLayerVisible : function (name){
         var lyrs = this.map.getLayersByName(name);
         if(lyrs && lyrs.length > 0){
             return lyrs[0].visibility;
         }
         return false;
     },
-    this.setLayerVisible = function (name,vis){
+    setLayerVisible : function (name,vis){
         var lyrs = this.map.getLayersByName(name);
         if(lyrs && lyrs.length > 0){
             var layer = lyrs[0];
             layer.setVisibility(vis);
         }
     },
-    this.zoomToExtent = function (minx,miny,maxx,maxy){
+    zoomToExtent : function (minx,miny,maxx,maxy){
         this.map.zoomToExtent([minx,miny,maxx,maxy]);
     },
-    this.update = function (){
+    update : function (){
         for ( var i = 0 ; i< this.map.layers.length ;i++ ){
             var layer = this.map.layers[i];
             layer.redraw(true);
         }
     },
-    this.addSldToKargis = function (walsld,trigsld, signsld){
+    addSldToKargis : function (walsld,trigsld, signsld){
         var wal = this.map.getLayersByName("walapparatuur")[0];
         var trig = this.map.getLayersByName("triggerpunten")[0];
         var sign = this.map.getLayersByName("signaalgroepen")[0];
@@ -332,7 +332,7 @@ function ol (){
             sld:signsld
         });
     },
-    this.removeSldFromKargis = function (){
+    removeSldFromKargis : function (){
         var wal = this.map.getLayersByName("walapparatuur")[0];
         var trig = this.map.getLayersByName("triggerpunten")[0];
         var sign = this.map.getLayersByName("signaalgroepen")[0];
@@ -351,7 +351,7 @@ function ol (){
      * All the vectorlayer functions
      * 
      */
-    this.drawPoint = function(wkt){
+    drawPoint : function(wkt){
         if(wkt){
             var olFeature = new OpenLayers.Geometry.Point(wkt[0],wkt[1]);
             geometryDrawUpdate(olFeature.toString());
@@ -361,7 +361,7 @@ function ol (){
         }
         this.dragFeature.activate();
     },
-    this.drawLine = function(wkt){
+    drawLine : function(wkt){
         if(wkt){
             var olFeature = new OpenLayers.Geometry.fromWKT(wkt);
             this.line.drawFeature(olFeature);
@@ -370,7 +370,7 @@ function ol (){
         }
         this.dragFeature.activate();
     },
-    this.drawLineFromPoint = function (x,y){
+    drawLineFromPoint : function (x,y){
         var lonlat = new OpenLayers.LonLat (x,y);
         var pixel = this.map.getPixelFromLonLat(lonlat);
         var evt = {
@@ -380,14 +380,14 @@ function ol (){
         this.line.handler.mousedown(evt);
         this.line.handler.mouseup(evt);
     },
-    this.removeAllFeatures = function(){
+    removeAllFeatures : function(){
         this.vectorLayer.removeAllFeatures();
         this.dragFeature.deactivate();
     },
-    this.dragComplete = function (feature){
+    dragComplete : function (feature){
         geometryDrawUpdate(feature.geometry.toString());
     },
-    this.drawFeature = function (object){
+    drawFeature : function (object){
         var feature =object.feature;
         var lastPoint = feature.geometry.components[feature.geometry.components.length-1];
         this.point.deactivate();
@@ -395,13 +395,13 @@ function ol (){
         editor.pointFinished(lastPoint);
         // TODO fire event geometry updated
     },
-    this.setActiveFeature = function (feature){
+    setActiveFeature : function (feature){
         this.activeFeature = feature;
     },
-    this.addFeatures = function(features){
+    addFeatures : function(features){
         this.vectorLayer.addFeatures(this.geojson_format.read(features));
     }
-}
+});
 var style = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
