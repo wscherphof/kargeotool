@@ -62,7 +62,7 @@ Ext.define("Editor", {
     },
     
     createOpenLayersController: function() {
-        this.olc = new ol();
+        this.olc = new ol(this);
         this.olc.createMap(this.domId);
         
         this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');

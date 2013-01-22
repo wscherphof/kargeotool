@@ -1,4 +1,5 @@
 Ext.define("ol", {
+    editor : null,
     map : null,
     panel : null,
     vectorLayer : null,
@@ -11,7 +12,10 @@ Ext.define("ol", {
     overview : null,
     activeFeature : null,
     selectCtrl : null,
-    
+    constructor : function(editor){
+        this.editor = editor;
+        this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
+    },
     // Make the map
     createMap : function(domId){
         
@@ -219,6 +223,11 @@ Ext.define("ol", {
         this.selectCtrl.activate();
     },
     updateVectorLayer : function(){
+        this.vectorLayer.removeAllFeatures();
+        var geoJson = this.editor.activeRseq.toGeoJSON();
+        this.addFeatures(geoJson);
+        var selected = this.editor.selectedObject;
+        this.selectFeature(selected.getId(), selected.$className);
         
     },
     selectFeature : function(id,className){
@@ -392,7 +401,7 @@ Ext.define("ol", {
         var lastPoint = feature.geometry.components[feature.geometry.components.length-1];
         this.point.deactivate();
         this.line.deactivate();
-        editor.pointFinished(lastPoint);
+        this.editor.pointFinished(lastPoint);
         // TODO fire event geometry updated
     },
     setActiveFeature : function (feature){
