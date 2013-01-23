@@ -19,6 +19,8 @@
 
           
             var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
+            var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
+            
             var contextPath = "${contextPath}";
    
 /*

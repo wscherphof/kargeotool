@@ -801,30 +801,42 @@ Ext.define("Editor", {
     geocode: function(address) {
         var me = this;
         Ext.Ajax.request({
-            url: 'http://bag42.nl/api/v0/geocode/json',
+            url: geocoderActionBeanUrl,
             params: {
-                'address': address
+                'search': address
             },
             method: 'GET',
             success: function(response) {
-                var result = Ext.JSON.decode(response.responseText);
-                if(result.status === 'OK') {
-                    var resultblock = Ext.get('geocoderesults');
-                    while(resultblock.first()) {
-                        resultblock.first().remove();
-                    }
-                    Ext.Array.each(result.results, function(data) {
-                        var address = me.parseAddressComponent(data.address_components);
+                var results = new OpenLayers.Format.XLS().read(response.responseXML);
+
+                console.log(results);
+                
+                var resultblock = Ext.get('geocoderesults');
+                while(resultblock.first()) {
+                    resultblock.first().remove();
+                }
+                
+                var rl = results.responseLists[0];
+                
+                if(rl) {
+                    Ext.Array.each(rl.features, function(feature) {
+                        var address = feature.attributes.address;
+                        
+                        var label = address.street != "" ? address.street + ", " : "";
+                        label += address.place.Municipality || address.place.CountrySubdivision;
+                        
                         var addresslink = document.createElement('a');
                         addresslink.href = '#';
                         addresslink.className = 'geocoderesultlink';
-                        addresslink.innerHTML = me.createLinkText(address);
+                        addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
                         var link = Ext.get(addresslink);
                         link.on('click', function() {
-                            me.zoomToAddress(data);
+                            me.olc.map.setCenter(new OpenLayers.LonLat(feature.geometry.x, feature.geometry.y), 12);
                         });
                         resultblock.appendChild(link);
                     });
+                } else {
+                    resultblock.innnerHTML = "Geen resultaten gevonden.";
                 }
             }
         });
