@@ -161,6 +161,13 @@ Ext.define("Editor", {
         });
     },
     
+    saveOrUpdate: function() {
+        var rseq = this.activeRseq;
+        if(rseq != null) {
+            console.log(rseq.toJSON());
+        }
+    },
+    
     zoomToActiveRseq: function() {
         if(this.activeRseq != null) {
             this.olc.map.setCenter(new OpenLayers.LonLat(
@@ -800,6 +807,8 @@ Ext.define("ActiveRseqInfoPanel", {
     
     updateRseqInfoPanel: function(rseq) {
         Ext.get("context_vri").setHTML(rseq == null ? "" : rseq.karAddress);
+        
+        Ext.get("rseqSave").setVisible(rseq != null);
     }
         
 });

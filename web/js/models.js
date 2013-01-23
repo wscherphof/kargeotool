@@ -1,3 +1,16 @@
+
+function objectSubset(object, keys) {
+    var j = { };
+
+    Ext.Object.each(object, function(key, value) {
+        if(Ext.Array.contains(keys, key)) {
+            j[key] = value;
+        }
+    });
+
+    return j;
+}
+
 Ext.define('RSEQ', {
     config:{
         id: null,
@@ -76,6 +89,23 @@ Ext.define('RSEQ', {
             "features" :points
         };
         return json;
+    },
+    toJSON: function() {
+        var j = objectSubset(this, ["id", "description", "validFrom", 
+            "karAddress", "dataOwner", "crossingCode", "town", "type", 
+            "location"]);
+        
+        j.points = [];
+        Ext.Array.each(this.points, function(point) {
+            j.points.push(point.toJSON());
+        });
+        
+        j.movements = [];
+        Ext.Array.each(this.movements, function(mvmt) {
+            j.movements.push(mvmt.toJSON());
+        });
+        
+        return j;
     }
 });
 
@@ -110,6 +140,9 @@ Ext.define('Point', {
             }
         };
         return json;
+    },
+    toJSON: function() {
+        return objectSubset(this, ["id", "geometry", "nummer", "label"]);        
     }
 });
 
@@ -121,11 +154,21 @@ Ext.define('MovementActivationPoint', {
         distanceTillStopLine:null,
         pointId:null,
         signalGroupNumber:null,
+        virtualLocalLoopNumber: null,
         triggerType:null,
         vehicleTypes:null
     },
     constructor: function(config) {        
         this.initConfig(config);    
+    },
+    toJSON: function() {
+        var keys = ["id", "beginEndOrActivation", "pointId"];
+        if(this.beginEndOrActivation == "ACTIVATION") {
+            keys = Ext.Array.merge(keys, ["commandType", "distanceTillStopLine", 
+                "triggerType", "signalGroupNumber", "virtualLocalLoopNumber", 
+                "vehicleTypes"]);
+        }
+        return objectSubset(this, keys);  
     }
 });
 
@@ -143,6 +186,15 @@ Ext.define('Movement', {
             this.maps = new Array();
         }
         this.maps.push(map);
+    },
+    toJSON: function() {
+        var j = objectSubset(this, ["id", "nummer"]);
+        
+        j.maps = [];
+        Ext.Array.each(this.maps, function(map) {
+            j.maps.push(map.toJSON());
+        });
+        return j;
     }
 });
 
