@@ -160,7 +160,6 @@ Ext.define("ContextMenu", {
             }
         });
         
-        
         this.checkin = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -176,6 +175,10 @@ Ext.define("ContextMenu", {
             {
                 id: 'voegVoorinmeldToe',
                 text: 'Voeg voorinmeldpunt toe'
+            },
+            {
+                id: 'voegBeginpuntToe',
+                text: 'Voeg beginpunt toe'
             }
             ],
             listeners: {
@@ -188,6 +191,9 @@ Ext.define("ContextMenu", {
                     switch (item.id) {
                         case 'voegVoorinmeldToe':
                             editor.addPreCheckinPoint(true);
+                            break;
+                        case 'voegBeginpuntToe':
+                            editor.addBeginpoint(true);
                             break;
                         case 'editCheckin':
                             this.editor.editSelectedObject();
@@ -202,10 +208,12 @@ Ext.define("ContextMenu", {
             "standaard" : this.defaultMenu,
             "ACTIVATION_1" : this.checkin,
             "ACTIVATION_2" : this.checkout ,
-            "ACTIVATION_3" : this.vri,
+            "ACTIVATION_3" : this.checkin,
             "END" : this.vri,
-            "BEGIN" : this.vri,
-            "CROSSING" : this.vri
+            "BEGIN" : this.checkin,
+            "CROSSING" : this.vri,
+            "GUARD" : this.vri,
+            "BAR" : this.vri
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){

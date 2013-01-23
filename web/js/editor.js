@@ -802,6 +802,10 @@ Ext.define("Editor", {
         this.currentEditAction = "END";
         this.addPoint(withLine,point);
     },
+    addBeginpoint : function(withLine,point){
+        this.currentEditAction = "BEGIN";
+        this.addPoint(withLine,point);
+    },
     addCheckinPoint : function(withLine,point){
         this.currentEditAction = "ACTIVATION_1";
         this.addPoint(withLine,point);
