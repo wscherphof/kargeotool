@@ -13,6 +13,7 @@ import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
+import nl.b3p.kar.hibernate.DataOwner2;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.GebruikerDataOwnerRights;
 import nl.b3p.kar.hibernate.Role;
@@ -38,7 +39,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     
     private List<Role> allRoles;
     
-    private List<DataOwner> dataOwners;
+    private List<DataOwner2> dataOwners;
     
     private String dataOwnersJson;
     
@@ -103,11 +104,11 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         this.allRoles = allRoles;
     }
 
-    public List<DataOwner> getDataOwners() {
+    public List<DataOwner2> getDataOwners() {
         return dataOwners;
     }
 
-    public void setDataOwners(List<DataOwner> dataOwners) {
+    public void setDataOwners(List<DataOwner2> dataOwners) {
         this.dataOwners = dataOwners;
     }
 
@@ -147,17 +148,15 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void loadLists() {
         gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
         allRoles = Stripersist.getEntityManager().createQuery("from Role order by role").getResultList();
-        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner where type = :type order by name")
-                .setParameter("type", DataOwner.TYPE_ROOW)
-                .getResultList();
+        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner2 order by code").getResultList();
         
         JSONArray ja = new JSONArray();
-        for(DataOwner dao: dataOwners) {
+        for(DataOwner2 dao: dataOwners) {
             JSONObject jo = new JSONObject();
             try {
-                jo.put("id", dao.getId());
+                jo.put("id", dao.getCode());
                 jo.put("code", dao.getCode());
-                jo.put("name", dao.getName());
+                jo.put("name", dao.getOmschrijving());
                 ja.put(jo);
             } catch(JSONException je) {
             }
@@ -178,10 +177,10 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
             for(GebruikerDataOwnerRights dor: gebruiker.getDataOwnerRights().values()) {
                 if(dor.isEditable()) {
-                    dataOwnersEditable.add(dor.getDataOwner().getId() + "");
+                    dataOwnersEditable.add(dor.getDataOwner().getCode());
                 }
                 if(dor.isValidatable()) {
-                    dataOwnersValidatable.add(dor.getDataOwner().getId() + "");
+                    dataOwnersValidatable.add(dor.getDataOwner().getCode());
                 }
             }
         }
@@ -244,14 +243,15 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         
         gebruiker.getDataOwnerRights().clear();
         em.flush();
+        /* XXX werkt niet meer met ID
         for(String daoId: dataOwnersEditable) {
-            DataOwner dao = em.find(DataOwner.class, Integer.parseInt(daoId));
+            DataOwner2 dao = em.find(DataOwner2.class, daoId);
             gebruiker.setDataOwnerRight(dao, Boolean.TRUE, null);
         }
         for(String daoId: dataOwnersValidatable) {
-            DataOwner dao = em.find(DataOwner.class, Integer.parseInt(daoId));
+            DataOwner2 dao = em.find(DataOwner2.class, daoId);
             gebruiker.setDataOwnerRight(dao, null, Boolean.TRUE);
-        }        
+        } */       
         
         em.persist(gebruiker);
         em.getTransaction().commit();

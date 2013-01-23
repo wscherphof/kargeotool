@@ -2,7 +2,10 @@ package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
@@ -185,6 +188,88 @@ public class EditorActionBean implements ActionBean {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
+            
+            JSONArray jpts = jrseq.getJSONArray("points");
+            Map<String, ActivationPoint2> pointsByJSONId = new HashMap();
+            for(int i = 0; i < jpts.length(); i++) {
+                JSONObject jpt = jpts.getJSONObject(i);
+                
+                ActivationPoint2 p = null;
+                if(isNew(jpt)) {
+                    p = new ActivationPoint2();
+                    p.setRoadsideEquipment(rseq);
+                } else {
+                    for(ActivationPoint2 ap2: rseq.getPoints()) {
+                        if(ap2.getId().equals(jpt.getLong("id"))) {
+                            p = ap2;
+                            break;
+                        }
+                    }   
+                }
+                pointsByJSONId.put(jpt.getString("id"), p);
+                p.setNummer(jpt.has("nummer") ?  jpt.getInt("nummer") : null);
+                p.setLabel(jpt.optString("label"));
+                p.setLocation(GeoJSON.toPoint(jpt.getJSONObject("geometry")));
+                if(p.getId() == null) {
+                    rseq.getPoints().add(p);
+                    em.persist(p);
+                }
+            }
+            // XXX delete niet goed
+            rseq.getPoints().retainAll(pointsByJSONId.values());
+            
+            Set<Long> mIds = new HashSet();
+            for(Movement m: rseq.getMovements()) {
+                m.getPoints().clear();
+                mIds.add(m.getId());
+            }
+            em.flush();
+            if(!mIds.isEmpty()) {
+                em.createNativeQuery("delete from movement_activation_point where movement in (:m)")
+                    .setParameter("m", mIds)
+                    .executeUpdate();
+            }
+            rseq.getMovements().clear();
+            em.flush();
+
+            JSONArray jmvmts = jrseq.getJSONArray("movements");
+            for(int i = 0; i < jmvmts.length(); i++) {
+                JSONObject jmvmt = jmvmts.getJSONObject(i);
+                Movement m = new Movement();
+                m.setRoadsideEquipment(rseq);
+                m.setNummer(jmvmt.has("nummer") ? jmvmt.getInt("nummer") : null);
+                
+                JSONArray jmaps = jmvmt.getJSONArray("maps");
+                for(int j = 0; j < jmaps.length(); j++) {
+                    JSONObject jmap = jmaps.getJSONObject(j);
+                    MovementActivationPoint map = new MovementActivationPoint();
+                    map.setMovement(m);
+                    map.setBeginEndOrActivation(jmap.getString("beginEndOrActivation"));
+                    map.setPoint(pointsByJSONId.get(jmap.getString("pointId")));
+                    
+                    if(MovementActivationPoint.ACTIVATION.equals(map.getBeginEndOrActivation())) {
+                        ActivationPointSignal signal = new ActivationPointSignal();
+                        map.setSignal(signal);
+                        signal.setDistanceTillStopLine(jmap.has("distanceTillStopLine") ? jmap.getInt("distanceTillStopLine") : null);
+                        signal.setKarCommandType(jmap.getInt("commandType"));
+                        signal.setSignalGroupNumber(jmap.has("signalGroupNumber") ? jmap.getInt("signalGroupNumber") : null);
+                        signal.setVirtualLocalLoopNumber(jmap.has("virtualLocalLoopNumber") ? jmap.getInt("virtualLocalLoopNumber") : null);
+                        signal.setTriggerType(jmap.getString("triggerType"));
+                        JSONArray vtids = jmap.optJSONArray("vehicleTypes");
+                        if(vtids != null) {
+                            for(int k = 0; k < vtids.length(); k++) {
+                                signal.getVehicleTypes().add(em.find(VehicleType.class, vtids.getInt(k)));
+                            }
+                        }
+                    }
+                    m.getPoints().add(map);
+                }
+                if(!m.getPoints().isEmpty()) {
+                    m.setNummer(rseq.getMovements().size()+1);
+                    em.persist(m);
+                    rseq.getMovements().add(m);
+                }
+            }           
             
             em.persist(rseq);
             em.getTransaction().commit();

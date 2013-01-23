@@ -54,8 +54,8 @@
             
             <div id="form">
                 <div id="help">
-                    Klik op een icoon van een verkeerssysteem om de details te
-                    bekijken of klik rechts om een verkeerssysteem toe te voegen.
+                    Klik op een icoon van een verkeerssysteem om deze te selecteren
+                    of klik rechts om een verkeerssysteem toe te voegen.
                 </div>
             </div>
 

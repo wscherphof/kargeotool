@@ -497,10 +497,17 @@ Ext.define("Editor", {
                     anchor: '100%'
                 },
                 items: [{
+                    xtype: 'numberfield',                        
                     fieldLabel: 'Nummer',
                     name: 'nummer',
-                    allowBlank: false,
-                    value: point.nummer
+                    minValue: 0,                    
+                    value: point.nummer,
+                    listeners: {
+                        change: function(field, value) {
+                            value = parseInt(value, 10);
+                            field.setValue(value);
+                        }
+                    }                      
                 },{
                     fieldLabel: 'Label',
                     name: 'label',
@@ -563,6 +570,7 @@ Ext.define("Editor", {
         var editingUitmeldpunt = map.commandType == 2;
         
         var signalItems = [{
+            xtype: 'numberfield',
             fieldLabel: 'Afstand tot stopstreep',
             name: 'distanceTillStopLine',
             value: map.distanceTillStopLine
@@ -608,6 +616,14 @@ Ext.define("Editor", {
             var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
 
             signalItems = Ext.Array.merge(signalItems, [{
+                xtype: numberfield,
+                minValue: 0,
+                listeners: {
+                    change: function(field, value) {
+                        value = parseInt(value, 10);
+                        field.setValue(value);
+                    }
+                },
                 fieldLabel: 'Signaalgroep',
                 name: 'signalGroupNumber',
                 value: map.signalGroupNumber,
@@ -651,10 +667,17 @@ Ext.define("Editor", {
                     anchor: '100%'
                 },
                 items: [{
+                    xtype: 'numberfield',                            
                     fieldLabel: 'Nummer',
                     name: 'nummer',
-                    allowBlank: false,
-                    value: point.nummer
+                    value: point.nummer,
+                    minValue: 0,
+                    listeners: {
+                        change: function(field, value) {
+                            value = parseInt(value, 10);
+                            field.setValue(value);
+                        }
+                    }                      
                 },{
                     fieldLabel: 'Label',
                     name: 'label',

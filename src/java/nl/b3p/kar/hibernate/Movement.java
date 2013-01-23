@@ -1,5 +1,6 @@
 package nl.b3p.kar.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
@@ -33,9 +34,11 @@ public class Movement implements Comparable {
     /**
      * Geordende lijst met punten (begin, eind en meldpunten) voor deze movement.
      */
-    @OneToMany(cascade= CascadeType.PERSIST, mappedBy="movement")
-    @OrderColumn(name="list_index")    
-    private List<MovementActivationPoint> points;
+    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268    
+    @JoinTable(name="movement_points",inverseJoinColumns=@JoinColumn(name="point"))
+    @OrderColumn(name="list_index")
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN) // cannot use orphanRemoval=true due to workaround
+    private List<MovementActivationPoint> points = new ArrayList();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {

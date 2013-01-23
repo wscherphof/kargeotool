@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import nl.b3p.geojson.GeoJSON;
 import org.hibernate.annotations.Sort;
@@ -112,13 +112,12 @@ public class RoadsideEquipment2 {
     @OrderColumn(name="list_index")
     private List<KarAttributes> karAttributes;
     
-    @OneToMany(cascade=CascadeType.PERSIST, mappedBy="roadsideEquipment") 
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
     @Sort(type=SortType.NATURAL)
     private SortedSet<Movement> movements = new TreeSet<Movement>();
     
-    @OneToMany(cascade=CascadeType.PERSIST, mappedBy="roadsideEquipment") 
-    @Sort(type=SortType.NATURAL)
-    private SortedSet<ActivationPoint2> points = new TreeSet<ActivationPoint2>();
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
+    private Set<ActivationPoint2> points = new HashSet<ActivationPoint2>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {
@@ -217,11 +216,11 @@ public class RoadsideEquipment2 {
         this.movements = movements;
     }
 
-    public SortedSet<ActivationPoint2> getPoints() {
+    public Set<ActivationPoint2> getPoints() {
         return points;
     }
 
-    public void setPoints(SortedSet<ActivationPoint2> points) {
+    public void setPoints(Set<ActivationPoint2> points) {
         this.points = points;
     }
     //</editor-fold>

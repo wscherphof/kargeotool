@@ -12,7 +12,7 @@ public class GebruikerDataOwnerRights implements Serializable {
     
     @Id
     @ManyToOne
-    private DataOwner dataOwner;
+    private DataOwner2 dataOwner;
     
     private boolean editable;
     private boolean validatable;
@@ -25,11 +25,11 @@ public class GebruikerDataOwnerRights implements Serializable {
         this.gebruiker = gebruiker;
     }
 
-    public DataOwner getDataOwner() {
+    public DataOwner2 getDataOwner() {
         return dataOwner;
     }
 
-    public void setDataOwner(DataOwner dataOwner) {
+    public void setDataOwner(DataOwner2 dataOwner) {
         this.dataOwner = dataOwner;
     }
 

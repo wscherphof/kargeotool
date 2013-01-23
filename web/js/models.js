@@ -167,7 +167,10 @@ Ext.define('MovementActivationPoint', {
         triggerType:null,
         vehicleTypes:null
     },
-    constructor: function(config) {        
+    constructor: function(config) {      
+        if(!config.triggerType) {
+            config.triggerType = 'STANDARD';
+        }
         this.initConfig(config);    
     },
     toJSON: function() {

@@ -43,6 +43,7 @@ public class MovementActivationPoint {
      * Foreign-key backreference.
      */
     @ManyToOne
+    @JoinColumn(name="movement",updatable=false,nullable=false)
     private Movement movement;
 
     /**
@@ -61,7 +62,7 @@ public class MovementActivationPoint {
     /**
      * Verplicht indien dit punt een meldpunt is, bevat de o.a. signaalgroep.
      */
-    @OneToOne
+    @OneToOne(cascade= CascadeType.ALL)
     private ActivationPointSignal signal;
 
     public Long getId() {

@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @author Matthijs Laan
  */
 @Entity
-public class ActivationPoint2 implements Comparable {
+public class ActivationPoint2 {
     
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
@@ -85,8 +85,5 @@ public class ActivationPoint2 implements Comparable {
         this.label = label;
     }
     //</editor-fold>
-
-    public int compareTo(Object t) {
-        return nummer.compareTo(((ActivationPoint2)t).nummer);
-    }    
+ 
 }

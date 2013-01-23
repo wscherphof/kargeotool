@@ -1,5 +1,6 @@
 package nl.b3p.kar.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
@@ -67,7 +68,7 @@ public class ActivationPointSignal {
      * movement aangemaakt te worden.
      */
     @ManyToMany
-    private List<VehicleType> vehicleTypes;
+    private List<VehicleType> vehicleTypes = new ArrayList();
     
     /**
      * Soort aanmelding, zie ActivationPointSignal.TRIGGER_ constantes.

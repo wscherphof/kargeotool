@@ -4,7 +4,7 @@
 <div id="header">
     <div id="headerLinks">
         <div class="headerlink">
-            <a href="#" onclick="alert('Nog niet beschikbaar')"><img src="<c:url value="/images/"/>/pencil.png" alt="icon" class="navimg" /> Beheer VRI-informatie</a>
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean"/>"><img src="<c:url value="/images/"/>/pencil.png" alt="icon" class="navimg" /> Beheer VRI-informatie</a>
         </div>
         <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">
             <div class="headerlink">

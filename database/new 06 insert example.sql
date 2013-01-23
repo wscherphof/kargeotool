@@ -36,6 +36,8 @@ insert into activation_point2(label, nummer, location, roadside_equipment) value
   
 insert into movement(nummer, roadside_equipment) select
   unnest(ARRAY[1,2,3,4,5,6,7,8,9,10,11,12]), (find_rseq2_id(9999));
+  
+-- XXX list_index aparte tabel
 
 insert into movement_activation_point(begin_end_or_activation, movement, point,list_index) values
   ('ACTIVATION',find_mvmt_id(9999,1),find_ap2_id(9999,'A'),0),

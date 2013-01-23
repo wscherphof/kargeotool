@@ -103,21 +103,6 @@
 		<servlet-name>StripesDispatcher</servlet-name>
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
-    
-    <servlet>
-        <servlet-name>dwr-invoker</servlet-name>
-        <display-name>DWR Servlet</display-name>
-        <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
-        <init-param>
-            <param-name>debug</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>crossDomainSessionSecurity</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
 
     <!-- Init ManagedPersistence to get a hibernate EntityManagerFactory -->
     <servlet>
@@ -158,11 +143,6 @@
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>dwr-invoker</servlet-name>
-        <url-pattern>/dwr/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>

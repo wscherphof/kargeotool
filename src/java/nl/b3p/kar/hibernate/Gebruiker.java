@@ -42,7 +42,7 @@ public class Gebruiker implements Principal {
     @OneToMany(mappedBy="gebruiker")
     @MapKeyJoinColumn(name="data_owner")
     @Sort(type=SortType.NATURAL)
-    private SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner, GebruikerDataOwnerRights>();
+    private SortedMap<DataOwner2, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner2, GebruikerDataOwnerRights>();
 
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String salt = SecurityRealm.generateHexSalt(request);
@@ -152,11 +152,11 @@ public class Gebruiker implements Principal {
         return false;
     }
 
-    public Map<DataOwner, GebruikerDataOwnerRights> getDataOwnerRights() {
+    public Map<DataOwner2, GebruikerDataOwnerRights> getDataOwnerRights() {
         return dataOwnerRights;
     }
 
-    public void setDataOwnerRights(SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights) {
+    public void setDataOwnerRights(SortedMap<DataOwner2, GebruikerDataOwnerRights> dataOwnerRights) {
         this.dataOwnerRights = dataOwnerRights;
     }
 
@@ -170,8 +170,8 @@ public class Gebruiker implements Principal {
         return r != null && r.isValidatable();
     }
 
-    public Set<DataOwner> getEditableDataOwners() {
-        HashSet<DataOwner> dataOwners = new HashSet<DataOwner>();
+    public Set<DataOwner2> getEditableDataOwners() {
+        HashSet<DataOwner2> dataOwners = new HashSet<DataOwner2>();
         for(Iterator it = dataOwnerRights.entrySet().iterator(); it.hasNext();) {
             Entry<DataOwner, GebruikerDataOwnerRights> entry = (Entry<DataOwner, GebruikerDataOwnerRights>)it.next();
             if(entry.getValue().isEditable()) {
@@ -181,7 +181,7 @@ public class Gebruiker implements Principal {
         return dataOwners;
     }
 
-    public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean validatable) throws Exception {
+    public void setDataOwnerRight(DataOwner2 dao, Boolean editable, Boolean validatable) throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         GebruikerDataOwnerRights dor = getDataOwnerRights().get(dao);
         if(dor == null) {
