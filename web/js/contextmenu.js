@@ -48,22 +48,23 @@ Ext.define("ContextMenu", {
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editRseq',
+                id: 'editRseqvri',
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },{
+                id: "uppervri",
                 xtype: 'menuseparator'
             },
             {
-                id: 'addCheckoutPoint',
+                id: 'addCheckoutPointvri',
                 text: 'Voeg uitmeldpunt toe'
             },
             {
-                id: 'addCheckinPoint',
+                id: 'addCheckinPointvri',
                 text: 'Voeg inmeldpunt toe'
             },
             {
-                id: 'addEndPoint',
+                id: 'addEndPointvri',
                 text: 'Voeg eindpunt toe'
             }
             ],
@@ -76,16 +77,16 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     var point= new OpenLayers.Geometry.Point(lonlat.lon,lonlat.lat);
                     switch (item.id) {
-                        case 'addEndPoint':
+                        case 'addEndPointvri':
                             editor.addEndpoint(false,point);
                             break;
-                        case 'addCheckinPoint':
+                        case 'addCheckinPointvri':
                             editor.addCheckinPoint(false,point);
                             break;
-                        case 'addCheckoutPoint':
+                        case 'addCheckoutPointvri':
                             editor.addCheckoutPoint(false,point);
                             break;
-                        case 'editRseq':
+                        case 'editRseqvri':
                             this.editor.editSelectedObject();
                             break;
                     }
@@ -103,27 +104,27 @@ Ext.define("ContextMenu", {
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },{
-                id: "upper",
+                id: "uppercheckout",
                 xtype: 'menuseparator'
             },
             {
-                id: 'addEndPoint',
+                id: 'addEndPointcheckout',
                 text: 'Voeg eindpunt toe'
             },
             {
-                id: 'selectEndPoint',
+                id: 'selectEndPointcheckout',
                 text: 'Selecteer eindpunt'
             },
             {
-                id: 'addCheckinPoint',
+                id: 'addCheckinPointcheckout',
                 text: 'Voeg inmeldpunt toe',
                 disabled:true
             },{
-                id : "lower",
+                id : "lowercheckout",
                 xtype: 'menuseparator'
             },
             {
-                id: 'showPath',
+                id: 'showPathcheckout',
                 text: 'Laat pad zien',
                 xtype: 'menucheckitem',
                 disabled:true
@@ -137,7 +138,7 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'addEndPoint':
+                        case 'addEndPointcheckout':
                             editor.addEndpoint(true);
                             Ext.Array.each(menu.items.items,function(name, idx, ori){
                                 if(name.id == "addCheckinPoint"){
@@ -145,13 +146,13 @@ Ext.define("ContextMenu", {
                                 }
                             });
                             break;
-                        case 'addCheckinPoint':
+                        case 'addCheckinPointcheckout':
                             editor.addCheckinPoint(true);
                             break;
-                        case 'selectEndPoint':
+                        case 'selectEndPointcheckout':
                             editor.selectEindpunt();
                             break;
-                        case 'editCheckout':
+                        case 'editCheckoutcheckout':
                             this.editor.editSelectedObject();
                             break;
                     }
@@ -165,19 +166,19 @@ Ext.define("ContextMenu", {
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editCheckin',
+                id: 'editCheckincheckin',
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },{
-                id: "upperIn",
+                id: "upperIncheckin",
                 xtype: 'menuseparator'
             },
             {
-                id: 'voegVoorinmeldToe',
+                id: 'voegVoorinmeldTocheckine',
                 text: 'Voeg voorinmeldpunt toe'
             },
             {
-                id: 'voegBeginpuntToe',
+                id: 'voegBeginpuntToecheckin',
                 text: 'Voeg beginpunt toe'
             }
             ],
@@ -189,13 +190,13 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'voegVoorinmeldToe':
+                        case 'voegVoorinmeldToecheckin':
                             editor.addPreCheckinPoint(true);
                             break;
-                        case 'voegBeginpuntToe':
+                        case 'voegBeginpuntToecheckin':
                             editor.addBeginpoint(true);
                             break;
-                        case 'editCheckin':
+                        case 'editCheckincheckin':
                             this.editor.editSelectedObject();
                             break;
                     }
