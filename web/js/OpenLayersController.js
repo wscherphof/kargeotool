@@ -239,9 +239,11 @@ Ext.define("ol", {
             onSelect : function (feature){
                 if(feature && feature.layer.name == "RseqSelect"){
                     console.log("Selecting rseq:" + feature.id);
-                    feature.layer.removeFeatures([feature]);
                     editor.loadRseqInfo({
                         karAddress: feature.data.karAddress
+                    },
+                    function(){
+                        feature.layer.removeFeatures([feature]);
                     });
                 }else{
                     editor.setSelectedObject(feature);
