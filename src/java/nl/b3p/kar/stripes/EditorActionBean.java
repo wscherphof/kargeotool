@@ -21,23 +21,18 @@ import org.stripesstuff.stripersist.Stripersist;
 @StrictBinding
 @UrlBinding("/action/viewer/editor")
 public class EditorActionBean implements ActionBean {
-    private static final Log log = LogFactory.getLog(EditorActionBean.class);
 
+    private static final Log log = LogFactory.getLog(EditorActionBean.class);
     private static final String JSP = "/WEB-INF/jsp/viewer/editor2.jsp";
     private ActionBeanContext context;
     private boolean magWalapparaatMaken;
-    
     @Validate
     private Integer karAddress;
-    
     @Validate
     private RoadsideEquipment2 rseq;
-    
     @Validate
     private JSONObject layers;
-    
     private JSONArray vehicleTypesJSON;
-    
     private JSONArray dataOwnersJSON;
 
     @DefaultHandler
@@ -54,17 +49,17 @@ public class EditorActionBean implements ActionBean {
         } else {
             magWalapparaatMaken = false;
         }
-        
+
         vehicleTypesJSON = new JSONArray();
-        for(VehicleType vt: (List<VehicleType>)em.createQuery("from VehicleType order by nummer").getResultList()) {
+        for (VehicleType vt : (List<VehicleType>) em.createQuery("from VehicleType order by nummer").getResultList()) {
             JSONObject jvt = new JSONObject();
             jvt.put("nummer", vt.getNummer());
             jvt.put("omschrijving", vt.getOmschrijving());
             vehicleTypesJSON.put(jvt);
         }
-        
+
         dataOwnersJSON = new JSONArray();
-        for(DataOwner2 dao: (List<DataOwner2>)em.createQuery("from DataOwner2 order by code").getResultList()) {
+        for (DataOwner2 dao : (List<DataOwner2>) em.createQuery("from DataOwner2 order by code").getResultList()) {
             JSONObject jdao = new JSONObject();
             jdao.put("code", dao.getCode());
             jdao.put("classificatie", dao.getClassificatie());
@@ -72,78 +67,100 @@ public class EditorActionBean implements ActionBean {
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
         }
-        
+
         return new ForwardResolution(JSP);
     }
-    
-    public Resolution gfi(){
+
+    public Resolution gfi() {
         return new StreamingResolution("application/json", "error: no objects found");
     }
-    
+
     public Resolution rseqInfo2() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
-        
+
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
             RoadsideEquipment2 rseq2;
-            
-            if(rseq != null) {
+
+            if (rseq != null) {
                 rseq2 = rseq;
             } else {
-                rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :un")
-                    .setParameter("un", karAddress)
-                    .getSingleResult();
-            }
-        
-            info.put("rseq",rseq2.getRseqGeoJSON());
-            info.put("points",rseq2.getPointsGeoJSON());
-            info.put("success", Boolean.TRUE);
-        } catch(Exception e) {
-            log.error("rseqInfo2 exception", e);
-            info.put("error", ExceptionUtils.getMessage(e));            
-        }
-        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
-    }
-    
-    public Resolution rseqJSON() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-        
-        JSONObject info = new JSONObject();
-        info.put("success", Boolean.FALSE);
-        try {
-            RoadsideEquipment2 rseq2;
-            
-            if(rseq != null) {
-                rseq2 = rseq;
-            } else {
-                rseq2 = (RoadsideEquipment2)em.createQuery("from RoadsideEquipment2 where karAddress = :a")
-                    .setParameter("a", karAddress)
-                    .getSingleResult();
+                rseq2 = (RoadsideEquipment2) em.createQuery("from RoadsideEquipment2 where karAddress = :un")
+                        .setParameter("un", karAddress)
+                        .getSingleResult();
             }
 
-            info.put("roadsideEquipment",rseq2.getJSON());
-            
+            info.put("rseq", rseq2.getRseqGeoJSON());
+            info.put("points", rseq2.getPointsGeoJSON());
             info.put("success", Boolean.TRUE);
-        } catch(Exception e) {
-            log.error("rseqJSON exception", e);
-            info.put("error", ExceptionUtils.getMessage(e));            
+        } catch (Exception e) {
+            log.error("rseqInfo2 exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
+    public Resolution rseqJSON() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            RoadsideEquipment2 rseq2;
+
+            if (rseq != null) {
+                rseq2 = rseq;
+            } else {
+                rseq2 = (RoadsideEquipment2) em.createQuery("from RoadsideEquipment2 where karAddress = :a")
+                        .setParameter("a", karAddress)
+                        .getSingleResult();
+            }
+
+            info.put("roadsideEquipment", rseq2.getJSON());
+
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("rseqJSON exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
+    public Resolution allRseqJSON() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            List<RoadsideEquipment2> rseq2;
+
+            rseq2 = (List<RoadsideEquipment2>) em.createQuery("from RoadsideEquipment2").getResultList();
+            JSONArray rseqs = new JSONArray();
+            for (RoadsideEquipment2 r : rseq2) {
+                rseqs.put(r.getRseqGeoJSON());
+            }
+            info.put("rseqs", rseqs);
+
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("allRseqJSON exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
     public Resolution saveOrUpdateRseq() throws Exception {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("saveOrUpdateRseq exception", e);
-            info.put("error", ExceptionUtils.getMessage(e));            
+            info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json",  new StringReader(info.toString(4)));
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
     // <editor-fold desc="Getters and Setters">
     public ActionBeanContext getContext() {
         return context;

@@ -22,7 +22,11 @@ Ext.define("Editor", {
     
     constructor: function(domId, mapfilePath) {
 
-        this.mixins.observable.constructor.call(this, {});
+        this.mixins.observable.constructor.call(this, {
+            listeners:{
+                 //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
+            }
+        });
         
         this.addEvents(
             'activeRseqChanged',
@@ -60,6 +64,7 @@ Ext.define("Editor", {
                 }
             }
         }
+        this.loadAllRseqs();
     },
     
     createOpenLayersController: function() {
@@ -160,7 +165,35 @@ Ext.define("Editor", {
             }
         });
     },
-    
+    loadAllRseqs : function(){
+        Ext.Ajax.request({
+            url:editorActionBeanUrl,
+            method: 'GET',
+            scope: this,
+            params:  {
+                'allRseqJSON' : true
+            },
+            success: function (response){
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var rseqs = msg.rseqs;
+                    var featureCollection = {
+                        type: "FeatureCollection",
+                        features: rseqs
+                    };
+                    
+                    // Dit misschien in listener
+                    editor.olc.removeAllRseqs();
+                    editor.olc.addRseqs(featureCollection);
+                }else{
+                    alert("Ophalen resultaten mislukt.");
+                }
+            },
+            failure: function (response){
+                alert("Ophalen resultaten mislukt.");
+            }
+        });
+    },
     saveOrUpdate: function() {
         var rseq = this.activeRseq;
         if(rseq != null) {

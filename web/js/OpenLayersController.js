@@ -3,6 +3,7 @@ Ext.define("ol", {
     map : null,
     panel : null,
     vectorLayer : null,
+    rseqVectorLayer: null,
     geojson_format : null,
     gfi : null,
     dragFeature : null,
@@ -19,7 +20,6 @@ Ext.define("ol", {
     },
     // Make the map
     createMap : function(domId){
-        
         this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
                 
@@ -43,9 +43,18 @@ Ext.define("ol", {
             })
         }
         );
+        this.rseqVectorLayer = new OpenLayers.Layer.Vector("RseqSelect", {
+            styleMap: new OpenLayers.StyleMap( {
+                "default": style,
+                "select": selectstyle,
+                "temporary" : tempstyle
+            })
+        }
+        );
             
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
+        this.map.addLayer(this.rseqVectorLayer);
         this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
@@ -216,29 +225,39 @@ Ext.define("ol", {
         this.map.addControl(oClick);
         oClick.activate();
         
-        var highlight = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
+        var highlight = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer], {
             highlightOnly: true,
             renderIntent: "temporary",
             hover:true
         });
-        
         this.map.addControl(highlight);
         highlight.activate();
-        this.selectCtrl = new OpenLayers.Control.SelectFeature(this.vectorLayer,{
+        
+        this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer,this.rseqVectorLayer],{
             clickout: true,
             scope:this,
             onSelect : function (feature){
-                editor.setSelectedObject(feature);
+                if(feature && feature.layer.name == "RseqSelect"){
+                    console.log("Selecting rseq:" + feature.id);
+                    feature.layer.removeFeatures([feature]);
+                    editor.loadRseqInfo({
+                        karAddress: feature.data.karAddress
+                    });
+                }else{
+                    editor.setSelectedObject(feature);
+                }
             },
-            onUnselect : function(){
-                editor.setSelectedObject(null);
+            onUnselect : function(feature){
+                if(feature && feature.layer.name == "Points"){
+                    editor.setSelectedObject(null);
+                }
             }
         });
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
     },
     updateVectorLayer : function(){
-        this.vectorLayer.removeAllFeatures();
+        this.removeAllFeatures();
         var geoJson = this.editor.activeRseq.toGeoJSON();
         this.addFeatures(geoJson);
         var selected = this.editor.selectedObject;
@@ -324,6 +343,7 @@ Ext.define("ol", {
             layer.setVisibility(visible);
             this.map.addLayer(layer);
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
+            this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+2);
         }
     },
     isLayerVisible : function (name){
@@ -415,6 +435,9 @@ Ext.define("ol", {
         this.vectorLayer.removeAllFeatures();
         this.dragFeature.deactivate();
     },
+    removeAllRseqs: function(){
+        this.rseqVectorLayer.removeAllFeatures();
+    },
     dragComplete : function (feature){
         var x = feature.geometry.x;
         var y = feature.geometry.y;
@@ -433,6 +456,9 @@ Ext.define("ol", {
     },
     addFeatures : function(features){
         this.vectorLayer.addFeatures(this.geojson_format.read(features));
+    },
+    addRseqs : function(rseqs){
+        this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
     }
 });
 var style = new OpenLayers.Style(
@@ -713,7 +739,10 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.point,
-            label: ""
+            label: "",
+            strokeColor: "#99BCE8",
+            strokeLinecap: "butt",
+            strokeDashstyle: "longdash"
         }
     }),
     new OpenLayers.Rule({   
