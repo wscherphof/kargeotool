@@ -43,15 +43,17 @@
             </div>
             
             <div id="rseqInfoPanel">
-                Huidig geselecteerde VRI: <span id="context_vri"></span>
-                
+                <div style="margin: 3px">
+                    Huidig geselecteerde VRI: <span id="context_vri"></span>
+                    <p><br>
+                    <input type="button" id="rseqSave" value="Opslaan" style="visibility: hidden" onclick="editor.saveOrUpdate()">
+                </div>
             </div>
             
             <div id="form">
-                <div id="formContainer">
-                    Formcontainer
-                    <span style="display: none">Status: <span id="formStatus" style="font-weight: bold">Geen object</span></span>
-                    <iframe frameborder="0" name="form" src="${contextPath}/empty.jsp"></iframe>
+                <div id="help">
+                    Klik op een icoon van een verkeerssysteem om de details te
+                    bekijken of klik rechts om een verkeerssysteem toe te voegen.
                 </div>
             </div>
 
@@ -65,17 +67,13 @@
         <div id="rightbar">
             <div id="legend">
                 <div id="walapparatuur" class="legendseparator">
-                    <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/> Walapparatuur<br/>
+                    <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/> Verkeerssystemen<br/>
                     <img src="<c:url value="/images/"/>icons/vri.png" alt="VRI" class="legendimg" /> VRI<br />
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
                 </div>
-                <div id="signaalgroepen" class="legendseparator">
-                    <input type="checkbox" checked="checked" onclick="toggleLayer('signaalgroepen');"/> Signaalgroepen<br/>
-                    <img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=signaalgroepen&amp;format=image/png"/>
-                </div>
                 <div id="triggerpunten" class="legendseparator">
-                    <input type="checkbox" checked="checked" onclick="toggleLayer('triggerpunten');"/> Triggerpunten<br/>
+                    <input type="checkbox" checked="checked" onclick="toggleLayer('triggerpunten');"/> Punten<br/>
                     <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
                     <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
