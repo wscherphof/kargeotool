@@ -799,6 +799,7 @@ Ext.define("Editor", {
      * Geocode search
      */
     geocode: function(address) {
+        Ext.get('geocoderesults').dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: geocoderActionBeanUrl,
@@ -808,13 +809,9 @@ Ext.define("Editor", {
             method: 'GET',
             success: function(response) {
                 var results = new OpenLayers.Format.XLS().read(response.responseXML);
-
-                console.log(results);
                 
                 var resultblock = Ext.get('geocoderesults');
-                while(resultblock.first()) {
-                    resultblock.first().remove();
-                }
+                resultblock.dom.innerHTML = "";
                 
                 var rl = results.responseLists[0];
                 
@@ -822,8 +819,24 @@ Ext.define("Editor", {
                     Ext.Array.each(rl.features, function(feature) {
                         var address = feature.attributes.address;
                         
-                        var label = address.street != "" ? address.street + ", " : "";
-                        label += address.place.Municipality || address.place.CountrySubdivision;
+                        var number = address.building && address.building.number ?
+                            " " + address.building.number : "";
+                        var label = address.street != "" ? address.street + number : "";
+                        if(address.postalCode != undefined) {
+                            label += (label != "" ? ", " : "") + address.postalCode;
+                        }
+                        // woonplaats
+                        if(address.place.MunicipalitySubdivision != undefined) {
+                            label += (label != "" ? ", " : "") + address.place.MunicipalitySubdivision;
+                        }
+                        // gemeente
+                        if(address.place.Municipality != undefined && address.place.Municipality != address.place.MunicipalitySubdivision) {
+                            label += (label != "" ? ", " : "") + address.place.Municipality;
+                        }
+                        // provincie
+                        if(label == "" && address.place.CountrySubdivision != undefined) {
+                            label = address.place.CountrySubdivision;
+                        }
                         
                         var addresslink = document.createElement('a');
                         addresslink.href = '#';
@@ -836,8 +849,11 @@ Ext.define("Editor", {
                         resultblock.appendChild(link);
                     });
                 } else {
-                    resultblock.innnerHTML = "Geen resultaten gevonden.";
+                    resultblock.dom.innerHTML = "Geen resultaten gevonden.";
                 }
+            },
+            failure: function() {
+                Ext.get('geocoderesults').dom.innerHTML = "Geen resultaten gevonden.";
             }
         });
     },
