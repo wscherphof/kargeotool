@@ -1,11 +1,13 @@
 package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +32,10 @@ public class EditorActionBean implements ActionBean {
     private Integer karAddress;
     @Validate
     private RoadsideEquipment2 rseq;
+    
+    @Validate
+    private String json;
+    
     @Validate
     private JSONObject layers;
     private JSONArray vehicleTypesJSON;
@@ -150,10 +156,41 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
+    private static final boolean isNew(JSONObject j) {
+        String id = j.optString("id");
+        return id != null && id.startsWith("ext-gen");
+    }
+    
     public Resolution saveOrUpdateRseq() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+        
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
+            JSONObject jrseq = new JSONObject(json);
+
+            if(isNew(jrseq)) {
+                rseq = new RoadsideEquipment2();
+            } else {
+                rseq = em.find(RoadsideEquipment2.class, jrseq.getLong("id"));
+            }
+
+            rseq.setLocation(GeoJSON.toPoint(jrseq.getJSONObject("location")));
+            rseq.setDescription(jrseq.optString("description"));
+            rseq.setTown(jrseq.optString("town"));
+            rseq.setType(jrseq.getString("type"));
+            rseq.setKarAddress(jrseq.getInt("karAddress"));
+            rseq.setCrossingCode(jrseq.optString("crossingCode"));
+            rseq.setDataOwner(em.find(DataOwner2.class, jrseq.getString("dataOwner")));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
+            rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
+            
+            em.persist(rseq);
+            em.getTransaction().commit();
+            
+            info.put("roadsideEquipment", rseq.getJSON());
+            info.put("success", Boolean.TRUE);
         } catch (Exception e) {
             log.error("saveOrUpdateRseq exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
@@ -216,6 +253,14 @@ public class EditorActionBean implements ActionBean {
 
     public void setVehicleTypesJSON(JSONArray vehicleTypesJSON) {
         this.vehicleTypesJSON = vehicleTypesJSON;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
     // </editor-fold>
 }

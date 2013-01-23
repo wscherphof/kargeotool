@@ -196,7 +196,26 @@ Ext.define("Editor", {
     saveOrUpdate: function() {
         var rseq = this.activeRseq;
         if(rseq != null) {
-            console.log(rseq.toJSON());
+            Ext.Ajax.request({
+                url: editorActionBeanUrl,
+                method: 'POST',
+                scope: this,
+                params: {
+                    'saveOrUpdateRseq': true,
+                    'json': Ext.JSON.encode(editor.activeRseq.toJSON())
+                },
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success) {
+                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.')
+                    }else{
+                        Ext.Msg.alert('Fout', 'Fout bij opslaan: ' + msg.error)
+                    }
+                },
+                failure: function (response){
+                    Ext.Msg.alert('Fout', 'Kan gegevens niet opslaan!')
+                }
+            });
         }
     },
     
@@ -373,9 +392,17 @@ Ext.define("Editor", {
                     name: 'crossingCode',
                     value: rseq.crossingCode
                 },{
+                    xtype: 'numberfield',
                     fieldLabel: 'KAR adres',
                     name: 'karAddress',
-                    value: rseq.karAddress
+                    minValue: 0,
+                    value: rseq.karAddress,
+                    listeners: {
+                        change: function(field, value) {
+                            value = parseInt(value, 10);
+                            field.setValue(value);
+                        }
+                    }                    
                 },{
                     fieldLabel: 'Omschrijving',
                     name: 'description',

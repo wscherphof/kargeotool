@@ -29,6 +29,15 @@ Ext.define('RSEQ', {
         if(!config.description){
             config.description = "";
         }
+        if(!config.points) {
+            config.points = [];
+        }
+        if(!config.movements) {
+            config.movements = [];
+        }
+        if(!config.validFrom) {
+            config.validFrom = Ext.Date.format(new Date(), "Y-m-d");
+        }
         this.initConfig(config);    
     },
     getPointById : function (id){
