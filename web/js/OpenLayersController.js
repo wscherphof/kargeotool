@@ -13,6 +13,7 @@ Ext.define("ol", {
     overview : null,
     activeFeature : null,
     selectCtrl : null,
+    highlight:null,
     constructor : function(editor){
         this.editor = editor;
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
@@ -225,17 +226,16 @@ Ext.define("ol", {
         this.map.addControl(oClick);
         oClick.activate();
         
-        var highlight = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer], {
+        this.highlight = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer], {
             highlightOnly: true,
             renderIntent: "temporary",
             hover:true
         });
-        this.map.addControl(highlight);
-        highlight.activate();
         
-        this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer,this.rseqVectorLayer],{
+        this.map.addControl(this.highlight);
+        this.highlight.activate();
+        this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer],{
             clickout: true,
-            scope:this,
             onSelect : function (feature){
                 if(feature && feature.layer.name == "RseqSelect"){
                     console.log("Selecting rseq:" + feature.id);
@@ -451,7 +451,8 @@ Ext.define("ol", {
         this.point.deactivate();
         this.line.deactivate();
         this.editor.pointFinished(lastPoint);
-        // TODO fire event geometry updated
+        this.highlight.activate();
+    // TODO fire event geometry updated
     },
     setActiveFeature : function (feature){
         this.activeFeature = feature;

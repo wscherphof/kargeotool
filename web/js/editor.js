@@ -131,7 +131,6 @@ Ext.define("Editor", {
      * Called from GUI.
      */
     loadRseqInfo: function(query, successFunction) {
-        
         // Clear huidige geselecteerde
         this.activeRseq = null;
         this.fireEvent('activeRseqChanged', this.activeRseq);
