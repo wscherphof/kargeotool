@@ -810,6 +810,10 @@ Ext.define("Editor", {
         this.currentEditAction = "ACTIVATION_2";
         this.addPoint(withLine,point);
     },
+    addPreCheckinPoint : function(withLine,point){
+        this.currentEditAction = "ACTIVATION_3";
+        this.addPoint(withLine,point);
+    },
     addPoint : function(withLine,point){
         if(withLine ){
             var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";

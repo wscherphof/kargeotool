@@ -5,6 +5,7 @@ Ext.define("ContextMenu", {
     // menu's 
     vri:null,
     checkout:null,
+    checkin:null,
     defaultMenu:null,
     
     constructor: function(editor) {
@@ -56,6 +57,14 @@ Ext.define("ContextMenu", {
             {
                 id: 'addCheckoutPoint',
                 text: 'Voeg uitmeldpunt toe'
+            },
+            {
+                id: 'addCheckinPoint',
+                text: 'Voeg inmeldpunt toe'
+            },
+            {
+                id: 'addEndPoint',
+                text: 'Voeg eindpunt toe'
             }
             ],
             listeners: {
@@ -151,9 +160,47 @@ Ext.define("ContextMenu", {
             }
         });
         
+        
+        this.checkin = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'editCheckin',
+                text: 'Bewerk...',
+                icon: contextPath + "/images/silk/table_edit.png"
+            },{
+                id: "upperIn",
+                xtype: 'menuseparator'
+            },
+            {
+                id: 'voegVoorinmeldToe',
+                text: 'Voeg voorinmeldpunt toe'
+            }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    var pos = {
+                        x: menu.x - Ext.get(editor.domId).getX(),
+                        y: menu.y
+                    }
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    switch (item.id) {
+                        case 'voegVoorinmeldToe':
+                            editor.addPreCheckinPoint(true);
+                            break;
+                        case 'editCheckin':
+                            this.editor.editSelectedObject();
+                            break;
+                    }
+                },
+                scope:me
+            }
+        });
+        
         this.menuContext ={
             "standaard" : this.defaultMenu,
-            "ACTIVATION_1" : this.vri,
+            "ACTIVATION_1" : this.checkin,
             "ACTIVATION_2" : this.checkout ,
             "ACTIVATION_3" : this.vri,
             "END" : this.vri,
