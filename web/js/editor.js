@@ -522,30 +522,82 @@ Ext.define("Editor", {
         }
         var map = movements[0].map;
         
-        Ext.define('VehicleType', {
-            extend: 'Ext.data.Model',
-            fields: [
-                {name: 'nummer', type: 'int'},
-                {name: 'omschrijving', type: 'string'}
-            ]
-        });
+        var editingUitmeldpunt = map.commandType == 2;
         
-        var data = [];
-        var selectedVehicleTypes = [];
-        Ext.Array.each(vehicleTypes, function(vt) {
-            var selected = map.vehicleTypes.hasOwnProperty(vt.nummer);
-            if(selected) {
-                selectedVehicleTypes.push(vt.nummer);
-            }
-            if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
-                data.push(vt);
-            }
-        });
-        var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
-        
+        var signalItems = [{
+            fieldLabel: 'Afstand tot stopstreep',
+            name: 'distanceTillStopLine',
+            value: map.distanceTillStopLine
+        },{
+            xtype: 'combo',
+            fieldLabel: 'Triggertype',
+            name: 'triggerType',
+            allowBlank: false,
+            blankText: 'Selecteer een optie',
+            editable: false,
+            displayField: 'desc',
+            valueField: 'value',
+            value: map.triggerType,
+            store: Ext.create('Ext.data.Store', {
+                fields: ['value', 'desc'],
+                data: [
+                    {value: 'STANDARD', desc: 'STANDARD: door vervoerder bepaald'},
+                    {value: 'FORCED', desc: 'FORCED: altijd melding'},
+                    {value: 'MANUAL', desc: 'MANUAL: handmatig door chauffeur'}
+                ]
+            })   
+        }];
+        if(editingUitmeldpunt) {
+            Ext.define('VehicleType', {
+                extend: 'Ext.data.Model',
+                fields: [
+                    {name: 'nummer', type: 'int'},
+                    {name: 'omschrijving', type: 'string'}
+                ]
+            });
+
+            var data = [];
+            var selectedVehicleTypes = [];
+            Ext.Array.each(vehicleTypes, function(vt) {
+                var selected = Ext.Array.contains(map.vehicleTypes, vt.nummer);
+                if(selected) {
+                    selectedVehicleTypes.push(vt.nummer);
+                }
+                if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
+                    data.push(vt);
+                }
+            });
+            var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
+
+            signalItems = Ext.Array.merge(signalItems, [{
+                fieldLabel: 'Signaalgroep',
+                name: 'signalGroupNumber',
+                value: map.signalGroupNumber,
+                disabled: map.commandType != 2
+            },{
+                fieldLabel: 'Virtual local loop number',
+                name: 'virtualLocalLoopNumber',
+                disabled: map.commandType != 2
+            },{
+                xtype: 'combo',
+                multiSelect: true,
+                disabled: map.commandType != 2,
+                allowBlank: false,
+                editable: false,
+                blankText: 'Selecteer een optie',
+                displayField: 'omschrijving',
+                valueField: 'nummer',
+                id: 'pietje',
+                value:  selectedVehicleTypes,
+                fieldLabel: 'Voertuigtypes',
+                name: 'vehicleTypes',
+                store: vehicleTypesStore
+            }]);
+        }
+                
         me.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: 300,
+            height: map.commandType == 2 ? 300 : 225,
             width: 450,
             icon: karTheme[apName],
             layout: 'fit',
@@ -579,49 +631,7 @@ Ext.define("Editor", {
                     defaults: {
                         anchor: '100%'
                     },
-                    items :[{
-                        fieldLabel: 'Afstand tot stopstreep',
-                        name: 'distanceTillStopLine',
-                        value: map.distanceTillStopLine
-                    },{
-                        xtype: 'combo',
-                        fieldLabel: 'Triggertype',
-                        name: 'triggerType',
-                        allowBlank: false,
-                        blankText: 'Selecteer een optie',
-                        editable: false,
-                        displayField: 'desc',
-                        valueField: 'value',
-                        value: map.triggerType,
-                        store: Ext.create('Ext.data.Store', {
-                            fields: ['value', 'desc'],
-                            data: [
-                                {value: 'STANDARD', desc: 'STANDARD: door vervoerder bepaald'},
-                                {value: 'FORCED', desc: 'FORCED: altijd melding'},
-                                {value: 'MANUAL', desc: 'MANUAL: handmatig door chauffeur'}
-                            ]
-                        })   
-                    },{
-                        fieldLabel: 'Signaalgroep',
-                        name: 'signalGroupNumber',
-                        value: map.signalGroupNumber
-                    },{
-                        fieldLabel: 'Virtual local loop number',
-                        name: 'virtualLocalLoopNumber'
-                    },{
-                        xtype: 'combo',
-                        multiSelect: true,
-                        allowBlank: false,
-                        editable: false,
-                        blankText: 'Selecteer een optie',
-                        displayField: 'omschrijving',
-                        valueField: 'nummer',
-                        id: 'pietje',
-                        value:  selectedVehicleTypes,
-                        fieldLabel: 'Voertuigtypes',
-                        name: 'vehicleTypes',
-                        store: vehicleTypesStore
-                    }]
+                    items: signalItems
                 }],
                 buttons: [{
                     text: 'OK',
@@ -634,7 +644,39 @@ Ext.define("Editor", {
                         
                         // TODO check of nummer al gebruikt
                         
-                        Ext.Object.merge(point, form.getValues());
+                        // merge nummer en label naar point
+                        var formValues = form.getValues();
+                        Ext.Object.merge(point, objectSubset(formValues, ["nummer", "label"]));
+
+                        // deze waardes naar alle maps van movements die dit
+                        // pointId gebruiken
+                        var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "triggerType"]);
+                        
+                        // Alleen bij uitmeldpund kunnen deze worden ingesteld
+                        // maar moeten voor alle movements worden toegepast op
+                        // alle signals
+                        if(editingUitmeldpunt) {
+                            allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes"]);
+                        }
+                        
+                        Ext.Array.each(movements, function(mvmtAndMap) {
+                            console.log("movement nummer " + mvmtAndMap.movement.nummer);
+                            if(mvmtAndMap.map) {
+                                console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
+                                Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
+                            }
+                            if(editingUitmeldpunt) {
+                                // merge allSignalValues naar alle MovementActivationPoints
+                                // van movements die dit pointId gebruiken
+                                Ext.each(mvmtAndMap.movement.maps, function(theMap) {
+                                    if(theMap.beginEndOrActivation == "ACTIVATION") {
+                                        console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
+                                        Ext.Object.merge(theMap, allSignalValues);
+                                    }
+                                });
+                            }
+                        });
+                        
                         if(rseq == me.activeRseq) {
                             me.fireEvent("activeRseqUpdated", rseq);
                         }

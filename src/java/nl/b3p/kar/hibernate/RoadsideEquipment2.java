@@ -362,9 +362,9 @@ public class RoadsideEquipment2 {
                     jmap.put("signalGroupNumber", signal.getSignalGroupNumber());
                     jmap.put("virtualLocalLoopNumber", signal.getVirtualLocalLoopNumber());
                     jmap.put("triggerType", signal.getTriggerType());
-                    JSONObject jvt = new JSONObject();
+                    JSONArray jvt = new JSONArray();
                     for(VehicleType vt: signal.getVehicleTypes()) {
-                        jvt.put(vt.getNummer()+"", Boolean.TRUE);
+                        jvt.put(vt.getNummer());
                     }
                     jmap.put("vehicleTypes", jvt);
                 }
