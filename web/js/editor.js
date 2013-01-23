@@ -17,6 +17,7 @@ Ext.define("Editor", {
     activationPointEditWindow: null,
     
     selectedObject:null,
+    previousSelectedObject:null,
     
     currentEditAction: null,
     
@@ -25,6 +26,8 @@ Ext.define("Editor", {
         this.mixins.observable.constructor.call(this, {
             listeners:{
                  //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
+                 // TODO wanneer active rseq veranderd, loadAllRseqs doen, behalve actieve
+                 
             }
         });
         
@@ -277,12 +280,18 @@ Ext.define("Editor", {
         this.fireEvent('activeRseqChanged', this.activeRseq);
         console.log("activeRseq: ", rseq);
     },
-    setSelectedObject : function (olFeature){
+    setSelectedObject : function (olFeature){;
         if(!olFeature){
+            if(this.selectedObject){
+                this.previousSelectedObject = this.selectedObject;
+            }
             this.selectedObject = null;
         }else{
             if(this.activeRseq){
                 if(olFeature.data.className == "RSEQ"){
+                    if(this.selectedObject){
+                        this.previousSelectedObject = this.selectedObject;
+                    }
                     this.selectedObject = this.activeRseq;
                 }else { // Point
                     var point = this.activeRseq.getPointById(olFeature.data.id);
@@ -290,6 +299,9 @@ Ext.define("Editor", {
                         if(this.selectedObject && this.selectedObject.getId() == olFeature.data.id ){ // Check if there are changes to the selectedObject. If not, then return
                             return;
                         }else{
+                            if(this.selectedObject){
+                                this.previousSelectedObject = this.selectedObject;
+                            }
                             this.selectedObject = point;
                         }
                     }else{
@@ -757,18 +769,7 @@ Ext.define("Editor", {
         });
     },
     
-    addObject : function (className, location,properties){
-        var geomName = "location";
-        if(className != "RSEQ"){
-            geomName = "geometry";
-        }
-        if(!properties){
-            properties = {};
-        }
-        properties[geomName] = location;
-        var newObject = Ext.create(className,properties);
-        var geo = newObject.toGeoJSON();
-        this.olc.addFeatures(geo);
+    addObject : function (newObject){
         if(newObject instanceof RSEQ){
             this.setActiveRseq(newObject);
         }else{
@@ -782,7 +783,21 @@ Ext.define("Editor", {
         }
         this.fireEvent('objectAdded', newObject);
     },
-    
+    selectEindpunt : function (){
+        this.on('selectedObjectChanged',this.eindpuntSelected,this);
+    },
+    eindpuntSelected : function (eindpunt){
+        if(eindpunt){
+            this.selectedObject = this.previousSelectedObject;
+            if(eindpunt instanceof Point && eindpunt.getType() == "END"){
+                this.addObject(eindpunt);
+                this.un('selectedObjectChanged',this.eindpuntSelected,this);
+            }else{
+                alert("Geselecteerd punt is geen eindpunt");
+            }
+            this.olc.selectFeature(this.selectedObject.getId(), "Point");
+        }
+    },
     addEndpoint : function(withLine,point){
         this.currentEditAction = "END";
         this.addPoint(withLine,point);
@@ -812,9 +827,16 @@ Ext.define("Editor", {
         };
         var properties = {
             type: this.currentEditAction,
-            id: Ext.id()
+            id: Ext.id(),
+            "geometry" : geom
         };
-        this.addObject("Point", geom,properties);
+        
+        var newObject = Ext.create("Point",properties);
+        var geo = newObject.toGeoJSON();
+        this.olc.addFeatures(geo);
+        
+        this.addObject(newObject);
+        
         this.currentEditAction = null;
         
         this.olc.removeAllFeatures();

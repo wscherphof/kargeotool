@@ -102,6 +102,10 @@ Ext.define("ContextMenu", {
                 text: 'Voeg eindpunt toe'
             },
             {
+                id: 'selectEndPoint',
+                text: 'Selecteer eindpunt'
+            },
+            {
                 id: 'addCheckinPoint',
                 text: 'Voeg inmeldpunt toe',
                 disabled:true
@@ -134,6 +138,9 @@ Ext.define("ContextMenu", {
                             break;
                         case 'addCheckinPoint':
                             editor.addCheckinPoint(true);
+                            break;
+                        case 'selectEndPoint':
+                            editor.selectEindpunt();
                             break;
                         case 'editCheckout':
                             this.editor.editSelectedObject();
