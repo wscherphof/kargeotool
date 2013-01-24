@@ -157,7 +157,14 @@ Ext.define("ContextMenu", {
                 text: 'Voeg inmeldpunt toe',
                 disabled:true,
                 icon: karTheme.inmeldPunt
-            },{
+            },
+            {
+                id: 'selectInmeldpunt',
+                text: 'Selecteer bestaand inmeldpunt',
+                disabled:true,
+                icon: contextPath + "/images/silk/cursor.png"
+            },
+            {
                 id : "lowercheckout",
                 xtype: 'menuseparator'
             }/*,
@@ -173,12 +180,12 @@ Ext.define("ContextMenu", {
                 menu: {
                     items:[
                     {
-                        id: 'selectOtherCheckout',
+                        id: 'selectUitmeldpuntAndereSignaalgroep',
                         text: 'Selecteer uitmeldpunt van andere fasecyclus',
                         icon: contextPath + "/images/silk/cursor.png"
                     },
                     {
-                        id: 'voegBeginpuntToecheckout',
+                        id: 'addBeginpunt',
                         text: 'Voeg beginpunt toe',
                         icon: karTheme.startPunt
                     }
@@ -187,11 +194,11 @@ Ext.define("ContextMenu", {
                         click:
                         function(menu,item,e, opts) {
                             switch (item.id) {
-                                case 'voegBeginpuntToecheckout':
-                                    this.editor.addBeginpoint(true);
+                                case 'addBeginpunt':
+                                    this.editor.addBeginpunt();
                                     break;
-                                case 'selectOtherCheckout':
-                                    Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is selecteren van een ander uitcheckpunt nog niet mogelijk!");
+                                case 'selectUitmeldpuntAndereSignaalgroep':
+                                    Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
                                     break;
                             }
                         },
@@ -208,20 +215,23 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
+                        case 'editUitmeldpunt':
+                            this.editor.editSelectedObject();
+                            break;                        
+                        case 'removeCheckoutcheckout':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;                            
                         case 'addEindpunt':
                             editor.addEindpunt();
                             break;
-                        case 'addCheckinPointcheckout':
-                            editor.addCheckinPoint(true);
-                            break;
-                        case 'selectEndPointcheckout':
+                        case 'selectEindpunt':
                             editor.selectEindpunt();
                             break;
-                        case 'editUitmeldpunt':
-                            this.editor.editSelectedObject();
+                        case 'addInmeldpunt':
+                            editor.addInmeldpunt();
                             break;
-                        case 'removeCheckoutcheckout':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                        case 'selectInmeldpunt':
+                            editor.selectInmeldpunt();
                             break;                            
                     }
                 },
@@ -267,34 +277,33 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'voegVoorinmeldTocheckin':
-                            editor.addPreCheckinPoint(true);
-                            break;
-                        case 'voegBeginpuntToecheckin':
-                            editor.addBeginpoint(true);
-                            break;
-                        case 'editCheckincheckin':
+                        case 'editInmeldpunt':
                             this.editor.editSelectedObject();
                             break;
-                        case 'removeCheckincheckin':
+                        case 'removeInmeldpunt':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
-                            break;                            
+                            break;                               
+                        case 'addVoorinmeldpunt':
+                            editor.addVoorinmeldpunt();
+                            break;
                     }
                 },
                 scope:me
             }
         });
-        // Maak wijzig menu
+        
+        // Context menu voor punten die alleen bewerkt kunnen worden (begin, eind, voorinmeldpunt)
+        
         this.nonActivationPoint = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'edit',
-                text: 'Bewerk...',
+                id: 'editNAPoint',
+                text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },{
-                id: 'remove',
+                id: 'removeNAPoint',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             }
@@ -302,10 +311,10 @@ Ext.define("ContextMenu", {
             listeners: {
                 click: function(menu,item,e, opts) {
                     switch (item.id) {
-                        case 'edit':
+                        case 'editNAPoint':
                             editor.editSelectedObject();
                             break;
-                        case 'remove':
+                        case 'removeNAPoint':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;
                     }
@@ -318,7 +327,7 @@ Ext.define("ContextMenu", {
             "standaard" : this.defaultMenu,
             "ACTIVATION_1" : this.inmeldpunt,
             "ACTIVATION_2" : this.uitmeldpunt ,
-            "ACTIVATION_3" : this.inmeldpunt, // XXX dit is voorinmeldpunt
+            "ACTIVATION_3" : this.inmeldpunt, // zelfde menu ook voor voorinmeldpunt
             
             "END" : this.nonActivationPoint,
             "BEGIN" : this.nonActivationPoint,
@@ -383,7 +392,8 @@ Ext.define("ContextMenu", {
     getMenuContext: function() {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
-            
+
+            console.log("showing context menu for type " + type);
             // Update state van disabled / enabled items op basis van selectedObject
 
             if(type == "ACTIVATION_2") {
@@ -395,6 +405,7 @@ Ext.define("ContextMenu", {
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
                 console.log("heeftEindpunt = " + heeftEindpunt);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
+                Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }
 
             var menu = this.menuContext[type];

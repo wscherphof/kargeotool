@@ -192,7 +192,7 @@ Ext.define("EditForms", {
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : "eindpunt ") + label,
+            title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : (point.getType() == "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
             height: 130,
             width: 250,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
@@ -354,16 +354,21 @@ Ext.define("EditForms", {
                 },
                 fieldLabel: 'Signaalgroep',
                 name: 'signalGroupNumber',
-                value: map.signalGroupNumber,
-                disabled: map.commandType != 2
+                value: map.signalGroupNumber
             },{
+                xtype: 'numberfield',
+                minValue: 0,
+                listeners: {
+                    change: function(field, value) {
+                        value = parseInt(value, 10);
+                        field.setValue(value);
+                    }
+                },                
                 fieldLabel: 'Virtual local loop number',
-                name: 'virtualLocalLoopNumber',
-                disabled: map.commandType != 2
+                name: 'virtualLocalLoopNumber'
             },{
                 xtype: 'combo',
                 multiSelect: true,
-                disabled: map.commandType != 2,
                 allowBlank: false,
                 editable: false,
                 blankText: 'Selecteer een optie',
@@ -452,7 +457,9 @@ Ext.define("EditForms", {
                         // nieuw punt, alleen naar map mergen
                         if(!movements) {
                             Ext.Object.merge(map, pointSignalValues);
-                            Ext.Object.merge(map, allSignalValues);
+                            if(editingUitmeldpunt) {
+                                Ext.Object.merge(map, allSignalValues);
+                            }
                         } else {
                             
                             // merge naar alle movements 

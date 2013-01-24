@@ -278,10 +278,13 @@ public class EditorActionBean implements ActionBean {
                     if(MovementActivationPoint.ACTIVATION.equals(map.getBeginEndOrActivation())) {
                         ActivationPointSignal signal = new ActivationPointSignal();
                         map.setSignal(signal);
-                        signal.setDistanceTillStopLine(jmap.has("distanceTillStopLine") ? jmap.getInt("distanceTillStopLine") : null);
+                        String s = jmap.optString("distanceTillStopLine","");
+                        signal.setDistanceTillStopLine(!"".equals(s) ? new Integer(s) : null);
                         signal.setKarCommandType(jmap.getInt("commandType"));
-                        signal.setSignalGroupNumber(jmap.has("signalGroupNumber") ? jmap.getInt("signalGroupNumber") : null);
-                        signal.setVirtualLocalLoopNumber(jmap.has("virtualLocalLoopNumber") ? jmap.getInt("virtualLocalLoopNumber") : null);
+                        s = jmap.optString("signalGroupNumber");
+                        signal.setSignalGroupNumber(!"".equals(s) ? new Integer(s) : null);
+                        s = jmap.optString("virtualLocalLoopNumber");
+                        signal.setVirtualLocalLoopNumber(!"".equals(s) ? new Integer(s) : null);
                         signal.setTriggerType(jmap.getString("triggerType"));
                         JSONArray vtids = jmap.optJSONArray("vehicleTypes");
                         if(vtids != null) {

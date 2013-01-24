@@ -128,7 +128,8 @@ Ext.define('RSEQ', {
     
     /**
      * Haal alle movements in deze rseq op waarin het gegeven point voorkomt
-     * @return een array van movements waar het point in voorkomt.
+     * @return een array van movements met objecten met "movement" en "map" 
+     *  properties (de movement en de map van het gegeven punt) 
      */
     findMovementsForPoint: function(point) {
         var movements = [];
@@ -155,8 +156,8 @@ Ext.define('RSEQ', {
         var pointMovements = this.findMovementsForPoint(uitmeldpunt);
         
         var result = false;
-        Ext.Array.each(pointMovements, function(mvmt) {
-            Ext.Array.each(mvmt.maps, function(map) {
+        Ext.Array.each(pointMovements, function(mvmtAndMap) {
+            Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
                 if(map.beginEndOrActivation == "END") {
                     result = true;
                     // Stop met Ext.Array.each() (break)
@@ -171,6 +172,9 @@ Ext.define('RSEQ', {
         return result;
     },    
     
+    /**
+     * Voeg een nieuw uitmeldpunt toe aan deze rseq.
+     */
     addUitmeldpunt: function(uitmeldpunt, map) {
         this.addPoint(uitmeldpunt);
         this.addMovement(Ext.create(Movement, {
@@ -179,10 +183,15 @@ Ext.define('RSEQ', {
             maps: [map]
         }));
     },
-
     
-    addEindpunt: function(uitmeldpunt, eindpunt) {
-        this.addPoint(eindpunt);
+    /**
+     * Voeg een nieuw of bestaand eindpunt toe aan alle movements van het gegeven
+     * uitmeldpunt van deze rseq.
+     */
+    addEindpunt: function(uitmeldpunt, eindpunt, isBestaandEindpunt) {
+        if(!isBestaandEindpunt) {
+            this.addPoint(eindpunt);
+        }
         
         var pointMovements = this.findMovementsForPoint(uitmeldpunt);
 
@@ -193,7 +202,7 @@ Ext.define('RSEQ', {
             alert("Ongeldige state, moet altijd movement zijn!");
         }
         if(pointMovements.length == 1) {
-            var movement = pointMovements[0];
+            var movement = pointMovements[0].movement;
             var hasEnd = false;
             Ext.Array.each(movement.maps, function(map) {
                 if(map.beginEndOrActivation == "END") {
@@ -206,7 +215,7 @@ Ext.define('RSEQ', {
                     beginEndOrActivation: "END",
                     pointId: eindpunt.getId()
                 });         
-
+                console.log(movement);
                 movement.maps.push(newMap);                
                 return;
             }
@@ -224,8 +233,8 @@ Ext.define('RSEQ', {
         // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
         // eindpunten
         
-        Ext.Array.each(pointMovements, function(mvmt) {
-            Ext.Array.each(mvmt.maps, function(map) {
+        Ext.Array.each(pointMovements, function(mvmtAndMap) {
+            Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
                 if(map.beginEndOrActivation != "END") {
                     
                     var config = {
@@ -258,6 +267,64 @@ Ext.define('RSEQ', {
         newMovement.maps.push(newMap);
         
         this.addMovement(newMovement);
+    },
+    
+    /**
+     * Voeg een nieuw of bestaand (voor)inmeldpunt toe aan movements van het
+     * gegeven puntVanMovement.
+     */
+    addInmeldpunt: function(puntVanMovement, inmeldpunt, theMap, isBestaandInmeldpunt, isVoorinmeldpunt) {
+        if(!isBestaandInmeldpunt) {
+            this.addPoint(inmeldpunt);
+        }        
+        
+        var pointMovements = this.findMovementsForPoint(puntVanMovement);
+        
+        // Insert inmeldpunt op alle movements van uitmeldpunt
+        
+        Ext.Array.each(pointMovements, function(mvmtAndMap) {
+
+            /* Maak een nieuwe MovementActivationPoint instance voor elke 
+             * movement, "theMap" is alleen gebruikt voor het form
+             */
+            var newMap = Ext.create(MovementActivationPoint, {
+                id: Ext.id(),
+                beginEndOrActivation: "ACTIVATION",
+                commandType: isVoorinmeldpunt ? 3 : 1,
+                pointId: inmeldpunt.getId()
+            });     
+            // De voor dit inmeldpunt ingestelde inmeldpuntwaardes
+            Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine", "triggerType"]));
+            
+            // De signal waardes komen van de MovementActivationPoint van het uitmeldpunt
+            Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes"]));
+
+            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+        });
+    },
+    
+    addBeginpunt: function(puntVanMovement, beginpunt, isBestaandBeginpunt) {
+        if(!isBestaandBeginpunt) {
+            this.addPoint(beginpunt);
+        }        
+        
+        var pointMovements = this.findMovementsForPoint(puntVanMovement);
+        
+        // Insert beginpunt op alle movements van uitmeldpunt
+        
+        Ext.Array.each(pointMovements, function(mvmtAndMap) {
+
+            /* Maak een nieuwe MovementActivationPoint instance voor elke 
+             * movement, "theMap" is alleen gebruikt voor het form
+             */
+            var newMap = Ext.create(MovementActivationPoint, {
+                id: Ext.id(),
+                beginEndOrActivation: "BEGIN",
+                pointId: beginpunt.getId()
+            });     
+
+            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+        });        
     },
     
     /**

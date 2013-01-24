@@ -459,7 +459,7 @@ public class RoadsideEquipment {
             String ap2type = null;
             
             SortedSet<Integer> movementNumbers = new TreeSet();
-            SortedSet<Integer> signalGroupNumbers = new TreeSet();
+            //SortedSet<Integer> signalGroupNumbers = new TreeSet();
             
             if(maps != null && !maps.isEmpty()) {
                 // de waardes beginEndOrActivation en karCommandType moeten voor
@@ -470,29 +470,29 @@ public class RoadsideEquipment {
                     assert(MovementActivationPoint.ACTIVATION.equals(ap2type));
                     ap2type = ap2type + "_" + map1.getSignal().getKarCommandType();
                 }
-                
+/*                
                 for(MovementActivationPoint map: maps) {
                     movementNumbers.add(map.getMovement().getNummer());
-                    if(map.getSignal() != null) {
+                    if(map.getSignal() != null && map.getSignal().getSignalGroupNumber() != null) {
                         signalGroupNumbers.add(map.getSignal().getSignalGroupNumber());
                     }
                     if(MovementActivationPoint.END.equals(ap2type)) {
                         for(MovementActivationPoint map2: map.getMovement().getPoints()) {
                             ActivationPointSignal aps = map2.getSignal();
-                            if(aps != null) {
+                            if(aps != null && aps.getSignalGroupNumber() != null) {
                                 signalGroupNumbers.add(aps.getSignalGroupNumber());
                             }
                         }
                     }
-                }
+                }*/
             }
             pj.put("type", ap2type);
             JSONArray mns = new JSONArray();
             for(Integer i: movementNumbers) { mns.put(i); };
             pj.put("movementNumbers", mns);
             JSONArray sgns = new JSONArray();
-            for(Integer i: signalGroupNumbers) { sgns.put(i); };
-            pj.put("signalGroupNumbers", sgns);
+            //for(Integer i: signalGroupNumbers) { sgns.put(i); };
+            //pj.put("signalGroupNumbers", sgns);
             
             jpoints.add(pj);
             Collections.sort(jpoints, new Comparator<JSONObject>() {
