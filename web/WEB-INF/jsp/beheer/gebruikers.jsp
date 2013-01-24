@@ -5,6 +5,8 @@
 
     <stripes:layout-component name="headerlinks" >
         <%@include file="/WEB-INF/jsp/commons/headerlinks2.jsp" %>
+        
+        <script type="text/javascript" src="<c:url value="/js/utils.js"/>"></script>
     </stripes:layout-component>
     <stripes:layout-component name="content">
 

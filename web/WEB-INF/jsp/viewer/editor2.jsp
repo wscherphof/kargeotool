@@ -1,6 +1,7 @@
 <%@include file="/WEB-INF/jsp/taglibs.jsp" %>
-<!DOCTYPE html> 
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
+
 <stripes:layout-render name="/WEB-INF/jsp/commons/siteTemplate2.jsp">
 
     <stripes:layout-component name="headerlinks" >
@@ -9,31 +10,13 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
 
-        <script type="text/javascript" src="${contextPath}/js/proj4js-compressed.js"></script>
-        <script type="text/javascript">
-            Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.237,50.0087,465.658,-0.406857,0.350733,-1.87035,4.0812 +units=m +no_defs";
-            Proj4js.defs["EPSG:4236"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ";                    
-        </script>
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript">
-
           
             var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
             var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
             
             var contextPath = "${contextPath}";
-   
-/*
-            setOnload(function() 
-            {
-                document.getElementById("walapparaatnummer").focus();
-                if("${magWalapparaatMaken}" == "true"){
-                    document.getElementById("newRseq").disabled = false;
-                }else{
-                    document.getElementById("newRseq").disabled = true;
-                }
-            });
-            */
         </script>
 
         <div id="leftbar">
