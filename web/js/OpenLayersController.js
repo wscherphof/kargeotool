@@ -239,6 +239,8 @@ Ext.define("ol", {
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var f = editor.olc.getFeatureFromEvent(evt);
+                    var x = evt.clientX;
+                    var y = evt.clientY;
                 if(f && f.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
                         karAddress: f.data.karAddress
@@ -246,12 +248,8 @@ Ext.define("ol", {
                         editor.contextMenu.show(x,y);
                     });
                 }else if(f && f.layer.name == "Points"){
-                    var x = evt.clientX;
-                    var y = evt.clientY;
                     editor.contextMenu.show(x,y);
                 }else{
-                    var x = evt.clientX;
-                    var y = evt.clientY;
                     editor.contextMenu.show(x,y,true);
                 }
                 return false;
