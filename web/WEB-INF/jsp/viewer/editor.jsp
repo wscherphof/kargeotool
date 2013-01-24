@@ -21,7 +21,7 @@
 
         <div id="leftbar">
             
-            <div id="searchform">
+            <div id="searchform" style="margin: 3px">
                 Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()}, function() { editor.zoomToActiveRseq(); } );"><br />
                 Adres zoeken: <input id="geocodeAddressInput" name="geocode_address" value="" size="17"> <input type="button" value="Zoeken" onclick="editor.geocode(Ext.get('geocodeAddressInput').getValue());">
                 <div id="geocoderesults"></div>
@@ -35,7 +35,7 @@
                 </div>
             </div>
             
-            <div id="form">
+            <div id="form" style="margin: 3px">
                 <div id="help">
                     Klik op een icoon van een verkeerssysteem om deze te selecteren
                     of klik rechts om een verkeerssysteem toe te voegen.
