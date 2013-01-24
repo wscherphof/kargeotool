@@ -43,8 +43,9 @@ Ext.define("Editor", {
     previousSelectedObject:null,
     
     currentEditAction: null,
+    
     /**
-     *@constructor
+     * @constructor
      */
     constructor: function(domId, mapfilePath) {
 
@@ -64,7 +65,7 @@ Ext.define("Editor", {
             'objectAdded',
             'movementAdded',
             'movementUpdated'
-            );
+        );
         
         this.domId = domId;
         
@@ -81,7 +82,7 @@ Ext.define("Editor", {
         if(this.startLocationHash.rseq) {
             this.loadRseqInfo({
                 rseq: parseInt(this.startLocationHash.rseq)
-                });
+            });
 
             // Toekomstige code voor aanroep met alleen rseq in hash zonder x,y,zoom
             var onRseqLoaded = function() {
@@ -96,13 +97,17 @@ Ext.define("Editor", {
         }
         this.loadAllRseqs();
         
+        /* Indien de panelen die door layout.js zijn gemaakt worden geresized of
+         * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
+         */
         var east = viewport.items.items[2];
         var west = viewport.items.items[3];
         east.on('resize', this.olc.resizeMap, this.olc);
         west.on('resize', this.olc.resizeMap, this.olc);
     },
+    
     /**
-     * Initieer de openlayers viewer.
+     * Initialiseer de openlayers viewer.
      */
     createOpenLayersController: function() {
         this.olc = new ol(this);
@@ -115,6 +120,7 @@ Ext.define("Editor", {
         
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
+    
     /**
      * Maak het context menu
      */
@@ -126,8 +132,9 @@ Ext.define("Editor", {
             this.contextMenu.deactivateContextMenu();
         });
     },
+    
     /**
-     * Haalt de window.location.hash op.
+     * Parset de window.location.hash naar een object.
      * @return de location hash als object
      */
     parseLocationHash: function() {
@@ -135,14 +142,16 @@ Ext.define("Editor", {
         hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
         return Ext.Object.fromQueryString(hash);
     },
+    
     /**
-     *Update de location hash.
-     *@param objToMerge het object dat moet worden gemerged met de waarden die reeds in de hash staan.
+     * Update de location hash met nieuwe waardes.
+     * @param objToMerge het object dat moet worden gemerged met de waarden die reeds in de hash staan.
      */
     updateLocationHash: function(objToMerge) {
         var hash = this.parseLocationHash();
         window.location.hash = Ext.Object.toQueryString(Ext.Object.merge(hash, objToMerge));
     },
+    
     /**
      * Plaats het huidige middelpunt van de map in de hash, inclusief het zoom niveau
      */
@@ -157,7 +166,6 @@ Ext.define("Editor", {
     /**
      * Aanroepen na het toevoegen van layers. De window.location.hash is 
      * opgeslagen voordat deze na zoomend en moveend events is aangepast.
-     * @return true;
      */
     setCenterFromLocationHash: function() {
         var hash = this.startLocationHash;
@@ -206,11 +214,12 @@ Ext.define("Editor", {
             }
         });
     },
+    
     /**
      * Laad alle road side equipment.
      * @param karAddress (optioneel) het kar adres
      */
-    loadAllRseqs : function(karAddress){
+    loadAllRseqs: function(karAddress) {
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
@@ -240,8 +249,9 @@ Ext.define("Editor", {
             }
         });
     },
+    
     /**
-     * Functie voor het opslaan/updaten van de ingevoerde data.
+     * Voert de Ajax call uit om de huidige Rseq op te slaan in de database.
      */
     saveOrUpdate: function() {
         var rseq = this.activeRseq;
@@ -268,8 +278,9 @@ Ext.define("Editor", {
             });
         }
     },
+    
     /**
-     * Laat de map zoomen naar de geactiveerde Road Side Equipment.
+     * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
     zoomToActiveRseq: function() {
         if(this.activeRseq != null) {
@@ -280,11 +291,12 @@ Ext.define("Editor", {
             );            
         }
     },
+    
     /**
-     * Haal alle movements op op basis het id van de putn
+     * Haal alle movements op op basis het id van de point
      * @param rseq het rseq object waar in gezocht moet worden
      * @param point het punt waarvoor de movements moeten worden opgehaald.
-     * @return een array van movements.
+     * @return een array van movements waar het point in voorkomt.
      */
     findMovementsForPoint: function(rseq, point) {
         var movements = [];
@@ -301,6 +313,7 @@ Ext.define("Editor", {
         });
         return movements;
     },
+    
     /**
      * Voegt een movement toe.
      * @param checkout de checkout waar het over gaat
@@ -320,10 +333,11 @@ Ext.define("Editor", {
         this.fireEvent('movementAdded', movement);
         
     },
+    
     /**
      * Voeg een inmeld punt toe aan de movement van een uitmeld punt.
      */
-    voegInmeldAanMovement : function(uitmeld, inmeld){
+    voegInmeldAanMovement: function(uitmeld, inmeld) {
         var mvnts = this.findMovementsForPoint(this.activeRseq, uitmeld);
         for ( var i = 0 ; i < mvnts.length ; i++ ){
             var movement = mvnts[i].movement;
@@ -336,20 +350,21 @@ Ext.define("Editor", {
         }
     },
     /**
-     * verander de actieve Rseq
+     * Verander de actieve Rseq
      * @param rseq de nieuwe actieve Rseq
      */
-    setActiveRseq : function (rseq){
+    setActiveRseq: function (rseq){
         this.activeRseq = rseq;
         this.olc.selectFeature(rseq.getId(),"RSEQ");
         this.fireEvent('activeRseqChanged', this.activeRseq);
         //console.log("activeRseq: ", rseq);
     },
+    
     /**
-     * verander het geselecteerde object
+     * Verander het geselecteerde object binnen de active Rseq
      * @param olFeature de OpenLayers feature;
      */
-    setSelectedObject : function (olFeature){;
+    setSelectedObject: function (olFeature) {
         if(!olFeature){
             if(this.selectedObject){
                 this.previousSelectedObject = this.selectedObject;
@@ -384,6 +399,7 @@ Ext.define("Editor", {
         }
         this.fireEvent('selectedObjectChanged', this.selectedObject);
     },
+    
     /**
      * Wijzig het geselecteerde object. Opent een popup waarmee het actieve punt
      * kan worden gewijzigd
@@ -404,7 +420,7 @@ Ext.define("Editor", {
     },
     
     /**
-     * Verander de geometry van het active Rseq
+     * Verander de geometry van het active Rseq of Point
      * @param className de className
      * @param id het id van het punt dat moet worden gewijzigd
      * @param x de nieuwe x coordinaat
@@ -420,6 +436,7 @@ Ext.define("Editor", {
             }
         }
     },
+    
     /**
      * Maak GeoJSON punt van x en y
      * @param x x coordinaat
@@ -431,6 +448,7 @@ Ext.define("Editor", {
             coordinates: [x, y]
         };
     },
+    
     /**
      * Voeg een Rseq toe
      * @param x x coordinaat
@@ -453,11 +471,12 @@ Ext.define("Editor", {
             me.setActiveRseq(newRseq);
         });
     },
+    
     /**
      * Voeg een nieuw object toe
      * @param newObject Nieuw object
      */
-    addObject : function (newObject){
+    addObject: function(newObject) {
         if(newObject instanceof RSEQ){
             this.setActiveRseq(newObject);
         }else{
@@ -471,13 +490,15 @@ Ext.define("Editor", {
         }
         this.fireEvent('objectAdded', newObject);
     },
-    selectEindpunt : function (){
+    
+    selectEindpunt: function() {
         this.on('selectedObjectChanged',this.eindpuntSelected,this);
     },
+    
     /**
      * Handler voor als een eindpunt is geselecteerd.
      */    
-    eindpuntSelected : function (eindpunt){
+    eindpuntSelected: function(eindpunt) {
         if(eindpunt){
             this.selectedObject = this.previousSelectedObject;
             if(eindpunt instanceof Point && eindpunt.getType() == "END"){
@@ -489,12 +510,13 @@ Ext.define("Editor", {
             this.olc.selectFeature(this.selectedObject.getId(), "Point");
         }
     },
+    
     /**
      * Voeg een eind punt toe aan een lijn
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addEndpoint : function(withLine,point){
+    addEndpoint: function(withLine, point) {
         this.currentEditAction = "END";
         this.addPoint(withLine,point);
     },
@@ -504,25 +526,27 @@ Ext.define("Editor", {
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addBeginpoint : function(withLine,point){
+    addBeginpoint: function(withLine, point) {
         this.currentEditAction = "BEGIN";
         this.addPoint(withLine,point);
-    },    
+    },   
+    
     /**
      * Voeg een in check punt toe aan een lijn
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addCheckinPoint : function(withLine,point){
+    addCheckinPoint: function(withLine, point) {
         this.currentEditAction = "ACTIVATION_1";
         this.addPoint(withLine,point);
     },    
+    
     /**
      * Voeg een uit check toe aan een lijn
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addCheckoutPoint : function(withLine,point){
+    addCheckoutPoint: function(withLine, point) {
         this.currentEditAction = "ACTIVATION_2";
         this.addPoint(withLine,point);
     },    
@@ -531,7 +555,7 @@ Ext.define("Editor", {
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addPreCheckinPoint : function(withLine,point){
+    addPreCheckinPoint: function(withLine, point) {
         this.currentEditAction = "ACTIVATION_3";
         this.addPoint(withLine,point);
     },
@@ -540,7 +564,7 @@ Ext.define("Editor", {
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
      */
-    addPoint : function(withLine,point){
+    addPoint: function(withLine, point) {
         if(withLine ){
             var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
             var startX = this.selectedObject[geomName].coordinates[0];
@@ -550,7 +574,8 @@ Ext.define("Editor", {
             this.pointFinished(point);
         }
     },
-    pointFinished : function(point){
+    
+    pointFinished: function(point) {
         var geom = {
             type: "Point",
             coordinates: [point.x,point.y]
