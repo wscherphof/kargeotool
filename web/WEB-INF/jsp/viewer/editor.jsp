@@ -62,7 +62,7 @@
                     <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
                     <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
-                    <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Vooraanmeldpunt" class="legendimg" /> Vooraanmeldpunt<br />
+                    <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Voorinnmeldpunt" class="legendimg" /> Voorinnmeldpunt<br />
                 </div>
                 <div id="starteindpunten" class="legendseparator">
                     <input type="checkbox" checked="checked" /> Begin- en eindpunten<br/>
