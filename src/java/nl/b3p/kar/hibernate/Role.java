@@ -69,25 +69,4 @@ public class Role {
     public void setRole(String role) {
         this.role = role;
     }
-
-    /**
-     * Zoekt rol op basi van naam.
-     * 
-     * @param role als String
-     * @return role als object
-     * @throws Exception
-     */
-    public static Role findByName(String role) throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-        Role r;
-        try {
-            r = (Role)em.createQuery("from Role where role = :role")
-                    .setParameter("role", role)
-                    .getSingleResult();
-
-        } catch(NoResultException nre) {
-            return null;
-        }
-        return r;
-    }
 }
