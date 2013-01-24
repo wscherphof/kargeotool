@@ -1,3 +1,24 @@
+/**
+* Geo-OV - applicatie voor het registreren van KAR meldpunten
+*
+* Copyright (C) 2009-2013 B3Partners B.V.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+/** 
+ * Class dat als 'wrapper' functioneert om eenvoudig OpenLayers aan te sturen.
+ **/
 Ext.define("ol", {
     editor : null,
     map : null,
@@ -19,7 +40,9 @@ Ext.define("ol", {
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
     },
-    // Make the map
+    /**
+     *Maak een map
+     */
     createMap : function(domId){
         this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
@@ -62,7 +85,7 @@ Ext.define("ol", {
         OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
     },
     /**
-     * Private nethod which adds all the controls
+     * Private method which adds all the controls
      */
     createControls : function (domId){
         var dg = new OpenLayers.Control.DragPan();
@@ -255,6 +278,9 @@ Ext.define("ol", {
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
     },
+    /**
+     * Update de vector layer met de roadside equipment in de editor
+     */
     updateVectorLayer : function(){
         this.removeAllFeatures();
         var geoJson = this.editor.activeRseq.toGeoJSON();
@@ -263,6 +289,11 @@ Ext.define("ol", {
         this.selectFeature(selected.getId(), selected.$className);
         
     },
+    /**
+     * Selecteert een feature.
+     * @param id id van de gewenste feature
+     * @param className van de gewenste feature.
+     */
     selectFeature : function(id,className){
         var olFeature = null;
         if(className=="RSEQ"){
@@ -285,6 +316,9 @@ Ext.define("ol", {
             this.selectCtrl.select(olFeature)
         }
     },
+    /**
+     * Toggle(aan/uit) de sleep feature functionaliteit/tool
+     */
     toggleDragfeature : function (feature){
         if(feature){
             this.dragFeature.activate();
@@ -292,6 +326,10 @@ Ext.define("ol", {
             this.dragFeature.deactivate();
         }
     },
+    /**
+     * Event dat aangeroepen wordt zodra er featureinfo is gevonden (Bijvoorbeeld doormiddel van een klik)
+     * @param evt het event eigenschappen
+     */
     raiseOnDataEvent : function(evt){
         var stub = new Object();          
         var walapparatuur = new Array();
@@ -345,6 +383,11 @@ Ext.define("ol", {
             this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+2);
         }
     },
+    /**
+     * Kijk of een layer zichtbaar is\
+     * @param name de naam van de layer.
+     * @return true/false zichtbaarheid van de layer
+     */
     isLayerVisible : function (name){
         var lyrs = this.map.getLayersByName(name);
         if(lyrs && lyrs.length > 0){
@@ -352,6 +395,11 @@ Ext.define("ol", {
         }
         return false;
     },
+    /**
+     *Verander de zichtbaarheid van een layer
+     *@param name de naam van de gewenste layer
+     *@param vis true/false zichtbaar/niet zichtbaar
+     */
     setLayerVisible : function (name,vis){
         var lyrs = this.map.getLayersByName(name);
         if(lyrs && lyrs.length > 0){
@@ -359,15 +407,31 @@ Ext.define("ol", {
             layer.setVisibility(vis);
         }
     },
+    /**
+     * Zoom het kaart beeld naar de gegeven extent
+     * @param minx minimale x
+     * @param miny minimale y
+     * @param maxx maximale x
+     * @param maxy maximale y
+     */
     zoomToExtent : function (minx,miny,maxx,maxy){
         this.map.zoomToExtent([minx,miny,maxx,maxy]);
     },
+    /**
+     * Update het kaartbeeld door alle layers opnieuw te tekenen/op te halen
+     */
     update : function (){
         for ( var i = 0 ; i< this.map.layers.length ;i++ ){
             var layer = this.map.layers[i];
             layer.redraw(true);
         }
     },
+    /**
+     * Voeg nieuw sld toe aan de kaarten.
+     * @param walsld sld voor de wal apparatuur
+     * @param trigsld sld voor de triggerpunten
+     * @param signsld sld voor de signaalgroepen
+     */
     addSldToKargis : function (walsld,trigsld, signsld){
         var wal = this.map.getLayersByName("walapparatuur")[0];
         var trig = this.map.getLayersByName("triggerpunten")[0];
@@ -382,6 +446,9 @@ Ext.define("ol", {
             sld:signsld
         });
     },
+    /**
+     * Haal de sld's van de layers 'walapparatuur','triggerpunten','signaalgroepen'
+     */
     removeSldFromKargis : function (){
         var wal = this.map.getLayersByName("walapparatuur")[0];
         var trig = this.map.getLayersByName("triggerpunten")[0];
@@ -397,9 +464,11 @@ Ext.define("ol", {
         });
         
     },
+    //All the vectorlayer functions
     /**
-     * All the vectorlayer functions
-     * 
+     * Teken het punt meegegeven punt
+     * @param wkt het punt als WKT (Well Known Text). Als deze parameter niet wordt
+     * meegegeven dan wordt het tekenen gestart en kan de gebruiker zelf tekenen
      */
     drawPoint : function(wkt){
         if(wkt){
@@ -411,6 +480,11 @@ Ext.define("ol", {
         }
         this.dragFeature.activate();
     },
+    /**
+     * Teken de meegegeven lijn
+     * @param wkt de lijn als WKT (Well Known Text). Als deze parameter niet wordt
+     * meegegeven dan wordt het tekenen gestart en kan de gebruiker zelf tekenen
+     */    
     drawLine : function(wkt){
         if(wkt){
             var olFeature = new OpenLayers.Geometry.fromWKT(wkt);
@@ -420,6 +494,11 @@ Ext.define("ol", {
         }
         this.dragFeature.activate();
     },
+    /**
+     * Teken een lijn vanaf een bepaald punt
+     * @param x de x coordinaat waar begonnen moet worden
+     * @param y de y coordinaat waar begonnen moet worden
+     */    
     drawLineFromPoint : function (x,y){
         var lonlat = new OpenLayers.LonLat (x,y);
         var pixel = this.map.getPixelFromLonLat(lonlat);
@@ -430,18 +509,33 @@ Ext.define("ol", {
         this.line.handler.mousedown(evt);
         this.line.handler.mouseup(evt);
     },
+    /**
+     * Verwijder alle features die getekend zijn op de vectorlayer     * 
+     */
     removeAllFeatures : function(){
         this.vectorLayer.removeAllFeatures();
         this.dragFeature.deactivate();
     },
+    /**
+     * Verwijder alle features die getekend zijn als road side equipment.
+     */
     removeAllRseqs: function(){
         this.rseqVectorLayer.removeAllFeatures();
     },
+    /**
+     * Event dat aangeroepen wordt als de gebruiker klaar is met het verslepen 
+     * van een feature
+     * @param feature de feature die verplaatst is.
+     */
     dragComplete : function (feature){
         var x = feature.geometry.x;
         var y = feature.geometry.y;
         editor.changeGeom(feature.data.className, feature.data.id, x,y);
     },
+    /**
+     * Teken een feature
+     * @param object.feature de feature die getekend moet worden     
+     */
     drawFeature : function (object){
         var feature =object.feature;
         var lastPoint = feature.geometry.components[feature.geometry.components.length-1];
@@ -451,19 +545,38 @@ Ext.define("ol", {
         this.highlight.activate();
     // TODO fire event geometry updated
     },
+    /**
+     * Activeer een feature op de kaart.
+     * @param feature de feature die geactiveerd moet worden
+     */
     setActiveFeature : function (feature){
         this.activeFeature = feature;
     },
+    /**
+     * Voeg 1 of meer features toe.
+     * @param features een object met feature(s) in GeoJSON formaat
+     */
     addFeatures : function(features){
         this.vectorLayer.addFeatures(this.geojson_format.read(features));
     },
+    /**
+     * Voeg 1 of meer road side equipment features toe
+     * @param rseqs rseqs die toegevoegd moeten worden in GeoJSON formaat.
+     */
     addRseqs : function(rseqs){
         this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
     },
+    /**
+     * Update de grote van de kaart.
+     */
     resizeMap : function(){
         this.map.updateSize();
     }
 });
+/**
+ * Hieronder volgen een aantal styles die worden gebruikt om features op de vectorlayers
+ * van OpenLayers te tekenen.
+ */
 var style = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
@@ -820,6 +933,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
         'stopDouble': false
     },
     handleRightClicks:true,
+    /**
+     * @constructor
+     */    
     initialize: function(options) {
         this.handlerOptions = OpenLayers.Util.extend(
         {}, this.defaultHandlerOptions
@@ -845,10 +961,22 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
             }, this.handlerOptions
             );
     },
+    /**
+     * functie dat wordt aangeroepen zodra er wordt geklikt. Functie moet overschreven worden
+     * in object dat deze classe implementeerd.
+     */
     onClick: function(evt) {        
     },
+    /**
+     * functie dat wordt aangeroepen zodra er dubbel wordt geklikt. Functie moet overschreven worden
+     * in object dat deze classe implementeerd.
+     */
     onDblclick: function(evt) {          
     },
+    /**
+     * functie dat wordt aangeroepen zodra er met de rechter muis wordt geklikt. 
+     * Functie moet overschreven worden in object dat deze classe implementeerd.
+     */
     onRightclick : function (evt){
     }
 });
