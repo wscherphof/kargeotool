@@ -46,7 +46,7 @@ Ext.define("ol", {
     createMap : function(domId){
         this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
-                
+        //opties voor openlayers map.        
         var opt = {
             projection: new OpenLayers.Projection("EPSG:28992"),
             maxExtent: maxBounds,
@@ -57,8 +57,9 @@ Ext.define("ol", {
             units : 'm',
             controls : [this.panel]
         };
-        
+        //maak oepnlayers map
         this.map = new OpenLayers.Map(domId,opt);
+        //maak vector layers.
         this.vectorLayer = new OpenLayers.Layer.Vector("Points", {
             styleMap: new OpenLayers.StyleMap( {
                 "default": style,
@@ -137,7 +138,7 @@ Ext.define("ol", {
                 }
             }
         }
-
+        //voeg meet tool toe
         var measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
         measureTool.events.register('measure',measureTool,function(){
             var measureValueDiv=document.getElementById("olControlMeasureValue");
@@ -153,6 +154,7 @@ Ext.define("ol", {
             }
         });
         this.panel.addControls (measureTool);
+        //voeg GetFeatureInfo tool toe.
         this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
             //drillDown: true,
             url: "localhost:8084/geo-ov/action/viewer/editor?gfi=true",
@@ -176,6 +178,7 @@ Ext.define("ol", {
             this.gfi.deactivate();
         });
         
+        //voeg 'teken punt' tool toe.
         var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
             displayClass: 'olControlDrawFeaturePoint',
@@ -183,11 +186,12 @@ Ext.define("ol", {
                 me.drawFeature(feature);
             }
         });
+        //voeg 'teken line' tool toe.
         this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
             displayClass: 'olControlDrawFeaturePath'
         });
         this.line.events.register('featureadded', me, me.drawFeature);
-        
+        //voeg 'versleep feature' tool toe.
         this.dragFeature= new OpenLayers.Control.DragFeature(this.vectorLayer,{
             onComplete : me.dragComplete,
             featureCallbacks:{
@@ -209,7 +213,7 @@ Ext.define("ol", {
         this.map.addControl(this.point);
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
-        
+        //maak en voeg achtergrond kaartlaag toe.
         var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
             layername:'brtachtergrondkaart', 
             type: 'png8',
@@ -218,7 +222,7 @@ Ext.define("ol", {
             tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
         });
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
-        
+        //Maak een overview kaart.
         this.overview = new OpenLayers.Control.OverviewMap({
             layers: [ovmLayer],
             mapOptions: {
@@ -231,7 +235,7 @@ Ext.define("ol", {
             }
         });
         this.map.addControl(this.overview);
-           
+        //defineer de click afhandeling.
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var x = evt.clientX;
