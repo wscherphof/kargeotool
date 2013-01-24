@@ -80,7 +80,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'removeRseqvri',
-                text: 'Verwijder',
+                text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "uppervri",
@@ -123,6 +123,9 @@ Ext.define("ContextMenu", {
                         case 'editRseqvri':
                             this.editor.editSelectedObject();
                             break;
+                        case 'removeRseqvri':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;
                     }
                 },
                 scope:me
@@ -140,7 +143,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'removeCheckoutcheckout',
-                text: 'Verwijder',
+                text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "uppercheckout",
@@ -226,6 +229,9 @@ Ext.define("ContextMenu", {
                         case 'editCheckoutcheckout':
                             this.editor.editSelectedObject();
                             break;
+                        case 'removeCheckoutcheckout':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;                            
                     }
                 },
                 scope:me
@@ -243,7 +249,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'removeCheckincheckin',
-                text: 'Verwijder',
+                text: 'Verwijderen...',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "upperIncheckin",
@@ -277,6 +283,9 @@ Ext.define("ContextMenu", {
                         case 'editCheckincheckin':
                             this.editor.editSelectedObject();
                             break;
+                        case 'removeCheckincheckin':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;                            
                     }
                 },
                 scope:me
@@ -291,6 +300,10 @@ Ext.define("ContextMenu", {
                 id: 'edit',
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
+            },{
+                id: 'remove',
+                text: 'Verwijderen',
+                icon: contextPath + "/images/silk/table_delete.png"
             }
             ],
             listeners: {
@@ -298,6 +311,9 @@ Ext.define("ContextMenu", {
                     switch (item.id) {
                         case 'edit':
                             editor.editSelectedObject();
+                            break;
+                        case 'remove':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;
                     }
                 },
