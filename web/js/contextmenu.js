@@ -151,13 +151,13 @@ Ext.define("ContextMenu", {
             },{
                 id : "lowercheckout",
                 xtype: 'menuseparator'
-            },
+            }/*,
             {
                 id: 'showPathcheckout',
                 text: 'Laat pad zien',
                 xtype: 'menucheckitem',
                 disabled:true
-            },
+            }*/,
             {
                 id: 'advancedCheckout',
                 text: 'Geavanceerd',
@@ -181,6 +181,9 @@ Ext.define("ContextMenu", {
                                 case 'voegBeginpuntToecheckout':
                                     this.editor.addBeginpoint(true);
                                     break;
+                                case 'selectOtherCheckout':
+                                    Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is selecteren van een ander uitcheckpunt nog niet mogelijk!");
+                                    break;
                             }
                         },
                         scope:me
@@ -199,7 +202,7 @@ Ext.define("ContextMenu", {
                         case 'addEndPointcheckout':
                             editor.addEndpoint(true);
                             Ext.Array.each(menu.items.items,function(name, idx, ori){
-                                if(name.id == "addCheckinPoint"){
+                                if(name.id == "addCheckinPointcheckout"){
                                     name.setDisabled (false);
                                 }
                             });
@@ -309,7 +312,7 @@ Ext.define("ContextMenu", {
             "standaard" : this.defaultMenu,
             "ACTIVATION_1" : this.checkin,
             "ACTIVATION_2" : this.checkout ,
-            "ACTIVATION_3" : this.checkin,
+            "ACTIVATION_3" : this.olyEdit,
             
             "END" : this.onlyEdit,
             "BEGIN" : this.onlyEdit,
