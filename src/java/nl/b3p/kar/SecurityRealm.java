@@ -61,7 +61,7 @@ public class SecurityRealm implements SecurityRealmInterface {
     private static final int SALT_SIZE = 4;
 
     /**
-     * Methode om zout tbv hash te genereren
+     * Methode om random salt tbv hash te genereren
      * 
      * @param request gebruikt voor initialisatie PRNG met IP en poort van client
      * @return salt in hex string
@@ -83,7 +83,7 @@ public class SecurityRealm implements SecurityRealmInterface {
             seed = seed * request.getRemotePort();
         }
         Random random = new Random(seed);
-        StringBuffer salt = new StringBuffer(SALT_SIZE*2);
+        StringBuilder salt = new StringBuilder(SALT_SIZE*2);
         for(int i = 0; i < SALT_SIZE; i++) {
             int b = random.nextInt(16);
             salt.append(Integer.toHexString(b));
@@ -94,9 +94,9 @@ public class SecurityRealm implements SecurityRealmInterface {
     }
 
 	/**
-      * Methode om hash te maken van wachtwoord met zout
+      * Methode om hash te maken van wachtwoord met salt
      * 
-     * @param salt het zout als String
+     * @param salt de salt als String
      * @param phrase het wachtwoord
      * @return de hash
      * @throws NoSuchAlgorithmException
@@ -123,9 +123,9 @@ public class SecurityRealm implements SecurityRealmInterface {
     }
 
     /**
-     * Methode om hash te maken van wachtwoord met zout
+     * Methode om hash te maken van wachtwoord met gebruik van salt
      * 
-     * @param salt het zout als byte array
+     * @param salt de salt als byte array
      * @param phrase het wachtwoord
      * @return de hash
      * @throws NoSuchAlgorithmException
@@ -142,7 +142,7 @@ public class SecurityRealm implements SecurityRealmInterface {
 		byte[] digest = md.digest(saltedPhrase);
 
         /* Converteer byte array naar hex-weergave */
-        StringBuffer sb = new StringBuffer(digest.length*2);
+        StringBuilder sb = new StringBuilder(digest.length*2);
         for(int i = 0; i < digest.length; i++) {
             sb.append(Integer.toHexString(digest[i] >> 4 & 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */
             sb.append(Integer.toHexString(digest[i] & 0xf));
