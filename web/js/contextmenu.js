@@ -69,6 +69,11 @@ Ext.define("ContextMenu", {
                 id: 'editRseqvri',
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
+            },
+            {
+                id: 'removeRseqvri',
+                text: 'Verwijder',
+                icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "uppervri",
                 xtype: 'menuseparator'
@@ -87,7 +92,7 @@ Ext.define("ContextMenu", {
                 id: 'addEndPointvri',
                 text: 'Voeg eindpunt toe',
                 icon: karTheme.eindPunt
-            }
+            },
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
@@ -124,6 +129,11 @@ Ext.define("ContextMenu", {
                 id: 'editCheckoutcheckout',
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
+            },
+            {
+                id: 'removeCheckoutcheckout',
+                text: 'Verwijder',
+                icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "uppercheckout",
                 xtype: 'menuseparator'
@@ -222,6 +232,11 @@ Ext.define("ContextMenu", {
                 id: 'editCheckincheckin',
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
+            },
+            {
+                id: 'removeCheckincheckin',
+                text: 'Verwijder',
+                icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "upperIncheckin",
                 xtype: 'menuseparator'
