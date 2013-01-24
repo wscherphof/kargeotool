@@ -11,7 +11,7 @@ fontset "fonts.list"
 web
   metadata
     "ows_title"				"Transmodel Connexxion"
-    "ows_onlineresource"		"http://x13.b3p.nl:8082/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion_edit.map"
+    "ows_onlineresource"		"http://x13.b3p.nl:8082/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map"
     "ows_srs"				"EPSG:28992"
     "ows_extent"			"12000 304000 280000 620000"
     "ows_schemas_location"		"http://schemas.opengeospatial.net"
