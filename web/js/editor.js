@@ -68,6 +68,11 @@ Ext.define("Editor", {
             }
         }
         this.loadAllRseqs();
+        
+        var east = viewport.items.items[2];
+        var west = viewport.items.items[3];
+        east.on('collapse', this.olc.resizeMap, this);
+        west.on('collapse', this.olc.resizeMap, this);
     },
     
     createOpenLayersController: function() {

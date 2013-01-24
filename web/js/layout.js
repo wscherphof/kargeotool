@@ -1,6 +1,6 @@
 Ext.onReady(function() {
     Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
-    var viewport = Ext.create('Ext.Viewport', {
+    viewport = Ext.create('Ext.Viewport', {
         layout: 'border',
         defaultType: 'panel',
         defaults: {
@@ -24,7 +24,7 @@ Ext.onReady(function() {
                     type: 'accordion',
                     align: 'stretch',
                     multi: true,
-                    hideCollapseTool: true,
+                    hideCollapseTool: true
                 },
                 defaultType: 'panel',
                 defaults: {

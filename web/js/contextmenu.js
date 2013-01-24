@@ -128,6 +128,33 @@ Ext.define("ContextMenu", {
                 text: 'Laat pad zien',
                 xtype: 'menucheckitem',
                 disabled:true
+            },
+            {
+                id: 'advancedCheckout',
+                text: 'Geavanceerd',
+                menu: {
+                    items:[
+                    {
+                        id: 'selectOtherCheckout',
+                        text: 'Selecteer uitmeldpunt van andere fasecyclus'
+                    },
+                    {
+                        id: 'voegBeginpuntToecheckout',
+                        text: 'Voeg beginpunt toe'
+                    }
+                    ],
+                    listeners: {
+                        click:
+                        function(menu,item,e, opts) {
+                            switch (item.id) {
+                                case 'voegBeginpuntToecheckout':
+                                    this.editor.addBeginpoint(true);
+                                    break;
+                            }
+                        },
+                        scope:me
+                    }
+                }
             }
             ],
             listeners: {
@@ -235,7 +262,7 @@ Ext.define("ContextMenu", {
         };
     },
     updateStates: function(selectedObject){
-        // TODO update the states according to the selected object
+    // TODO update the states according to the selected object
     },
     show : function(x,y){
         var context = this.getMenuContext();
