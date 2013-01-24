@@ -121,7 +121,7 @@ Ext.define("ContextMenu", {
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editCheckout',
+                id: 'editCheckoutcheckout',
                 text: 'Bewerk...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },{
@@ -260,16 +260,42 @@ Ext.define("ContextMenu", {
             }
         });
         
+        this.unkown = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'edit',
+                text: 'Bewerk...',
+                icon: contextPath + "/images/silk/table_edit.png"
+            }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    switch (item.id) {
+                        case 'edit':
+                            editor.editSelectedObject();
+                            break;
+                    }
+                },
+                scope:me
+            }
+        });
+        
         this.menuContext ={
             "standaard" : this.defaultMenu,
             "ACTIVATION_1" : this.checkin,
             "ACTIVATION_2" : this.checkout ,
             "ACTIVATION_3" : this.checkin,
+            
             "END" : this.vri,
             "BEGIN" : this.checkin,
+            
             "CROSSING" : this.vri,
             "GUARD" : this.vri,
-            "BAR" : this.vri
+            "BAR" : this.vri,
+            
+            "UNKOWN" : this.unkown
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -305,7 +331,7 @@ Ext.define("ContextMenu", {
             if(menu){
                 return menu;
             }else{
-                return this.menuContext["standaard"];
+                return this.menuContext["UNKOWN"];
             }
         }else{
             return this.menuContext["standaard"];

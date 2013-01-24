@@ -190,13 +190,14 @@ Ext.define("Editor", {
             }
         });
     },
-    loadAllRseqs : function(){
+    loadAllRseqs : function(karAddress){
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
             scope: this,
             params:  {
-                'allRseqJSON' : true
+                'allRseqJSON' : true,
+                karAddress: karAddress
             },
             success: function (response){
                 var msg = Ext.JSON.decode(response.responseText);
@@ -639,7 +640,7 @@ Ext.define("Editor", {
             var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
 
             signalItems = Ext.Array.merge(signalItems, [{
-                xtype: numberfield,
+                xtype: 'numberfield',
                 minValue: 0,
                 listeners: {
                     change: function(field, value) {
