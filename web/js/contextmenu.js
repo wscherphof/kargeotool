@@ -90,17 +90,7 @@ Ext.define("ContextMenu", {
                 id: 'addCheckoutPointvri',
                 text: 'Voeg uitmeldpunt toe',
                 icon: karTheme.uitmeldPunt
-            },
-            {
-                id: 'addCheckinPointvri',
-                text: 'Voeg inmeldpunt toe',
-                icon: karTheme.inmeldPunt
-            },
-            {
-                id: 'addEndPointvri',
-                text: 'Voeg eindpunt toe',
-                icon: karTheme.eindPunt
-            },
+            }
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
@@ -111,14 +101,8 @@ Ext.define("ContextMenu", {
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     var point= new OpenLayers.Geometry.Point(lonlat.lon,lonlat.lat);
                     switch (item.id) {
-                        case 'addEndPointvri':
-                            editor.addEndpoint(false,point);
-                            break;
-                        case 'addCheckinPointvri':
-                            editor.addCheckinPoint(false,point);
-                            break;
                         case 'addCheckoutPointvri':
-                            editor.addCheckoutPoint(false,point);
+                            editor.addCheckoutPoint(true);
                             break;
                         case 'editRseqvri':
                             this.editor.editSelectedObject();
