@@ -312,7 +312,7 @@ Ext.define("ContextMenu", {
             "standaard" : this.defaultMenu,
             "ACTIVATION_1" : this.checkin,
             "ACTIVATION_2" : this.checkout ,
-            "ACTIVATION_3" : this.olyEdit,
+            "ACTIVATION_3" : this.onlyEdit,
             
             "END" : this.onlyEdit,
             "BEGIN" : this.onlyEdit,
@@ -333,6 +333,17 @@ Ext.define("ContextMenu", {
                 var x = e.clientX;
                 var y = e.clientY;
                 editor.contextMenu.show(x,y);
+            }
+            var rseq = editor.olc.rseqVectorLayer.getFeatureFromEvent(e);
+            if(rseq){ 
+                editor.loadRseqInfo({
+                        karAddress: rseq.data.karAddress
+                    },function(){
+                        
+                        var x = e.clientX;
+                        var y = e.clientY;
+                        editor.contextMenu.show(x,y);
+                    });
             }
             if (e.preventDefault) 
                 e.preventDefault(); // For non-IE browsers.
