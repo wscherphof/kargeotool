@@ -16,8 +16,12 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 /**
- * Editor class. 
+ * Editor class is een alghele controller van de edit interface en delegeert
+ * grote functionaliteiten naar andere classes, zoals de controle over OpenLayers,
+ * ContextMenu, Geocoder, EditForms en ActiveRseqInfoPanel.
+ * 
  */
 Ext.define("Editor", {
     mixins: {
