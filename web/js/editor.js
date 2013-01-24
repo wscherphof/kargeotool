@@ -71,8 +71,8 @@ Ext.define("Editor", {
         
         var east = viewport.items.items[2];
         var west = viewport.items.items[3];
-        east.on('collapse', this.olc.resizeMap, this);
-        west.on('collapse', this.olc.resizeMap, this);
+        east.on('resize', this.olc.resizeMap, this.olc);
+        west.on('resize', this.olc.resizeMap, this.olc);
     },
     
     createOpenLayersController: function() {

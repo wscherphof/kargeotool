@@ -464,10 +464,7 @@ Ext.define("ol", {
         this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
     },
     resizeMap : function(){
-        var me = this;
-        setTimeout(function(){
-            me.map.updateSize();
-        },500);
+        this.map.updateSize();
     }
 });
 var style = new OpenLayers.Style(
