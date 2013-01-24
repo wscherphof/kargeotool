@@ -740,7 +740,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard_selected,
-            graphicYOffset: -16,
+            graphicYOffset: -26,
             label: "${description}"
         }
     }),
@@ -754,7 +754,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar_selected,
-            graphicYOffset: -16,
+            graphicYOffset: -26,
             label: "${description}"
         }
     }),
@@ -851,6 +851,34 @@ var tempstyle = new OpenLayers.Style(
             externalGraphic: karTheme.crossing,
             label: "${description}",
             graphicYOffset: -26
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "GUARD"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.guard,
+            graphicYOffset: -26,
+            label: "${description}"
+        }
+    }),
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type", // the "foo" feature attribute
+            value: "BAR"
+        }),
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.bar,
+            graphicYOffset: -26,
+            label: "${description}"
         }
     }),
     new OpenLayers.Rule({
