@@ -16,6 +16,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * Als het document klaar is met laden, zet de layout goed.
+ */
 Ext.onReady(function() {
     Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
     viewport = Ext.create('Ext.Viewport', {
