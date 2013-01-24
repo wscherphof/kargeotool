@@ -260,7 +260,7 @@ Ext.define("ContextMenu", {
             }
         });
         
-        this.unkown = Ext.create ("Ext.menu.Menu",{
+        this.onlyEdit = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -288,14 +288,14 @@ Ext.define("ContextMenu", {
             "ACTIVATION_2" : this.checkout ,
             "ACTIVATION_3" : this.checkin,
             
-            "END" : this.vri,
-            "BEGIN" : this.checkin,
+            "END" : this.onlyEdit,
+            "BEGIN" : this.onlyEdit,
             
             "CROSSING" : this.vri,
             "GUARD" : this.vri,
             "BAR" : this.vri,
             
-            "UNKOWN" : this.unkown
+            "onlyEdit" : this.onlyEdit
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -331,7 +331,7 @@ Ext.define("ContextMenu", {
             if(menu){
                 return menu;
             }else{
-                return this.menuContext["UNKOWN"];
+                return this.menuContext["onlyEdit"];
             }
         }else{
             return this.menuContext["standaard"];
