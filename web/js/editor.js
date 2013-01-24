@@ -453,6 +453,7 @@ Ext.define("Editor", {
         if(eindpunt){
             this.selectedObject = this.previousSelectedObject;
             if(eindpunt instanceof Point && eindpunt.getType() == "END"){
+                Ext.Msg.alert('Eindpunt geselecteerd', 'Eindpunt ' + eindpunt.getLabel() + " geselecteerd voor " + this.selectedObject.getLabel() + ".");
                 this.addObject(eindpunt);
                 this.un('selectedObjectChanged',this.eindpuntSelected,this);
             }else{
