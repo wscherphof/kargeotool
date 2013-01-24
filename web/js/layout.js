@@ -90,7 +90,7 @@ Ext.onReady(function() {
                     },
                     {
                         contentEl: 'form',
-                        title: 'Info'
+                        title: 'Help'
                     }
                 ]
             },

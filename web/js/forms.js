@@ -176,12 +176,13 @@ Ext.define("EditForms", {
             }
         }).show();
     },
+    
     /**
      * Opent een popup waarmee een non activation punt kan worden bewerkt.
      */
-    editNonActivationPoint: function() {
+    editNonActivationPoint: function(newPoint, okHandler, cancelHandler) {
         var rseq = this.editor.activeRseq;
-        var point = this.editor.selectedObject;
+        var point = newPoint || this.editor.selectedObject;
         
         if(this.pointEditWindow != null) {
             this.pointEditWindow.destroy();
@@ -211,7 +212,8 @@ Ext.define("EditForms", {
                     xtype: 'numberfield',                        
                     fieldLabel: 'Nummer',
                     name: 'nummer',
-                    minValue: 0,                    
+                    minValue: 0,                
+                    allowBlank: false,
                     value: point.nummer,
                     listeners: {
                         change: function(field, value) {
@@ -242,12 +244,20 @@ Ext.define("EditForms", {
                         }
                         me.pointEditWindow.destroy();
                         me.pointEditWindow = null;
+                        
+                        if(okHandler) {
+                            okHandler(point);
+                        }                        
                     }
                 },{
                     text: 'Annuleren',
                     handler: function() {
                         me.pointEditWindow.destroy();
                         me.pointEditWindow = null;
+                        
+                        if(cancelHandler) {
+                            cancelHandler();
+                        }                        
                     }
                 }]
             }
@@ -255,12 +265,13 @@ Ext.define("EditForms", {
         Ext.getCmp("nummerEdit").selectText(0);
         Ext.getCmp("nummerEdit").focus(false, 100);
     },
+    
     /**
      * Opent een window waarmee een activation punt kan worden gewijzgd.
      */
-    editActivationPoint: function() {
+    editActivationPoint: function(newUitmeldpunt, newMap, okHandler, cancelHandler) {
         var rseq = this.editor.activeRseq;
-        var point = this.editor.selectedObject;
+        var point = newUitmeldpunt || this.editor.selectedObject;
         
         if(this.activationPointEditWindow != null) {
             this.activationPointEditWindow.destroy();
@@ -272,13 +283,17 @@ Ext.define("EditForms", {
         var apType = point.getType().split("_")[1];
         var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
         
-        var movements = this.editor.findMovementsForPoint(rseq, point);
-        
-        if(movements.length == 0) {
-            alert("Kan geen movements vinden voor activation point!");
-            return;
+        var map = newMap;
+        var movements = null;
+        if(!map) {
+            movements = rseq.findMovementsForPoint(point);
+
+            if(movements.length == 0) {
+                alert("Kan geen movements vinden voor activation point!");
+                return;
+            }
+            map = movements[0].map;
         }
-        var map = movements[0].map;
         
         var editingUitmeldpunt = map.commandType == 2;
         
@@ -384,6 +399,7 @@ Ext.define("EditForms", {
                     fieldLabel: 'Nummer',
                     name: 'nummer',
                     value: point.nummer,
+                    allowBlank: false,                    
                     minValue: 0,
                     listeners: {
                         change: function(field, value) {
@@ -433,35 +449,52 @@ Ext.define("EditForms", {
                             allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes"]);
                         }
                         
-                        Ext.Array.each(movements, function(mvmtAndMap) {
-                            //console.log("movement nummer " + mvmtAndMap.movement.nummer);
-                            if(mvmtAndMap.map) {
-                                //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
-                                Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
-                            }
-                            if(editingUitmeldpunt) {
-                                // merge allSignalValues naar alle MovementActivationPoints
-                                // van movements die dit pointId gebruiken
-                                Ext.each(mvmtAndMap.movement.maps, function(theMap) {
-                                    if(theMap.beginEndOrActivation == "ACTIVATION") {
-                                        //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
-                                        Ext.Object.merge(theMap, allSignalValues);
-                                    }
-                                });
-                            }
-                        });
+                        // nieuw punt, alleen naar map mergen
+                        if(!movements) {
+                            Ext.Object.merge(map, pointSignalValues);
+                            Ext.Object.merge(map, allSignalValues);
+                        } else {
+                            
+                            // merge naar alle movements 
+                            
+                            Ext.Array.each(movements, function(mvmtAndMap) {
+                                //console.log("movement nummer " + mvmtAndMap.movement.nummer);
+                                if(mvmtAndMap.map) {
+                                    //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
+                                    Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
+                                }
+                                if(editingUitmeldpunt) {
+                                    // merge allSignalValues naar alle MovementActivationPoints
+                                    // van movements die dit pointId gebruiken
+                                    Ext.each(mvmtAndMap.movement.maps, function(theMap) {
+                                        if(theMap.beginEndOrActivation == "ACTIVATION") {
+                                            //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
+                                            Ext.Object.merge(theMap, allSignalValues);
+                                        }
+                                    });
+                                }
+                            });
+                        }
                         
                         if(rseq == me.editor.activeRseq) {
                             me.editor.fireEvent("activeRseqUpdated", rseq);
                         }
                         me.activationPointEditWindow.destroy();
                         me.activationPointEditWindow = null;
+                        
+                        if(okHandler) {
+                            okHandler(point);
+                        }
                     }
                 },{
                     text: 'Annuleren',
                     handler: function() {
                         me.activationPointEditWindow.destroy();
                         me.activationPointEditWindow = null;
+                        
+                        if(cancelHandler) {
+                            cancelHandler();
+                        }
                     }
                 }]
             }

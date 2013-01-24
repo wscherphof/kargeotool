@@ -25,9 +25,11 @@ Ext.define("ContextMenu", {
     editor: null,
     
     // menu's 
-    vri:null,
-    checkout:null,
-    checkin:null,
+    rseq:null,
+    uitmeldpunt:null,
+    inmeldpunt:null,
+    nonActivationPoint: null,
+    
     defaultMenu:null,
     /**
      *@constructor
@@ -41,8 +43,10 @@ Ext.define("ContextMenu", {
      */
     createMenus: function() {
         var me = this;
-        //maak default menu
-        this.defaultMenu= Ext.create ("Ext.menu.Menu",{
+        
+        // Context menu voor een klik in de kaart indien geen rseq actief is
+        
+        this.defaultMenu = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -54,14 +58,19 @@ Ext.define("ContextMenu", {
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
+                    
+                    // Gebruik huidige positie om om die plek wat te doen
                     var pos = {
-                        x: menu.x - Ext.get(editor.domId).getX(),
+                        x: menu.x - Ext.get(this.editor.domId).getX(),
                         y: menu.y
                     }
-                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    var lonlat = this.editor.olc.map.getLonLatFromPixel(pos);
+                    
                     switch (item.id) {
                         case 'addRseq':
-                            editor.addRseq(lonlat.lon, lonlat.lat);
+                            // Voeg op huidige positie nieuwe Rseq toe 
+                            
+                            this.editor.addRseq(lonlat.lon, lonlat.lat);
                             break;
                     }
                 },
@@ -69,18 +78,19 @@ Ext.define("ContextMenu", {
             }
         });
         
-        //maak vri menu
-        this.vri = Ext.create ("Ext.menu.Menu",{
+        // Context menu voor rseq
+        
+        this.rseq = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editRseqvri',
+                id: 'editRseq',
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },
             {
-                id: 'removeRseqvri',
+                id: 'removeRseq',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
@@ -88,46 +98,44 @@ Ext.define("ContextMenu", {
                 xtype: 'menuseparator'
             },
             {
-                id: 'addCheckoutPointvri',
+                id: 'addUitmeldpunt',
                 text: 'Voeg uitmeldpunt toe',
                 icon: karTheme.uitmeldPunt
             }
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x - Ext.get(editor.domId).getX(),
-                        y: menu.y
-                    }
-                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
-                    var point= new OpenLayers.Geometry.Point(lonlat.lon,lonlat.lat);
+                    // Huidige positie van muis wordt niet gebruikt voor dit context menu
+                    
                     switch (item.id) {
-                        case 'addCheckoutPointvri':
-                            editor.addCheckoutPoint(true);
+                        case 'addUitmeldpunt':
+                            this.editor.addUitmeldpunt();
                             break;
-                        case 'editRseqvri':
+                        case 'editRseq':
                             this.editor.editSelectedObject();
                             break;
-                        case 'removeRseqvri':
+                        case 'removeRseq':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;
                     }
                 },
-                scope:me
+                scope: me
             }
         });
-        //Maak checkout menu
-        this.checkout = Ext.create ("Ext.menu.Menu",{
+        
+        // Context menu voor een uitmeldpunt
+        
+        this.uitmeldpunt = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editCheckoutcheckout',
-                text: 'Bewerk...',
+                id: 'editUitmeldpunt',
+                text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },
             {
-                id: 'removeCheckoutcheckout',
+                id: 'removeUitmeldpunt',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
@@ -135,17 +143,17 @@ Ext.define("ContextMenu", {
                 xtype: 'menuseparator'
             },
             {
-                id: 'addEndPointcheckout',
-                text: 'Voeg eindpunt toe',
+                id: 'addEindpunt',
+                text: 'Voeg nieuw eindpunt toe',
                 icon: karTheme.eindPunt
             },
             {
-                id: 'selectEndPointcheckout',
-                text: 'Selecteer eindpunt',
+                id: 'selectEindpunt',
+                text: 'Selecteer bestaand eindpunt',
                 icon: contextPath + "/images/silk/cursor.png"
             },
             {
-                id: 'addCheckinPointcheckout',
+                id: 'addInmeldpunt',
                 text: 'Voeg inmeldpunt toe',
                 disabled:true,
                 icon: karTheme.inmeldPunt
@@ -200,13 +208,8 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'addEndPointcheckout':
-                            editor.addEndpoint(true);
-                            Ext.Array.each(menu.items.items,function(name, idx, ori){
-                                if(name.id == "addCheckinPointcheckout"){
-                                    name.setDisabled (false);
-                                }
-                            });
+                        case 'addEindpunt':
+                            editor.addEindpunt();
                             break;
                         case 'addCheckinPointcheckout':
                             editor.addCheckinPoint(true);
@@ -214,7 +217,7 @@ Ext.define("ContextMenu", {
                         case 'selectEndPointcheckout':
                             editor.selectEindpunt();
                             break;
-                        case 'editCheckoutcheckout':
+                        case 'editUitmeldpunt':
                             this.editor.editSelectedObject();
                             break;
                         case 'removeCheckoutcheckout':
@@ -225,18 +228,20 @@ Ext.define("ContextMenu", {
                 scope:me
             }
         });
-        //Maak checkin menu
-        this.checkin = Ext.create ("Ext.menu.Menu",{
+        
+        // Context menu voor een inmeldpunt
+        
+        this.inmeldpunt = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
             {
-                id: 'editCheckincheckin',
-                text: 'Bewerk...',
+                id: 'editInmeldpunt',
+                text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png"
             },
             {
-                id: 'removeCheckincheckin',
+                id: 'removeInmeldpunt',
                 text: 'Verwijderen...',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
@@ -244,15 +249,15 @@ Ext.define("ContextMenu", {
                 xtype: 'menuseparator'
             },
             {
-                id: 'voegVoorinmeldTocheckin',
+                id: 'addVoorinmeldpunt',
                 text: 'Voeg voorinmeldpunt toe',
                 icon: karTheme.voorinmeldPunt
-            },
+            },/*
             {
                 id: 'voegBeginpuntToecheckin',
                 text: 'Voeg beginpunt toe',
                 icon: karTheme.startPunt
-            }
+            }*/
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
@@ -280,7 +285,7 @@ Ext.define("ContextMenu", {
             }
         });
         // Maak wijzig menu
-        this.onlyEdit = Ext.create ("Ext.menu.Menu",{
+        this.nonActivationPoint = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -311,18 +316,18 @@ Ext.define("ContextMenu", {
         
         this.menuContext ={
             "standaard" : this.defaultMenu,
-            "ACTIVATION_1" : this.checkin,
-            "ACTIVATION_2" : this.checkout ,
-            "ACTIVATION_3" : this.onlyEdit,
+            "ACTIVATION_1" : this.inmeldpunt,
+            "ACTIVATION_2" : this.uitmeldpunt ,
+            "ACTIVATION_3" : this.inmeldpunt, // XXX dit is voorinmeldpunt
             
-            "END" : this.onlyEdit,
-            "BEGIN" : this.onlyEdit,
+            "END" : this.nonActivationPoint,
+            "BEGIN" : this.nonActivationPoint,
             
-            "CROSSING" : this.vri,
-            "GUARD" : this.vri,
-            "BAR" : this.vri,
+            "CROSSING" : this.rseq,
+            "GUARD" : this.rseq,
+            "BAR" : this.rseq//,
             
-            "onlyEdit" : this.onlyEdit
+            //"onlyEdit" : this.onlyEdit // XXX
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -378,10 +383,25 @@ Ext.define("ContextMenu", {
     getMenuContext: function() {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
+            
+            // Update state van disabled / enabled items op basis van selectedObject
+
+            if(type == "ACTIVATION_2") {
+                // Voor een uitmeldpunt kan alleen een inmeldpunt worden toegevoegd
+                // indien voor dat uitmeldpunt in een movement een eindpunt aanwezig 
+                // is
+                console.log("Controleren of uitmeldpunt ", editor.selectedObject, " een eindpunt heeft");
+                
+                var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
+                console.log("heeftEindpunt = " + heeftEindpunt);
+                Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
+            }
+
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
             }else{
+                console.log("could not find menu for type " + type);
                 return this.menuContext["onlyEdit"];
             }
         }else{
@@ -394,6 +414,9 @@ Ext.define("ContextMenu", {
     deactivateContextMenu: function() {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
+            if(!mc) {
+                console.log("mc for key " + key + " is null");
+            }
             mc.hide();
         }
     }

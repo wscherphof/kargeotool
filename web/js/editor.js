@@ -66,7 +66,8 @@ Ext.define("Editor", {
             'selectedObjectChanged',
             'objectAdded',
             'movementAdded',
-            'movementUpdated'
+            'movementUpdated',
+            'currentEditActionChanged'
         );
         
         this.domId = domId;
@@ -423,6 +424,86 @@ Ext.define("Editor", {
         });
     },
     
+    changeCurrentEditAction: function(action) {
+        this.currentEditAction = action;
+        console.log("Edit action naar: " + action);
+        this.fireEvent("currentEditActionChanged", action);
+    },
+    
+    /**
+     * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de 
+     * huidige rseq.
+     */
+    addUitmeldpunt: function() {
+        this.changeCurrentEditAction("ACTIVATION_2");
+        
+        var me = this;
+        this.pointFinishedHandler = function(location) {
+
+            console.log("Uitmeldpunt geplaatst!");
+            
+            var uitmeldpunt = Ext.create(Point, {
+                type: "ACTIVATION_2",
+                geometry: location
+            });
+            var map = Ext.create(MovementActivationPoint, {
+                beginEndOrActivation: "ACTIVATION",
+                commandType: 2, 
+                pointId: uitmeldpunt.getId(),
+                vehicleTypes: [1]
+            });
+            
+            me.editForms.editActivationPoint(uitmeldpunt, map, function() {
+                console.log("Uitmeldpunt opslaan");
+                
+                me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
+                
+                // XXXXXXX DIT MOET OLC ZELF DOEN NA UPDATED EVENT
+                me.olc.removeAllFeatures();
+                me.olc.updateVectorLayer();
+                
+                console.log("Uitmeldpunt opgeslagen");
+            }, function() {
+                // XXXXXXX DIT MOET OLC ZELF DOEN NA UPDATED EVENT
+                me.olc.removeAllFeatures();
+                me.olc.updateVectorLayer();
+            });
+        };
+        
+        this.addPoint(true);
+    },     
+    
+    addEindpunt: function() {
+        this.changeCurrentEditAction("END");
+        var me = this;
+        var uitmeldpunt = this.selectedObject;
+        this.pointFinishedHandler = function(location) {
+            console.log("Eindpunt geplaatst voor uitmeldpunt " + uitmeldpunt);
+            
+            var eindpunt = Ext.create(Point, {
+                type: "END",
+                geometry: location                
+            });
+            
+            me.editForms.editNonActivationPoint(eindpunt, function() {
+                console.log("Eindpunt opslaan");
+                
+                me.activeRseq.addEindpunt(uitmeldpunt, eindpunt);
+                
+                // XXXXXXX DIT MOET OLC ZELF DOEN NA UPDATED EVENT
+                me.olc.removeAllFeatures();
+                me.olc.updateVectorLayer();
+                
+                console.log("Eindpunt opgeslagen");
+            }, function() {
+                // XXXXXXX DIT MOET OLC ZELF DOEN NA UPDATED EVENT
+                me.olc.removeAllFeatures();
+                me.olc.updateVectorLayer();
+            });            
+        };
+        this.addPoint(true);        
+    },
+    
     /**
      * Voeg een nieuw object toe
      * @param newObject Nieuw object
@@ -494,15 +575,6 @@ Ext.define("Editor", {
     },    
     
     /**
-     * Voeg een uit check toe aan een lijn
-     * @param withLine de lijn waar aan het punt moet worden toegevoegd
-     * @param piont het toe te voegen punt
-     */
-    addCheckoutPoint: function(withLine, point) {
-        this.currentEditAction = "ACTIVATION_2";
-        this.addPoint(withLine,point);
-    },    
-    /**
      * Voeg een voor check in punt toe aan een lijn
      * @param withLine de lijn waar aan het punt moet worden toegevoegd
      * @param piont het toe te voegen punt
@@ -527,11 +599,22 @@ Ext.define("Editor", {
         }
     },
     
+    /**
+     * Wordt aangeroepen door OpenLayersController indien de gebruiker een punt
+     * heeft geplaatst door te dubbelklikken.
+     */
     pointFinished: function(point) {
         var geom = {
             type: "Point",
             coordinates: [point.x,point.y]
         };
+
+        this.changeCurrentEditAction(null);
+        
+        if(this.pointFinishedHandler) {
+            this.pointFinishedHandler(geom);
+        }
+        /*
         var properties = {
             type: this.currentEditAction,
             id: Ext.id(),
@@ -548,31 +631,10 @@ Ext.define("Editor", {
         
         this.olc.removeAllFeatures();
         this.olc.updateVectorLayer();
+        */
     },
     
     // === Model functies ===
-    
-    /**
-     * Haal alle movements op op basis het id van de point
-     * @param rseq het rseq object waar in gezocht moet worden
-     * @param point het punt waarvoor de movements moeten worden opgehaald.
-     * @return een array van movements waar het point in voorkomt.
-     */
-    findMovementsForPoint: function(rseq, point) {
-        var movements = [];
-        
-        Ext.Array.each(rseq.getMovements(), function(movement) {
-            Ext.Array.each(movement.getMaps(), function(map) {
-                if(map.pointId == point.id) {
-                    movements.push({
-                        movement: movement,
-                        map: map
-                    });
-                }
-            });
-        });
-        return movements;
-    },
     
     /**
      * Voegt een movement toe.
@@ -598,7 +660,7 @@ Ext.define("Editor", {
      * Voeg een inmeld punt toe aan de movement van een uitmeld punt.
      */
     voegInmeldAanMovement: function(uitmeld, inmeld) {
-        var mvnts = this.findMovementsForPoint(this.activeRseq, uitmeld);
+        var mvnts = this.activeRseq.findMovementsForPoint(uitmeld);
         for ( var i = 0 ; i < mvnts.length ; i++ ){
             var movement = mvnts[i].movement;
             var map = Ext.create(MovementActivationPoint,{
@@ -620,12 +682,40 @@ Ext.define("ActiveRseqInfoPanel", {
         this.editor = editor;
         editor.on("activeRseqChanged", this.updateRseqInfoPanel, this);
         editor.on("activeRseqUpdated", this.updateRseqInfoPanel, this);
+        editor.on("currentEditActionChanged", this.updateInfoPanel, this);
     },
     
     updateRseqInfoPanel: function(rseq) {
         Ext.get("context_vri").setHTML(rseq == null ? "" : rseq.karAddress);
         
         Ext.get("rseqSave").setVisible(rseq != null);
+        this.updateInfoPanel();
+    },
+    
+    updateInfoPanel: function() {
+        
+        var action = this.editor.currentEditAction;
+        var txt;
+        switch(action) {
+            case "ACTIVATION_2": 
+                txt = "Dubbelklik om het uitmeldpunt te plaatsen.";
+                break;
+            case "END":
+                txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep "
+                    + "X" + ".";
+                break;
+            default:
+                if(editor.activeRseq == null) {
+                    txt = "Klik op een icoon van een verkeerssysteem om deze te selecteren" +
+                        "of klik rechts om een verkeerssysteem toe te voegen.";
+                } else {
+                    txt = "Klik rechts op het verkeerssysteem icoon om een uitmeldpunt voor " +
+                        "een signaalgroep toe te voegen of klik rechts op een punt om deze " +
+                        "te bewerken.";
+                }
+        }
+        
+        Ext.get("help").dom.innerHTML = txt;
     }
         
 });

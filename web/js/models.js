@@ -124,6 +124,142 @@ Ext.define('RSEQ', {
         }
         this.movements.push(movement);
     },
+    
+    
+    /**
+     * Haal alle movements in deze rseq op waarin het gegeven point voorkomt
+     * @return een array van movements waar het point in voorkomt.
+     */
+    findMovementsForPoint: function(point) {
+        var movements = [];
+        
+        Ext.Array.each(this.getMovements(), function(movement) {
+            Ext.Array.each(movement.getMaps(), function(map) {
+                if(map.pointId == point.id) {
+                    movements.push({
+                        movement: movement,
+                        map: map
+                    });
+                }
+            });
+        });
+        return movements;
+    },
+    
+    /**
+     * Controleert of er in een movement van het gegeven uitmeldpunt een
+     * eindpunt is.
+     */
+    heeftUitmeldpuntEindpunt: function(uitmeldpunt) {
+        
+        var pointMovements = this.findMovementsForPoint(uitmeldpunt);
+        
+        var result = false;
+        Ext.Array.each(pointMovements, function(mvmt) {
+            Ext.Array.each(mvmt.maps, function(map) {
+                if(map.beginEndOrActivation == "END") {
+                    result = true;
+                    // Stop met Ext.Array.each() (break)
+                    return false;
+                }
+                // Ga verder met volgende Ext.Array.each();
+                return true;
+            });
+            // Indien nog geen eindpunt gevonden ga verder met volgende movement
+            return result == false;
+        });
+        return result;
+    },    
+    
+    addUitmeldpunt: function(uitmeldpunt, map) {
+        this.addPoint(uitmeldpunt);
+        this.addMovement(Ext.create(Movement, {
+            id: Ext.id(),
+            nummer: null,
+            maps: [map]
+        }));
+    },
+
+    
+    addEindpunt: function(uitmeldpunt, eindpunt) {
+        this.addPoint(eindpunt);
+        
+        var pointMovements = this.findMovementsForPoint(uitmeldpunt);
+
+        // Indien maar een enkele movement zonder eindpunt, voeg alleen eindpunt
+        // toe aan dat movement
+        
+        if(pointMovements.length == 0) {
+            alert("Ongeldige state, moet altijd movement zijn!");
+        }
+        if(pointMovements.length == 1) {
+            var movement = pointMovements[0];
+            var hasEnd = false;
+            Ext.Array.each(movement.maps, function(map) {
+                if(map.beginEndOrActivation == "END") {
+                    hasEnd = true;
+                }
+            });
+            if(!hasEnd) {
+                newMap = Ext.create(MovementActivationPoint, {
+                    id: Ext.id(),
+                    beginEndOrActivation: "END",
+                    pointId: eindpunt.getId()
+                });         
+
+                movement.maps.push(newMap);                
+                return;
+            }
+        }
+
+        var newMovement = Ext.create(Movement, {
+            id: Ext.id(),
+            nummer: null,
+            maps: []
+        });
+        
+        var newMap;
+        
+        
+        // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
+        // eindpunten
+        
+        Ext.Array.each(pointMovements, function(mvmt) {
+            Ext.Array.each(mvmt.maps, function(map) {
+                if(map.beginEndOrActivation != "END") {
+                    
+                    var config = {
+                        id: Ext.id(),
+                        beginEndOrActivation: map.beginEndOrActivation,
+                        pointId: map.pointId
+                    };
+                    if(map.beginEndOrActivation == "ACTIVATION") {
+                        Ext.Object.merge(config, {
+                            commandType: map.commandType,
+                            distanceTillStopLine: map.distanceTillStopLine,
+                            signalGroupNumber: map.signalGroupNumber,
+                            virtualLocalLoopNumber: map.virtualLocalLoopNumber,
+                            triggerType: map.triggerType,
+                            vehicleTypes: map.vehicleTypes
+                        });
+                    }
+                    newMap = Ext.create(MovementActivationPoint, config);
+                    newMovement.maps.push(newMap);
+                }
+            });
+        });
+        
+        newMap = Ext.create(MovementActivationPoint, {
+            id: Ext.id(),
+            beginEndOrActivation: "END",
+            pointId: eindpunt.getId()
+        });         
+            
+        newMovement.maps.push(newMap);
+        
+        this.addMovement(newMovement);
+    },
+    
     /**
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
@@ -207,6 +343,9 @@ Ext.define('Point', {
         if(!config.label){
             config.label = "";
         }
+        if(!config.id) {
+            config.id = Ext.id();
+        }
         this.initConfig(config);    
     },
     /**
@@ -263,6 +402,9 @@ Ext.define('MovementActivationPoint', {
     constructor: function(config) {      
         if(!config.triggerType) {
             config.triggerType = 'STANDARD';
+        }
+        if(!config.id) {
+            config.id = Ext.id();
         }
         this.initConfig(config);    
     },
