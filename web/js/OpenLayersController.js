@@ -238,13 +238,23 @@ Ext.define("ol", {
         //defineer de click afhandeling.
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
-                var x = evt.clientX;
-                var y = evt.clientY;
-                editor.contextMenu.show(x,y);
-           
+                var f = editor.olc.getFeatureFromEvent(evt);
+                if(f && f.layer.name == "RseqSelect"){
+                    editor.loadRseqInfo({
+                        karAddress: f.data.karAddress
+                    },function(){
+                        editor.contextMenu.show(x,y);
+                    });
+                }else{
+                    var x = evt.clientX;
+                    var y = evt.clientY;
+                    editor.contextMenu.show(x,y);
+                }
                 return false;
             },
             click: function (evt){
+                editor.setSelectedObject(null);
+                editor.olc.selectCtrl.unselectAll();
                 editor.contextMenu.deactivateContextMenu();
             },
             includeXY:true
@@ -265,7 +275,6 @@ Ext.define("ol", {
             clickout: true,
             onSelect : function (feature){
                 if(feature && feature.layer.name == "RseqSelect"){
-                    //console.log("Selecting rseq:" + feature.id);
                     editor.loadRseqInfo({
                         karAddress: feature.data.karAddress
                     });
@@ -569,6 +578,21 @@ Ext.define("ol", {
      */
     addRseqs : function(rseqs){
         this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
+    },
+    /**
+     * Haal de feature op uit de twee bestaande vectorlagen.
+     * @param e Het event om de feature uit te halen
+     */
+    getFeatureFromEvent : function (e){
+        var f = editor.olc.vectorLayer.getFeatureFromEvent(e);
+        if(f){
+            return f;
+        }
+        var rseq = editor.olc.rseqVectorLayer.getFeatureFromEvent(e);
+        if(rseq){
+            return rseq;
+        }
+        return rseq;
     },
     /**
      * Update de grote van de kaart.

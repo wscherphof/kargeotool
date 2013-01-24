@@ -328,23 +328,21 @@ Ext.define("ContextMenu", {
         document.oncontextmenu = function(e){
             e = e?e:window.event;
             
-            var f = editor.olc.vectorLayer.getFeatureFromEvent(e);
+            var f = editor.olc.getFeatureFromEvent(e);
+            
             if(f){
-                editor.setSelectedObject(f);
                 var x = e.clientX;
                 var y = e.clientY;
-                editor.contextMenu.show(x,y);
-            }
-            var rseq = editor.olc.rseqVectorLayer.getFeatureFromEvent(e);
-            if(rseq){ 
-                editor.loadRseqInfo({
-                        karAddress: rseq.data.karAddress
+                if(f.layer.name== "RseqSelect"){
+                    editor.loadRseqInfo({
+                        karAddress: f.data.karAddress
                     },function(){
-                        
-                        var x = e.clientX;
-                        var y = e.clientY;
                         editor.contextMenu.show(x,y);
                     });
+                }else{
+                    editor.setSelectedObject(f);
+                    editor.contextMenu.show(x,y);
+                }
             }
             if (e.preventDefault) 
                 e.preventDefault(); // For non-IE browsers.
