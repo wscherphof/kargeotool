@@ -35,6 +35,7 @@ Ext.define("ol", {
     activeFeature : null,
     selectCtrl : null,
     highlight:null,
+    measureTool:null,
     constructor : function(editor){
         this.editor = editor;
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
@@ -110,13 +111,13 @@ Ext.define("ol", {
         }));        
         this.map.addControl(new OpenLayers.Control.PanZoomBar());
         
-       /* var options = new Object();
+        var options = new Object();
         options["persist"]=true;
         options["callbacks"]={
             modify: function (evt){
                 //make a tooltip with the measured length
                 if (evt.parent){
-                    var measureValueDiv=document.getElementById("olControlMeasureValue");
+            var measureValueDiv=document.getElementById("olControlMeasureValue");
                     if (measureValueDiv==undefined){
                         measureValueDiv=document.createElement('div');
                         measureValueDiv.id="olControlMeasureValue";
@@ -137,24 +138,32 @@ Ext.define("ol", {
                     measureValueText.innerHTML= bestLengthTokens[0].toFixed(3)+" "+bestLengthTokens[1];
                 }
             }
-        }
+        };
+        options["handlerOptions"]={
+            style :{
+                strokeColor : ""
+            }
+        };
+        
         //voeg meet tool toe
-        var measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
-        measureTool.events.register('measure',measureTool,function(){
+        this.measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
+        this.map.addControl(this.measureTool);
+      
+        this.measureTool.events.register('measure',this.measureTool,function(){
             var measureValueDiv=document.getElementById("olControlMeasureValue");
             if (measureValueDiv){                
                 measureValueDiv.style.display="none";
             }
             this.cancel();
         });
-        measureTool.events.register('deactivate',measureTool,function(){
+        this.measureTool.events.register('deactivate',this.measureTool,function(){
             var measureValueDiv=document.getElementById("olControlMeasureValue");
             if (measureValueDiv){
                 measureValueDiv.style.display="none";
             }
         });
-        this.panel.addControls (measureTool);*/
-        //voeg GetFeatureInfo tool toe.
+        this.map.addControl(this.measureTool);
+        /*voeg GetFeatureInfo tool toe.
         /*this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
             //drillDown: true,
             url: "localhost:8084/geo-ov/action/viewer/editor?gfi=true",
@@ -239,8 +248,8 @@ Ext.define("ol", {
         var oClick = new OpenLayers.Control.Click({
             rightclick: function (evt){
                 var f = editor.olc.getFeatureFromEvent(evt);
-                    var x = evt.clientX;
-                    var y = evt.clientY;
+                var x = evt.clientX;
+                var y = evt.clientY;
                 if(f && f.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
                         karAddress: f.data.karAddress
@@ -519,10 +528,13 @@ Ext.define("ol", {
         var pixel = this.map.getPixelFromLonLat(lonlat);
         var evt = {
             xy: pixel
-        }
+        };
+        this.measureTool.activate();
         this.line.activate();
         this.line.handler.mousedown(evt);
         this.line.handler.mouseup(evt);
+        this.measureTool.handler.createFeature(pixel);
+        this.measureTool.handler.insertXY(x,y);
     },
     /**
      * Verwijder alle features die getekend zijn op de vectorlayer     * 
@@ -556,6 +568,7 @@ Ext.define("ol", {
         var lastPoint = feature.geometry.components[feature.geometry.components.length-1];
         this.point.deactivate();
         this.line.deactivate();
+        this.measureTool.deactivate();
         this.editor.pointFinished(lastPoint);
         this.highlight.activate();
     // TODO fire event geometry updated
