@@ -23,6 +23,7 @@ import nl.b3p.kar.hibernate.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.securityfilter.realm.SecurityRealmInterface;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * SecurityRealm implementatie voor SecurityFilter 2.0.
@@ -44,11 +45,6 @@ public class SecurityRealm implements SecurityRealmInterface {
 
     private static final Log auditLog = LogFactory.getLog("audit");
     
-    private static final String ROLE_GEMEENTE = "gemeente";
-    private static final String ROLE_REGIO = "regio";
-    private static final String ROLE_PROVINCIE = "provincie";
-    private static final String ROLE_BEHEERDER = "beheerder";
-
     private static final int SALT_SIZE = 4;
 
     /**
@@ -136,13 +132,10 @@ public class SecurityRealm implements SecurityRealmInterface {
         String auditAllow = "LOGIN ALLOW: username=\"" + username + "\": ";
         String auditDeny = "LOGIN DENY:  username=\"" + username + "\": ";
 
-        Object emId = null;
         try {
-            emId = MyEMFDatabase.createEntityManager(MyEMFDatabase.REALM_EM);
-            EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.REALM_EM);
+            Stripersist.requestInit();
+            EntityManager em = Stripersist.getEntityManager();
 
-            EntityTransaction tx = em.getTransaction();
-            tx.begin();
             try {
                 Gebruiker g = (Gebruiker)em.createQuery(
                         "from Gebruiker g where " +
@@ -165,11 +158,9 @@ public class SecurityRealm implements SecurityRealmInterface {
                         }
                     }
                     auditLog.info(auditAllow + info);
-                    tx.commit();
                     return g;
                 } else {
                     auditLog.info(auditDeny + "password hash komt niet overeen (ongeldig wachtwoord)");
-                    tx.commit();
                     return null;
                 }
             } catch(NoResultException nre) {
@@ -180,7 +171,7 @@ public class SecurityRealm implements SecurityRealmInterface {
             auditLog.error("LOGIN ERROR: username=\"" + username + "\": exception", e);
             throw new RuntimeException("Exception checking authentication database", e);
         } finally {
-            MyEMFDatabase.closeEntityManager(emId, MyEMFDatabase.REALM_EM);
+            Stripersist.requestComplete();
         }
     }
 
