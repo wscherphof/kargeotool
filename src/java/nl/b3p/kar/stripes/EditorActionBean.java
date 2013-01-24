@@ -174,17 +174,23 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
+    /**
+     * Bepaalt of een JSON object nieuw gemaakt client-side. De door JavaScript 
+     * client-side gestuurde JSON om een RoadsideEquipment op te slaan kan nieuw 
+     * gemaakte objecten bevatten die nog geen persistente JPA entities zijn, 
+     * deze hebben een door ExtJS bepaald id dat begint met "ext-gen".
+     * 
+     * @param j het JSON object
+     * @return of het JSON object client-side nieuw gemaakt is
+     */
     private static boolean isNew(JSONObject j) {
         String id = j.optString("id");
         return id != null && id.startsWith("ext-gen");
     }
     
     /**
-     * Stripes methode waarmee het opslaan van het edit proces wordt 
-     * voorbereid.
-     * 
-     * @return Stripes Resolution saveOrUpdateRseq
-     * @throws Exception
+     * Ajax handler om een RoadsideEquipment die in de json parameter is 
+     * meegegeven op te slaan.
      */
     public Resolution saveOrUpdateRseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();

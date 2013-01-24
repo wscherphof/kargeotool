@@ -34,7 +34,9 @@ import net.sourceforge.stripes.validation.Validate;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Klasse waarmee geocoder kan worden aangeroepen.
+ * Klasse waarmee de PDOK geocoder kan worden aangeroepen, deze geocoder 
+ * ondersteunt geen cross origin resource sharing (CORS) dus kan deze niet direct
+ * met Ajax worden aangeroepen.
  * 
  * @author Matthijs Laan
  */

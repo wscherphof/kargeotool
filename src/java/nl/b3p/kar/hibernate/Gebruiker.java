@@ -69,7 +69,7 @@ public class Gebruiker implements Principal {
     /**
      * Verandert het wachtwoord
      * 
-     * @param request nodig voor bepaling zout
+     * @param request nodig voor bepaling random salt
      * @param pw het wachtwoord
      * @throws NoSuchAlgorithmException
      * @throws UnsupportedEncodingException
@@ -327,7 +327,7 @@ public class Gebruiker implements Principal {
      * Zet de rechten mbt de DataOwner
      * @param dao het dataowner object
      * @param editable mag geedit worden
-     * @param validatable mag gevaliseerd worden
+     * @param validatable mag gevalideerd worden
      * @throws Exception
      */
     public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean validatable) throws Exception {

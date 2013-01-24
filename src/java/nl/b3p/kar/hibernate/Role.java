@@ -17,10 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.      
  */
 
-
 package nl.b3p.kar.hibernate;
 
 import javax.persistence.*;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Klasse beschrijft een rol en definieert standaard rollen.
@@ -78,19 +78,16 @@ public class Role {
      * @throws Exception
      */
     public static Role findByName(String role) throws Exception {
-        return null;
-/*        
-        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
-        Role r = null;
+        EntityManager em = Stripersist.getEntityManager();
+        Role r;
         try {
             r = (Role)em.createQuery("from Role where role = :role")
                     .setParameter("role", role)
                     .getSingleResult();
 
         } catch(NoResultException nre) {
-            // ...
+            return null;
         }
         return r;
-        */
     }
 }

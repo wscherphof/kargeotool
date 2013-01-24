@@ -287,8 +287,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     }
     
     /**
-     *
-     * @return Stripes Resolution list
+     * Default resolution voor het alleen tonen van de lijst met gebruikers.
+     * 
      */
     @DefaultHandler
     @DontBind
@@ -297,8 +297,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     }
 
     /**
-     *
-     * @return Stripes Resolution edit
+     * Resolution voor het bewerken van een gebruiker.
+     * 
      */
     @DontValidate
     public Resolution edit() {
@@ -317,8 +317,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     }
     
     /**
-     *
-     * @return Stripes Resolution add
+     * Resolution voor het toevoegen van een gebruiker.
+     * 
      */
     @DontValidate
     public Resolution add() {
@@ -327,9 +327,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     }
     
     /**
+     * Resolution die een gebruiker opslaat.
      *
-     * @return Stripes Resolution save
-     * @throws Exception
      */
     public Resolution save() throws Exception {
     
@@ -381,8 +380,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     }
     
     /**
-     *
-     * @return Stripes Resolution delete
+     * Resolution die een gebruiker verwijdert.
+     * 
      */
     public Resolution delete() {
         EntityManager em = Stripersist.getEntityManager();
