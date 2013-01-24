@@ -1,5 +1,20 @@
-/*
- * $Id: SecurityRealm.java 9928 2009-01-16 13:24:00Z Jytte $
+/**
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten               
+ *                                                                           
+ * Copyright (C) 2009-2013 B3Partners B.V.                                   
+ *                                                                           
+ * This program is free software: you can redistribute it and/or modify      
+ * it under the terms of the GNU Affero General Public License as            
+ * published by the Free Software Foundation, either version 3 of the        
+ * License, or (at your option) any later version.                           
+ *                                                                           
+ * This program is distributed in the hope that it will be useful,           
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
+ * GNU Affero General Public License for more details.                       
+ *                                                                           
+ * You should have received a copy of the GNU Affero General Public License  
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.      
  */
 
 package nl.b3p.kar;
@@ -46,6 +61,8 @@ public class SecurityRealm implements SecurityRealmInterface {
     private static final int SALT_SIZE = 4;
 
     /**
+     * Methode om zout tbv hash te genereren
+     * 
      * @param request gebruikt voor initialisatie PRNG met IP en poort van client
      * @return salt in hex string
      */
@@ -76,7 +93,16 @@ public class SecurityRealm implements SecurityRealmInterface {
         return salt.toString();
     }
 
-	public static String getHexSha1(String saltHex, String phrase) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	/**
+      * Methode om hash te maken van wachtwoord met zout
+     * 
+     * @param salt het zout als String
+     * @param phrase het wachtwoord
+     * @return de hash
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
+    public static String getHexSha1(String saltHex, String phrase) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         saltHex = saltHex.trim();
         if(saltHex.length() % 2 != 0) {
             throw new IllegalArgumentException("Invalid salt hex length (must be divisible by 2): " + saltHex.length());
@@ -96,6 +122,15 @@ public class SecurityRealm implements SecurityRealmInterface {
         return getHexSha1(salt, phrase);
     }
 
+    /**
+     * Methode om hash te maken van wachtwoord met zout
+     * 
+     * @param salt het zout als byte array
+     * @param phrase het wachtwoord
+     * @return de hash
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
     public static String getHexSha1(byte[] salt, String phrase) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         byte[] phraseUTF8 = phrase.getBytes("UTF8");
         byte[] saltedPhrase = new byte[salt.length + phraseUTF8.length];
@@ -115,15 +150,15 @@ public class SecurityRealm implements SecurityRealmInterface {
         return sb.toString();
 	}
     
-    /*public static void testGetHexSha1() throws Exception {
-        String salt = "00112233";
-        String phrase = "test";
-        System.out.println(getHexSha1(salt, phrase).equals("af30b67b3c0e3fcd1d80ba679770f3947f6edd8d"));
-        phrase = "tëst";
-        System.out.println(getHexSha1(salt, phrase).equals("d49a8431ec274a1433b7fdda34e4de0b2784b812"));
-    }*/
-
-    public Principal authenticate(String username, String password) {
+   /**
+    * Authenticate a user.
+    *
+    * @param username a username
+    * @param password a plain text password, as entered by the user
+    *
+    * @return a Principal object representing the user if successful, false otherwise
+    */
+     public Principal authenticate(String username, String password) {
         /* TODO: "LOGIN", "username" en "ALLOW" MDC vars maken, gebruik wel filter dat bij
          * elk request MDC.clear() doet en filter dat username instelt
          */
@@ -176,6 +211,10 @@ public class SecurityRealm implements SecurityRealmInterface {
     /**
      * Er zijn drie rollen, bepaald door het feit of bij een Gebruiker entity
      * de gemeente, regio of provincie relatie not-null is.
+     * 
+     * @param principal de principal, de rollen van de gebruiker
+     * @param role de gevraagde rol
+     * @return boolean of rol geldig is
      */
     public boolean isUserInRole(Principal principal, String role) {
         if(principal == null) {

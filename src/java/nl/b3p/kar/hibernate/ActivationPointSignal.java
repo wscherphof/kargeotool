@@ -1,3 +1,22 @@
+/**
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten               
+ *                                                                           
+ * Copyright (C) 2009-2013 B3Partners B.V.                                   
+ *                                                                           
+ * This program is free software: you can redistribute it and/or modify      
+ * it under the terms of the GNU Affero General Public License as            
+ * published by the Free Software Foundation, either version 3 of the        
+ * License, or (at your option) any later version.                           
+ *                                                                           
+ * This program is distributed in the hope that it will be useful,           
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
+ * GNU Affero General Public License for more details.                       
+ *                                                                           
+ * You should have received a copy of the GNU Affero General Public License  
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ */
+
 package nl.b3p.kar.hibernate;
 
 import java.util.ArrayList;
@@ -95,58 +114,114 @@ public class ActivationPointSignal {
     private Integer virtualLocalLoopNumber;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+    /**
+     *
+     * @return id
+     */
     public Long getId() {
         return id;
     }
     
+    /**
+     *
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
     
+    /**
+     *
+     * @return karCommandType
+     */
     public int getKarCommandType() {
         return karCommandType;
     }
     
+    /**
+     *
+     * @param karCommandType
+     */
     public void setKarCommandType(int karCommandType) {
         this.karCommandType = karCommandType;
     }
     
+    /**
+     *
+     * @return vehicleTypes
+     */
     public List<VehicleType> getVehicleTypes() {
         return vehicleTypes;
     }
     
+    /**
+     *
+     * @param vehicleTypes
+     */
     public void setVehicleTypes(List<VehicleType> vehicleTypes) {
         this.vehicleTypes = vehicleTypes;
     }
     
+    /**
+     *
+     * @return triggerType
+     */
     public String getTriggerType() {
         return triggerType;
     }
     
+    /**
+     *
+     * @param triggerType
+     */
     public void setTriggerType(String triggerType) {
         this.triggerType = triggerType;
     }
     
+    /**
+     *
+     * @return distanceTillStopLine
+     */
     public Integer getDistanceTillStopLine() {
         return distanceTillStopLine;
     }
     
+    /**
+     *
+     * @param distanceTillStopLine
+     */
     public void setDistanceTillStopLine(Integer distanceTillStopLine) {
         this.distanceTillStopLine = distanceTillStopLine;
     }
     
+    /**
+     *
+     * @return signalGroupNumber
+     */
     public Integer getSignalGroupNumber() {
         return signalGroupNumber;
     }
     
+    /**
+     *
+     * @param signalGroupNumber
+     */
     public void setSignalGroupNumber(Integer signalGroupNumber) {
         this.signalGroupNumber = signalGroupNumber;
     }
     
+    /**
+     *
+     * @return virtualLocalLoopNumber
+     */
     public Integer getVirtualLocalLoopNumber() {
         return virtualLocalLoopNumber;
     }
     
+    /**
+     *
+     * @param virtualLocalLoopNumber
+     */
     public void setVirtualLocalLoopNumber(Integer virtualLocalLoopNumber) {
         this.virtualLocalLoopNumber = virtualLocalLoopNumber;
     }

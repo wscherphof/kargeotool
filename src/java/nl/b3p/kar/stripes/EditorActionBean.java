@@ -1,3 +1,22 @@
+/**
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten               
+ *                                                                           
+ * Copyright (C) 2009-2013 B3Partners B.V.                                   
+ *                                                                           
+ * This program is free software: you can redistribute it and/or modify      
+ * it under the terms of the GNU Affero General Public License as            
+ * published by the Free Software Foundation, either version 3 of the        
+ * License, or (at your option) any later version.                           
+ *                                                                           
+ * This program is distributed in the hope that it will be useful,           
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
+ * GNU Affero General Public License for more details.                       
+ *                                                                           
+ * You should have received a copy of the GNU Affero General Public License  
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ */
+
 package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
@@ -20,7 +39,8 @@ import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
- *
+ * Stripes klasse welke de edit functionaliteit regelt.
+ * 
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
 @StrictBinding
@@ -47,6 +67,12 @@ public class EditorActionBean implements ActionBean {
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
 
+    /**
+     * Stripes methode waarmee de view van het edit proces wordt voorbereid.
+     * 
+     * @return Stripes Resolution view
+     * @throws Exception
+     */
     @DefaultHandler
     public Resolution view() throws Exception {
 
@@ -83,6 +109,12 @@ public class EditorActionBean implements ActionBean {
         return new ForwardResolution(JSP);
     }
 
+    /**
+     * Stripes methode waarmee de huidge roadside equipement wordt opgehaald.
+     * 
+     * @return Stripes Resolution rseqJSON
+     * @throws Exception
+     */
     public Resolution rseqJSON() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -109,6 +141,12 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
+    /**
+     * Stripes methode waarmee alle roadside equipement wordt opgehaald.
+     * 
+     * @return Stripes Resolution allRseqJSON
+     * @throws Exception
+     */
     public Resolution allRseqJSON() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -141,6 +179,13 @@ public class EditorActionBean implements ActionBean {
         return id != null && id.startsWith("ext-gen");
     }
     
+    /**
+     * Stripes methode waarmee het opslaan van het edit proces wordt 
+     * voorbereid.
+     * 
+     * @return Stripes Resolution saveOrUpdateRseq
+     * @throws Exception
+     */
     public Resolution saveOrUpdateRseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         
@@ -269,50 +314,98 @@ public class EditorActionBean implements ActionBean {
         this.context = context;
     }
 
+    /**
+     *
+     * @return karAddress
+     */
     public Integer getKarAddress() {
         return karAddress;
     }
 
+    /**
+     *
+     * @param karAddress
+     */
     public void setKarAddress(Integer karAddress) {
         this.karAddress = karAddress;
     }
 
+    /**
+     *
+     * @return magWalapparaatMaken
+     */
     public boolean isMagWalapparaatMaken() {
         return magWalapparaatMaken;
     }
 
+    /**
+     *
+     * @param magWalapparaatMaken
+     */
     public void setMagWalapparaatMaken(boolean magWalapparaatMaken) {
         this.magWalapparaatMaken = magWalapparaatMaken;
     }
 
+    /**
+     *
+     * @return rseq
+     */
     public RoadsideEquipment getRseq() {
         return rseq;
     }
 
+    /**
+     *
+     * @param rseq
+     */
     public void setRseq(RoadsideEquipment rseq) {
         this.rseq = rseq;
     }
 
+    /**
+     *
+     * @return dataOwnersJSON
+     */
     public JSONArray getDataOwnersJSON() {
         return dataOwnersJSON;
     }
 
+    /**
+     *
+     * @param dataOwnersJSON
+     */
     public void setDataOwnersJSON(JSONArray dataOwnersJSON) {
         this.dataOwnersJSON = dataOwnersJSON;
     }
 
+    /**
+     *
+     * @return vehicleTypesJSON
+     */
     public JSONArray getVehicleTypesJSON() {
         return vehicleTypesJSON;
     }
 
+    /**
+     *
+     * @param vehicleTypesJSON
+     */
     public void setVehicleTypesJSON(JSONArray vehicleTypesJSON) {
         this.vehicleTypesJSON = vehicleTypesJSON;
     }
 
+    /**
+     *
+     * @return json
+     */
     public String getJson() {
         return json;
     }
 
+    /**
+     *
+     * @param json
+     */
     public void setJson(String json) {
         this.json = json;
     }

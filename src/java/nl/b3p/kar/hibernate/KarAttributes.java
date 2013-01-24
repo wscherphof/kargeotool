@@ -1,3 +1,22 @@
+/**
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten               
+ *                                                                           
+ * Copyright (C) 2009-2013 B3Partners B.V.                                   
+ *                                                                           
+ * This program is free software: you can redistribute it and/or modify      
+ * it under the terms of the GNU Affero General Public License as            
+ * published by the Free Software Foundation, either version 3 of the        
+ * License, or (at your option) any later version.                           
+ *                                                                           
+ * This program is distributed in the hope that it will be useful,           
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
+ * GNU Affero General Public License for more details.                       
+ *                                                                           
+ * You should have received a copy of the GNU Affero General Public License  
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ */
+
 package nl.b3p.kar.hibernate;
 
 import javax.persistence.*;
@@ -50,26 +69,50 @@ public class KarAttributes {
     private int usedAttributesMask;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+    /**
+     *
+     * @return serviceType
+     */
     public String getServiceType() {
         return serviceType;
     }
     
+    /**
+     *
+     * @param serviceType
+     */
     public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
     }
     
+    /**
+     *
+     * @return commandType
+     */
     public int getCommandType() {
         return commandType;
     }
     
+    /**
+     *
+     * @param commandType
+     */
     public void setCommandType(int commandType) {
         this.commandType = commandType;
     }
     
+    /**
+     *
+     * @return usedAttributesMask
+     */
     public int getUsedAttributesMask() {
         return usedAttributesMask;
     }
     
+    /**
+     *
+     * @param usedAttributesMask
+     */
     public void setUsedAttributesMask(int usedAttributesMask) {
         this.usedAttributesMask = usedAttributesMask;
     }

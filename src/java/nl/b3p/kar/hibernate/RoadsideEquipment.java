@@ -1,3 +1,22 @@
+/**
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten               
+ *                                                                           
+ * Copyright (C) 2009-2013 B3Partners B.V.                                   
+ *                                                                           
+ * This program is free software: you can redistribute it and/or modify      
+ * it under the terms of the GNU Affero General Public License as            
+ * published by the Free Software Foundation, either version 3 of the        
+ * License, or (at your option) any later version.                           
+ *                                                                           
+ * This program is distributed in the hope that it will be useful,           
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
+ * GNU Affero General Public License for more details.                       
+ *                                                                           
+ * You should have received a copy of the GNU Affero General Public License  
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ */
+
 package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
@@ -22,7 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
+ * Klasse voor het beschrijven van RoadsideEquipment zoals VRI's
+ * 
  * @author Matthijs Laan
  */
 @Entity
@@ -121,111 +141,221 @@ public class RoadsideEquipment {
     private Set<ActivationPoint> points = new HashSet<ActivationPoint>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+    /**
+     *
+     * @return id
+     */
     public Long getId() {
         return id;
     }
     
+    /**
+     *
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
     
+    /**
+     *
+     * @return dataOwner
+     */
     public DataOwner getDataOwner() {
         return dataOwner;
     }
     
+    /**
+     *
+     * @param dataOwner
+     */
     public void setDataOwner(DataOwner dataOwner) {
         this.dataOwner = dataOwner;
     }
     
+    /**
+     *
+     * @return karAddress
+     */
     public Integer getKarAddress() {
         return karAddress;
     }
     
+    /**
+     *
+     * @param karAddress
+     */
     public void setKarAddress(Integer karAddress) {
         this.karAddress = karAddress;
     }
     
+    /**
+     *
+     * @return validFrom
+     */
     public Date getValidFrom() {
         return validFrom;
     }
     
+    /**
+     *
+     * @param validFrom
+     */
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
     }
     
+    /**
+     *
+     * @return validUntil
+     */
     public Date getValidUntil() {
         return validUntil;
     }
     
+    /**
+     *
+     * @param validUntil
+     */
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
     }
     
+    /**
+     *
+     * @return type
+     */
     public String getType() {
         return type;
     }
     
+    /**
+     *
+     * @param type
+     */
     public void setType(String type) {
         this.type = type;
     }
     
+    /**
+     *
+     * @return crossingCode
+     */
     public String getCrossingCode() {
         return crossingCode;
     }
     
+    /**
+     *
+     * @param crossingCode
+     */
     public void setCrossingCode(String crossingCode) {
         this.crossingCode = crossingCode;
     }
     
+    /**
+     *
+     * @return town
+     */
     public String getTown() {
         return town;
     }
     
+    /**
+     *
+     * @param town
+     */
     public void setTown(String town) {
         this.town = town;
     }
     
+    /**
+     *
+     * @return description
+     */
     public String getDescription() {
         return description;
     }
     
+    /**
+     *
+     * @param description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
     
+    /**
+     *
+     * @return location
+     */
     public Point getLocation() {
         return location;
     }
 
+    /**
+     *
+     * @param location
+     */
     public void setLocation(Point location) {
         this.location = location;
     }
 
+    /**
+     *
+     * @return karAttributes
+     */
     public List<KarAttributes> getKarAttributes() {
         return karAttributes;
     }
 
+    /**
+     *
+     * @param karAttributes
+     */
     public void setKarAttributes(List<KarAttributes> karAttributes) {
         this.karAttributes = karAttributes;
     }
 
+    /**
+     *
+     * @return movements
+     */
     public SortedSet<Movement> getMovements() {
         return movements;
     }
 
+    /**
+     *
+     * @param movements
+     */
     public void setMovements(SortedSet<Movement> movements) {
         this.movements = movements;
     }
 
+    /**
+     *
+     * @return points
+     */
     public Set<ActivationPoint> getPoints() {
         return points;
     }
 
+    /**
+     *
+     * @param points
+     */
     public void setPoints(Set<ActivationPoint> points) {
         this.points = points;
     }
     //</editor-fold>
     
+    /**
+     * Methode converteert dit RoadsideEquipment object in een JSON object
+     * 
+     * @return JSON object
+     * @throws JSONException
+     */
     public JSONObject getRseqGeoJSON() throws JSONException {
         JSONObject gj = new JSONObject();
         gj.put("type","Feature");
@@ -247,6 +377,13 @@ public class RoadsideEquipment {
         return gj;
     }
     
+    /**
+     * Methode haalt alle punten van dit RoadsideEquipment object op en zet deze
+     * in een JSON object.
+     * 
+     * @return JSON object
+     * @throws JSONException
+     */
     public JSONObject getPointsGeoJSON() throws JSONException {
         JSONObject gjc = new JSONObject();
         gjc.put("type","FeatureCollection");
@@ -325,6 +462,13 @@ public class RoadsideEquipment {
         return gjc;
     }
     
+    /**
+     * Methode bouwt het volledige JSON object op voor dit RoadsideEquipment 
+     * object.
+     * 
+     * @return JSON Object
+     * @throws JSONException
+     */
     public JSONObject getJSON() throws JSONException {
         JSONObject j = new JSONObject();
         j.put("id", id);
