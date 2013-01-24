@@ -30,20 +30,6 @@
     <stripes:layout-component name="content">
 
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/geocoder.js"></script>
-        <script type="text/javascript">
-          
-            var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
-            var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
-            
-            var contextPath = "${contextPath}";
-            
-            var geocoder = Ext.create(Geocoder);
-            geocoder.on("geocodeResultClick", function(x, y) {
-                editor.olc.map.setCenter(new OpenLayers.LonLat(x, y), 12);
-            });
-
-        </script>
 
         <div id="leftbar">
             
@@ -104,10 +90,24 @@
                 <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/>BRT<br/>
             </div>
-            <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
-            <script type="text/javascript">
                 
+                
+            <script type="text/javascript" src="${contextPath}/js/forms.js"></script>
+            <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
+            <script type="text/javascript" src="${contextPath}/js/geocoder.js"></script>
+            <script type="text/javascript">
+
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map";
+
+                var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
+                var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
+
+                var contextPath = "${contextPath}";
+
+                var geocoder = Ext.create(Geocoder);
+                geocoder.on("geocodeResultClick", function(x, y) {
+                    editor.olc.map.setCenter(new OpenLayers.LonLat(x, y), 12);
+                });
                 
                 var editor = null;
                 Ext.onReady(function() {
