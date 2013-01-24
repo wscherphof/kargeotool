@@ -100,11 +100,6 @@ Ext.define("Editor", {
         
         this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
-        this.olc.addLayer("WMS","walapparatuur",mapfilePath,'walapparatuur', false);
-        this.olc.addLayer("WMS","signaalgroepen",mapfilePath,'signaalgroepen', false);
-        //this.olc.addLayer("WMS","roadside_equipment2",mapfilePath,'roadside_equipment2', true);
-        //this.olc.addLayer("WMS","activation_point2",mapfilePath,'activation_point2', true);
-        this.olc.addLayer("WMS","triggerpunten",mapfilePath,'triggerpunten', false);
         this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', false);
         this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', false);
         
