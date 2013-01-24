@@ -245,6 +245,10 @@ Ext.define("ol", {
                     },function(){
                         editor.contextMenu.show(x,y);
                     });
+                }else if(f && f.layer.name == "Points"){
+                    var x = evt.clientX;
+                    var y = evt.clientY;
+                    editor.contextMenu.show(x,y);
                 }else{
                     var x = evt.clientX;
                     var y = evt.clientY;
