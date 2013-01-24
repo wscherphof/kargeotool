@@ -24,7 +24,7 @@ public class Movement implements Comparable {
      * Roadside equipment waarbij deze movement hoort.
      */
     @ManyToOne(optional=false)
-    private RoadsideEquipment2 roadsideEquipment;
+    private RoadsideEquipment roadsideEquipment;
 
     /**
      * Volgnummer van movement binnen het verkeerssysteem.
@@ -49,11 +49,11 @@ public class Movement implements Comparable {
         this.id = id;
     }
     
-    public RoadsideEquipment2 getRoadsideEquipment() {
+    public RoadsideEquipment getRoadsideEquipment() {
         return roadsideEquipment;
     }
     
-    public void setRoadsideEquipment(RoadsideEquipment2 roadsideEquipment) {
+    public void setRoadsideEquipment(RoadsideEquipment roadsideEquipment) {
         this.roadsideEquipment = roadsideEquipment;
     }
     

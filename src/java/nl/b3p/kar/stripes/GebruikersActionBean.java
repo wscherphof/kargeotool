@@ -13,7 +13,7 @@ import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
-import nl.b3p.kar.hibernate.DataOwner2;
+import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.GebruikerDataOwnerRights;
 import nl.b3p.kar.hibernate.Role;
@@ -38,7 +38,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     
     private List<Role> allRoles;
     
-    private List<DataOwner2> dataOwners;
+    private List<DataOwner> dataOwners;
     
     private String dataOwnersJson;
     
@@ -63,74 +63,75 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     @Validate
     private List<String> dataOwnersValidatable = new ArrayList();
 
+    //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public ActionBeanContext getContext() {
         return context;
     }
-
+    
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
-
+    
     public List<Gebruiker> getGebruikers() {
         return gebruikers;
     }
-
+    
     public void setGebruikers(List<Gebruiker> gebruikers) {
         this.gebruikers = gebruikers;
     }
-
+    
     public Gebruiker getGebruiker() {
         return gebruiker;
     }
-
+    
     public void setGebruiker(Gebruiker gebruiker) {
         this.gebruiker = gebruiker;
     }
-
+    
     public String getPassword() {
         return password;
     }
-
+    
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
     public List<Role> getAllRoles() {
         return allRoles;
     }
-
+    
     public void setAllRoles(List<Role> allRoles) {
         this.allRoles = allRoles;
     }
-
-    public List<DataOwner2> getDataOwners() {
+    
+    public List<DataOwner> getDataOwners() {
         return dataOwners;
     }
-
-    public void setDataOwners(List<DataOwner2> dataOwners) {
+    
+    public void setDataOwners(List<DataOwner> dataOwners) {
         this.dataOwners = dataOwners;
     }
-
+    
     public String getDataOwnersJson() {
         return dataOwnersJson;
     }
-
+    
     public void setDataOwnersJson(String dataOwnersJson) {
         this.dataOwnersJson = dataOwnersJson;
     }
-
+    
     public List<String> getDataOwnersEditable() {
         return dataOwnersEditable;
     }
-
+    
     public void setDataOwnersEditable(List<String> dataOwnersEditable) {
         this.dataOwnersEditable = dataOwnersEditable;
     }
-
+    
     public List<String> getDataOwnersValidatable() {
         return dataOwnersValidatable;
     }
-
+    
     public void setDataOwnersValidatable(List<String> dataOwnersValidatable) {
         this.dataOwnersValidatable = dataOwnersValidatable;
     }
@@ -138,19 +139,20 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public Integer getRole() {
         return role;
     }
-
+    
     public void setRole(Integer role) {
         this.role = role;
     }
+    //</editor-fold>
     
     @Before(stages = LifecycleStage.BindingAndValidation)
     public void loadLists() {
         gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
         allRoles = Stripersist.getEntityManager().createQuery("from Role order by role").getResultList();
-        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner2 order by code").getResultList();
+        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner order by code").getResultList();
         
         JSONArray ja = new JSONArray();
-        for(DataOwner2 dao: dataOwners) {
+        for(DataOwner dao: dataOwners) {
             JSONObject jo = new JSONObject();
             try {
                 jo.put("id", dao.getCode());
@@ -244,11 +246,11 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         em.flush();
         /* XXX werkt niet meer met ID
         for(String daoId: dataOwnersEditable) {
-            DataOwner2 dao = em.find(DataOwner2.class, daoId);
+            DataOwner dao = em.find(DataOwner.class, daoId);
             gebruiker.setDataOwnerRight(dao, Boolean.TRUE, null);
         }
         for(String daoId: dataOwnersValidatable) {
-            DataOwner2 dao = em.find(DataOwner2.class, daoId);
+            DataOwner dao = em.find(DataOwner.class, daoId);
             gebruiker.setDataOwnerRight(dao, null, Boolean.TRUE);
         } */       
         

@@ -28,19 +28,22 @@ import org.stripesstuff.stripersist.Stripersist;
 public class EditorActionBean implements ActionBean {
 
     private static final Log log = LogFactory.getLog(EditorActionBean.class);
-    private static final String JSP = "/WEB-INF/jsp/viewer/editor2.jsp";
+    
+    private static final String JSP = "/WEB-INF/jsp/viewer/editor.jsp";
+    
     private ActionBeanContext context;
+    
     private boolean magWalapparaatMaken;
+
     @Validate
     private Integer karAddress;
+    
     @Validate
-    private RoadsideEquipment2 rseq;
+    private RoadsideEquipment rseq;
     
     @Validate
     private String json;
     
-    @Validate
-    private JSONObject layers;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
 
@@ -68,7 +71,7 @@ public class EditorActionBean implements ActionBean {
         }
 
         dataOwnersJSON = new JSONArray();
-        for (DataOwner2 dao : (List<DataOwner2>) em.createQuery("from DataOwner2 order by code").getResultList()) {
+        for (DataOwner dao : (List<DataOwner>) em.createQuery("from DataOwner order by code").getResultList()) {
             JSONObject jdao = new JSONObject();
             jdao.put("code", dao.getCode());
             jdao.put("classificatie", dao.getClassificatie());
@@ -80,48 +83,18 @@ public class EditorActionBean implements ActionBean {
         return new ForwardResolution(JSP);
     }
 
-    public Resolution gfi() {
-        return new StreamingResolution("application/json", "error: no objects found");
-    }
-
-    public Resolution rseqInfo2() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-
-        JSONObject info = new JSONObject();
-        info.put("success", Boolean.FALSE);
-        try {
-            RoadsideEquipment2 rseq2;
-
-            if (rseq != null) {
-                rseq2 = rseq;
-            } else {
-                rseq2 = (RoadsideEquipment2) em.createQuery("from RoadsideEquipment2 where karAddress = :un")
-                        .setParameter("un", karAddress)
-                        .getSingleResult();
-            }
-
-            info.put("rseq", rseq2.getRseqGeoJSON());
-            info.put("points", rseq2.getPointsGeoJSON());
-            info.put("success", Boolean.TRUE);
-        } catch (Exception e) {
-            log.error("rseqInfo2 exception", e);
-            info.put("error", ExceptionUtils.getMessage(e));
-        }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
-    }
-
     public Resolution rseqJSON() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            RoadsideEquipment2 rseq2;
+            RoadsideEquipment rseq2;
 
             if (rseq != null) {
                 rseq2 = rseq;
             } else {
-                rseq2 = (RoadsideEquipment2) em.createQuery("from RoadsideEquipment2 where karAddress = :a")
+                rseq2 = (RoadsideEquipment) em.createQuery("from RoadsideEquipment where karAddress = :a")
                         .setParameter("a", karAddress)
                         .getSingleResult();
             }
@@ -142,11 +115,11 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            List<RoadsideEquipment2> rseq2;
+            List<RoadsideEquipment> rseq2;
 
-            rseq2 = (List<RoadsideEquipment2>) em.createQuery("from RoadsideEquipment2").getResultList();
+            rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
             JSONArray rseqs = new JSONArray();
-            for (RoadsideEquipment2 r : rseq2) {
+            for (RoadsideEquipment r : rseq2) {
                 rseqs.put(r.getRseqGeoJSON());
             }
             info.put("rseqs", rseqs);
@@ -159,7 +132,7 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
-    private static final boolean isNew(JSONObject j) {
+    private static boolean isNew(JSONObject j) {
         String id = j.optString("id");
         return id != null && id.startsWith("ext-gen");
     }
@@ -173,9 +146,9 @@ public class EditorActionBean implements ActionBean {
             JSONObject jrseq = new JSONObject(json);
 
             if(isNew(jrseq)) {
-                rseq = new RoadsideEquipment2();
+                rseq = new RoadsideEquipment();
             } else {
-                rseq = em.find(RoadsideEquipment2.class, jrseq.getLong("id"));
+                rseq = em.find(RoadsideEquipment.class, jrseq.getLong("id"));
             }
 
             rseq.setLocation(GeoJSON.toPoint(jrseq.getJSONObject("location")));
@@ -184,22 +157,22 @@ public class EditorActionBean implements ActionBean {
             rseq.setType(jrseq.getString("type"));
             rseq.setKarAddress(jrseq.getInt("karAddress"));
             rseq.setCrossingCode(jrseq.optString("crossingCode"));
-            rseq.setDataOwner(em.find(DataOwner2.class, jrseq.getString("dataOwner")));
+            rseq.setDataOwner(em.find(DataOwner.class, jrseq.getString("dataOwner")));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
             
             JSONArray jpts = jrseq.getJSONArray("points");
-            Map<String, ActivationPoint2> pointsByJSONId = new HashMap();
+            Map<String, ActivationPoint> pointsByJSONId = new HashMap();
             for(int i = 0; i < jpts.length(); i++) {
                 JSONObject jpt = jpts.getJSONObject(i);
                 
-                ActivationPoint2 p = null;
+                ActivationPoint p = null;
                 if(isNew(jpt)) {
-                    p = new ActivationPoint2();
+                    p = new ActivationPoint();
                     p.setRoadsideEquipment(rseq);
                 } else {
-                    for(ActivationPoint2 ap2: rseq.getPoints()) {
+                    for(ActivationPoint ap2: rseq.getPoints()) {
                         if(ap2.getId().equals(jpt.getLong("id"))) {
                             p = ap2;
                             break;
@@ -300,14 +273,6 @@ public class EditorActionBean implements ActionBean {
         this.karAddress = karAddress;
     }
 
-    public JSONObject getLayers() {
-        return layers;
-    }
-
-    public void setLayers(JSONObject layers) {
-        this.layers = layers;
-    }
-
     public boolean isMagWalapparaatMaken() {
         return magWalapparaatMaken;
     }
@@ -316,11 +281,11 @@ public class EditorActionBean implements ActionBean {
         this.magWalapparaatMaken = magWalapparaatMaken;
     }
 
-    public RoadsideEquipment2 getRseq() {
+    public RoadsideEquipment getRseq() {
         return rseq;
     }
 
-    public void setRseq(RoadsideEquipment2 rseq) {
+    public void setRseq(RoadsideEquipment rseq) {
         this.rseq = rseq;
     }
 

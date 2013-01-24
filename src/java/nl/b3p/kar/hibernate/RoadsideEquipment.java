@@ -20,12 +20,13 @@ import org.hibernate.annotations.SortType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 /**
  *
  * @author Matthijs Laan
  */
 @Entity
-public class RoadsideEquipment2 {
+public class RoadsideEquipment {
     
     /**
      * Waarde voor de functie van het verkeerssysteem welke een verkeersregel-
@@ -57,7 +58,7 @@ public class RoadsideEquipment2 {
     private Long id;
     
     @ManyToOne(optional=false)
-    private DataOwner2 dataOwner;
+    private DataOwner dataOwner;
     
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
     private Point location;
@@ -117,7 +118,7 @@ public class RoadsideEquipment2 {
     private SortedSet<Movement> movements = new TreeSet<Movement>();
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
-    private Set<ActivationPoint2> points = new HashSet<ActivationPoint2>();
+    private Set<ActivationPoint> points = new HashSet<ActivationPoint>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {
@@ -128,11 +129,11 @@ public class RoadsideEquipment2 {
         this.id = id;
     }
     
-    public DataOwner2 getDataOwner() {
+    public DataOwner getDataOwner() {
         return dataOwner;
     }
     
-    public void setDataOwner(DataOwner2 dataOwner) {
+    public void setDataOwner(DataOwner dataOwner) {
         this.dataOwner = dataOwner;
     }
     
@@ -216,11 +217,11 @@ public class RoadsideEquipment2 {
         this.movements = movements;
     }
 
-    public Set<ActivationPoint2> getPoints() {
+    public Set<ActivationPoint> getPoints() {
         return points;
     }
 
-    public void setPoints(Set<ActivationPoint2> points) {
+    public void setPoints(Set<ActivationPoint> points) {
         this.points = points;
     }
     //</editor-fold>
@@ -251,7 +252,7 @@ public class RoadsideEquipment2 {
         gjc.put("type","FeatureCollection");
         JSONArray f = new JSONArray();
         
-        Map<ActivationPoint2,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
+        Map<ActivationPoint,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
         for(Movement m: movements) {
             for(MovementActivationPoint map: m.getPoints()) {
                 List<MovementActivationPoint> maps = mapsByAp2.get(map.getPoint());
@@ -263,7 +264,7 @@ public class RoadsideEquipment2 {
             }
         }
         
-        for(ActivationPoint2 ap2: points) {
+        for(ActivationPoint ap2: points) {
             JSONObject gj = new JSONObject();
             gj.put("type","Feature");
             gj.put("geometry", GeoJSON.toGeoJSON(ap2.getLocation()));
@@ -370,7 +371,7 @@ public class RoadsideEquipment2 {
             }
         }
         
-        Map<ActivationPoint2,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
+        Map<ActivationPoint,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
         for(Movement m: movements) {
             for(MovementActivationPoint map: m.getPoints()) {
                 List<MovementActivationPoint> maps = mapsByAp2.get(map.getPoint());
@@ -384,7 +385,7 @@ public class RoadsideEquipment2 {
 
         List<JSONObject> jpoints = new ArrayList();
         
-        for(ActivationPoint2 ap2: points) {
+        for(ActivationPoint ap2: points) {
             JSONObject pj = new JSONObject();
             pj.put("id",ap2.getId());
             pj.put("geometry", GeoJSON.toGeoJSON(ap2.getLocation()));

@@ -52,7 +52,7 @@ public class MovementActivationPoint {
      */
     @ManyToOne
     @Basic(optional=false)
-    private ActivationPoint2 point;
+    private ActivationPoint point;
     
     /**
      * Geeft aan of dit een beginpunt, eindpunt of meldpunt is.
@@ -65,43 +65,45 @@ public class MovementActivationPoint {
     @OneToOne(cascade= CascadeType.ALL)
     private ActivationPointSignal signal;
 
+    //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public Movement getMovement() {
         return movement;
     }
-
+    
     public void setMovement(Movement movement) {
         this.movement = movement;
     }
     
-    public ActivationPoint2 getPoint() {
+    public ActivationPoint getPoint() {
         return point;
     }
-
-    public void setPoint(ActivationPoint2 point) {
+    
+    public void setPoint(ActivationPoint point) {
         this.point = point;
     }
-
+    
     public String getBeginEndOrActivation() {
         return beginEndOrActivation;
     }
-
+    
     public void setBeginEndOrActivation(String beginEndOrActivation) {
         this.beginEndOrActivation = beginEndOrActivation;
     }
-
+    
     public ActivationPointSignal getSignal() {
         return signal;
     }
-
+    
     public void setSignal(ActivationPointSignal signal) {
         this.signal = signal;
     }
+    //</editor-fold>
 }

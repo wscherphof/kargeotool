@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @author Matthijs Laan
  */
 @Entity
-public class ActivationPoint2 {
+public class ActivationPoint {
     
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
@@ -24,7 +24,7 @@ public class ActivationPoint2 {
      * Roadside equipment waarbij deze movement hoort.
      */
     @ManyToOne(optional=false)
-    private RoadsideEquipment2 roadsideEquipment;
+    private RoadsideEquipment roadsideEquipment;
     
     /**
      * Nummer van het activation point binnen een enkele VRI.
@@ -53,11 +53,11 @@ public class ActivationPoint2 {
         this.id = id;
     }
 
-    public RoadsideEquipment2 getRoadsideEquipment() {
+    public RoadsideEquipment getRoadsideEquipment() {
         return roadsideEquipment;
     }
 
-    public void setRoadsideEquipment(RoadsideEquipment2 roadsideEquipment) {
+    public void setRoadsideEquipment(RoadsideEquipment roadsideEquipment) {
         this.roadsideEquipment = roadsideEquipment;
     }
 

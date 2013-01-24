@@ -94,61 +94,61 @@ public class ActivationPointSignal {
      */
     private Integer virtualLocalLoopNumber;
 
+    //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public int getKarCommandType() {
         return karCommandType;
     }
-
+    
     public void setKarCommandType(int karCommandType) {
         this.karCommandType = karCommandType;
     }
-
+    
     public List<VehicleType> getVehicleTypes() {
         return vehicleTypes;
     }
-
+    
     public void setVehicleTypes(List<VehicleType> vehicleTypes) {
         this.vehicleTypes = vehicleTypes;
     }
-
+    
     public String getTriggerType() {
         return triggerType;
     }
-
+    
     public void setTriggerType(String triggerType) {
         this.triggerType = triggerType;
     }
-
+    
     public Integer getDistanceTillStopLine() {
         return distanceTillStopLine;
     }
-
+    
     public void setDistanceTillStopLine(Integer distanceTillStopLine) {
         this.distanceTillStopLine = distanceTillStopLine;
     }
-
+    
     public Integer getSignalGroupNumber() {
         return signalGroupNumber;
     }
-
+    
     public void setSignalGroupNumber(Integer signalGroupNumber) {
         this.signalGroupNumber = signalGroupNumber;
     }
-
+    
     public Integer getVirtualLocalLoopNumber() {
         return virtualLocalLoopNumber;
     }
-
+    
     public void setVirtualLocalLoopNumber(Integer virtualLocalLoopNumber) {
         this.virtualLocalLoopNumber = virtualLocalLoopNumber;
     }
-    
-    
+    //</editor-fold>
 }

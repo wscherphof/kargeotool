@@ -8,7 +8,7 @@ import javax.persistence.*;
  * @author Matthijs Laan
  */
 @Entity
-public class DataOwner2 {
+public class DataOwner {
     public static final String CLASSIFICATIE_VERVOERDER = "Vervoerder";
     public static final String CLASSIFICATIE_INTEGRATOR = "Integrator";
     public static final String CLASSIFICATIE_INFRA_BEHEERDER = "Infra Beheerder";

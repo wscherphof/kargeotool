@@ -49,27 +49,29 @@ public class KarAttributes {
     @Basic(optional=false)
     private int usedAttributesMask;
 
+    //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public String getServiceType() {
         return serviceType;
     }
-
+    
     public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
     }
-
+    
     public int getCommandType() {
         return commandType;
     }
-
+    
     public void setCommandType(int commandType) {
         this.commandType = commandType;
     }
-
+    
     public int getUsedAttributesMask() {
         return usedAttributesMask;
     }
-
+    
     public void setUsedAttributesMask(int usedAttributesMask) {
         this.usedAttributesMask = usedAttributesMask;
     }
+    //</editor-fold>
 }
