@@ -104,20 +104,12 @@
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 
-    <servlet>
-        <servlet-name>SldServlet</servlet-name>
-        <servlet-class>nl.b3p.kar.services.SldServlet</servlet-class>
-    </servlet>
 	<servlet>
 		<servlet-name>StripesDispatcher</servlet-name>
 		<servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>    
     
-    <servlet-mapping>
-        <servlet-name>SldServlet</servlet-name>
-        <url-pattern>/SldServlet</url-pattern>
-    </servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>StripesDispatcher</servlet-name>
 		<url-pattern>*.action</url-pattern>
@@ -139,8 +131,5 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <error-page>
-        <error-code>403</error-code>
-        <location>/loginError.do</location>
-    </error-page>
+
 </web-app>
