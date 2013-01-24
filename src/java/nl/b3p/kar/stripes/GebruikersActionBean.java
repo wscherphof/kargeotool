@@ -17,7 +17,6 @@ import nl.b3p.kar.hibernate.DataOwner2;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.GebruikerDataOwnerRights;
 import nl.b3p.kar.hibernate.Role;
-import nl.b3p.transmodel.DataOwner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

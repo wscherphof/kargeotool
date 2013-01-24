@@ -14,8 +14,6 @@ import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
-import nl.b3p.kar.persistence.MyEMFDatabase;
-import nl.b3p.transmodel.DataOwner;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.stripesstuff.stripersist.Stripersist;
@@ -52,13 +50,11 @@ public class Gebruiker implements Principal {
     }
 
     public static Gebruiker getNonTransientPrincipal(HttpServletRequest request) throws Exception {
-        EntityManager em = MyEMFDatabase.getEntityManager(MyEMFDatabase.MAIN_EM);
-
         Gebruiker g = (Gebruiker)request.getUserPrincipal();
         if(g == null) {
             return null;
         }
-        return em.find(Gebruiker.class, g.getId());
+        return Stripersist.getEntityManager().find(Gebruiker.class, g.getId());
     }
 
     public Integer getId() {
@@ -160,12 +156,12 @@ public class Gebruiker implements Principal {
         this.dataOwnerRights = dataOwnerRights;
     }
 
-    public boolean canEditDataOwner(DataOwner d) {
+    public boolean canEditDataOwner(DataOwner2 d) {
         GebruikerDataOwnerRights r = dataOwnerRights.get(d);
         return r != null && r.isEditable();
     }
 
-    public boolean canValidateDataOwner(DataOwner d) {
+    public boolean canValidateDataOwner(DataOwner2 d) {
         GebruikerDataOwnerRights r = dataOwnerRights.get(d);
         return r != null && r.isValidatable();
     }
@@ -173,7 +169,7 @@ public class Gebruiker implements Principal {
     public Set<DataOwner2> getEditableDataOwners() {
         HashSet<DataOwner2> dataOwners = new HashSet<DataOwner2>();
         for(Iterator it = dataOwnerRights.entrySet().iterator(); it.hasNext();) {
-            Entry<DataOwner, GebruikerDataOwnerRights> entry = (Entry<DataOwner, GebruikerDataOwnerRights>)it.next();
+            Entry<DataOwner2, GebruikerDataOwnerRights> entry = (Entry<DataOwner2, GebruikerDataOwnerRights>)it.next();
             if(entry.getValue().isEditable()) {
                 dataOwners.add(entry.getValue().getDataOwner());
             }

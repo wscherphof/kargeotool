@@ -100,15 +100,15 @@
         </c:if>
 
         <c:if test="${!empty actionBean.gebruiker}">
-            <stripes:submit name="save"><fmt:message key="button.save"/></stripes:submit>
+            <stripes:submit name="save">Opslaan</stripes:submit>
             <c:if test="${actionBean.gebruiker.id != null}">
                 <%-- niet gebruiker zichzelf laten verwijderen --%>
                 <c:if test="${actionBean.gebruiker.id != pageContext.request.userPrincipal.id}">
-                    <stripes:submit name="delete" onclick="return confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?');"><fmt:message key="button.remove"/></stripes:submit>
+                    <stripes:submit name="delete" onclick="return confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?');">Verwijderen</stripes:submit>
                 </c:if>
             </c:if>
             <stripes:url var="cancelPage" beanclass="nl.b3p.kar.stripes.GebruikersActionBean"/>
-            <stripes:button name="cancel" onclick="window.location.href='${cancelPage}'"><fmt:message key="button.cancel"/></stripes:button>
+            <stripes:button name="cancel" onclick="window.location.href='${cancelPage}'">Annuleren</stripes:button>
             <div class="edittable">
                 <table style="font-size: 8pt">
                     <tr>

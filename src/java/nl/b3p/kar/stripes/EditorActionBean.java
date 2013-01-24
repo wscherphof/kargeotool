@@ -24,7 +24,7 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
 @StrictBinding
-@UrlBinding("/action/viewer/editor")
+@UrlBinding("/action/editor")
 public class EditorActionBean implements ActionBean {
 
     private static final Log log = LogFactory.getLog(EditorActionBean.class);

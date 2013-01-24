@@ -1,7 +1,7 @@
 <%@include file="/WEB-INF/jsp/taglibs.jsp" %>
 <%@page errorPage="/WEB-INF/jsp/commons/errorpage.jsp" %>
 
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 
 <stripes:layout-definition>
     <html>
@@ -32,12 +32,6 @@
                 uitmeldPunt_selected:    imgPath + '/icons/radio_rood_selected.png'
             };
         </script>
-        <script type="text/javascript" src="${contextPath}/js/edit.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/json2.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/utils.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/simple_treeview.js"></script>
-        <script src="${contextPath}/js/jquery-1.3.2.min.js"></script>
-        <script src="${contextPath}/js/jquery-ui-1.7.2.custom.min.js"></script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
