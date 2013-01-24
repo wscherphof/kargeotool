@@ -104,33 +104,6 @@
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 
-    <!-- Init ManagedPersistence to get a hibernate EntityManagerFactory -->
-    <servlet>
-        <servlet-name>managedpersistence</servlet-name>
-        <servlet-class>nl.b3p.kar.persistence.MyEMFDatabase</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>action</servlet-name>
-        <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
-        <init-param>
-            <param-name>chainConfig</param-name>
-            <param-value>org/apache/struts/tiles/chain-config.xml</param-value>
-        </init-param>
-        <init-param>
-            <param-name>config</param-name>
-            <param-value>/WEB-INF/struts-root.xml</param-value>
-        </init-param>
-        <init-param>
-            <param-name>config/viewer</param-name>
-            <param-value>/WEB-INF/struts-viewer.xml</param-value>
-        </init-param>
-        <init-param>
-            <param-name>config/beheer</param-name>
-            <param-value>/WEB-INF/struts-beheer.xml</param-value>
-        </init-param>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
     <servlet>
         <servlet-name>SldServlet</servlet-name>
         <servlet-class>nl.b3p.kar.services.SldServlet</servlet-class>
@@ -140,10 +113,6 @@
 		<servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>    
-    <servlet-mapping>
-        <servlet-name>action</servlet-name>
-        <url-pattern>*.do</url-pattern>
-    </servlet-mapping>
     
     <servlet-mapping>
         <servlet-name>SldServlet</servlet-name>
@@ -169,7 +138,6 @@
     </session-config>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
-        <welcome-file>login.do</welcome-file>
     </welcome-file-list>
     <error-page>
         <error-code>403</error-code>
