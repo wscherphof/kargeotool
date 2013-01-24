@@ -44,6 +44,8 @@ Ext.define("Editor", {
     
     currentEditAction: null,
     
+    // === Initialisatie ===
+    
     /**
      * @constructor
      */
@@ -133,6 +135,8 @@ Ext.define("Editor", {
         });
     },
     
+    // === Opstarten viewer ===
+    
     /**
      * Parset de window.location.hash naar een object.
      * @return de location hash als object
@@ -177,6 +181,8 @@ Ext.define("Editor", {
             return true;
         }
     },
+    
+    // === Ajax calls ===
     
     /**
      * Laad de road side equipment. Wordt aangeroepen van uit de GUI.
@@ -279,6 +285,8 @@ Ext.define("Editor", {
         }
     },
     
+    // === Edit functies ===
+    
     /**
      * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
@@ -292,63 +300,6 @@ Ext.define("Editor", {
         }
     },
     
-    /**
-     * Haal alle movements op op basis het id van de point
-     * @param rseq het rseq object waar in gezocht moet worden
-     * @param point het punt waarvoor de movements moeten worden opgehaald.
-     * @return een array van movements waar het point in voorkomt.
-     */
-    findMovementsForPoint: function(rseq, point) {
-        var movements = [];
-        
-        Ext.Array.each(rseq.getMovements(), function(movement) {
-            Ext.Array.each(movement.getMaps(), function(map) {
-                if(map.pointId == point.id) {
-                    movements.push({
-                        movement: movement,
-                        map: map
-                    });
-                }
-            });
-        });
-        return movements;
-    },
-    
-    /**
-     * Voegt een movement toe.
-     * @param checkout de checkout waar het over gaat
-     * @param end het eind punt.
-     */
-    addMovement: function (checkout, end){
-        var mapEnd = Ext.create(MovementActivationPoint,{
-            beginEndOrActivation:"END",
-            pointId: end.getId()
-        });
-        var mapCheckout= Ext.create(MovementActivationPoint,{
-            beginEndOrActivation:"END",
-            pointId: checkout.getId()
-        });
-        var movement= Ext.create(Movement,{maps:[mapEnd,mapCheckout]});
-        this.activeRseq.addMovement(movement);
-        this.fireEvent('movementAdded', movement);
-        
-    },
-    
-    /**
-     * Voeg een inmeld punt toe aan de movement van een uitmeld punt.
-     */
-    voegInmeldAanMovement: function(uitmeld, inmeld) {
-        var mvnts = this.findMovementsForPoint(this.activeRseq, uitmeld);
-        for ( var i = 0 ; i < mvnts.length ; i++ ){
-            var movement = mvnts[i].movement;
-            var map = Ext.create(MovementActivationPoint,{
-                pointId: inmeld.getId(),
-                beginEndOrActivation: "ACTIVATION"
-            });
-            movement.addMap(map);
-            this.fireEvent('movementUpdated', movement);
-        }
-    },
     /**
      * Verander de actieve Rseq
      * @param rseq de nieuwe actieve Rseq
@@ -596,6 +547,66 @@ Ext.define("Editor", {
         
         this.olc.removeAllFeatures();
         this.olc.updateVectorLayer();
+    },
+    
+    // === Model functies ===
+    
+    /**
+     * Haal alle movements op op basis het id van de point
+     * @param rseq het rseq object waar in gezocht moet worden
+     * @param point het punt waarvoor de movements moeten worden opgehaald.
+     * @return een array van movements waar het point in voorkomt.
+     */
+    findMovementsForPoint: function(rseq, point) {
+        var movements = [];
+        
+        Ext.Array.each(rseq.getMovements(), function(movement) {
+            Ext.Array.each(movement.getMaps(), function(map) {
+                if(map.pointId == point.id) {
+                    movements.push({
+                        movement: movement,
+                        map: map
+                    });
+                }
+            });
+        });
+        return movements;
+    },
+    
+    /**
+     * Voegt een movement toe.
+     * @param checkout de checkout waar het over gaat
+     * @param end het eind punt.
+     */
+    addMovement: function (checkout, end){
+        var mapEnd = Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: end.getId()
+        });
+        var mapCheckout= Ext.create(MovementActivationPoint,{
+            beginEndOrActivation:"END",
+            pointId: checkout.getId()
+        });
+        var movement= Ext.create(Movement,{maps:[mapEnd,mapCheckout]});
+        this.activeRseq.addMovement(movement);
+        this.fireEvent('movementAdded', movement);
+        
+    },
+    
+    /**
+     * Voeg een inmeld punt toe aan de movement van een uitmeld punt.
+     */
+    voegInmeldAanMovement: function(uitmeld, inmeld) {
+        var mvnts = this.findMovementsForPoint(this.activeRseq, uitmeld);
+        for ( var i = 0 ; i < mvnts.length ; i++ ){
+            var movement = mvnts[i].movement;
+            var map = Ext.create(MovementActivationPoint,{
+                pointId: inmeld.getId(),
+                beginEndOrActivation: "ACTIVATION"
+            });
+            movement.addMap(map);
+            this.fireEvent('movementUpdated', movement);
+        }
     }
 });
 
