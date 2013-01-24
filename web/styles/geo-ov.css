@@ -151,3 +151,7 @@ body.editor {
     display: block;
     margin-bottom: 2px;
 }
+
+#kaart{
+    height: 100%;
+}
