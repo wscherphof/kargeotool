@@ -238,7 +238,7 @@ Ext.define("ol", {
             clickout: true,
             onSelect : function (feature){
                 if(feature && feature.layer.name == "RseqSelect"){
-                    console.log("Selecting rseq:" + feature.id);
+                    //console.log("Selecting rseq:" + feature.id);
                     editor.loadRseqInfo({
                         karAddress: feature.data.karAddress
                     },
@@ -339,7 +339,7 @@ Ext.define("ol", {
                 tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
             });
         }else{
-            console.log("Type " + type + " not known.");
+            //console.log("Type " + type + " not known.");
         }
         if(layer){
             layer.setVisibility(visible);

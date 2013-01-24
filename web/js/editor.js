@@ -302,7 +302,7 @@ Ext.define("Editor", {
         this.activeRseq = rseq;
         this.olc.selectFeature(rseq.getId(),"RSEQ");
         this.fireEvent('activeRseqChanged', this.activeRseq);
-        console.log("activeRseq: ", rseq);
+        //console.log("activeRseq: ", rseq);
     },
     setSelectedObject : function (olFeature){;
         if(!olFeature){
@@ -745,9 +745,9 @@ Ext.define("Editor", {
                         }
                         
                         Ext.Array.each(movements, function(mvmtAndMap) {
-                            console.log("movement nummer " + mvmtAndMap.movement.nummer);
+                            //console.log("movement nummer " + mvmtAndMap.movement.nummer);
                             if(mvmtAndMap.map) {
-                                console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
+                                //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
                                 Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
                             }
                             if(editingUitmeldpunt) {
@@ -755,7 +755,7 @@ Ext.define("Editor", {
                                 // van movements die dit pointId gebruiken
                                 Ext.each(mvmtAndMap.movement.maps, function(theMap) {
                                     if(theMap.beginEndOrActivation == "ACTIVATION") {
-                                        console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
+                                        //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
                                         Ext.Object.merge(theMap, allSignalValues);
                                     }
                                 });
