@@ -16,6 +16,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * Context menu class dat alle rechtermuis clicks afhandelt.
+ */
 Ext.define("ContextMenu", {
     menuContext: null,
     editor: null,
@@ -25,14 +28,19 @@ Ext.define("ContextMenu", {
     checkout:null,
     checkin:null,
     defaultMenu:null,
-    
+    /**
+     *@constructor
+     */
     constructor: function(editor) {
         this.editor = editor;
         this.editor.on("selectedObjectChanged", this.updateStates,this);
     },
-    
+    /**
+     * Maak de menu's aan.
+     */
     createMenus: function() {
         var me = this;
+        //maak default menu
         this.defaultMenu= Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -60,7 +68,7 @@ Ext.define("ContextMenu", {
             }
         });
         
-        
+        //maak vri menu
         this.vri = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -120,7 +128,7 @@ Ext.define("ContextMenu", {
                 scope:me
             }
         });
-        
+        //Maak checkout menu
         this.checkout = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -223,7 +231,7 @@ Ext.define("ContextMenu", {
                 scope:me
             }
         });
-        
+        //Maak checkin menu
         this.checkin = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -274,7 +282,7 @@ Ext.define("ContextMenu", {
                 scope:me
             }
         });
-        
+        // Maak wijzig menu
         this.onlyEdit = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -330,15 +338,27 @@ Ext.define("ContextMenu", {
             }
         };
     },
+    /**
+     * Update de status van het menu bij verandering.
+     */
     updateStates: function(selectedObject){
     // TODO update the states according to the selected object
     },
+    /**
+     * Toon het menu op de gewenste x en y pixel
+     * @param x de x pixel
+     * @param y de y pixel
+     */
     show : function(x,y){
         var context = this.getMenuContext();
         if(context){
             context.showAt(x, y);
         }
     },
+    /**
+     * Haal het nodige menu op door te kijken wat het type is van het geselecteerde object
+     * @return het gewenste menu
+     */
     getMenuContext: function() {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
@@ -352,26 +372,13 @@ Ext.define("ContextMenu", {
             return this.menuContext["standaard"];
         }
     },
+    /**
+     * Deactiveer het menu (verberg)
+     */
     deactivateContextMenu: function() {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
             mc.hide();
         }
-    },
-    openPopup: function() {
-        Ext.create('Ext.window.Window', {
-            title: 'Hello',
-            height: 200,
-            width: 400,
-            layout: 'fit',
-            items: {  // Let's put an empty grid in just to illustrate fit layout
-                xtype: 'grid',
-                border: false,
-                columns: [{
-                    header: 'World'
-                }],                 // One header just for show. There's no data,
-                store: Ext.create('Ext.data.ArrayStore', {}) // A dummy empty data store
-            }
-        }).show();
     }
 });
