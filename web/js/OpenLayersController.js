@@ -135,7 +135,7 @@ Ext.define("ol", {
                     measureValueDiv.style.display="block";
                     var measureValueText=document.getElementById('olControlMeasureValueText');
                     var bestLengthTokens=this.getBestLength(evt.parent);
-                    measureValueText.innerHTML= bestLengthTokens[0].toFixed(3)+" "+bestLengthTokens[1];
+                    measureValueText.innerHTML= bestLengthTokens[0].toFixed(0)+" "+bestLengthTokens[1];
                 }
             }
         };
