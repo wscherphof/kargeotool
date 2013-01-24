@@ -248,7 +248,7 @@ Ext.define("ol", {
                 }else{
                     var x = evt.clientX;
                     var y = evt.clientY;
-                    editor.contextMenu.show(x,y);
+                    editor.contextMenu.show(x,y,true);
                 }
                 return false;
             },

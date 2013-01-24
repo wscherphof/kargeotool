@@ -362,8 +362,11 @@ Ext.define("ContextMenu", {
      * @param x de x pixel
      * @param y de y pixel
      */
-    show : function(x,y){
+    show : function(x,y,forceDefault){
         var context = this.getMenuContext();
+        if(forceDefault === true){
+            context = this.menuContext['standaard'];
+        }
         if(context){
             context.showAt(x, y);
         }
