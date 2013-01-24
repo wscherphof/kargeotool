@@ -43,9 +43,10 @@ Ext.define("Editor", {
 
         this.mixins.observable.constructor.call(this, {
             listeners:{
+                activeRseqChanged : function(rseq){
+                    this.loadAllRseqs(rseq.karAddress);
+                }
                  //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
-                 // TODO wanneer active rseq veranderd, loadAllRseqs doen, behalve actieve
-                 
             }
         });
         
@@ -157,10 +158,6 @@ Ext.define("Editor", {
      * Called from GUI.
      */
     loadRseqInfo: function(query, successFunction) {
-        // Clear huidige geselecteerde
-        this.activeRseq = null;
-        this.fireEvent('activeRseqChanged', this.activeRseq);
-        
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
@@ -181,6 +178,7 @@ Ext.define("Editor", {
                     if(successFunction) {
                         successFunction(rseq);
                     }
+                    this.fireEvent('activeRseqChanged', this.activeRseq);
                 }else{
                     alert("Ophalen resultaten mislukt.");
                 }

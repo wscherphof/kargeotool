@@ -241,9 +241,6 @@ Ext.define("ol", {
                     //console.log("Selecting rseq:" + feature.id);
                     editor.loadRseqInfo({
                         karAddress: feature.data.karAddress
-                    },
-                    function(){
-                        feature.layer.removeFeatures([feature]);
                     });
                 }else{
                     editor.setSelectedObject(feature);

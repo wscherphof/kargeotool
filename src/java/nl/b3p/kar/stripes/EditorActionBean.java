@@ -117,7 +117,11 @@ public class EditorActionBean implements ActionBean {
         try {
             List<RoadsideEquipment> rseq2;
 
-            rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+            if(karAddress != null){
+                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where karAddress <> :karAddress").setParameter("karAddress", karAddress).getResultList();
+            }else{
+                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+            }
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment r : rseq2) {
                 rseqs.put(r.getRseqGeoJSON());
