@@ -57,15 +57,18 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'addCheckoutPointvri',
-                text: 'Voeg uitmeldpunt toe'
+                text: 'Voeg uitmeldpunt toe',
+                icon: karTheme.uitmeldPunt
             },
             {
                 id: 'addCheckinPointvri',
-                text: 'Voeg inmeldpunt toe'
+                text: 'Voeg inmeldpunt toe',
+                icon: karTheme.inmeldPunt
             },
             {
                 id: 'addEndPointvri',
-                text: 'Voeg eindpunt toe'
+                text: 'Voeg eindpunt toe',
+                icon: karTheme.eindPunt
             }
             ],
             listeners: {
@@ -109,25 +112,22 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'addEndPointcheckout',
-                text: 'Voeg eindpunt toe'
+                text: 'Voeg eindpunt toe',
+                icon: karTheme.uitmeldPunt
             },
             {
                 id: 'selectEndPointcheckout',
-                text: 'Selecteer eindpunt'
+                text: 'Selecteer eindpunt',
+                icon: contextPath + "/images/silk/cursor.png"
             },
             {
                 id: 'addCheckinPointcheckout',
                 text: 'Voeg inmeldpunt toe',
-                disabled:true
+                disabled:true,
+                icon: karTheme.inmeldPunt
             },{
                 id : "lowercheckout",
                 xtype: 'menuseparator'
-            },
-            {
-                id: 'showPathcheckout',
-                text: 'Laat pad zien',
-                xtype: 'menucheckitem',
-                disabled:true
             },
             {
                 id: 'advancedCheckout',
@@ -136,11 +136,13 @@ Ext.define("ContextMenu", {
                     items:[
                     {
                         id: 'selectOtherCheckout',
-                        text: 'Selecteer uitmeldpunt van andere fasecyclus'
+                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
+                        icon: contextPath + "/images/silk/cursor.png"
                     },
                     {
                         id: 'voegBeginpuntToecheckout',
-                        text: 'Voeg beginpunt toe'
+                        text: 'Voeg beginpunt toe',
+                        icon: karTheme.startPunt
                     }
                     ],
                     listeners: {
@@ -155,6 +157,12 @@ Ext.define("ContextMenu", {
                         scope:me
                     }
                 }
+            },
+            {
+                id: 'showPathcheckout',
+                text: 'Laat pad zien',
+                xtype: 'menucheckitem',
+                disabled:true
             }
             ],
             listeners: {
@@ -202,11 +210,13 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'voegVoorinmeldTocheckine',
-                text: 'Voeg voorinmeldpunt toe'
+                text: 'Voeg voorinmeldpunt toe',
+                icon: karTheme.voorinmeldPunt
             },
             {
                 id: 'voegBeginpuntToecheckin',
-                text: 'Voeg beginpunt toe'
+                text: 'Voeg beginpunt toe',
+                icon: karTheme.startPunt
             }
             ],
             listeners: {
