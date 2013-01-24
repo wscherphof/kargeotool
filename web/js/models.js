@@ -16,6 +16,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * In dit .js bestand worden de models gedefineerd.
+ */
 function objectSubset(object, keys) {
     var j = { };
 
@@ -27,7 +30,9 @@ function objectSubset(object, keys) {
 
     return j;
 }
-
+/**
+ * Roadside Equipment model.
+ */
 Ext.define('RSEQ', {
     config:{
         id: null,
@@ -42,6 +47,20 @@ Ext.define('RSEQ', {
         town:null,
         type:null // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
     },
+    /**
+     *@constructor
+     * @param config.id het id van de RSEQ
+     * @param config.location de locatie als geometry
+     * @param config.description de omschrijving
+     * @param config.validFrom geldig vanaf
+     * @param config.movements de movements die bij deze RSEQ horen.
+     * @param config.karAddress het kar adres
+     * @param config.crossingCode het kruispunt nummer
+     * @param config.dataOwner de eigenaar van de bijhorende data
+     * @param config.points de punten die bij deze RSEQ horen
+     * @param config.town de plaats waar deze RSEQ bij hoort
+     * @param config.type het type van de RSEQ
+     */
     constructor: function(config) {     
         if(!config.description){
             config.description = "";
@@ -57,6 +76,11 @@ Ext.define('RSEQ', {
         }
         this.initConfig(config);    
     },
+    /**
+     * Haal het punt op met behulp van het id van het punt
+     * @param id het id van het gewenste punt
+     * @return het gevonden punt of null indien niet gevonden.
+     */
     getPointById : function (id){
         if(this.points){
             for (var i = 0 ; i < this.points.length ;i++){
@@ -67,6 +91,11 @@ Ext.define('RSEQ', {
         }
         return null;
     },
+    /**
+     * Haal de movement op met behulp van het id.
+     * @param id het id van de gewenste movement.
+     * @return het movement object of null indien niet gevonden.
+     */
     getMovementById : function (id){
         for (var i = 0 ; i < this.movements.length ;i++){
             if(this.movements[i].getId() == id){
@@ -75,18 +104,30 @@ Ext.define('RSEQ', {
         }
         return null;
     },
+    /**
+     * Voegt een punt toe
+     * @param point het toe te voegen punt
+     */
     addPoint : function (point){
         if(!this.points){
             this.points = new Array();
         }
         this.points.push(point);
     },
+    /**
+     * Voegt een movement toe
+     * @param movement de toe te voegen movement
+     */
     addMovement: function (movement){
         if(!this.movements){
             this.movements = new Array();
         }
         this.movements.push(movement);
     },
+    /**
+     * Geeft een GeoJSON object terug dat deze RSEQ representeert
+     * @return GeoJSON object
+     */
     toGeoJSON : function (){
         var points = new Array();
         if(this.points){
@@ -116,6 +157,10 @@ Ext.define('RSEQ', {
         };
         return json;
     },
+    /**
+     * Geeft een JSON object terug dat deze RSEQ representeert
+     * @return json object
+     */
     toJSON: function() {
         var j = objectSubset(this, ["id", "description", "validFrom", 
             "karAddress", "dataOwner", "crossingCode", "town", "type", 
@@ -135,6 +180,9 @@ Ext.define('RSEQ', {
     }
 });
 
+/**
+ * Class voor Point
+ */
 Ext.define('Point', {
     config:{
         id: null,
@@ -145,12 +193,26 @@ Ext.define('Point', {
         nummer:null,
         signalGroupNumbers:null
     },
+    /**
+     * @constructor
+     * @param config.id id van dit punt
+     * @param config.geometry geometry van dit punt
+     * @param config.label het label van dit punt
+     * @param config.movementNumbers nummers van de bijhorende movements
+     * @param config.type type van dit punt
+     * @param config.nummer nummer van dit punt
+     * @param config.signalGroupNumbers nummers van de bijhorende signaal groepen
+     */
     constructor: function(config) {        
         if(!config.label){
             config.label = "";
         }
         this.initConfig(config);    
     },
+    /**
+     * Geeft dit object als GeoJSON terug
+     * @return een GeoJSON representatie van dit object.
+     */
     toGeoJSON : function(){
         var json = {
             type: "Feature",
@@ -171,7 +233,9 @@ Ext.define('Point', {
         return objectSubset(this, ["id", "geometry", "nummer", "label"]);        
     }
 });
-
+/**
+ * Class van een activatie punt van een movement.
+ */
 Ext.define('MovementActivationPoint', {
     config:{
         id: null,
@@ -184,12 +248,28 @@ Ext.define('MovementActivationPoint', {
         triggerType:null,
         vehicleTypes:null
     },
+    /**
+     *@constructor
+     *@param config.id id van dit activatie punt
+     *@param config.beginEndOrActivation BEGIN,END of ACTIVATION 
+     *@param config.commandType het commando type
+     *@param config.distanceTillStopLine afstand tot stoplijn
+     *@param config.pointId het id van het bijhorende punt
+     *@param config.signalGroupNumber het signaal group nummer waar dit object bij hoort
+     *@param config.virtualLocalLoopNumber 
+     *@param config.triggerType type trigger
+     *@param config.vehicleTypes typen voertuigen waar dit punt op moet reageren.
+     */
     constructor: function(config) {      
         if(!config.triggerType) {
             config.triggerType = 'STANDARD';
         }
         this.initConfig(config);    
     },
+    /**
+     * Geeft een JSON object terug van dit object
+     * @return een JSON object dat dit object representeert.
+     */
     toJSON: function() {
         var keys = ["id", "beginEndOrActivation", "pointId"];
         if(this.beginEndOrActivation == "ACTIVATION") {
@@ -200,22 +280,38 @@ Ext.define('MovementActivationPoint', {
         return objectSubset(this, keys);  
     }
 });
-
+/**
+ * Class voor de movement
+ */
 Ext.define('Movement', {
     config:{
         id: null,
         maps:null,
         nummer:null
     },
+    /**
+     * @constructor
+     * @param config.id het id van de movement
+     * @param config.maps een array van movement activatie punten
+     * @param config.nummer nummer van de movement
+     */
     constructor: function(config) {        
         this.initConfig(config);    
     },
+    /**
+     * voeg een Movement Activatie Punt toe.
+     * @param map het Movement Activatie Punt dat toegevoegd moet worden.
+     */
     addMap : function (map){
         if(!this.maps){
             this.maps = new Array();
         }
         this.maps.push(map);
     },
+    /**
+     * Geeft een JSON object van dit object terug
+     * @return een JSON object dat dit object representeert
+     */
     toJSON: function() {
         var j = objectSubset(this, ["id", "nummer"]);
         
@@ -226,7 +322,11 @@ Ext.define('Movement', {
         return j;
     }
 });
-
+/**
+ * Maak een Roadside Equipment object op basis van een JSON object
+ * @param json het json object
+ * @return een RSEQ object.
+ */
 function makeRseq (json){
     var rseq = Ext.create("RSEQ",json);
     var movements = makeMovements(json.movements);
@@ -235,7 +335,11 @@ function makeRseq (json){
     rseq.setPoints(points);
     return rseq;
 }
-
+/**
+ * Maak movements objecten op basis van een JSON array
+ * @param json de json array
+ * @return een array van movement objecten.
+ */
 function makeMovements(json){
     var movements = new Array();
     for (var i = 0 ; i < json.length; i++){
@@ -248,7 +352,11 @@ function makeMovements(json){
     
     return movements;
 }
-
+/**
+ * Maak Movement Activatie Punt objecten op basis van een JSON array
+ * @param json de json array
+ * @return een array van Movement Activatie Punten
+ */
 function makeMAPs(json){
     var maps = new Array();
     for(var i = 0 ; i < json.length ; i++){
@@ -258,10 +366,20 @@ function makeMAPs(json){
     return maps;
 }
 
+/**
+ * Maak een Movement object op basis van een JSON object
+ * @param json het json object
+ * @return een movement object.
+ */
 function makeMovement(json){
     return Ext.create("Movement",json);
 }
 
+/**
+ * Maak een array van Point objecten op basis van een JSON array
+ * @param json de json array
+ * @return een array van Points.
+ */
 function makePoints(json){
     var points = new Array();
     for(var i = 0 ; i < json.length ; i++){
