@@ -131,7 +131,7 @@ Ext.define("ContextMenu", {
             {
                 id: 'addEndPointcheckout',
                 text: 'Voeg eindpunt toe',
-                icon: karTheme.uitmeldPunt
+                icon: karTheme.eindPunt
             },
             {
                 id: 'selectEndPointcheckout',
@@ -146,6 +146,12 @@ Ext.define("ContextMenu", {
             },{
                 id : "lowercheckout",
                 xtype: 'menuseparator'
+            },
+            {
+                id: 'showPathcheckout',
+                text: 'Laat pad zien',
+                xtype: 'menucheckitem',
+                disabled:true
             },
             {
                 id: 'advancedCheckout',
@@ -175,12 +181,6 @@ Ext.define("ContextMenu", {
                         scope:me
                     }
                 }
-            },
-            {
-                id: 'showPathcheckout',
-                text: 'Laat pad zien',
-                xtype: 'menucheckitem',
-                disabled:true
             }
             ],
             listeners: {
@@ -227,7 +227,7 @@ Ext.define("ContextMenu", {
                 xtype: 'menuseparator'
             },
             {
-                id: 'voegVoorinmeldTocheckine',
+                id: 'voegVoorinmeldTocheckin',
                 text: 'Voeg voorinmeldpunt toe',
                 icon: karTheme.voorinmeldPunt
             },
@@ -245,7 +245,7 @@ Ext.define("ContextMenu", {
                     }
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
-                        case 'voegVoorinmeldToecheckin':
+                        case 'voegVoorinmeldTocheckin':
                             editor.addPreCheckinPoint(true);
                             break;
                         case 'voegBeginpuntToecheckin':
