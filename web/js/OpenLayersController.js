@@ -44,7 +44,7 @@ Ext.define("ol", {
      *Maak een map
      */
     createMap : function(domId){
-        this.panel = new OpenLayers.Control.Panel();
+     //   this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
         //opties voor openlayers map.        
         var opt = {
@@ -55,9 +55,9 @@ Ext.define("ol", {
             resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21,0.105,0.0525],
             theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
             units : 'm',
-            controls : [this.panel]
+            controls : []
         };
-        //maak oepnlayers map
+        //maak openlayers map
         this.map = new OpenLayers.Map(domId,opt);
         //maak vector layers.
         this.vectorLayer = new OpenLayers.Layer.Vector("Points", {
@@ -89,28 +89,28 @@ Ext.define("ol", {
      * Private method which adds all the controls
      */
     createControls : function (domId){
-        var dg = new OpenLayers.Control.DragPan();
+      /*  var dg = new OpenLayers.Control.DragPan();
         var zb = new OpenLayers.Control.ZoomBox()
         this.panel.addControls(dg);
-        this.panel.addControls(zb);  
+        this.panel.addControls(zb);  */
         var nav = new OpenLayers.Control.Navigation({
-            dragPan: dg,
-            zoomBox: zb
+           /* dragPan: dg,
+            zoomBox: zb*/
         });
-        dg.activate();
+        //dg.activate();
         this.map.addControl(nav);
         
-        this.panel.addControls( new OpenLayers.Control.ZoomToMaxExtent()); 
-        var navHist = new OpenLayers.Control.NavigationHistory();
+      //  this.panel.addControls( new OpenLayers.Control.ZoomToMaxExtent()); 
+        /*var navHist = new OpenLayers.Control.NavigationHistory();
         this.map.addControl(navHist);
         this.panel.addControls( navHist.previous);
-        this.panel.addControls( navHist.next);
+        this.panel.addControls( navHist.next);*/
         this.map.addControl( new OpenLayers.Control.MousePosition({
             numDigits: 2
         }));        
         this.map.addControl(new OpenLayers.Control.PanZoomBar());
         
-        var options = new Object();
+       /* var options = new Object();
         options["persist"]=true;
         options["callbacks"]={
             modify: function (evt){
@@ -153,9 +153,9 @@ Ext.define("ol", {
                 measureValueDiv.style.display="none";
             }
         });
-        this.panel.addControls (measureTool);
+        this.panel.addControls (measureTool);*/
         //voeg GetFeatureInfo tool toe.
-        this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
+        /*this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
             //drillDown: true,
             url: "localhost:8084/geo-ov/action/viewer/editor?gfi=true",
             infoFormat: "application/vnd.ogc.gml"
@@ -177,7 +177,7 @@ Ext.define("ol", {
         this.identifyButton.events.register("deactivate",this,function(){
             this.gfi.deactivate();
         });
-        
+        */
         //voeg 'teken punt' tool toe.
         var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
