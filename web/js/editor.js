@@ -710,17 +710,40 @@ Ext.define("ActiveRseqInfoPanel", {
         this.editor = editor;
         editor.on("activeRseqChanged", this.updateRseqInfoPanel, this);
         editor.on("activeRseqUpdated", this.updateRseqInfoPanel, this);
-        editor.on("currentEditActionChanged", this.updateInfoPanel, this);
+        editor.on("currentEditActionChanged", this.updateHelpPanel, this);
     },
     
     updateRseqInfoPanel: function(rseq) {
-        Ext.get("context_vri").setHTML(rseq == null ? "" : rseq.karAddress);
-        
+        Ext.get("context_vri").setHTML(rseq == null ? "" : 
+            (rseq.description + " (" + rseq.karAddress + ")"));
         Ext.get("rseqSave").setVisible(rseq != null);
-        this.updateInfoPanel();
+        
+        var signaalGroepen = [];
+        var signaalGroepMap = {};
+        
+        var overzicht = Ext.get("overzicht");
+        overzicht.dom.innerHTML = "";        
+        
+        if(rseq != null) {
+            Ext.Array.each(rseq.movements, function(mvmt) {
+                Ext.Array.each(mvmt.maps, function(map) {
+                    if(map.beginEndOrActivation == "ACTIVATION" && map.signalGroupNumber) {
+                        if(!signaalGroepMap[map.signalGroupNumber]) {
+                            signaalGroepen.push(map.signalGroupNumber);
+                            signaalGroepMap[map.signalGroupNumber] = true;
+                        }
+                    }
+                });
+            });
+            
+            overzicht.dom.innerHTML = "Signaalgroepen: " + signaalGroepen.join(", ");
+        }
+        
+        
+        this.updateHelpPanel();
     },
     
-    updateInfoPanel: function() {
+    updateHelpPanel: function() {
         
         var action = this.editor.currentEditAction;
         var txt;
