@@ -215,7 +215,6 @@ Ext.define('RSEQ', {
                     beginEndOrActivation: "END",
                     pointId: eindpunt.getId()
                 });         
-                console.log(movement);
                 movement.maps.push(newMap);                
                 return;
             }
