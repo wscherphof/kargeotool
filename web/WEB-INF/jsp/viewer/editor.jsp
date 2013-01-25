@@ -44,6 +44,8 @@
                     Huidig geselecteerde VRI: <span id="context_vri"></span>
                     <p><br>
                     <input type="button" id="rseqSave" value="Opslaan" style="visibility: hidden" onclick="editor.saveOrUpdate()">
+                    <div id="overzicht" style="margin-top: 5px; font-size: 10pt">
+                    </div>
                 </div>
             </div>
             
