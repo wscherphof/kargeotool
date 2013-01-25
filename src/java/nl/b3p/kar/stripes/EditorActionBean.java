@@ -217,6 +217,10 @@ public class EditorActionBean implements ActionBean {
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
             
+            if(rseq.getId() == null) {
+                em.persist(rseq);
+            }
+            
             JSONArray jpts = jrseq.getJSONArray("points");
             Map<String, ActivationPoint> pointsByJSONId = new HashMap();
             for(int i = 0; i < jpts.length(); i++) {
