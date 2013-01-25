@@ -211,7 +211,6 @@ Ext.define("Editor", {
                     if(successFunction) {
                         successFunction(rseq);
                     }
-                    this.fireEvent('activeRseqChanged', this.activeRseq);
                 }else{
                     alert("Ophalen resultaten mislukt.");
                 }
@@ -274,9 +273,17 @@ Ext.define("Editor", {
                 success: function (response){
                     var msg = Ext.JSON.decode(response.responseText);
                     if(msg.success) {
-                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.')
+                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                        
+                        var rseq = makeRseq(msg.roadsideEquipment);
+
+                        // Dit misschien in listener
+                        editor.olc.removeAllFeatures();
+                        editor.olc.addFeatures(rseq.toGeoJSON());
+                        this.setActiveRseq(rseq);
+                        
                     }else{
-                        Ext.Msg.alert('Fout', 'Fout bij opslaan: ' + msg.error)
+                        Ext.Msg.alert('Fout', 'Fout bij opslaan: ' + msg.error);
                     }
                 },
                 failure: function (response){
