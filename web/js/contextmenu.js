@@ -393,17 +393,14 @@ Ext.define("ContextMenu", {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
 
-            console.log("showing context menu for type " + type);
             // Update state van disabled / enabled items op basis van selectedObject
 
             if(type == "ACTIVATION_2") {
                 // Voor een uitmeldpunt kan alleen een inmeldpunt worden toegevoegd
                 // indien voor dat uitmeldpunt in een movement een eindpunt aanwezig 
                 // is
-                console.log("Controleren of uitmeldpunt ", editor.selectedObject, " een eindpunt heeft");
                 
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
-                console.log("heeftEindpunt = " + heeftEindpunt);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }
@@ -412,7 +409,7 @@ Ext.define("ContextMenu", {
             if(menu){
                 return menu;
             }else{
-                console.log("could not find menu for type " + type);
+                alert("Kan geen context menu vinden voor type " + type);
                 return this.menuContext["onlyEdit"];
             }
         }else{
@@ -426,7 +423,7 @@ Ext.define("ContextMenu", {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
             if(!mc) {
-                console.log("mc for key " + key + " is null");
+                alert("mc for key " + key + " is null");
             }
             mc.hide();
         }
