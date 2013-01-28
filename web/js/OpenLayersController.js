@@ -747,7 +747,7 @@ var selectstyle = new OpenLayers.Style(
 // all other symbolizers in rules will extend this one
 {
     graphicWidth: 37,
-    graphicHeight: 37,
+    graphicHeight: 39,
     graphicYOffset: -21, 
     labelYOffset: -20,
     label: "${label}" 
@@ -870,7 +870,7 @@ var tempstyle = new OpenLayers.Style(
 // all other symbolizers in rules will extend this one
 {
     graphicWidth: 37,
-    graphicHeight: 37,
+    graphicHeight: 39,
     graphicYOffset: -21, 
     labelYOffset: -20,
     label: "${label}" 
