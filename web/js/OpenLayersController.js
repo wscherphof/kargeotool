@@ -30,6 +30,13 @@ Ext.define("ol", {
     dragFeature : null,
     point : null,
     line : null,
+    
+    /**
+     * Het OpenLayers.Control dat geactiveerd wordt om een locatie aan te klikken
+     * waar Street View geopend moet worden.
+     */
+    streetViewClickControl: null,
+    
     identifyButton : null,
     overview : null,
     activeFeature : null,
@@ -183,6 +190,40 @@ Ext.define("ol", {
         this.dragFeature.handlers['feature'].stopDown = false;
         this.dragFeature.handlers['feature'].stopUp = false;
         this.dragFeature.handlers['feature'].stopClick = false;
+        
+        // streetViewClickControl
+        
+        var StreetViewClick = OpenLayers.Class(OpenLayers.Control, {
+            defaultHandlerOptions: {
+                'single': true,
+                'double': false,
+                'pixelTolerance': 0,
+                'stopSingle': false,
+                'stopDouble': false
+            },
+            
+            initialize: function(options) {
+                this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);
+                OpenLayers.Control.prototype.initialize.apply(this, arguments);
+                this.handler = new OpenLayers.Handler.Click(
+                    this, {
+                        'click': this.clicked
+                    }, this.handlerOptions
+                );
+           },
+           clicked: function(e) {
+               var lonlat = this.map.getLonLatFromPixel(e.xy);
+               this.events.triggerEvent("clicked", { lonlat: lonlat});
+           }
+        });
+        this.streetViewClickControl = new StreetViewClick({
+            eventListeners: {
+                "clicked": me.streetViewClicked,
+                scope: me
+            },
+            displayClass: 'olStreetViewClick'
+        });
+        this.map.addControl(this.streetViewClickControl);
 
         this.map.addControl(this.point);
         this.map.addControl(this.line);

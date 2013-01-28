@@ -23,6 +23,13 @@
 
 <stripes:layout-render name="/WEB-INF/jsp/commons/siteTemplate.jsp">
 
+    <stripes:layout-component name="head">
+        <script type="text/javascript" src="${contextPath}/js/proj4js/proj4js-compressed.js"></script>
+        <script type="text/javascript">
+            Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.237,50.0087,465.658,-0.406857,0.350733,-1.87035,4.0812 +units=m +no_defs";
+            Proj4js.defs["EPSG:4236"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ";            
+        </script>
+    </stripes:layout-component>
     <stripes:layout-component name="headerlinks" >
         <%@include file="/WEB-INF/jsp/commons/headerlinks.jsp" %>
 
@@ -43,7 +50,11 @@
                 <div style="margin: 3px">
                     Huidig geselecteerde VRI: <span id="context_vri"></span>
                     <p><br>
-                    <input type="button" id="rseqSave" value="Opslaan" style="visibility: hidden" onclick="editor.saveOrUpdate()">
+                    <div id="rseqOptions" style="visibility: hidden">
+                        <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate()">
+                    </div>
+                    <p><br>
+                    <input type="button" id="streetview" value="Streetview" onclick="editor.streetViewClick()">
                     <div id="overzicht" style="margin-top: 5px; font-size: 10pt">
                     </div>
                 </div>

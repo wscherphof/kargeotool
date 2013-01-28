@@ -59,6 +59,7 @@
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
+        <stripes:layout-component name="head"/>        
     </head>
     <body class="editor" id="editorBody">
         <div id="viewportcontainer">
