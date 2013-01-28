@@ -31,6 +31,8 @@ Ext.define("ContextMenu", {
     nonActivationPoint: null,
     
     defaultMenu:null,
+    
+    point_with_line:null,
     /**
      *@constructor
      */
@@ -69,8 +71,28 @@ Ext.define("ContextMenu", {
                     switch (item.id) {
                         case 'addRseq':
                             // Voeg op huidige positie nieuwe Rseq toe 
-                            
-                            this.editor.addRseq(lonlat.lon, lonlat.lat);
+                    }
+                },
+                scope:me
+            }
+        });
+                
+        
+         this.point_with_line = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'resetMeasure',
+                text: 'Meten vanaf vorig punt',
+                icon: contextPath + "/images/silk/ruler.png"
+            }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    switch (item.id) {
+                        case 'resetMeasure':
+                            this.editor.resetMeasure();
                             break;
                     }
                 },
@@ -334,7 +356,9 @@ Ext.define("ContextMenu", {
             
             "CROSSING" : this.rseq,
             "GUARD" : this.rseq,
-            "BAR" : this.rseq//,
+            "BAR" : this.rseq,
+            
+            "ADDPOINT_WITH_LINE" : this.point_with_line
             
             //"onlyEdit" : this.onlyEdit // XXX
         };
@@ -379,7 +403,9 @@ Ext.define("ContextMenu", {
     show : function(x,y,forceDefault){
         var context = this.getMenuContext();
         if(forceDefault === true){
-            context = this.menuContext['standaard'];
+            if(context != this.point_with_line){
+                context = this.menuContext['standaard'];
+            }
         }
         if(context){
             context.showAt(x, y);
@@ -403,6 +429,8 @@ Ext.define("ContextMenu", {
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
+            }else if(editor.currentEditAction == "ADDPOINT_WITH_LINE"){
+                type = "ADDPOINT_WITH_LINE";
             }
 
             var menu = this.menuContext[type];

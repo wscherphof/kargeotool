@@ -526,13 +526,10 @@ Ext.define("ol", {
     drawLineFromPoint : function (x,y){
         var lonlat = new OpenLayers.LonLat (x,y);
         var pixel = this.map.getPixelFromLonLat(lonlat);
-        var evt = {
-            xy: pixel
-        };
         this.measureTool.activate();
         this.line.activate();
-        this.line.handler.mousedown(evt);
-        this.line.handler.mouseup(evt);
+        this.line.handler.createFeature(pixel);
+        this.line.handler.insertXY(x,y);
         this.measureTool.handler.createFeature(pixel);
         this.measureTool.handler.insertXY(x,y);
     },

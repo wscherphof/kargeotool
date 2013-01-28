@@ -394,6 +394,14 @@ Ext.define("Editor", {
             }
         }
     },
+    /**
+     * Reset het meten. Meet vanaf vorige punt
+     */
+    resetMeasure : function (){
+        var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3]
+        this.olc.line.deactivate();
+        this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
+    },
     
     /**
      * Maak GeoJSON punt van x en y
@@ -673,6 +681,7 @@ Ext.define("Editor", {
       */
     addPoint: function(withLine, point) {
         if(withLine ){
+            this.changeCurrentEditAction("ADDPOINT_WITH_LINE");
             var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
             var startX = this.selectedObject[geomName].coordinates[0];
             var startY = this.selectedObject[geomName].coordinates[1];
@@ -757,7 +766,7 @@ Ext.define("ActiveRseqInfoPanel", {
             case "ACTIVATION_2": 
                 txt = "Dubbelklik om het uitmeldpunt te plaatsen.";
                 break;
-            case "ACTIVATION_2": 
+            case "ACTIVATION_3": 
                 txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X.";
                 break;
             case "BEGIN":
