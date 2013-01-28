@@ -90,22 +90,10 @@ Ext.define("ol", {
      * Private method which adds all the controls
      */
     createControls : function (domId){
-      /*  var dg = new OpenLayers.Control.DragPan();
-        var zb = new OpenLayers.Control.ZoomBox()
-        this.panel.addControls(dg);
-        this.panel.addControls(zb);  */
         var nav = new OpenLayers.Control.Navigation({
-           /* dragPan: dg,
-            zoomBox: zb*/
         });
-        //dg.activate();
         this.map.addControl(nav);
         
-      //  this.panel.addControls( new OpenLayers.Control.ZoomToMaxExtent()); 
-        /*var navHist = new OpenLayers.Control.NavigationHistory();
-        this.map.addControl(navHist);
-        this.panel.addControls( navHist.previous);
-        this.panel.addControls( navHist.next);*/
         this.map.addControl( new OpenLayers.Control.MousePosition({
             numDigits: 2
         }));        
@@ -163,30 +151,7 @@ Ext.define("ol", {
             }
         });
         this.map.addControl(this.measureTool);
-        /*voeg GetFeatureInfo tool toe.
-        /*this.gfi = new OpenLayers.Control.WMSGetFeatureInfo({
-            //drillDown: true,
-            url: "localhost:8084/geo-ov/action/viewer/editor?gfi=true",
-            infoFormat: "application/vnd.ogc.gml"
-        });
-        this.gfi.events.register("getfeatureinfo",this,this.raiseOnDataEvent);
-        this.map.addControl(this.gfi);
         
-        var frameworkOptions = {
-            displayClass: "olControlIdentify",
-            type: OpenLayers.Control.TYPE_TOOL,
-            title: "Selecteer een feature"
-        };        
-        this.identifyButton= new OpenLayers.Control(frameworkOptions);
-        this.panel.addControls(this.identifyButton);
-        
-        this.identifyButton.events.register("activate",this,function(){
-            this.gfi.activate();
-        });
-        this.identifyButton.events.register("deactivate",this,function(){
-            this.gfi.deactivate();
-        });
-        */
         //voeg 'teken punt' tool toe.
         var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
