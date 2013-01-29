@@ -60,6 +60,7 @@ Ext.define("EditForms", {
             title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 330,
             width: 450,
+            modal: true,
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
             layout: 'fit',
             items: {  
@@ -195,6 +196,7 @@ Ext.define("EditForms", {
             title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : (point.getType() == "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
             height: 130,
             width: 250,
+            modal: true,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
             layout: 'fit',
             items: {  
@@ -386,6 +388,7 @@ Ext.define("EditForms", {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
             height: map.commandType == 2 ? 300 : 225,
             width: 450,
+            modal: true,
             icon: karTheme[apName],
             layout: 'fit',
             items: {  
