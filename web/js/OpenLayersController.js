@@ -43,6 +43,7 @@ Ext.define("ol", {
     selectCtrl : null,
     highlight:null,
     measureTool:null,
+    standaloneMeasure:null,
     constructor : function(editor){
         this.editor = editor;
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
@@ -52,8 +53,10 @@ Ext.define("ol", {
      *Maak een map
      */
     createMap : function(domId){
-     //   this.panel = new OpenLayers.Control.Panel();
         var maxBounds = new OpenLayers.Bounds(12000,304000,280000,620000);
+        this.panel = new OpenLayers.Control.Panel({
+            allowDepress:true
+        });
         //opties voor openlayers map.        
         var opt = {
             projection: new OpenLayers.Projection("EPSG:28992"),
@@ -63,7 +66,7 @@ Ext.define("ol", {
             resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21,0.105,0.0525],
             theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
             units : 'm',
-            controls : []
+            controls : [this.panel]
         };
         //maak openlayers map
         this.map = new OpenLayers.Map(domId,opt);
@@ -97,8 +100,7 @@ Ext.define("ol", {
      * Private method which adds all the controls
      */
     createControls : function (domId){
-        var nav = new OpenLayers.Control.Navigation({
-        });
+        var nav = new OpenLayers.Control.Navigation();
         this.map.addControl(nav);
         
         this.map.addControl( new OpenLayers.Control.MousePosition({
@@ -112,7 +114,7 @@ Ext.define("ol", {
             modify: function (evt){
                 //make a tooltip with the measured length
                 if (evt.parent){
-            var measureValueDiv=document.getElementById("olControlMeasureValue");
+                    var measureValueDiv=document.getElementById("olControlMeasureValue");
                     if (measureValueDiv==undefined){
                         measureValueDiv=document.createElement('div');
                         measureValueDiv.id="olControlMeasureValue";
@@ -142,7 +144,6 @@ Ext.define("ol", {
         
         //voeg meet tool toe
         this.measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
-        this.map.addControl(this.measureTool);
       
         this.measureTool.events.register('measure',this.measureTool,function(){
             var measureValueDiv=document.getElementById("olControlMeasureValue");
@@ -157,7 +158,17 @@ Ext.define("ol", {
                 measureValueDiv.style.display="none";
             }
         });
+        
         this.map.addControl(this.measureTool);
+        
+        this.standaloneMeasure = Ext.create(Measure,{
+            map: this.map,
+            panel: this.panel
+        });
+        this.standaloneMeasure.on('measurechanged',function(){
+            this.editor.changeCurrentEditAction("MEASURE");
+        }, this);
+        
         
         //voeg 'teken punt' tool toe.
         var me = this;
@@ -404,7 +415,7 @@ Ext.define("ol", {
                 tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
             });
         }else{
-            //console.log("Type " + type + " not known.");
+        //console.log("Type " + type + " not known.");
         }
         if(layer){
             layer.setVisibility(visible);
@@ -684,7 +695,10 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.punt,
-            label: ""
+            label: "",
+            strokeColor: "#99BCE8",
+            strokeLinecap: "butt",
+            strokeDashstyle: "longdash"
         }
     }),
     new OpenLayers.Rule({   
@@ -806,7 +820,10 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.punt_selected,
-            label: ""
+            label: "",
+            strokeColor: "#99BCE8",
+            strokeLinecap: "butt",
+            strokeDashstyle: "longdash"
         }
     }),
     new OpenLayers.Rule({   

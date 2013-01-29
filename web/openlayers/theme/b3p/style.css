@@ -2,11 +2,12 @@
 /*OpenLayers*/
 .olControlPanel{
     float: left;
-    margin-left: 75px;
+    left: 8px;
+    top:300px;
+    margin-left: 0px;
     margin-top: 5px;
-    border: 1px solid grey;
+    border: 0px solid grey;
     padding: 2px;
-    background-color: #D9E7F8;
 }
 .olControlNavigationHistory{
     float: left;

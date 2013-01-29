@@ -796,6 +796,10 @@ Ext.define("ActiveRseqInfoPanel", {
                 txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep "
                     + "X" + ".";
                 break;
+            case "MEASURE":
+                var length = this.editor.olc.standaloneMeasure.lastLength;
+                txt = "De afstand is " + length[0].toFixed(0) + ' ' + length[1] + '. Druk op de lineaal om het meten te stoppen.';
+                break;
             default:
                 if(editor.activeRseq == null) {
                     txt = "Klik op een icoon van een verkeerssysteem om deze te selecteren" +

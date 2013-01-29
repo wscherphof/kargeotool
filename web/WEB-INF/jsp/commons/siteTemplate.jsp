@@ -55,6 +55,7 @@
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
+        <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
