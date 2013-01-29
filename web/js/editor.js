@@ -60,6 +60,15 @@ Ext.define("Editor", {
             }
         });
         
+        var me = this;
+        window.onbeforeunload = function(e) {
+            if(me.activeRseq != null) {
+                // TODO alleen indien er niet opgeslagen wijzigingen zijn
+                return "Weet u zeker dat u deze applicatie wilt verlaten? Wijzigingen aan '" + me.activeRseq.description + "' worden niet opgeslagen.";
+            }
+            return undefined;
+        };
+        
         this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
