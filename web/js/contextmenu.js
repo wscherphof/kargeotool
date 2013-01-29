@@ -429,7 +429,8 @@ Ext.define("ContextMenu", {
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
-            }else if(editor.currentEditAction == "ADDPOINT_WITH_LINE"){
+            }
+            if(editor.currentEditAction == "ADDPOINT_WITH_LINE"){
                 type = "ADDPOINT_WITH_LINE";
             }
 
