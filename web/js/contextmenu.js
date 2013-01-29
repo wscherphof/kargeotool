@@ -71,6 +71,8 @@ Ext.define("ContextMenu", {
                     switch (item.id) {
                         case 'addRseq':
                             // Voeg op huidige positie nieuwe Rseq toe 
+                            this.editor.addRseq(lonlat.lon, lonlat.lat);
+                            break;                            
                     }
                 },
                 scope:me
