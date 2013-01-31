@@ -44,6 +44,8 @@ Ext.define("ol", {
     highlight:null,
     measureTool:null,
     standaloneMeasure:null,
+    
+    markerLayer:null,
     constructor : function(editor){
         this.editor = editor;
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
@@ -87,6 +89,8 @@ Ext.define("ol", {
             })
         }
         );
+        this.markerLayer = new OpenLayers.Layer.Markers( "Markers" );
+        this.map.addLayer(this.markerLayer);
             
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
@@ -107,14 +111,14 @@ Ext.define("ol", {
             numDigits: 2
         }));        
         this.map.addControl(new OpenLayers.Control.PanZoomBar());
-        
+        var me = this;
         var options = new Object();
         options["persist"]=true;
         options["callbacks"]={
             modify: function (evt){
                 //make a tooltip with the measured length
                 if (evt.parent){
-                    var measureValueDiv=document.getElementById("olControlMeasureValue");
+                    /* var measureValueDiv=document.getElementById("olControlMeasureValue");
                     if (measureValueDiv==undefined){
                         measureValueDiv=document.createElement('div');
                         measureValueDiv.id="olControlMeasureValue";
@@ -130,9 +134,10 @@ Ext.define("ol", {
                     measureValueDiv.style.top=px.y+"px";
                     measureValueDiv.style.left=px.x+25+'px'
                     measureValueDiv.style.display="block";
-                    var measureValueText=document.getElementById('olControlMeasureValueText');
+                    var measureValueText=document.getElementById('olControlMeasureValueText');*/
                     var bestLengthTokens=this.getBestLength(evt.parent);
-                    measureValueText.innerHTML= bestLengthTokens[0].toFixed(0)+" "+bestLengthTokens[1];
+                    me.editor.changeCurrentEditAction("MEASURE_INTEGRATED", bestLengthTokens[0].toFixed(0), bestLengthTokens[1]);
+                //  measureValueText.innerHTML= bestLengthTokens[0].toFixed(0)+" "+bestLengthTokens[1];
                 }
             }
         };
@@ -166,7 +171,7 @@ Ext.define("ol", {
             panel: this.panel
         });
         this.standaloneMeasure.on('measurechanged',function(){
-            this.editor.changeCurrentEditAction("MEASURE");
+            this.editor.changeCurrentEditAction("MEASURE_STANDALONE");
         }, this);
         
         
@@ -220,12 +225,14 @@ Ext.define("ol", {
                     this, {
                         'click': this.clicked
                     }, this.handlerOptions
-                );
-           },
-           clicked: function(e) {
-               var lonlat = this.map.getLonLatFromPixel(e.xy);
-               this.events.triggerEvent("clicked", { lonlat: lonlat});
-           }
+                    );
+            },
+            clicked: function(e) {
+                var lonlat = this.map.getLonLatFromPixel(e.xy);
+                this.events.triggerEvent("clicked", {
+                    lonlat: lonlat
+                });
+            }
         });
         this.streetViewClickControl = new StreetViewClick({
             eventListeners: {
@@ -422,6 +429,7 @@ Ext.define("ol", {
             this.map.addLayer(layer);
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
             this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+2);
+            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+3);
         }
     },
     /**
@@ -628,6 +636,16 @@ Ext.define("ol", {
      */
     resizeMap : function(){
         this.map.updateSize();
+    },
+    
+    addMarker : function(geom){
+        var lonlat = new OpenLayers.LonLat(geom.x, geom.y);
+        var marker = new OpenLayers.Marker(lonlat);
+        this.clearMarkers();
+        this.markerLayer.addMarker(marker);
+    },
+    clearMarkers : function(){
+        this.markerLayer.clearMarkers();
     }
 });
 /**

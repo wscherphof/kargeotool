@@ -410,6 +410,7 @@ Ext.define("Editor", {
         var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3]
         this.olc.line.deactivate();
         this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
+        this.olc.addMarker(lastPoint);
     },
     
     /**
@@ -715,6 +716,7 @@ Ext.define("Editor", {
         if(this.pointFinishedHandler) {
             this.pointFinishedHandler(geom);
         }
+        this.olc.clearMarkers();
     },
     
     streetViewClick: function() {
@@ -805,9 +807,14 @@ Ext.define("ActiveRseqInfoPanel", {
                 txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep "
                     + "X" + ".";
                 break;
-            case "MEASURE":
+            case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
                 txt = "De afstand is " + length[0].toFixed(0) + ' ' + length[1] + '. Druk op de lineaal om het meten te stoppen.';
+                break;
+            case "MEASURE_INTEGRATED":
+                var measure = this.editor.olc.measureTool;
+                var length = measure.getBestLength(measure.handler.line.geometry);
+                txt = "De afstand is " + length[0].toFixed(0) + ' ' + length[1] + '. Dubbelklik om het punt te zetten. Rechtermuisknop heerft de optie om het meten opnieuw te starten vanaf het vorige punt.';
                 break;
             default:
                 if(editor.activeRseq == null) {

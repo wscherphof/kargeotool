@@ -432,7 +432,7 @@ Ext.define("ContextMenu", {
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }
-            if(editor.currentEditAction == "ADDPOINT_WITH_LINE"){
+            if(editor.currentEditAction == "MEASURE_INTEGRATED"){
                 type = "ADDPOINT_WITH_LINE";
             }
 
