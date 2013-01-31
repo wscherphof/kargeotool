@@ -116,34 +116,16 @@ Ext.define("ol", {
         options["persist"]=true;
         options["callbacks"]={
             modify: function (evt){
-                //make a tooltip with the measured length
                 if (evt.parent){
-                    /* var measureValueDiv=document.getElementById("olControlMeasureValue");
-                    if (measureValueDiv==undefined){
-                        measureValueDiv=document.createElement('div');
-                        measureValueDiv.id="olControlMeasureValue";
-                        measureValueDiv.style.position='absolute';
-                        this.map.div.appendChild(measureValueDiv);
-                        measureValueDiv.style.zIndex="10000";
-                        measureValueDiv.className="olControlMaptip";
-                        var measureValueText=document.createElement('div');
-                        measureValueText.id='olControlMeasureValueText';
-                        measureValueDiv.appendChild(measureValueText);
-                    }
-                    var px= this.map.getViewPortPxFromLonLat(new OpenLayers.LonLat(evt.x,evt.y));
-                    measureValueDiv.style.top=px.y+"px";
-                    measureValueDiv.style.left=px.x+25+'px'
-                    measureValueDiv.style.display="block";
-                    var measureValueText=document.getElementById('olControlMeasureValueText');*/
                     var bestLengthTokens=this.getBestLength(evt.parent);
                     me.editor.changeCurrentEditAction("MEASURE_INTEGRATED", bestLengthTokens[0].toFixed(0), bestLengthTokens[1]);
-                //  measureValueText.innerHTML= bestLengthTokens[0].toFixed(0)+" "+bestLengthTokens[1];
                 }
             }
         };
         options["handlerOptions"]={
             style :{
-                strokeColor : ""
+                strokeColor : "",
+                strokeOpacity: 0
             }
         };
         
