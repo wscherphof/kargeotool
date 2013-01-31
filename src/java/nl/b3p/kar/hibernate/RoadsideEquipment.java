@@ -139,6 +139,9 @@ public class RoadsideEquipment {
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
     private Set<ActivationPoint> points = new HashSet<ActivationPoint>();
+    
+    @Column(length=4096)
+    private String memo;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
@@ -219,6 +222,14 @@ public class RoadsideEquipment {
      */
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
     
     /**
@@ -370,6 +381,7 @@ public class RoadsideEquipment {
         p.put("validFrom", sdf.format(validFrom));
         p.put("dataOwner", dataOwner.getCode());
         p.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
+        p.put("memo", memo);
         
         // geen kar attributes
         
@@ -397,6 +409,7 @@ public class RoadsideEquipment {
         j.put("validFrom", sdf.format(validFrom));
         j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         j.put("location", GeoJSON.toGeoJSON(location));
+        j.put("memo", memo);
         
         JSONArray jmvmts = new JSONArray();
         j.put("movements", jmvmts);

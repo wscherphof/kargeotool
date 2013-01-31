@@ -30,31 +30,38 @@
         <script type="text/javascript">
             var imgPath = "<c:url value="/images/"/>";
             var karTheme = {
-                crossing:                imgPath + 'icons/vri.png',
-                crossing_selected:       imgPath + 'icons/vri_selected.png',
-                guard:                   imgPath + 'icons/wri.png',
-                guard_selected:          imgPath + 'icons/wri_selected.png',
-                bar:                     imgPath + 'icons/afsluitingssysteem.png',
-                bar_selected:            imgPath + 'icons/afsluitingssysteem_selected.png',
+                crossing:                       imgPath + 'icons/vri.png',
+                crossing_attachment:            imgPath + 'icons/vri_attachment.png',
+                crossing_selected:              imgPath + 'icons/vri_selected.png',
+                crossing_selected_attachment:   imgPath + 'icons/vri_selected_attachment.png',
+                guard:                          imgPath + 'icons/wri.png',
+                guard_attachment:                          imgPath + 'icons/wri_attachment.png',
+                guard_selected:                 imgPath + 'icons/wri_selected.png',
+                guard_selected_attachment:      imgPath + 'icons/wri_selected_attachment.png',
+                bar:                            imgPath + 'icons/afsluitingssysteem.png',
+                bar_attachment:                 imgPath + 'icons/afsluitingssysteem_attachment.png',
+                bar_selected:                   imgPath + 'icons/afsluitingssysteem_selected.png',
+                bar_selected_attachment:        imgPath + 'icons/afsluitingssysteem_selected_attachment.png',
 
-                punt:                    imgPath + '/icons/radio_zwart.png',
-                punt_selected:           imgPath + '/icons/radio_zwart_selected.png',
-                startPunt:               imgPath + '/icons/beginpunt.png',
-                startPunt_selected:      imgPath + '/icons/beginpunt_selected.png',
-                eindPunt:                imgPath + '/icons/eindpunt.png',
-                eindPunt_selected:       imgPath + '/icons/eindpunt_selected.png',
+                punt:                           imgPath + '/icons/radio_zwart.png',
+                punt_selected:                  imgPath + '/icons/radio_zwart_selected.png',
+                startPunt:                      imgPath + '/icons/beginpunt.png',
+                startPunt_selected:             imgPath + '/icons/beginpunt_selected.png',
+                eindPunt:                       imgPath + '/icons/eindpunt.png',
+                eindPunt_selected:              imgPath + '/icons/eindpunt_selected.png',
 
-                voorinmeldPunt:          imgPath + '/icons/radio_blauw.png',
-                voorinmeldPunt_selected: imgPath + '/icons/radio_blauw_selected.png',
-                inmeldPunt:              imgPath + '/icons/radio_groen.png',
-                inmeldPunt_selected:     imgPath + '/icons/radio_groen_selected.png',
-                uitmeldPunt:             imgPath + '/icons/radio_rood.png',
-                uitmeldPunt_selected:    imgPath + '/icons/radio_rood_selected.png'
+                voorinmeldPunt:                 imgPath + '/icons/radio_blauw.png',
+                voorinmeldPunt_selected:        imgPath + '/icons/radio_blauw_selected.png',
+                inmeldPunt:                     imgPath + '/icons/radio_groen.png',
+                inmeldPunt_selected:            imgPath + '/icons/radio_groen_selected.png',
+                uitmeldPunt:                    imgPath + '/icons/radio_rood.png',
+                uitmeldPunt_selected:           imgPath + '/icons/radio_rood_selected.png'
             };
         </script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
+        <script type="text/javascript" src="${contextPath}/js/styles.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>

@@ -118,6 +118,10 @@ Ext.define("ContextMenu", {
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
+                id: "addMemo",
+                text: "Memo toevoegen/bewerken",
+                icon: contextPath + "/images/silk/attach.png"
+            },{
                 id: "uppervri",
                 xtype: 'menuseparator'
             },
@@ -140,6 +144,9 @@ Ext.define("ContextMenu", {
                             break;
                         case 'removeRseq':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;
+                        case 'addMemo':
+                            this.editor.addMemo();
                             break;
                     }
                 },

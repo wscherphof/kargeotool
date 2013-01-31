@@ -449,6 +449,22 @@ Ext.define("Editor", {
         });
     },
     
+    addMemo : function(){
+        var memo = this.activeRseq.memo;
+        var msgBox= new Ext.window.MessageBox({
+            buttonText: {
+                ok : "Opslaan",
+                cancel: "Annuleren"
+            }
+        });
+        
+        msgBox.prompt('Memo', 'Voer een memo in:', function(btn, text){
+            if (btn == 'ok'){
+                this.activeRseq.memo = text;
+            }
+        }, this, true, memo);
+    },
+    
     changeCurrentEditAction: function(action) {
         this.currentEditAction = action;
         this.fireEvent("currentEditActionChanged", action);

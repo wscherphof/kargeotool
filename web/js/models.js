@@ -45,7 +45,8 @@ Ext.define('RSEQ', {
         dataOwner:null,
         points:null,
         town:null,
-        type:null // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
+        type:null, // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
+        memo:null
     },
     /**
      *@constructor
@@ -73,6 +74,9 @@ Ext.define('RSEQ', {
         }
         if(!config.validFrom) {
             config.validFrom = Ext.Date.format(new Date(), "Y-m-d");
+        }
+        if(!config.memo){
+            config.memo = "";
         }
         this.initConfig(config);    
     },
@@ -350,7 +354,8 @@ Ext.define('RSEQ', {
                 crossingCode: this.crossingCode,
                 town:this.town,
                 type:this.type,
-                className: this.$className
+                className: this.$className,
+                memo: this.memo
             }
         });
         var json = {
@@ -366,7 +371,7 @@ Ext.define('RSEQ', {
     toJSON: function() {
         var j = objectSubset(this, ["id", "description", "validFrom", 
             "karAddress", "dataOwner", "crossingCode", "town", "type", 
-            "location"]);
+            "location","memo"]);
         
         j.points = [];
         Ext.Array.each(this.points, function(point) {
