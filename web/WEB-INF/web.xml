@@ -38,6 +38,10 @@
             <param-value>UTF-8</param-value>
         </init-param>
     </filter>
+    <filter>
+        <filter-name>No URL rewriting filter</filter-name>
+        <filter-class>nl.b3p.commons.services.NoUrlRewritingFilter</filter-class>
+    </filter>    
 	<filter>
 		<display-name>Stripes Filter</display-name>
 		<filter-name>StripesFilter</filter-name>
@@ -80,6 +84,10 @@
         </init-param>
  	</filter>    
 
+    <filter-mapping>
+        <filter-name>No URL rewriting filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>Request encoding filter</filter-name>
         <url-pattern>/*</url-pattern>
