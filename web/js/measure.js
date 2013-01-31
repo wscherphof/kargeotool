@@ -43,24 +43,31 @@ Ext.define("Measure", {
             "default" :{
                 strokeColor: "#99BCE8",
                 fillColor: "#99BCE8",
-                strokeLinecap: "butt",
                 strokeDashstyle: "longdash",
-                'pointRadius': 6
-        
+                'pointRadius': 6,
+                fillOpacity: 0.9
             },
             "select":{
                 strokeColor: "#99BCE8",
                 strokeLinecap: "butt",
-                fillColor: "#99BCE8",
+                fillColor: "#E8C599",
                 strokeDashstyle: "longdash",
                 'pointRadius': 6
             },
             "temporary":{
                 strokeColor: "#99BCE8",
                 fillColor: "#99BCE8",
-                strokeLinecap: "butt",
                 strokeDashstyle: "longdash",
-                'pointRadius': 6
+                'pointRadius': 6,
+                fillOpacity: 0.4
+            },
+            "vertexStyle":{
+                strokeColor: "#99BCE8",
+                fillColor: "#99BCE8",
+                strokeDashstyle:"solid",
+                'pointRadius': 6,
+                fillOpacity: 0.4,
+                strokeOpacity: 0.9
             }
         });
         this.vectorLayer = new OpenLayers.Layer.Vector("tempMeasure",{
@@ -101,7 +108,7 @@ Ext.define("Measure", {
         this.line.events.register('featureadded', this, this.featureFinished);
         this.map.addControl(this.line);
         
-        this.modify = new OpenLayers.Control.ModifyFeature(this.vectorLayer,{standAlone:false, clickout:true, toggle:true});
+        this.modify = new OpenLayers.Control.ModifyFeature(this.vectorLayer,{standAlone:false, clickout:true, toggle:true,vertexRenderIntent: "vertexStyle"});
 
         this.vectorLayer.events.register('featuremodified',this, this.featureModified);
         
