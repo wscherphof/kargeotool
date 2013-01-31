@@ -192,6 +192,7 @@ Ext.define("ol", {
         // streetViewClickControl
         
         var StreetViewClick = OpenLayers.Class(OpenLayers.Control, {
+            button: null,
             defaultHandlerOptions: {
                 'single': true,
                 'double': false,
@@ -207,20 +208,36 @@ Ext.define("ol", {
                     this, {
                         'click': this.clicked
                     }, this.handlerOptions
-                    );
+                );
+                this.button = new OpenLayers.Control( {
+                    displayClass: "olControlStreetView",
+                    type: OpenLayers.Control.TYPE_TOOL,
+                    title: "StreetView (klik op kaart voor positie, opent nieuw venster)"
+                });
+                this.button.events.register("activate",this,function(){
+                    this.activate();
+                });
+                this.button.events.register("deactivate",this,function(){
+                    this.deactivate();
+                });
+                options.panel.addControls(this.button);                
             },
             clicked: function(e) {
                 var lonlat = this.map.getLonLatFromPixel(e.xy);
-                this.events.triggerEvent("clicked", {
-                    lonlat: lonlat
-                });
+                
+                this.deactivate();
+                this.button.deactivate();
+
+                var dest = new Proj4js.Proj("EPSG:4236");
+                var source = new Proj4js.Proj("EPSG:28992");
+                var point = new Proj4js.Point(lonlat.lon, lonlat.lat);
+                Proj4js.transform(source, dest, point);            
+
+                window.open("http://maps.google.nl/maps?q=" + point.y + "," + point.x + "&z=16&layer=c&cbll=" + point.y + "," + point.x + "&cbp=12,0,,0,0", "_blank");
             }
         });
         this.streetViewClickControl = new StreetViewClick({
-            eventListeners: {
-                "clicked": me.streetViewClicked,
-                scope: me
-            },
+            panel: this.panel,
             displayClass: 'olStreetViewClick'
         });
         this.map.addControl(this.streetViewClickControl);

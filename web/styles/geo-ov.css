@@ -155,9 +155,3 @@ body.editor {
 #kaart{
     height: 100%;
 }
-
-/* OpenLayers classes */
-
-.olStreetViewClickActive {
-    cursor: crosshair;
-}

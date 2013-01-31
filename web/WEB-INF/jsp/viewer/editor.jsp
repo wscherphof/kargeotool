@@ -54,7 +54,6 @@
                         <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate()">
                     </div>
                     <p><br>
-                    <input type="button" id="streetview" value="Streetview" onclick="editor.streetViewClick()">
                     <div id="overzicht" style="margin-top: 5px; font-size: 10pt">
                     </div>
                 </div>

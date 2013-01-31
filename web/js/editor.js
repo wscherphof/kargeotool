@@ -735,27 +735,7 @@ Ext.define("Editor", {
             this.pointFinishedHandler(geom);
         }
         this.olc.clearMarkers();
-    },
-    
-    streetViewClick: function() {
-        
-        this.changeCurrentEditAction("StreetView");
-        
-        var func = function(e) {
-            this.olc.streetViewClickControl.events.unregister("clicked", this, func);
-            this.olc.streetViewClickControl.deactivate();
-            
-            var dest = new Proj4js.Proj("EPSG:4236");
-            var source = new Proj4js.Proj("EPSG:28992");
-            var point = new Proj4js.Point(e.lonlat.lon, e.lonlat.lat);
-            Proj4js.transform(source, dest, point);            
-            
-            window.open("http://maps.google.nl/maps?q=" + point.y + "," + point.x + "&z=16&layer=c&cbll=" + point.y + "," + point.x + "&cbp=12,0,,0,0", "_blank");
-        };
-        this.olc.streetViewClickControl.events.register("clicked", this, func);
-        this.olc.streetViewClickControl.activate();
     }
-
 });
 
 Ext.define("ActiveRseqInfoPanel", {
