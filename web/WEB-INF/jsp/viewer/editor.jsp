@@ -77,29 +77,29 @@
         <div id="rightbar">
             <div id="legend">
                 <div id="walapparatuur" class="legendseparator">
-                    <input type="checkbox" checked="checked" onclick="toggleLayer('walapparatuur');"/> Verkeerssystemen<br/>
+                    <b>Verkeerssystemen</b><br/>
                     <img src="<c:url value="/images/"/>icons/vri.png" alt="VRI" class="legendimg" /> VRI<br />
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
                 </div>
                 <div id="triggerpunten" class="legendseparator">
-                    <input type="checkbox" checked="checked" onclick="toggleLayer('triggerpunten');"/> Punten<br/>
+                    <b>Punten</b><br/>
                     <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
                     <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Voorinnmeldpunt" class="legendimg" /> Voorinnmeldpunt<br />
                 </div>
                 <div id="starteindpunten" class="legendseparator">
-                    <input type="checkbox" checked="checked" /> Begin- en eindpunten<br/>
+                    <b>Begin- en eindpunten</b><br/>
                     <img src="<c:url value="/images/"/>/icons/beginpunt.png" alt="Beginpunt" class="legendimg" /> Beginpunt<br />
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
                 </div><br/>
-                <strong>OV-informatie</strong><br/>
+                <b>OV-informatie</b><br/>
                 <input type="checkbox" onclick="toggleLayer('buslijnen');"/>Buslijnen<br/>
                 <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
                 <input type="checkbox" onclick="toggleLayer('bushaltes');"/>Bushaltes<br/>
                 <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
-                <strong>Achtergrond</strong><br/>
+                <b>Achtergrond</b><br/>
                 <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
                 <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/>BRT<br/>
             </div>
