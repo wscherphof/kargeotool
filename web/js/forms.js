@@ -194,7 +194,7 @@ Ext.define("EditForms", {
         var label = point.getLabel() == null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : (point.getType() == "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
-            height: 130,
+            height: 96,
             width: 250,
             modal: true,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
@@ -211,23 +211,10 @@ Ext.define("EditForms", {
                     anchor: '100%'
                 },
                 items: [{
-                    xtype: 'numberfield',                        
-                    fieldLabel: 'Nummer',
-                    name: 'nummer',
-                    minValue: 0,                
-                    allowBlank: false,
-                    value: point.nummer,
-                    listeners: {
-                        change: function(field, value) {
-                            value = parseInt(value, 10);
-                            field.setValue(value);
-                        }
-                    }                      
-                },{
                     fieldLabel: 'Label',
                     name: 'label',
                     value: point.label,
-                    id: 'nummerEdit'
+                    id: 'labelEdit'
                 }],
                 buttons: [{
                     text: 'OK',
@@ -237,8 +224,6 @@ Ext.define("EditForms", {
                             Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
                             return;
                         }
-                        
-                        // TODO check of nummer al gebruikt
                         
                         Ext.Object.merge(point, form.getValues());
                         if(rseq == me.editor.activeRseq) {
@@ -264,8 +249,8 @@ Ext.define("EditForms", {
                 }]
             }
         }).show();
-        Ext.getCmp("nummerEdit").selectText(0);
-        Ext.getCmp("nummerEdit").focus(false, 100);
+        Ext.getCmp("labelEdit").selectText(0);
+        Ext.getCmp("labelEdit").focus(false, 100);
     },
     
     /**
@@ -376,7 +361,6 @@ Ext.define("EditForms", {
                 blankText: 'Selecteer een optie',
                 displayField: 'omschrijving',
                 valueField: 'nummer',
-                id: 'pietje',
                 value:  selectedVehicleTypes,
                 fieldLabel: 'Voertuigtypes',
                 name: 'vehicleTypes',
@@ -386,7 +370,7 @@ Ext.define("EditForms", {
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.commandType == 2 ? 300 : 225,
+            height: map.commandType == 2 ? 274 : 193,
             width: 450,
             modal: true,
             icon: karTheme[apName],
@@ -403,23 +387,10 @@ Ext.define("EditForms", {
                     anchor: '100%'
                 },
                 items: [{
-                    xtype: 'numberfield',                            
-                    fieldLabel: 'Nummer',
-                    name: 'nummer',
-                    value: point.nummer,
-                    allowBlank: false,                    
-                    minValue: 0,
-                    listeners: {
-                        change: function(field, value) {
-                            value = parseInt(value, 10);
-                            field.setValue(value);
-                        }
-                    }                      
-                },{
                     fieldLabel: 'Label',
                     name: 'label',
                     value: point.label,
-                    id: 'nummerEdit'
+                    id: 'labelEdit'
                 },{
                     xtype:'fieldset',
                     title: 'KAR signaal',
@@ -440,11 +411,9 @@ Ext.define("EditForms", {
                             return;
                         }
                         
-                        // TODO check of nummer al gebruikt
-                        
-                        // merge nummer en label naar point
+                        // merge label naar point
                         var formValues = form.getValues();
-                        Ext.Object.merge(point, objectSubset(formValues, ["nummer", "label"]));
+                        Ext.Object.merge(point, objectSubset(formValues, ["label"]));
 
                         // deze waardes naar alle maps van movements die dit
                         // pointId gebruiken
@@ -509,8 +478,8 @@ Ext.define("EditForms", {
                 }]
             }
         }).show();
-        Ext.getCmp("nummerEdit").selectText(0);
-        Ext.getCmp("nummerEdit").focus(false, 100);
+        Ext.getCmp("labelEdit").selectText(0);
+        Ext.getCmp("labelEdit").focus(false, 100);
     }
     
 });

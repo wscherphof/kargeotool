@@ -222,6 +222,7 @@ public class EditorActionBean implements ActionBean {
             }
             
             JSONArray jpts = jrseq.getJSONArray("points");
+            Integer highestPointNumber = 0;
             Map<String, ActivationPoint> pointsByJSONId = new HashMap();
             for(int i = 0; i < jpts.length(); i++) {
                 JSONObject jpt = jpts.getJSONObject(i);
@@ -242,11 +243,22 @@ public class EditorActionBean implements ActionBean {
                 p.setNummer(jpt.has("nummer") ?  jpt.getInt("nummer") : null);
                 p.setLabel(jpt.optString("label"));
                 p.setLocation(GeoJSON.toPoint(jpt.getJSONObject("geometry")));
-                if(p.getId() == null) {
-                    rseq.getPoints().add(p);
-                    em.persist(p);
-                }
+                if(p.getNummer() != null) {
+                    highestPointNumber = Math.max(p.getNummer(), highestPointNumber);
+                }                    
             }
+            
+            for(ActivationPoint ap: pointsByJSONId.values()) {
+                if(ap.getNummer() == null) {
+                    ap.setNummer(++highestPointNumber);
+                }
+                if(ap.getId() == null) {
+                    rseq.getPoints().add(ap);
+                    em.persist(ap);
+                }
+                
+            }
+            
             // XXX delete niet goed
             rseq.getPoints().retainAll(pointsByJSONId.values());
             
