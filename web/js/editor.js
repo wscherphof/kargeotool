@@ -116,6 +116,8 @@ Ext.define("Editor", {
         var west = viewport.items.items[3];
         east.on('resize', this.olc.resizeMap, this.olc);
         west.on('resize', this.olc.resizeMap, this.olc);
+        east.on('collapse', this.olc.resizeMap, this.olc);
+        west.on('collapse', this.olc.resizeMap, this.olc);
     },
     
     /**
