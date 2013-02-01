@@ -30,20 +30,10 @@ var style = new OpenLayers.Style(
 },
 {
     rules: [
-        // CROSSING memo
+    // CROSSING memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
@@ -55,17 +45,7 @@ var style = new OpenLayers.Style(
     // CROSSING no memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "CROSSING");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -79,17 +59,7 @@ var style = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -101,17 +71,7 @@ var style = new OpenLayers.Style(
     // GUARD no memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -121,20 +81,10 @@ var style = new OpenLayers.Style(
         }
     }),
     // BAR memo
-     new OpenLayers.Rule({
+    new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -146,17 +96,7 @@ var style = new OpenLayers.Style(
     // BAR No memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "BAR");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -249,18 +189,8 @@ var selectstyle = new OpenLayers.Style(
 {
     rules: [
     new OpenLayers.Rule({
-       filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+        filter: new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_selected_attachment,
@@ -270,17 +200,7 @@ var selectstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "CROSSING");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -290,21 +210,10 @@ var selectstyle = new OpenLayers.Style(
         }
     }),
 
-// BAR
+    // BAR
     new OpenLayers.Rule({
-         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+        filter:  new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
         }),
         symbolizer: {
             externalGraphic: karTheme.bar_selected_attachment,
@@ -313,18 +222,8 @@ var selectstyle = new OpenLayers.Style(
         }
     }),
     new OpenLayers.Rule({
-       filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+        filter: new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasNoMemo(attributes, "BAR");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -337,17 +236,7 @@ var selectstyle = new OpenLayers.Style(
     // GUARD
     new OpenLayers.Rule({
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
         }),
         symbolizer: {
             externalGraphic: karTheme.guard_selected_attachment,
@@ -357,17 +246,7 @@ var selectstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -462,17 +341,7 @@ var tempstyle = new OpenLayers.Style(
     rules: [
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
@@ -482,17 +351,7 @@ var tempstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "CROSSING"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate:  function (attributes){ return hasNoMemo(attributes, "CROSSING");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -505,18 +364,8 @@ var tempstyle = new OpenLayers.Style(
     // GUARD
     new OpenLayers.Rule({
         // a rule contains an optional filter
-       filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+        filter:  new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -528,17 +377,7 @@ var tempstyle = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter: new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "GUARD"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -549,18 +388,8 @@ var tempstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         // a rule contains an optional filter
-         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                return false;
-            }
+        filter:  new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -570,19 +399,8 @@ var tempstyle = new OpenLayers.Style(
         }
     }),
     new OpenLayers.Rule({
-        // a rule contains an optional filter
-         filter:  new OpenLayers.Filter.Function({
-            evaluate: function(attributes) {
-                if(attributes.type == "BAR"){
-                    var memo = attributes.memo;
-                    if(memo && memo != ""){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                return false;
-            }
+        filter:  new OpenLayers.Filter.Function({
+            evaluate: function (attributes){ return hasNoMemo(attributes,"BAR");}
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -658,3 +476,27 @@ var tempstyle = new OpenLayers.Style(
     ]
 }
 );
+
+function hasMemo(attributes, type){
+    if(attributes.type == type){
+        var memo = attributes.memo;
+        if(memo && memo != ""){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return false;
+}
+
+function hasNoMemo(attributes, type){
+    if(attributes.type == type){
+        var memo = attributes.memo;
+        if(memo && memo != ""){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    return false;
+}
