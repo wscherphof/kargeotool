@@ -807,12 +807,12 @@ Ext.define("ActiveRseqInfoPanel", {
                 break;
             case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
-                txt = "De afstand is " + length[0].toFixed(0) + ' ' + length[1] + '. Druk op de lineaal om het meten te stoppen.';
+                txt = "De afstand is <b>" + length[0].toFixed(0) + ' ' + length[1] + '</b>. Druk op de lineaal om het meten te stoppen.';
                 break;
             case "MEASURE_INTEGRATED":
                 var measure = this.editor.olc.measureTool;
                 var length = measure.getBestLength(measure.handler.line.geometry);
-                txt = "De afstand is " + length[0].toFixed(0) + ' ' + length[1] + '. Dubbelklik om het punt te zetten. Rechtermuisknop heerft de optie om het meten opnieuw te starten vanaf het vorige punt.';
+                txt = "De afstand is <b>" + length[0].toFixed(0) + ' ' + length[1] + '</b>. Dubbelklik om het punt te zetten. Rechtermuisknop heerft de optie om het meten opnieuw te starten vanaf het vorige punt.';
                 break;
             default:
                 if(editor.activeRseq == null) {
