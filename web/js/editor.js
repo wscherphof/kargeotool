@@ -756,6 +756,12 @@ Ext.define("ActiveRseqInfoPanel", {
         Ext.get("context_vri").setHTML(rseq == null ? "" : 
             (rseq.description + " (" + rseq.karAddress + ")"));
         Ext.get("rseqOptions").setVisible(rseq != null);
+        var memoIcon = Ext.get("memo_vri");
+        if(rseq.memo && rseq.memo != ""){
+            memoIcon.setVisible(true);
+        }else{
+            memoIcon.setVisible(false);
+        }
         
         var signaalGroepen = [];
         var signaalGroepMap = {};

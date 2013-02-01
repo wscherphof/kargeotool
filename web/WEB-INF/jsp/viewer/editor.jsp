@@ -48,7 +48,7 @@
             
             <div id="rseqInfoPanel">
                 <div style="margin: 3px">
-                    Huidig geselecteerde VRI: <span id="context_vri"></span>
+                    Huidig geselecteerde VRI: <span id="context_vri"></span><img id="memo_vri" src="${contextPath}/images/silk/attach.png" style="visibility: hidden;" onclick="editor.addMemo()"/>
                     <p><br>
                     <div id="rseqOptions" style="visibility: hidden">
                         <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate()">
