@@ -118,6 +118,8 @@ Ext.define("Editor", {
         west.on('resize', this.olc.resizeMap, this.olc);
         east.on('collapse', this.olc.resizeMap, this.olc);
         west.on('collapse', this.olc.resizeMap, this.olc);
+        east.on('expand', this.olc.resizeMap, this.olc);
+        west.on('expand', this.olc.resizeMap, this.olc);
     },
     
     /**
