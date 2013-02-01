@@ -487,10 +487,16 @@ Ext.define("Editor", {
                 type: "ACTIVATION_2",
                 geometry: location
             });
+            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+            if(!distance){
+                distance = new Array();
+                distance[0] = 0;
+            }
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 2, 
                 pointId: uitmeldpunt.getId(),
+                distanceTillStopLine: distance[0].toFixed(0),
                 vehicleTypes: [1]
             });
             
@@ -582,9 +588,25 @@ Ext.define("Editor", {
                 type: "ACTIVATION_1",
                 geometry: location
             });
+            var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
+            var uitmeldMap = mvmts[0].map;
+            var distanceMap = uitmeldMap.distanceTillStopLine;
+            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+            if(!distance){
+                distance = 0;
+            }else{
+                distance = parseInt(distance[0].toFixed(0));
+            }
+            if(!distanceMap){
+                distanceMap =0;
+            }else{
+                distanceMap = parseInt(distanceMap);
+            }
+            distance -= distanceMap;
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 1, 
+                distanceTillStopLine:distance,
                 pointId: inmeldpunt.getId()
             });
             
@@ -655,10 +677,26 @@ Ext.define("Editor", {
                 type: "ACTIVATION_3",
                 geometry: location
             });
+             var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
+            var uitmeldMap = mvmts[0].map;
+            var distanceMap = uitmeldMap.distanceTillStopLine;
+            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+            if(!distance){
+                distance = 0;
+            }else{
+                distance = parseInt(distance[0].toFixed(0));
+            }
+            if(!distanceMap){
+                distanceMap =0;
+            }else{
+                distanceMap = parseInt(distanceMap);
+            }
+            distance += distanceMap;
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 3, 
-                pointId: voorinmeldpunt.getId()
+                pointId: voorinmeldpunt.getId(),
+                distanceTillStopLine: distance
             });
             
             me.editForms.editActivationPoint(voorinmeldpunt, map, function() {
