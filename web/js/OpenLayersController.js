@@ -475,6 +475,7 @@ Ext.define("ol", {
         }
     },
     /**
+     * TODO: kan weg volgens mij
      * Voeg nieuw sld toe aan de kaarten.
      * @param walsld sld voor de wal apparatuur
      * @param trigsld sld voor de triggerpunten
@@ -495,6 +496,7 @@ Ext.define("ol", {
         });
     },
     /**
+     * TODO: kan weg volgens mij
      * Haal de sld's van de layers 'walapparatuur','triggerpunten','signaalgroepen'
      */
     removeSldFromKargis : function (){

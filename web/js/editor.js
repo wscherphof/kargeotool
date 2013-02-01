@@ -463,6 +463,7 @@ Ext.define("Editor", {
         msgBox.prompt('Memo', 'Voer een memo in:', function(btn, text){
             if (btn == 'ok'){
                 this.activeRseq.memo = text;
+                this.fireEvent('activeRseqUpdated', this.activeRseq);
             }
         }, this, true, memo);
     },
