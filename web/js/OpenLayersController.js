@@ -25,6 +25,9 @@ Ext.define("ol", {
     panel : null,
     vectorLayer : null,
     rseqVectorLayer: null,
+    snapLayer:null,
+    snap:null,
+    
     geojson_format : null,
     gfi : null,
     dragFeature : null,
@@ -89,12 +92,21 @@ Ext.define("ol", {
             })
         }
         );
+        this.snapLayer = new OpenLayers.Layer.Vector("SnapLayer", {
+            styleMap: new OpenLayers.StyleMap( {
+                "default": snap,
+                "select": snap,
+                "temporary" : snap
+            })
+        }
+        );
         this.markerLayer = new OpenLayers.Layer.Markers( "Markers" );
         this.map.addLayer(this.markerLayer);
             
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
         this.map.addLayer(this.rseqVectorLayer);
+        this.map.addLayer(this.snapLayer);
         this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
@@ -158,7 +170,6 @@ Ext.define("ol", {
         
         
         //voeg 'teken punt' tool toe.
-        var me = this;
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
             displayClass: 'olControlDrawFeaturePoint',
             featureAdded: function(feature ) {
@@ -188,7 +199,7 @@ Ext.define("ol", {
         this.dragFeature.handlers['feature'].stopDown = false;
         this.dragFeature.handlers['feature'].stopUp = false;
         this.dragFeature.handlers['feature'].stopClick = false;
-        
+                
         // streetViewClickControl
         
         var StreetViewClick = OpenLayers.Class(OpenLayers.Control, {
@@ -208,7 +219,7 @@ Ext.define("ol", {
                     this, {
                         'click': this.clicked
                     }, this.handlerOptions
-                );
+                    );
                 this.button = new OpenLayers.Control( {
                     displayClass: "olControlStreetView",
                     type: OpenLayers.Control.TYPE_TOOL,
@@ -322,8 +333,19 @@ Ext.define("ol", {
                 }
             }
         });
+        
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
+        
+        this.snap = new OpenLayers.Control.Snapping({
+            layer: this.vectorLayer,
+            targets: [{
+                layer: this.snapLayer,
+                tolerance: 30
+            }],
+            greedy: true
+        });
+        this.map.addControl(this.snap);
     },
     /**
      * Update de vector layer met de roadside equipment in de editor
@@ -426,9 +448,10 @@ Ext.define("ol", {
         if(layer){
             layer.setVisibility(visible);
             this.map.addLayer(layer);
-            this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+1);
-            this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+2);
-            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+3);
+            this.map.setLayerIndex(this.snapLayer, this.map.getLayerIndex(layer)+1);
+            this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+2);
+            this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+3);
+            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+4);
         }
     },
     /**

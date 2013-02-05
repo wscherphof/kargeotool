@@ -120,6 +120,14 @@ Ext.define("Editor", {
         west.on('collapse', this.olc.resizeMap, this.olc);
         east.on('expand', this.olc.resizeMap, this.olc);
         west.on('expand', this.olc.resizeMap, this.olc);
+        
+        this.on('activeRseqChanged', function(){
+            var snapRoads = Ext.get("snapRoads");
+            if(snapRoads.dom.checked){
+                this.loadRoads();
+            }
+        }, this);
+        
     },
     
     /**
@@ -304,6 +312,44 @@ Ext.define("Editor", {
                 }
             });
         }
+    },
+    loadRoads : function(){
+        if(this.activeRseq){
+            Ext.Ajax.request({
+                url:editorActionBeanUrl,
+                method: 'GET',
+                scope: this,
+                params:  {
+                    'roads' : true,
+                    rseq: this.activeRseq.getId()
+                },
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success){
+                        var roads = msg.roads;
+                        var featureCollection = {
+                            type: "FeatureCollection",
+                            features: roads
+                        };
+
+                        // Dit misschien in listener
+                        this.olc.snapLayer.removeAllFeatures();
+                        var features = this.olc.geojson_format.read(featureCollection);
+                        this.olc.snapLayer.addFeatures(features);
+                        this.olc.snap.activate();
+                    }else{
+                        alert("Ophalen resultaten mislukt.");
+                    }
+                },
+                failure: function (response){
+                    alert("Ophalen resultaten mislukt.");
+                }
+            });
+        }
+    },
+    
+    removeRoads :function(){
+        this.olc.snapLayer.removeAllFeatures();
     },
     
     // === Edit functies ===

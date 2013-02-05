@@ -94,13 +94,16 @@
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
                 </div><br/>
                 <b>OV-informatie</b><br/>
-                <input type="checkbox" onclick="toggleLayer('buslijnen');"/>Buslijnen<br/>
+                <input type="checkbox" onclick="toggleLayer('buslijnen');"/> Buslijnen<br/>
                 <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
-                <input type="checkbox" onclick="toggleLayer('bushaltes');"/>Bushaltes<br/>
+                <input type="checkbox" onclick="toggleLayer('bushaltes');"/> Bushaltes<br/>
                 <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
                 <b>Achtergrond</b><br/>
-                <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/>Luchtfoto<br/>
-                <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/>BRT<br/>
+                <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/> Luchtfoto<br/>
+                <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/> BRT<br/>
+                <br/>
+                <b>Extra</b><br/>
+                <input type="checkbox" id="snapRoads" onclick="toggleRoad(this)"/> Wegen<br/>
             </div>
                 
                 
@@ -137,6 +140,15 @@
                     if(legend){
                         var attr = !visible ?  'block' : 'none' ;
                         legend.setAttribute("style", 'display:' +attr);
+                    }
+                }
+                
+                function toggleRoad(form){
+                    var activate = form.checked;
+                    if(activate){
+                        editor.loadRoads();
+                    }else{
+                        editor.removeRoads();
                     }
                 }
                     
