@@ -56,7 +56,7 @@ Ext.define("Editor", {
                 activeRseqChanged : function(rseq){
                     this.loadAllRseqs(rseq.karAddress);
                 }
-                 //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
+            //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
             }
         });
         
@@ -77,7 +77,7 @@ Ext.define("Editor", {
             'movementAdded',
             'movementUpdated',
             'currentEditActionChanged'
-        );
+            );
         
         this.domId = domId;
         
@@ -362,7 +362,7 @@ Ext.define("Editor", {
             this.olc.map.setCenter(new OpenLayers.LonLat(
                 this.activeRseq.location.coordinates[0],
                 this.activeRseq.location.coordinates[1]), 
-                14 /* TODO bepaal zoomniveau op basis van extent rseq location en alle point locations) */
+            14 /* TODO bepaal zoomniveau op basis van extent rseq location en alle point locations) */
             );            
         }
     },
@@ -499,19 +499,32 @@ Ext.define("Editor", {
     
     addMemo : function(){
         var memo = this.activeRseq.memo;
-        var msgBox= new Ext.window.MessageBox({
+        var animId = this.olc.vectorLayer.getFeaturesByAttribute("className", "RSEQ")[0].geometry.id;
+        Ext.Msg.show({
+            title: 'Memo',
+            msg: 'Voer een memo in:',
+            width: 300,
+            buttons: Ext.Msg.YESNOCANCEL,
             buttonText: {
-                ok : "Opslaan",
-                cancel: "Annuleren"
-            }
+                cancel: "Annuleren",
+                no: "Verwijderen",
+                yes: "Opslaan"
+            },
+            multiline: true,
+            value: memo,
+            fn: function(btn, text){
+                if (btn == 'yes'){
+                    this.activeRseq.memo = text;
+                    this.fireEvent('activeRseqUpdated', this.activeRseq);
+                }else if (btn == 'no') {
+                    this.activeRseq.memo = '';
+                    this.fireEvent('activeRseqUpdated', this.activeRseq);
+                }
+            },
+            scope: this,
+            animateTarget: animId,
+            icon: Ext.window.MessageBox.INFO
         });
-        
-        msgBox.prompt('Memo', 'Voer een memo in:', function(btn, text){
-            if (btn == 'ok'){
-                this.activeRseq.memo = text;
-                this.fireEvent('activeRseqUpdated', this.activeRseq);
-            }
-        }, this, true, memo);
     },
     
     changeCurrentEditAction: function(action) {
@@ -609,7 +622,7 @@ Ext.define("Editor", {
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     }
-                );
+                    );
                 
                 this.un('selectedObjectChanged',this.eindpuntSelected,this);
             }else{
@@ -696,7 +709,7 @@ Ext.define("Editor", {
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     }
-                );
+                    );
                 
                 this.un('selectedObjectChanged',this.inmeldpuntSelected,this);
             }else{
@@ -723,7 +736,7 @@ Ext.define("Editor", {
                 type: "ACTIVATION_3",
                 geometry: location
             });
-             var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
+            var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
             var uitmeldMap = mvmts[0].map;
             var distanceMap = uitmeldMap.distanceTillStopLine;
             var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
@@ -789,7 +802,7 @@ Ext.define("Editor", {
         this.addPoint(true);        
     }, 
     
-     /**
+    /**
       * Ga naar punttoevoegen modus, optioneel met een lijn vanaf het gegeven punt.
       * @param withLine of vanaf het gegeven punt een lijn (met tussenpunten) moet worden getekend
       * @param piont punt van waar de lijn moet worden getekend indien withLine true is
@@ -880,23 +893,23 @@ Ext.define("ActiveRseqInfoPanel", {
         switch(action) {
             case "ACTIVATION_1":
                 txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) X. " +
-                    "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
-                    "van het inmeldpunt om de afstand te bepalen. " + 
-                    "<p>TODO (afstand - uitmeldpunt.distanceTillStopLine) invullen bij distanceTillStopLine nieuw inmeldpunt";
+                "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
+                "van het inmeldpunt om de afstand te bepalen. " + 
+                "<p>TODO (afstand - uitmeldpunt.distanceTillStopLine) invullen bij distanceTillStopLine nieuw inmeldpunt";
                 break;
-            case "ACTIVATION_2": 
+            case "ACTIVATION_2":
                 txt = "Dubbelklik om het uitmeldpunt te plaatsen.";
                 break;
-            case "ACTIVATION_3": 
+            case "ACTIVATION_3":
                 txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X.";
                 break;
             case "BEGIN":
                 txt = "Dubbelklik om een beginpunt te plaatsen voor signaalgroep(en) "
-                    + "X" + ".";
+                + "X" + ".";
                 break;
             case "END":
                 txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep "
-                    + "X" + ".";
+                + "X" + ".";
                 break;
             case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
@@ -910,11 +923,11 @@ Ext.define("ActiveRseqInfoPanel", {
             default:
                 if(editor.activeRseq == null) {
                     txt = "Klik op een icoon van een verkeerssysteem om deze te selecteren" +
-                        "of klik rechts om een verkeerssysteem toe te voegen.";
+                "of klik rechts om een verkeerssysteem toe te voegen.";
                 } else {
                     txt = "Klik rechts op het verkeerssysteem icoon om een uitmeldpunt voor " +
-                        "een signaalgroep toe te voegen of klik rechts op een punt om deze " +
-                        "te bewerken.";
+                "een signaalgroep toe te voegen of klik rechts op een punt om deze " +
+                "te bewerken.";
                 }
         }
         
