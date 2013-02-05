@@ -119,7 +119,7 @@ Ext.define("ContextMenu", {
                 icon: contextPath + "/images/silk/table_delete.png"
             },{
                 id: "addMemo",
-                text: "Memo toevoegen/bewerken",
+                text: "Memo...",
                 icon: contextPath + "/images/silk/attach.png"
             },{
                 id: "uppervri",
