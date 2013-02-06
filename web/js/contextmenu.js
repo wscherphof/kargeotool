@@ -412,7 +412,7 @@ Ext.define("ContextMenu", {
     show : function(x,y,forceDefault){
         var context = this.getMenuContext();
         if(forceDefault === true){
-            if(context == this.uitmeldpunt ||context == this.inmeldpunt ){
+            if(this.editor.olc.isMeasuring() ){
                 context = this.menuContext['ADDPOINT_WITH_LINE'];
             }else{
                 context = this.menuContext['standaard'];

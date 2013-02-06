@@ -891,15 +891,18 @@ Ext.define("ActiveRseqInfoPanel", {
                 txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) X. " +
                 "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
                 "van het inmeldpunt om de afstand te bepalen. " + 
-                "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop \"Meten vanaf vorig punt\" te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
+                "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop <i>Meten vanaf vorig punt</i> te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
                 "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "ACTIVATION_2":
-                txt = "Dubbelklik om het uitmeldpunt te plaatsen.";
+                txt = "Dubbelklik om het uitmeldpunt te plaatsen."+
+                "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop <i>Meten vanaf vorig punt</i> te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
+                "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "ACTIVATION_3":
                 txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X." +
-                "<p>Let op: De afstand vanaf de stopstreep tot inmeldpunt wordt opgeteld bij de afstand van inmeldpunt tot voorinmeldpunt.";
+                "<p>Let op: De afstand vanaf de stopstreep tot inmeldpunt wordt opgeteld bij de afstand van inmeldpunt tot voorinmeldpunt."+
+                "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "BEGIN":
                 txt = "Dubbelklik om een beginpunt te plaatsen voor signaalgroep(en) "

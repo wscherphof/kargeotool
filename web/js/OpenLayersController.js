@@ -677,6 +677,9 @@ Ext.define("ol", {
     },
     clearMarkers : function(){
         this.markerLayer.clearMarkers();
+    },
+    isMeasuring: function(){
+        return this.measureTool.active || this.standaloneMeasure.button.active;
     }
 });
 /**
