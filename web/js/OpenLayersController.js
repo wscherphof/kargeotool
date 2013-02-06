@@ -20,6 +20,10 @@
  * Class dat als 'wrapper' functioneert om eenvoudig OpenLayers aan te sturen.
  **/
 Ext.define("ol", {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    
     editor : null,
     map : null,
     panel : null,
@@ -50,7 +54,10 @@ Ext.define("ol", {
     
     markerLayer:null,
     constructor : function(editor){
+        this.mixins.observable.constructor.call(this);  
         this.editor = editor;
+        
+        this.addEvents('measureChanged');
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
     },
@@ -130,7 +137,7 @@ Ext.define("ol", {
             modify: function (evt){
                 if (evt.parent){
                     var bestLengthTokens=this.getBestLength(evt.parent);
-                    me.editor.changeCurrentEditAction("MEASURE_INTEGRATED", bestLengthTokens[0].toFixed(0), bestLengthTokens[1]);
+                    me.editor.olc.fireEvent('measureChanged', bestLengthTokens[0].toFixed(0), bestLengthTokens[1]);
                 }
             }
         };

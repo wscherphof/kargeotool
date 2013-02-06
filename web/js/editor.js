@@ -127,7 +127,13 @@ Ext.define("Editor", {
                 this.loadRoads();
             }
         }, this);
-        
+      
+        this.olc.on('measureChanged', function( length, unit){
+            var measureIntField = Ext.get("measureInt");
+            if(measureIntField ){
+                measureIntField.setHTML(length + " " + unit);
+            }
+        },this);
     },
     
     /**
@@ -647,21 +653,12 @@ Ext.define("Editor", {
                 type: "ACTIVATION_1",
                 geometry: location
             });
-            var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
-            var uitmeldMap = mvmts[0].map;
-            var distanceMap = uitmeldMap.distanceTillStopLine;
             var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
             if(!distance){
                 distance = 0;
             }else{
                 distance = parseInt(distance[0].toFixed(0));
             }
-            if(!distanceMap){
-                distanceMap =0;
-            }else{
-                distanceMap = parseInt(distanceMap);
-            }
-            distance -= distanceMap;
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 1, 
@@ -737,8 +734,8 @@ Ext.define("Editor", {
                 geometry: location
             });
             var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
-            var uitmeldMap = mvmts[0].map;
-            var distanceMap = uitmeldMap.distanceTillStopLine;
+            var inmeldMap = mvmts[0].map;
+            var distanceMap = inmeldMap.distanceTillStopLine;
             var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
             if(!distance){
                 distance = 0;
@@ -809,7 +806,6 @@ Ext.define("Editor", {
       */
     addPoint: function(withLine, point) {
         if(withLine ){
-            this.changeCurrentEditAction("ADDPOINT_WITH_LINE");
             var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
             var startX = this.selectedObject[geomName].coordinates[0];
             var startY = this.selectedObject[geomName].coordinates[1];
@@ -895,13 +891,15 @@ Ext.define("ActiveRseqInfoPanel", {
                 txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) X. " +
                 "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
                 "van het inmeldpunt om de afstand te bepalen. " + 
-                "<p>TODO (afstand - uitmeldpunt.distanceTillStopLine) invullen bij distanceTillStopLine nieuw inmeldpunt";
+                "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop \"Meten vanaf vorig punt\" te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
+                "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "ACTIVATION_2":
                 txt = "Dubbelklik om het uitmeldpunt te plaatsen.";
                 break;
             case "ACTIVATION_3":
-                txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X.";
+                txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X." +
+                "<p>Let op: De afstand vanaf de stopstreep tot inmeldpunt wordt opgeteld bij de afstand van inmeldpunt tot voorinmeldpunt.";
                 break;
             case "BEGIN":
                 txt = "Dubbelklik om een beginpunt te plaatsen voor signaalgroep(en) "
@@ -914,11 +912,6 @@ Ext.define("ActiveRseqInfoPanel", {
             case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
                 txt = "De afstand is <b>" + length[0].toFixed(0) + ' ' + length[1] + '</b>. Druk op de lineaal om het meten te stoppen.';
-                break;
-            case "MEASURE_INTEGRATED":
-                var measure = this.editor.olc.measureTool;
-                var length = measure.getBestLength(measure.handler.line.geometry);
-                txt = "De afstand is <b>" + length[0].toFixed(0) + ' ' + length[1] + '</b>. Dubbelklik om het punt te zetten. Rechtermuisknop heerft de optie om het meten opnieuw te starten vanaf het vorige punt.';
                 break;
             default:
                 if(editor.activeRseq == null) {

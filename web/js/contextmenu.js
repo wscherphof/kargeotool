@@ -412,7 +412,9 @@ Ext.define("ContextMenu", {
     show : function(x,y,forceDefault){
         var context = this.getMenuContext();
         if(forceDefault === true){
-            if(context != this.point_with_line){
+            if(context == this.uitmeldpunt ||context == this.inmeldpunt ){
+                context = this.menuContext['ADDPOINT_WITH_LINE'];
+            }else{
                 context = this.menuContext['standaard'];
             }
         }
@@ -439,10 +441,6 @@ Ext.define("ContextMenu", {
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }
-            if(editor.currentEditAction == "MEASURE_INTEGRATED"){
-                type = "ADDPOINT_WITH_LINE";
-            }
-
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
