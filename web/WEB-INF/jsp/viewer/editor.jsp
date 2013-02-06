@@ -42,8 +42,8 @@
             
             <div id="searchform" style="margin: 3px">
                 Zoeken: <input id="searchField" name="searchField"><input type="button" value="Zoeken" onclick="editor.search.search(Ext.get('searchField').getValue());"><br/>
-                Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()}, function() { editor.zoomToActiveRseq(); } );"><br />
                 <div id="geocoderesults"></div>
+                <div id="rseqresults"></div>
             </div>
             
             <div id="rseqInfoPanel">
@@ -115,6 +115,7 @@
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
+                var searchRseqActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchRseqActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;

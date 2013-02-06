@@ -35,6 +35,12 @@ Ext.define("SearchManager", {
             category: "geocoder"
         });
         this.addSearchEntity(geocoder);
+        var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{
+            resultDom: "rseqresults",
+            category: "rseq"
+        });
+        this.addSearchEntity(rseq);
+        
         this.addEvents('searchResultClicked');
         
         Ext.get('searchField').on('keypress', function(evt,form){
@@ -108,7 +114,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
      * Do a geocoding search and display the results.
      */
     search: function(address) {
-        Ext.get('geocoderesults').dom.innerHTML = "Zoeken...";
+        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: geocoderActionBeanUrl,
@@ -171,6 +177,69 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
                 x:feature.geometry.x, 
                 y:feature.geometry.y
+            });
+            me.fireEvent("searchResultClicked",result );
+        });
+        element.appendChild(link);
+    }
+});
+
+/**
+ * Zoeken op RSEQs. Op dit moment wordt er door de beschrijving heen gezocht en op karAddress
+ */
+Ext.define("nl.b3p.kar.SearchRSEQ", {
+    extend: "nl.b3p.kar.Search",
+    constructor: function(config) {
+        this.mixins.observable.constructor.call(this);  
+        this.initConfig(config);
+        
+        this.addEvents('searchResultClicked');
+    },
+    search: function(term){
+        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
+        var me = this;
+        Ext.Ajax.request({
+            url: searchRseqActionBeanUrl,
+            params: {
+                'search': true,
+                term: term
+            },
+            method: 'GET',
+            scope:this,
+            success: function(response) {
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var rseqs = msg.rseqs;
+                    if(rseqs.length > 0){
+                        var resultblock = Ext.get(this.resultDom);
+                        resultblock.dom.innerHTML = "";
+                        for ( var i = 0 ; i < rseqs.length ; i++){
+                            this.createResult(rseqs[i], resultblock);
+                        }
+                    }else{
+                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                    }
+                }else{
+                    alert("Ophalen resultaten mislukt.");
+                }
+            },
+            failure: function() {
+                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+            }
+        });
+    },
+    createResult : function (rseq, element){
+        var label = rseq.properties.karAddress + " - " + rseq.properties.description;
+        var addresslink = document.createElement('a');
+        addresslink.href = '#';
+        addresslink.className = 'geocoderesultlink';
+        addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
+        var link = Ext.get(addresslink);
+        var me = this;
+        link.on('click', function() {
+            var result = Ext.create(nl.b3p.kar.SearchResult,{
+                x:rseq.geometry.coordinates[0], 
+                y:rseq.geometry.coordinates[1]
             });
             me.fireEvent("searchResultClicked",result );
         });
