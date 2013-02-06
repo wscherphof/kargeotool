@@ -41,8 +41,8 @@
         <div id="leftbar">
             
             <div id="searchform" style="margin: 3px">
+                Zoeken: <input id="searchField" name="searchField"><input type="button" value="Zoeken" onclick="editor.search.search(Ext.get('searchField').getValue());"><br/>
                 Adres verkeerssysteem: <input id="addressInput" name="address" value="9999" size="6"> <input type="button" value="Zoeken" onclick="editor.loadRseqInfo({karAddress:Ext.get('addressInput').getValue()}, function() { editor.zoomToActiveRseq(); } );"><br />
-                Adres zoeken: <input id="geocodeAddressInput" name="geocode_address" value="" size="17"> <input type="button" value="Zoeken" onclick="geocoder.geocode(Ext.get('geocodeAddressInput').getValue());">
                 <div id="geocoderesults"></div>
             </div>
             
@@ -118,12 +118,6 @@
                 var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
 
                 var contextPath = "${contextPath}";
-
-                var geocoder = Ext.create(Geocoder);
-                geocoder.on("geocodeResultClick", function(x, y) {
-                    editor.olc.map.setCenter(new OpenLayers.LonLat(x, y), 12);
-                });
-                
                 var editor = null;
                 Ext.onReady(function() {
                     editor = Ext.create(Editor, "map", mapfilePath);    

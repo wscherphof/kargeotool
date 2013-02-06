@@ -44,6 +44,7 @@ Ext.define("Editor", {
     
     currentEditAction: null,
     
+    search:null,
     // === Initialisatie ===
     
     /**
@@ -134,6 +135,9 @@ Ext.define("Editor", {
                 measureIntField.setHTML(length + " " + unit);
             }
         },this);
+        
+        this.search = Ext.create(SearchManager,{searchField:'searchField'});
+        this.search.on('searchResultClicked',this.searchResultClicked,this);
     },
     
     /**
@@ -831,6 +835,11 @@ Ext.define("Editor", {
             this.pointFinishedHandler(geom);
         }
         this.olc.clearMarkers();
+    },
+    
+    // ==== Search ==== ///
+    searchResultClicked : function(searchResult){
+        this.olc.map.setCenter(searchResult.getLocation(), 12);
     }
 });
 

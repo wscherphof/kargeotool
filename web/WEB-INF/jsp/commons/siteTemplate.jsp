@@ -63,6 +63,7 @@
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/styles.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>
+        <script type="text/javascript" src="${contextPath}/js/search.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
