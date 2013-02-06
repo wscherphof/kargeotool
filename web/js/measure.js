@@ -80,6 +80,9 @@ Ext.define("Measure", {
             },
             persist:true
         };
+        
+        measureOptions["displaySystemUnits"] = new Object();
+        measureOptions["displaySystemUnits"].metric=["m"];
         this.measure = new OpenLayers.Control.Measure( OpenLayers.Handler.Path, measureOptions);
         this.map.addControl(this.measure);
         
