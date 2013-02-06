@@ -114,8 +114,7 @@
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
-                var geocoderActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GeocoderActionBean"/>";
-                var searchRseqActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchRseqActionBean"/>";
+                var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;

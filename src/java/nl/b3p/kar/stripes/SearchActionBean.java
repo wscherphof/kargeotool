@@ -18,13 +18,19 @@
  */
 package nl.b3p.kar.stripes;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,16 +49,16 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
 @StrictBinding
-@UrlBinding("/action/search/rseq")
-public class SearchRseqActionBean implements ActionBean {
+@UrlBinding("/action/search")
+public class SearchActionBean implements ActionBean {
 
-    private static final Log log = LogFactory.getLog(SearchRseqActionBean.class);
-    private static final String JSP = "/WEB-INF/jsp/viewer/editor.jsp";
+    private static final String GEOCODER_URL = "http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=";
+    private static final Log log = LogFactory.getLog(SearchActionBean.class);
     private ActionBeanContext context;
     @Validate
     private String term;
 
-    public Resolution search() throws Exception {
+    public Resolution rseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
@@ -88,6 +94,19 @@ public class SearchRseqActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
     
+       /**
+     *
+     * @return Stripes Resolution geocode
+     * @throws Exception
+     */
+    public Resolution geocode() throws Exception {
+        InputStream in = new URL(GEOCODER_URL + URLEncoder.encode(term, "UTF-8")).openStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        IOUtils.copy(in, bos);
+        in.close();
+        bos.close();
+        return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
+    }
     // <editor-fold desc="Getters and Setters">
     
     public ActionBeanContext getContext() {

@@ -117,9 +117,10 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
-            url: geocoderActionBeanUrl,
+            url: searchActionBeanUrl,
             params: {
-                'search': address
+                'term': address,
+                geocode:true
             },
             method: 'GET',
             scope:this,
@@ -199,9 +200,9 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
-            url: searchRseqActionBeanUrl,
+            url: searchActionBeanUrl,
             params: {
-                'search': true,
+                'rseq': true,
                 term: term
             },
             method: 'GET',
