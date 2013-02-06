@@ -1,21 +1,21 @@
 /**
-* Geo-OV - applicatie voor het registreren van KAR meldpunten
-*
-* Copyright (C) 2009-2013 B3Partners B.V.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
  * Context menu class dat alle rechtermuis clicks afhandelt.
@@ -80,7 +80,7 @@ Ext.define("ContextMenu", {
         });
                 
         
-         this.point_with_line = Ext.create ("Ext.menu.Menu",{
+        this.point_with_line = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
             items: [
@@ -369,7 +369,7 @@ Ext.define("ContextMenu", {
             
             "ADDPOINT_WITH_LINE" : this.point_with_line
             
-            //"onlyEdit" : this.onlyEdit // XXX
+        //"onlyEdit" : this.onlyEdit // XXX
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -411,21 +411,17 @@ Ext.define("ContextMenu", {
      */
     show : function(x,y,forceDefault){
         var context = this.getMenuContext();
-        if(forceDefault === true){
-            if(this.editor.olc.isMeasuring() ){
-                context = this.menuContext['ADDPOINT_WITH_LINE'];
-            }else{
-                context = this.menuContext['standaard'];
-            }
+        if(forceDefault === true&& context != this.point_with_line){
+            context = this.menuContext['standaard'];
         }
         if(context){
             context.showAt(x, y);
         }
     },
     /**
-     * Haal het nodige menu op door te kijken wat het type is van het geselecteerde object
-     * @return het gewenste menu
-     */
+ * Haal het nodige menu op door te kijken wat het type is van het geselecteerde object
+ * @return het gewenste menu
+ */
     getMenuContext: function() {
         if(editor.selectedObject){
             var type = editor.selectedObject.getType();
@@ -441,6 +437,10 @@ Ext.define("ContextMenu", {
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }
+            
+            if(this.editor.olc.isMeasuring() ){
+                type = "ADDPOINT_WITH_LINE";
+            }
             var menu = this.menuContext[type];
             if(menu){
                 return menu;
@@ -453,8 +453,8 @@ Ext.define("ContextMenu", {
         }
     },
     /**
-     * Deactiveer het menu (verberg)
-     */
+ * Deactiveer het menu (verberg)
+ */
     deactivateContextMenu: function() {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
