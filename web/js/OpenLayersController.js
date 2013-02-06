@@ -147,7 +147,8 @@ Ext.define("ol", {
                 strokeOpacity: 0
             }
         };
-        
+        options["displaySystemUnits"] = new Object();
+        options["displaySystemUnits"].metric=["m"];
         //voeg meet tool toe
         this.measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
       
