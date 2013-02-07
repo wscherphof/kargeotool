@@ -40,11 +40,7 @@
 
         <div id="leftbar">
             
-            <div id="searchform" style="margin: 3px">
-                Zoeken: <input id="searchField" name="searchField"><input type="button" value="Zoeken" onclick="editor.search.search(Ext.get('searchField').getValue());"><br/>
-                <div id="geocoderesults"></div>
-                <div id="rseqresults"></div>
-            </div>
+            <div id="searchform" style="margin: 3px"></div>
             
             <div id="rseqInfoPanel">
                 <div style="margin: 3px">

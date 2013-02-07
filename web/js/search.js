@@ -1,21 +1,21 @@
 /**
-* Geo-OV - applicatie voor het registreren van KAR meldpunten
-*
-* Copyright (C) 2009-2013 B3Partners B.V.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 /**
  * Searchmanager managet alle zoekingangen. Dit is de klasse waar alle verzoeken binnenkomen en uitgaan.
  */
@@ -24,30 +24,65 @@ Ext.define("SearchManager", {
         observable: 'Ext.util.Observable'
     },
     config:{
-      searchField:null  
+        searchField:null,
+        dom:null
     },
     searchEntities:null,
-    constructor: function() {
-        this.searchEntities = new Array();
+    searchBox:null,
+    constructor: function(config) {
+        this.initConfig(config);
         this.mixins.observable.constructor.call(this);  
+        this.searchEntities = new Array();
+        this.createForm();
         var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{
-            resultDom: "geocoderesults",
-            category: "geocoder"
+            dom: this.dom
         });
         this.addSearchEntity(geocoder);
         var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{
-            resultDom: "rseqresults",
-            category: "rseq"
+            dom: this.dom
         });
         this.addSearchEntity(rseq);
         
         this.addEvents('searchResultClicked');
         
-        Ext.get('searchField').on('keypress', function(evt,form){
-            if(evt.getKey() == Ext.EventObject.ENTER){
-                this.search(form.value);
+    },
+    createForm : function(){
+        Ext.create(Ext.panel.Panel,{
+            renderTo:this.dom,
+            border:false,
+            layout:'hbox',
+            items:[
+            {
+                xtype: 'textfield',
+                id: 'searchField' ,
+                enableKeyEvents:true,
+                listeners:{
+                    keypress: {
+                        fn: function(form,evt){
+                            if(evt.getKey() == Ext.EventObject.ENTER){
+                                this.search(form.value);
+                            }
+                        },
+                        scope:this
+                    }
+                }
+            },
+            {
+                xtype: 'button',
+                text: "Zoek" ,
+                listeners:{
+                    click:{
+                        fn: function(){
+                            var term = Ext.getCmp('searchField').getValue();
+                            this.search(term);
+                        },
+                        scope: this
+
+                    }
+                }
             }
-        },this);
+            ]
+        });
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
@@ -64,19 +99,38 @@ Ext.define("SearchManager", {
 });
 
 /**
- * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen. 
- */
+     * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen. 
+     */
 Ext.define("nl.b3p.kar.Search", {
     mixins: {
         observable: 'Ext.util.Observable'
     },
     config:{
-        resultDom:null,
-        category:null
+        dom:null
     },
+    resultDom:null,
+    container:null,
+    title:null,
+    category:null,
     constructor: function(config) {
         this.mixins.observable.constructor.call(this);  
         this.initConfig(config);
+        
+        this.dom = Ext.get(this.dom);
+        this.container = document.createElement('div');
+        this.container.setAttribute("id",this.category + "Container" + Ext.id());
+        this.dom.appendChild(this.container);
+        
+        this.resultDom = document.createElement('div');
+        this.resultDom.setAttribute("id",this.category + "results" + Ext.id());
+        this.resultDom.innerHTML = "&nbsp;<br/>";
+        
+        this.title = document.createElement('div');
+        this.title.setAttribute("id",this.category + "title" + Ext.id());
+        this.title.innerHTML = "<b>" + this.category + "</b><br/>";
+        
+        this.container.appendChild(this.title);
+        this.container.appendChild(this.resultDom);
         
         this.addEvents('searchResultClicked');
     },
@@ -86,9 +140,9 @@ Ext.define("nl.b3p.kar.Search", {
 });
 
 /**
- * Het generieke antwoord dat een zoekingang teruggeeft. 
- * 
- */
+     * Het generieke antwoord dat een zoekingang teruggeeft. 
+     * 
+     */
 Ext.define("nl.b3p.kar.SearchResult", {
     config:{
         location:null,
@@ -102,17 +156,19 @@ Ext.define("nl.b3p.kar.SearchResult", {
 });
 
 /**
- * Implementatie van een Search class. Het implementeert een geocoder obv PDOK.
- *
- */
+     * Implementatie van een Search class. Het implementeert een geocoder obv PDOK.
+     *
+     */
 Ext.define("nl.b3p.kar.SearchGeocoder", {
     extend: "nl.b3p.kar.Search",
+
+    category : "Adressen",
     constructor: function() {
         this.callParent(arguments);
     },
     /**
-     * Do a geocoding search and display the results.
-     */
+         * Do a geocoding search and display the results.
+         */
     search: function(address) {
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
@@ -137,7 +193,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
                         me.displayGeocodeResult(resultblock, feature);
                     });
                 } else {
-                    resultblock.dom.innerHTML = "Geen resultaten gevonden.";
+                    resultblock.dom.innerHTML += "Geen resultaten gevonden.";
                 }
             },
             failure: function() {
@@ -186,15 +242,13 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
 });
 
 /**
- * Zoeken op RSEQs. Op dit moment wordt er door de beschrijving heen gezocht en op karAddress
- */
+     * Zoeken op RSEQs. Op dit moment wordt er door de beschrijving heen gezocht en op karAddress
+     */
 Ext.define("nl.b3p.kar.SearchRSEQ", {
     extend: "nl.b3p.kar.Search",
+    category: "Verkeerssystemen",
     constructor: function(config) {
-        this.mixins.observable.constructor.call(this);  
-        this.initConfig(config);
-        
-        this.addEvents('searchResultClicked');
+        this.callParent(arguments);
     },
     search: function(term){
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
