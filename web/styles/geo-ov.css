@@ -142,11 +142,8 @@ body.editor {
     background-color: #CCCCCC;
 }
 
-#geocoderesults {
-    margin-top: 10px;
-}
 
-.geocoderesultlink {
+.resultlink {
     color: #0000EE;
     display: block;
     margin-bottom: 2px;

@@ -38,10 +38,16 @@ Ext.define("SearchManager", {
             dom: this.dom
         });
         this.addSearchEntity(geocoder);
+        
         var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{
             dom: this.dom
         });
         this.addSearchEntity(rseq);
+        
+        var road = Ext.create(nl.b3p.kar.SearchRoad,{
+            dom: this.dom
+        });
+        this.addSearchEntity(road);
         
         this.addEvents('searchResultClicked');
         
@@ -99,8 +105,8 @@ Ext.define("SearchManager", {
 });
 
 /**
-     * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen. 
-     */
+ * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen. 
+ */
 Ext.define("nl.b3p.kar.Search", {
     mixins: {
         observable: 'Ext.util.Observable'
@@ -136,29 +142,39 @@ Ext.define("nl.b3p.kar.Search", {
     },
     search: function(term){
         alert("Search called on superclas. Must be implemented.");
+    },
+    addResult: function (result){
+        var resultblock = Ext.get(this.resultDom);
+        resultblock.appendChild(result);
+        var breakLine = document.createElement('br');
+        resultblock.appendChild(breakLine);
     }
 });
 
 /**
-     * Het generieke antwoord dat een zoekingang teruggeeft. 
-     * 
-     */
+ * Het generieke antwoord dat een zoekingang teruggeeft. 
+ * 
+ */
 Ext.define("nl.b3p.kar.SearchResult", {
     config:{
         location:null,
         x:null,
-        y:null
+        y:null,
+        bounds:null,
+        addMarker:null
     },
     constructor: function(config) {
         this.initConfig(config);
-        this.location = new OpenLayers.LonLat(this.x, this.y);
+        if(this.x != null && this.y != null){
+            this.location = new OpenLayers.LonLat(this.x, this.y);
+        }
     }
 });
 
 /**
-     * Implementatie van een Search class. Het implementeert een geocoder obv PDOK.
-     *
-     */
+ * Implementatie van een Search class. Het implementeert een geocoder obv PDOK.
+ *
+ */
 Ext.define("nl.b3p.kar.SearchGeocoder", {
     extend: "nl.b3p.kar.Search",
 
@@ -167,8 +183,8 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         this.callParent(arguments);
     },
     /**
-         * Do a geocoding search and display the results.
-         */
+     * Do a geocoding search and display the results.
+     */
     search: function(address) {
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
@@ -190,7 +206,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
                 
                 if(rl) {
                     Ext.Array.each(rl.features, function(feature) {
-                        me.displayGeocodeResult(resultblock, feature);
+                        me.displayGeocodeResult( feature);
                     });
                 } else {
                     resultblock.dom.innerHTML += "Geen resultaten gevonden.";
@@ -202,7 +218,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         });
     },
     
-    displayGeocodeResult: function(element, feature) {
+    displayGeocodeResult: function( feature) {
         var address = feature.attributes.address;
 
         var number = address.building && address.building.number ?
@@ -226,24 +242,25 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
 
         var addresslink = document.createElement('a');
         addresslink.href = '#';
-        addresslink.className = 'geocoderesultlink';
+        addresslink.className = '.resultlink';
         addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
         var link = Ext.get(addresslink);
         var me = this;
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
                 x:feature.geometry.x, 
-                y:feature.geometry.y
+                y:feature.geometry.y,
+                addMarker:true
             });
             me.fireEvent("searchResultClicked",result );
         });
-        element.appendChild(link);
+        this.addResult(link);
     }
 });
 
 /**
-     * Zoeken op RSEQs. Op dit moment wordt er door de beschrijving heen gezocht en op karAddress
-     */
+ * Zoeken op RSEQs. Op dit moment wordt er door de beschrijving heen gezocht en op karAddress
+ */
 Ext.define("nl.b3p.kar.SearchRSEQ", {
     extend: "nl.b3p.kar.Search",
     category: "Verkeerssystemen",
@@ -269,7 +286,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                         var resultblock = Ext.get(this.resultDom);
                         resultblock.dom.innerHTML = "";
                         for ( var i = 0 ; i < rseqs.length ; i++){
-                            this.createResult(rseqs[i], resultblock);
+                            this.createResult(rseqs[i]);
                         }
                     }else{
                         Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
@@ -283,21 +300,101 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
             }
         });
     },
-    createResult : function (rseq, element){
+    createResult : function (rseq){
         var label = rseq.properties.karAddress + " - " + rseq.properties.description;
         var addresslink = document.createElement('a');
         addresslink.href = '#';
-        addresslink.className = 'geocoderesultlink';
+        addresslink.className = '.resultlink';
         addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
         var link = Ext.get(addresslink);
         var me = this;
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
                 x:rseq.geometry.coordinates[0], 
-                y:rseq.geometry.coordinates[1]
+                y:rseq.geometry.coordinates[1],
+                addMarker:false
             });
             me.fireEvent("searchResultClicked",result );
+            editor.loadRseqInfo({
+                karAddress:  rseq.properties.karAddress
+            });
         });
-        element.appendChild(link);
+        this.addResult(link);
+    }
+});
+
+
+
+/**
+* Zoeken op wegen
+*/
+Ext.define("nl.b3p.kar.SearchRoad", {
+    extend: "nl.b3p.kar.Search",
+    category: "Wegen",
+    a:null,
+    constructor: function(config) {
+        this.callParent(arguments);
+        this.a = new Array();
+    },
+    search: function(term){
+        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
+        var me = this;
+        Ext.Ajax.request({
+            url: searchActionBeanUrl,
+            params: {
+                'road': true,
+                term: term
+            },
+            method: 'GET',
+            scope:this,
+            success: function(response) {
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var roads = msg.roads;
+                    if(roads.length > 0){
+                        var resultblock = Ext.get(this.resultDom);
+                        resultblock.dom.innerHTML = "";
+                        for ( var i = 0 ; i < roads.length ; i++){
+                            this.createResult(roads[i]);
+                        }
+                    }else{
+                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                    }
+                }else{
+                    alert("Ophalen resultaten mislukt.");
+                }
+            },
+            failure: function() {
+                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+            }
+        });
+    },
+    createResult : function (road){
+        if(road.envelope){
+            var label = road.weg;
+            if(road.name){
+                label += " - " + road.name;
+            }
+            var addresslink = document.createElement('a');
+            addresslink.href = '#';
+            addresslink.className = '.resultlink';
+            addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
+            var link = Ext.get(addresslink);
+            var me = this;
+            link.on('click', function() {
+                var env = road.envelope;
+                var bounds = new OpenLayers.Bounds([env.minx, env.miny, env.maxx, env.maxy]);
+                var location = bounds.getCenterLonLat();
+                var result = Ext.create(nl.b3p.kar.SearchResult,{
+                    bounds: bounds,
+                    location: location,
+                    addMarker:true
+                });
+                me.fireEvent("searchResultClicked",result );
+                
+            });
+            
+            this.addResult(link);
+        }
     }
 });

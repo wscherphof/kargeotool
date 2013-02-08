@@ -470,7 +470,7 @@ Ext.define("Editor", {
         var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3]
         this.olc.line.deactivate();
         this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
-        this.olc.addMarker(lastPoint);
+        this.olc.addMarker(lastPoint.x,lastPoint.y);
     },
     
     /**
@@ -839,7 +839,15 @@ Ext.define("Editor", {
     
     // ==== Search ==== ///
     searchResultClicked : function(searchResult){
-        this.olc.map.setCenter(searchResult.getLocation(), 12);
+        if(searchResult.getBounds() != null){
+            var bounds = searchResult.getBounds();
+            this.olc.map.zoomToExtent(bounds.toArray());
+        }else if (searchResult.getX() != null && searchResult.getY() != null){
+            this.olc.map.setCenter(searchResult.getLocation(), 12);
+        }
+        if(searchResult.getAddMarker()){
+            this.olc.addMarker(searchResult.getLocation());
+        }
     }
 });
 

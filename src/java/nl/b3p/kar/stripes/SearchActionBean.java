@@ -18,13 +18,18 @@
  */
 package nl.b3p.kar.stripes;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.*;
@@ -35,6 +40,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
@@ -67,17 +73,18 @@ public class SearchActionBean implements ActionBean {
 
             Session sess = (Session) em.getDelegate();
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
-            
+
             Criterion desc = Restrictions.ilike("description", term, MatchMode.ANYWHERE);
             Criterion address = null;
-            try{
+            try {
                 int karAddress = Integer.parseInt(term);
                 address = Restrictions.eq("karAddress", karAddress);
-            }catch(NumberFormatException e){}
-            
-            if(address != null){
+            } catch (NumberFormatException e) {
+            }
+
+            if (address != null) {
                 criteria.add(Restrictions.or(address, desc));
-            }else{
+            } else {
                 criteria.add(desc);
             }
             List<RoadsideEquipment> l = criteria.list();
@@ -85,7 +92,7 @@ public class SearchActionBean implements ActionBean {
             for (RoadsideEquipment roadsideEquipment : l) {
                 rseqs.put(roadsideEquipment.getRseqGeoJSON());
             }
-            info.put("rseqs",rseqs);
+            info.put("rseqs", rseqs);
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {
             log.error("search rseq exception", e);
@@ -93,8 +100,52 @@ public class SearchActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
-       /**
+
+    public Resolution road() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+
+            Session sess = (Session) em.getDelegate();
+            Query q = sess.createSQLQuery("SELECT ref,name,astext(st_union(geometry)) FROM Road where ref ilike :ref group by ref,name");
+            q.setParameter("ref", "%"+term+"%");
+
+            List<Object[]> l = (List<Object[]>) q.list();
+            JSONArray roads = new JSONArray();
+            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
+            WKTReader reader = new WKTReader(gf);
+            for (Object[] road : l) {
+                JSONObject jRoad = new JSONObject();
+                jRoad.put("weg", road[0]);
+                if(road[1] != null){
+                    jRoad.put("name", road[1]);
+                }
+                try {
+                    Geometry g = reader.read((String) road[2]);
+                    Envelope env = g.getEnvelopeInternal();
+                    if(env != null){
+                        JSONObject jEnv = new JSONObject();
+                        jEnv.put("minx",env.getMinX());
+                        jEnv.put("miny",env.getMinY());
+                        jEnv.put("maxx",env.getMaxX());
+                        jEnv.put("maxy",env.getMaxY());
+                        jRoad.put("envelope", jEnv);
+                    }
+                } catch (ParseException ex) {}
+                roads.put(jRoad);
+            }
+            info.put("roads",roads);
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("search road exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
+    /**
      *
      * @return Stripes Resolution geocode
      * @throws Exception
@@ -108,7 +159,7 @@ public class SearchActionBean implements ActionBean {
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
     }
     // <editor-fold desc="Getters and Setters">
-    
+
     public ActionBeanContext getContext() {
         return context;
     }
@@ -124,8 +175,5 @@ public class SearchActionBean implements ActionBean {
     public void setTerm(String term) {
         this.term = term;
     }
-    
     // </editor-fold>
-
-
 }
