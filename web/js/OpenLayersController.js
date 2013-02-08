@@ -670,8 +670,13 @@ Ext.define("ol", {
         this.map.updateSize();
     },
     
-    addMarker : function(geom){
-        var lonlat = new OpenLayers.LonLat(geom.x, geom.y);
+    addMarker : function(x,y){
+        var lonlat = null;
+        if(y){
+            lonlat = new OpenLayers.LonLat(x, y);
+        }else{
+            lonlat = x;
+        }
         var marker = new OpenLayers.Marker(lonlat);
         this.clearMarkers();
         this.markerLayer.addMarker(marker);
