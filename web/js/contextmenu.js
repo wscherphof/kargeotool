@@ -114,10 +114,16 @@ Ext.define("ContextMenu", {
                 icon: contextPath + "/images/silk/table_edit.png"
             },
             {
+                id: 'saveRseq',
+                text: 'Opslaan',
+                icon: contextPath + "/images/silk/table_save.png"
+            },
+            {
                 id: 'removeRseq',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
-            },{
+            },
+            {
                 id: "addMemo",
                 text: "Memo...",
                 icon: contextPath + "/images/silk/attach.png"
@@ -147,6 +153,9 @@ Ext.define("ContextMenu", {
                             break;
                         case 'addMemo':
                             this.editor.addMemo();
+                            break;
+                        case 'saveRseq':
+                            this.editor.saveOrUpdate();
                             break;
                     }
                 },
