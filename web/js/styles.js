@@ -26,6 +26,8 @@ var style = new OpenLayers.Style(
     graphicHeight: 28,
     graphicYOffset: -14, // shift graphic up 28 pixels
     labelYOffset: -15,
+    labelOutlineColor:"#ffffff",
+    labelOutlineWidth:2,
     label: "${label}" // label will be foo attribute value
 },
 {
@@ -33,7 +35,9 @@ var style = new OpenLayers.Style(
     // CROSSING memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "CROSSING");
+            }
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
@@ -45,7 +49,9 @@ var style = new OpenLayers.Style(
     // CROSSING no memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "CROSSING");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "CROSSING");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -59,7 +65,9 @@ var style = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "GUARD");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -71,7 +79,9 @@ var style = new OpenLayers.Style(
     // GUARD no memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "GUARD");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -84,7 +94,9 @@ var style = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "BAR");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -96,13 +108,33 @@ var style = new OpenLayers.Style(
     // BAR No memo
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "BAR");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "BAR");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar,
             graphicYOffset: -26,
             label: "${description}"
+        }
+    }),
+    
+    // Cluster 
+    new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Function({
+            evaluate: function (attributes){
+                return attributes.count ;
+            }
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.cluster,
+            graphicYOffset: -26,
+            label: "${count}",
+            labelYOffset: 32,
+            labelXOffset: 0,
+            fontColor: "#000",
+            labelOutlineColor:'#fff'
         }
     }),
     new OpenLayers.Rule({
@@ -183,6 +215,8 @@ var selectstyle = new OpenLayers.Style(
     graphicHeight: 39,
     graphicYOffset: -21, 
     labelYOffset: -20,
+    labelOutlineColor:"#ffffff",
+    labelOutlineWidth:2,
     label: "${label}" 
 },
 // the second argument will include all rules
@@ -190,7 +224,9 @@ var selectstyle = new OpenLayers.Style(
     rules: [
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "CROSSING");
+            }
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_selected_attachment,
@@ -200,7 +236,9 @@ var selectstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "CROSSING");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "CROSSING");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -213,7 +251,9 @@ var selectstyle = new OpenLayers.Style(
     // BAR
     new OpenLayers.Rule({
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "BAR");
+            }
         }),
         symbolizer: {
             externalGraphic: karTheme.bar_selected_attachment,
@@ -223,7 +263,9 @@ var selectstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "BAR");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "BAR");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -236,7 +278,9 @@ var selectstyle = new OpenLayers.Style(
     // GUARD
     new OpenLayers.Rule({
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "GUARD");
+            }
         }),
         symbolizer: {
             externalGraphic: karTheme.guard_selected_attachment,
@@ -246,13 +290,33 @@ var selectstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "GUARD");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard_selected,
             graphicYOffset: -26,
             label: "${description}"
+        }
+    }),
+    
+    // Cluster 
+    new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Function({
+            evaluate: function (attributes){
+                return attributes.count ;
+            }
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.cluster,
+            graphicYOffset: -26,
+            label: "${count}",
+            labelYOffset: 32,
+            labelXOffset: 0,
+            fontColor: "#000",
+            labelOutlineColor:'#fff'
         }
     }),
     new OpenLayers.Rule({
@@ -333,6 +397,8 @@ var tempstyle = new OpenLayers.Style(
     graphicWidth: 37,
     graphicHeight: 39,
     graphicYOffset: -21, 
+    labelOutlineColor:"#ffffff",
+    labelOutlineWidth:2,
     labelYOffset: -20,
     label: "${label}" 
 },
@@ -341,7 +407,9 @@ var tempstyle = new OpenLayers.Style(
     rules: [
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "CROSSING");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "CROSSING");
+            }
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
@@ -351,7 +419,9 @@ var tempstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
-            evaluate:  function (attributes){ return hasNoMemo(attributes, "CROSSING");}
+            evaluate:  function (attributes){
+                return hasNoMemo(attributes, "CROSSING");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -365,7 +435,9 @@ var tempstyle = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "GUARD");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -377,7 +449,9 @@ var tempstyle = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter: new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes, "GUARD");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes, "GUARD");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -389,7 +463,9 @@ var tempstyle = new OpenLayers.Style(
     new OpenLayers.Rule({
         // a rule contains an optional filter
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasMemo(attributes, "BAR");}
+            evaluate: function (attributes){
+                return hasMemo(attributes, "BAR");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -400,13 +476,33 @@ var tempstyle = new OpenLayers.Style(
     }),
     new OpenLayers.Rule({
         filter:  new OpenLayers.Filter.Function({
-            evaluate: function (attributes){ return hasNoMemo(attributes,"BAR");}
+            evaluate: function (attributes){
+                return hasNoMemo(attributes,"BAR");
+            }
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar,
             graphicYOffset: -26,
             label: "${description}"
+        }
+    }),
+    
+    // Cluster 
+    new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Function({
+            evaluate: function (attributes){
+                return attributes.count ;
+            }
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.cluster,
+            graphicYOffset: -26,
+            label: "${count}",
+            labelYOffset: 32,
+            labelXOffset: 0,
+            fontColor: "#000",
+            labelOutlineColor:'#fff'
         }
     }),
     new OpenLayers.Rule({
@@ -481,7 +577,7 @@ var snap = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-   // strokeColor: "#99BCE8",
+    // strokeColor: "#99BCE8",
     strokeLinecap: "butt",
     strokeDashstyle: "dash",
     strokeColor: "#9E9E9E",

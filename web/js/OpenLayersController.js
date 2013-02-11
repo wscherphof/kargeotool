@@ -91,7 +91,9 @@ Ext.define("ol", {
             })
         }
         );
+        
         this.rseqVectorLayer = new OpenLayers.Layer.Vector("RseqSelect", {
+            strategies: [new OpenLayers.Strategy.Cluster({threshold:2})],
             styleMap: new OpenLayers.StyleMap( {
                 "default": style,
                 "select": selectstyle,
@@ -327,7 +329,15 @@ Ext.define("ol", {
         this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer],{
             clickout: true,
             onSelect : function (feature){
-                if(feature && feature.layer.name == "RseqSelect"){
+                if(feature && feature.cluster && feature.layer.name == "RseqSelect"){
+                    var cluster = feature.cluster;
+                    var bounds = new OpenLayers.Bounds();
+                    for(var i = 0 ; i< cluster.length; i++){
+                        var point = cluster[i];
+                        bounds.extend(point.geometry);
+                    }
+                    editor.olc.map.zoomToExtent(bounds);
+                }else if(feature && feature.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
                         karAddress: feature.data.karAddress
                     });
