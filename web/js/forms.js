@@ -117,6 +117,7 @@ Ext.define("EditForms", {
                     xtype: 'numberfield',
                     fieldLabel: 'KAR adres',
                     name: 'karAddress',
+                    allowBlank: false,
                     minValue: 0,
                     value: rseq.karAddress,
                     listeners: {
@@ -132,8 +133,7 @@ Ext.define("EditForms", {
                 },{
                     fieldLabel: 'Locatie',
                     name: 'description',
-                    value: rseq.description,
-                    allowBlank: false
+                    value: rseq.description
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
@@ -387,11 +387,6 @@ Ext.define("EditForms", {
                     anchor: '100%'
                 },
                 items: [{
-                    fieldLabel: 'Label',
-                    name: 'label',
-                    value: point.label,
-                    id: 'labelEdit'
-                },{
                     xtype:'fieldset',
                     title: 'KAR signaal',
                     collapsible: false,
@@ -401,6 +396,13 @@ Ext.define("EditForms", {
                         anchor: '100%'
                     },
                     items: signalItems
+                },{
+                    fieldLabel: 'Label',
+                    name: 'label',
+                    value: point.label,
+                    maxLength: 4,
+                    maxLengthText: "Maximale lengte is 4 karakters",
+                    id: 'labelEdit'
                 }],
                 buttons: [{
                     text: 'OK',
