@@ -126,14 +126,14 @@ Ext.define("EditForms", {
                         }
                     }                    
                 },{
-                    fieldLabel: 'Omschrijving',
-                    name: 'description',
-                    value: rseq.description,
-                    allowBlank: false
-                },{
                     fieldLabel: 'Plaats',
                     name: 'town',
                     value: rseq.town
+                },{
+                    fieldLabel: 'Locatie',
+                    name: 'description',
+                    value: rseq.description,
+                    allowBlank: false
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
