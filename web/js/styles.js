@@ -577,12 +577,11 @@ var snap = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
 {
-    // strokeColor: "#99BCE8",
     strokeLinecap: "butt",
     strokeDashstyle: "dash",
-    strokeColor: "#9E9E9E",
-    stokeOpacity: 0.7,
-    strokeWidth: 1
+    strokeColor: "#99BCE8",
+    stokeOpacity: 1.0,
+    strokeWidth: 2
 });
 
 function hasMemo(attributes, type){
