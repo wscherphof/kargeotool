@@ -695,6 +695,7 @@ Ext.define("Editor", {
      */    
     inmeldpuntSelected: function(inmeldpunt) {
         if(inmeldpunt){
+            
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
             if(inmeldpunt instanceof Point && inmeldpunt.getType() == "ACTIVATION_1"){
                 
@@ -706,10 +707,16 @@ Ext.define("Editor", {
                     'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     function(buttonId) {
                         if(buttonId == "yes") {
-                            me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, true);
+                            var map = Ext.create(MovementActivationPoint, {
+                                beginEndOrActivation: "ACTIVATION",
+                                commandType: 1, 
+                                pointId: inmeldpunt.getId()
+                            });
+                            me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
-                    }
+                    },
+                     me
                     );
                 
                 this.un('selectedObjectChanged',this.inmeldpuntSelected,this);
