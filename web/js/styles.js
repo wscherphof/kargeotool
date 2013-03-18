@@ -20,6 +20,16 @@
  * Hieronder volgen een aantal styles die worden gebruikt om features op de vectorlayers
  * van OpenLayers te tekenen.
  */
+
+var styleContext = {
+    getLabel:function (feature){
+        if(editor.olc.map.getResolution() > 1){
+            return "";
+        }else{
+            return feature.attributes.description;
+        }
+    }
+};
 var style = new OpenLayers.Style(
 {
     graphicWidth: 28,
@@ -31,6 +41,7 @@ var style = new OpenLayers.Style(
     label: "${label}" // label will be foo attribute value
 },
 {
+    context: styleContext,
     rules: [
     // CROSSING memo
     new OpenLayers.Rule({
@@ -42,7 +53,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -57,7 +68,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -73,7 +84,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard_attachment,
             graphicYOffset: -16,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     // GUARD no memo
@@ -87,7 +98,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     // BAR memo
@@ -102,7 +113,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar_attachment,
             graphicYOffset: -16,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     // BAR No memo
@@ -116,7 +127,7 @@ var style = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -231,7 +242,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing_selected_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -244,7 +255,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing_selected,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
 
@@ -258,7 +269,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar_selected_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -271,7 +282,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar_selected,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -285,7 +296,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard_selected_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -298,7 +309,7 @@ var selectstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard_selected,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -414,7 +425,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -427,7 +438,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.crossing,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
@@ -443,7 +454,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -457,7 +468,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.guard,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -471,7 +482,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar_attachment,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     new OpenLayers.Rule({
@@ -484,7 +495,7 @@ var tempstyle = new OpenLayers.Style(
         symbolizer: {
             externalGraphic: karTheme.bar,
             graphicYOffset: -26,
-            label: "${description}"
+            label: "${getLabel}"
         }
     }),
     
