@@ -49,6 +49,7 @@
                 startPunt_selected:             imgPath + '/icons/beginpunt_selected.png',
                 eindPunt:                       imgPath + '/icons/eindpunt.png',
                 eindPunt_selected:              imgPath + '/icons/eindpunt_selected.png',
+                cursor_delete:                  imgPath + '/silk/cursor_delete.png',
 
                 voorinmeldPunt:                 imgPath + '/icons/radio_blauw.png',
                 voorinmeldPunt_selected:        imgPath + '/icons/radio_blauw_selected.png',

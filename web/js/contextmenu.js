@@ -33,7 +33,10 @@ Ext.define("ContextMenu", {
     defaultMenu:null,
     
     point_with_line:null,
+    actionToCancel:null,
     /**
+     * 
+     * @param editor A reference to the editor.
      *@constructor
      */
     constructor: function(editor) {
@@ -56,6 +59,12 @@ Ext.define("ContextMenu", {
                 id: 'addRseq',
                 text: 'Hier verkeerssysteem toevoegen',
                 icon: karTheme.crossing
+            },
+            {
+                id: 'cancelSelecting',
+                text: 'Annuleer selecteren bestaand punt.',
+                icon: karTheme.cursor_delete,
+                hidden: true
             }
             ],
             listeners: {
@@ -69,6 +78,9 @@ Ext.define("ContextMenu", {
                     var lonlat = this.editor.olc.map.getLonLatFromPixel(pos);
                     
                     switch (item.id) {
+                        case 'cancelSelecting':
+                            this.cancelSelection();
+                            break;                            
                         case 'addRseq':
                             // Voeg op huidige positie nieuwe Rseq toe 
                             this.editor.addRseq(lonlat.lon, lonlat.lat);
@@ -472,5 +484,17 @@ Ext.define("ContextMenu", {
             }
             mc.hide();
         }
+    },
+    showCancelSelecting: function(action){
+        var cancel = this.defaultMenu.items.getByKey("cancelSelecting");
+        cancel.show();
+        this.actionToCancel = action;
+    },
+    hideCancelSelecting: function(){
+        var cancel = this.defaultMenu.items.getByKey("cancelSelecting");
+        cancel.hide();
+    },
+    cancelSelection:function(){
+        this.editor.un('selectedObjectChanged',this.actionToCancel,this.editor);
     }
 });

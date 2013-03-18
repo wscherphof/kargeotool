@@ -609,6 +609,7 @@ Ext.define("Editor", {
      * Selecteren bestaand eindpunt
      */
     selectEindpunt: function() {
+        this.contextMenu.showCancelSelecting(this.eindpuntSelected);
         this.on('selectedObjectChanged',this.eindpuntSelected,this);
     },
     
@@ -635,6 +636,7 @@ Ext.define("Editor", {
                     );
                 
                 this.un('selectedObjectChanged',this.eindpuntSelected,this);
+                this.contextMenu.hideCancelSelecting();
             }else{
                 Ext.Msg.alert("Kan punt niet selecteren", "Geselecteerd punt is geen eindpunt");
             }
@@ -687,6 +689,7 @@ Ext.define("Editor", {
      * Selecteren bestaand inmeldpunt
      */
     selectInmeldpunt: function() {
+        this.contextMenu.showCancelSelecting(this.inmeldpuntSelected);
         this.on('selectedObjectChanged',this.inmeldpuntSelected,this);
     },
     
@@ -720,6 +723,7 @@ Ext.define("Editor", {
                     );
                 
                 this.un('selectedObjectChanged',this.inmeldpuntSelected,this);
+                this.contextMenu.hideCancelSelecting();
             }else{
                 Ext.Msg.alert("Kan punt niet selecteren", "Geselecteerd punt is geen inmeldpunt");
             }
