@@ -101,14 +101,30 @@ Ext.define("EditForms", {
                     name: 'dataOwner',
                     allowBlank: false,
                     blankText: 'Selecteer een optie',
-                    editable: false,
                     displayField: 'omschrijving',
+                    queryMode:'local',
+                    typeAhead:true,
+                    minChars:2,
                     valueField: 'code',
                     value: rseq.dataOwner,
                     store: Ext.create('Ext.data.Store', {
                         fields: ['code', 'classificatie', 'companyNumber', 'omschrijving'],
                         data: dataOwners
-                    })
+                    }),
+                    listeners: {
+                      buffer: 50,
+                      change: function() {
+                        var store = this.store;
+                        //store.suspendEvents();
+                        store.clearFilter();
+                        //store.resumeEvents();
+                        store.filter({
+                            property: 'omschrijving',
+                            anyMatch: true,
+                            value   : this.getValue()
+                        });
+                      }
+                    }
                 },{
                     fieldLabel: 'Beheerdersaanduiding',
                     name: 'crossingCode',
