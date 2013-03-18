@@ -30,6 +30,7 @@ var styleContext = {
         }
     }
 };
+// <editor-fold desc="Standaardstyle">
 var style = new OpenLayers.Style(
 {
     graphicWidth: 28,
@@ -217,7 +218,9 @@ var style = new OpenLayers.Style(
     ]
 }
 );
+// </editor-fold>
 
+// <editor-fold desc="Selectstyle">
 var selectstyle = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
@@ -399,8 +402,9 @@ var selectstyle = new OpenLayers.Style(
     ]
 }
 );
+// </editor-fold>
 
-
+// <editor-fold desc="Temporary style">
 var tempstyle = new OpenLayers.Style(
 // the first argument is a base symbolizer
 // all other symbolizers in rules will extend this one
@@ -583,6 +587,7 @@ var tempstyle = new OpenLayers.Style(
     ]
 }
 );
+// </editor-fold>
 
 var snap = new OpenLayers.Style(
 // the first argument is a base symbolizer
