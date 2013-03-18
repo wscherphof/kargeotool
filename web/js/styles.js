@@ -23,10 +23,24 @@
 
 var styleContext = {
     getLabel:function (feature){
-        if(editor.olc.map.getResolution() > 1){
-            return "";
-        }else{
+        var show = false;
+        if(feature.renderIntent == "default"){
+            if(editor.olc.map.getResolution() < 1){
+                show = true;
+            }
+        } else if(feature.renderIntent == "select"){
+            show = true;
+        } else{
+            // Temporary
+            if(editor.olc.vectorLayer.selectedFeatures != undefined && editor.olc.vectorLayer.selectedFeatures.length > 0 && editor.olc.vectorLayer.selectedFeatures[0].id == feature.id){
+                show = true;
+            }
+        }
+        
+        if(show){
             return feature.attributes.description;
+        }else{
+            return "";
         }
     }
 };
@@ -145,8 +159,8 @@ var style = new OpenLayers.Style(
             label: "${count}",
             labelYOffset: 32,
             labelXOffset: 0,
-            fontColor: "#000",
-            labelOutlineColor:'#fff'
+            fontColor: "#F0F000",
+            labelOutlineColor:'#000'
         }
     }),
     new OpenLayers.Rule({
@@ -235,6 +249,7 @@ var selectstyle = new OpenLayers.Style(
 },
 // the second argument will include all rules
 {
+    context: styleContext,
     rules: [
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
@@ -419,6 +434,7 @@ var tempstyle = new OpenLayers.Style(
 },
 // the second argument will include all rules
 {
+    context: styleContext,
     rules: [
     new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Function({
