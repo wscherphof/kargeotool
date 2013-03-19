@@ -152,3 +152,8 @@ body.editor {
 #kaart{
     height: 100%;
 }
+
+.x-tree-icon{
+    background-image: none !important;
+    width:0px !important;
+}

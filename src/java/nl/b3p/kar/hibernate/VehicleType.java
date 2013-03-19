@@ -40,6 +40,8 @@ public class VehicleType {
      * Omschrijving van het soort voertuig.
      */
     private String omschrijving;
+    
+    private String groep;
 
     /**
      *
@@ -72,5 +74,15 @@ public class VehicleType {
     public void setOmschrijving(String omschrijving) {
         this.omschrijving = omschrijving;
     }
+
+    public String getGroep() {
+        return groep;
+    }
+
+    public void setGroep(String groep) {
+        this.groep = groep;
+    }
+    
+    
     
 }

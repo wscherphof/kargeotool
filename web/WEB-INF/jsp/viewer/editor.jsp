@@ -37,6 +37,7 @@
     <stripes:layout-component name="content">
 
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
 
         <div id="leftbar">
             

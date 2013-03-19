@@ -95,6 +95,7 @@ public class EditorActionBean implements ActionBean {
         for (VehicleType vt : (List<VehicleType>) em.createQuery("from VehicleType order by nummer").getResultList()) {
             JSONObject jvt = new JSONObject();
             jvt.put("nummer", vt.getNummer());
+            jvt.put("groep", vt.getGroep());
             jvt.put("omschrijving", vt.getOmschrijving());
             vehicleTypesJSON.put(jvt);
         }

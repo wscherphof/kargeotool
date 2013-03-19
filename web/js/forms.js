@@ -325,15 +325,32 @@ Ext.define("EditForms", {
             })   
         }];
         if(editingUitmeldpunt) {
-            Ext.define('VehicleType', {
-                extend: 'Ext.data.Model',
-                fields: [
-                    {name: 'nummer', type: 'int'},
-                    {name: 'omschrijving', type: 'string'}
+            var ov = [];
+            var hulpdienst = [];
+            var data = {root:{
+                text: 'Alle',
+                id: 'root',
+                expanded: true,
+                checked: false,
+                children :[ 
+                    {
+                        id: 'ov-node', 
+                        text: 'OV', 
+                        checked: false, 
+                        expanded:true,
+                        leaf: false,
+                        children: ov
+                    }, 
+                    {
+                        id: 'hulpdienst-node', 
+                        text: 'Hulpdiensten', 
+                        checked: false, 
+                        expanded:true,
+                        leaf: false,
+                        children: hulpdienst
+                    }
                 ]
-            });
-
-            var data = [];
+            }};
             var selectedVehicleTypes = [];
             Ext.Array.each(vehicleTypes, function(vt) {
                 var selected = Ext.Array.contains(map.vehicleTypes, vt.nummer);
@@ -341,10 +358,19 @@ Ext.define("EditForms", {
                     selectedVehicleTypes.push(vt.nummer);
                 }
                 if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
-                    data.push(vt);
+                    var leaf = {
+                            id: vt.nummer,
+                            text: vt.omschrijving,
+                            checked: false, 
+                            leaf: true};
+                    if(vt.groep == "OV"){
+                        ov.push(leaf);
+                    }else{
+                        hulpdienst.push(leaf);
+                    }
                 }
             });
-            var vehicleTypesStore = Ext.create('Ext.data.Store', {proxy: 'memory', model: 'VehicleType', data: data});
+            var vehicleTypesStore = Ext.create('Ext.data.TreeStore', data);
 
             signalItems = Ext.Array.merge(signalItems, [{
                 xtype: 'numberfield',
@@ -370,16 +396,14 @@ Ext.define("EditForms", {
                 fieldLabel: 'Virtual local loop number',
                 name: 'virtualLocalLoopNumber'
             },{
-                xtype: 'combo',
-                multiSelect: true,
-                allowBlank: false,
-                editable: false,
-                blankText: 'Selecteer een optie',
-                displayField: 'omschrijving',
-                valueField: 'nummer',
-                value:  selectedVehicleTypes,
+                xtype: 'treecombo',
+                valueField: 'id',
+                editable:false,
+                value:  selectedVehicleTypes.join(","),
                 fieldLabel: 'Voertuigtypes',
-                name: 'vehicleTypes',
+                treeWidth:290,
+                treeHeight: 300,
+                name: 'vehicleTypes',   
                 store: vehicleTypesStore
             }]);
         }
@@ -387,7 +411,7 @@ Ext.define("EditForms", {
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
             height: map.commandType == 2 ? 274 : 193,
-            width: 450,
+            width: 490,
             modal: true,
             icon: karTheme[apName],
             layout: 'fit',
@@ -437,7 +461,7 @@ Ext.define("EditForms", {
                         // pointId gebruiken
                         var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "triggerType"]);
                         
-                        // Alleen bij uitmeldpund kunnen deze worden ingesteld
+                        // Alleen bij uitmeldpunt kunnen deze worden ingesteld
                         // maar moeten voor alle movements worden toegepast op
                         // alle signals
                         if(editingUitmeldpunt) {
