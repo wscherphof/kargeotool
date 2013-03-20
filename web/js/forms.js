@@ -330,6 +330,7 @@ Ext.define("EditForms", {
             var data = {root:{
                 text: 'Alle',
                 id: 'root',
+                iconCls: "noTreeIcon",
                 expanded: true,
                 checked: false,
                 children :[ 
@@ -337,6 +338,7 @@ Ext.define("EditForms", {
                         id: 'ov-node', 
                         text: 'OV', 
                         checked: false, 
+                        iconCls: "noTreeIcon",
                         expanded:false,
                         leaf: false,
                         children: ov
@@ -345,6 +347,7 @@ Ext.define("EditForms", {
                         id: 'hulpdienst-node', 
                         text: 'Hulpdiensten', 
                         checked: false, 
+                        iconCls: "noTreeIcon",
                         expanded:false,
                         leaf: false,
                         children: hulpdienst
@@ -353,7 +356,7 @@ Ext.define("EditForms", {
             }};
             var selectedVehicleTypes = [];
             Ext.Array.each(vehicleTypes, function(vt) {
-                var selected = Ext.Array.contains(map.vehicleTypes, vt.nummer);
+                var selected = map.vehicleTypes.indexOf(vt.nummer) != -1;
                 if(selected) {
                     selectedVehicleTypes.push(vt.nummer);
                 }
@@ -362,6 +365,7 @@ Ext.define("EditForms", {
                             id: vt.nummer,
                             text: vt.omschrijving,
                             checked: false, 
+                            iconCls: "noTreeIcon",
                             leaf: true};
                     if(vt.groep == "OV"){
                         ov.push(leaf);
