@@ -318,9 +318,9 @@ Ext.define("EditForms", {
             store: Ext.create('Ext.data.Store', {
                 fields: ['value', 'desc'],
                 data: [
-                    {value: 'STANDARD', desc: 'STANDARD: door vervoerder bepaald'},
-                    {value: 'FORCED', desc: 'FORCED: altijd melding'},
-                    {value: 'MANUAL', desc: 'MANUAL: handmatig door chauffeur'}
+                    {value: 'STANDARD', desc: 'Standaard: door vervoerder bepaald'},
+                    {value: 'FORCED', desc: 'Automatisch: altijd melding'},
+                    {value: 'MANUAL', desc: 'Handmatig: handmatig door chauffeur'}
                 ]
             })   
         }];
