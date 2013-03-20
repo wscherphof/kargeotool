@@ -20,7 +20,7 @@
 /**
  * Editor class is een alghele controller van de edit interface en delegeert
  * grote functionaliteiten naar andere classes, zoals de controle over OpenLayers,
- * ContextMenu, Geocoder, EditForms en ActiveRseqInfoPanel.
+ * ContextMenu, SearchManager, EditForms, Overview en ActiveRseqInfoPanel.
  * 
  */
 Ext.define("Editor", {
@@ -35,7 +35,8 @@ Ext.define("Editor", {
     startLocationHash: null,
     
     activeRseq: null,
-    activeRseqInfoPanel: null,
+    helpPanel: null,
+    overview: null,
     
     editForms: null,
     
@@ -82,7 +83,8 @@ Ext.define("Editor", {
         
         this.domId = domId;
         
-        this.activeRseqInfoPanel = Ext.create(ActiveRseqInfoPanel, "rseqInfoPanel", this);
+        this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
+        this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         this.editForms = Ext.create(EditForms, this);
         
         this.startLocationHash = this.parseLocationHash();
@@ -566,7 +568,7 @@ Ext.define("Editor", {
                 commandType: 2, 
                 pointId: uitmeldpunt.getId(),
                 distanceTillStopLine: distance[0].toFixed(0),
-                vehicleTypes: [1]
+                vehicleTypes: [1,2,6,7,71]
             });
             
             me.editForms.editActivationPoint(uitmeldpunt, map, function() {
@@ -862,54 +864,15 @@ Ext.define("Editor", {
     }
 });
 
-Ext.define("ActiveRseqInfoPanel", {
+Ext.define("HelpPanel", {
     domId: null,
     editor: null,
     
     constructor: function(domId, editor) {
         this.domId = domId;
         this.editor = editor;
-        editor.on("activeRseqChanged", this.updateRseqInfoPanel, this);
-        editor.on("activeRseqUpdated", this.updateRseqInfoPanel, this);
         editor.on("currentEditActionChanged", this.updateHelpPanel, this);
     },
-    
-    updateRseqInfoPanel: function(rseq) {
-        Ext.get("context_vri").setHTML(rseq == null ? "" : 
-            (rseq.description + " (" + rseq.karAddress + ")"));
-        Ext.get("rseqOptions").setVisible(rseq != null);
-        var memoIcon = Ext.get("memo_vri");
-        if(rseq.memo && rseq.memo != ""){
-            memoIcon.setVisible(true);
-        }else{
-            memoIcon.setVisible(false);
-        }
-        
-        var signaalGroepen = [];
-        var signaalGroepMap = {};
-        
-        var overzicht = Ext.get("overzicht");
-        overzicht.dom.innerHTML = "";        
-        
-        if(rseq != null) {
-            Ext.Array.each(rseq.movements, function(mvmt) {
-                Ext.Array.each(mvmt.maps, function(map) {
-                    if(map.beginEndOrActivation == "ACTIVATION" && map.signalGroupNumber) {
-                        if(!signaalGroepMap[map.signalGroupNumber]) {
-                            signaalGroepen.push(map.signalGroupNumber);
-                            signaalGroepMap[map.signalGroupNumber] = true;
-                        }
-                    }
-                });
-            });
-            
-            overzicht.dom.innerHTML = "Signaalgroepen: " + signaalGroepen.join(", ");
-        }
-        
-        
-        this.updateHelpPanel();
-    },
-    
     updateHelpPanel: function() {
         
         var action = this.editor.currentEditAction;

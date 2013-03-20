@@ -157,3 +157,8 @@ body.editor {
     background-image: none !important;
     width:0px !important;
 }
+
+.overviewTree{
+    width: 20px;
+    
+}
