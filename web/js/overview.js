@@ -48,54 +48,17 @@ Ext.define("nl.b3p.kar.Overview",{
             tree.remove();
         }
         var root = this.createRootNode(rseq.getOverviewJSON());
-        var store = Ext.create('Ext.data.TreeStore',/*{
-         root : {
-         expanded : true,
-         children : [
-         {
-         text : "detention",
-         id : "16",
-         leaf : true,
-         type : "nablijven"
-         },
-         {
-         text : "homework",
-         id : "15",
-         expanded : true,
-         type : "aap",
-         children : [
-         {
-         text : "book report",
-         id : "14",
-         tsdf : 6,
-         leaf : true
-         },
-         {
-         text : "algebra",
-         leaf : true
-         }
-         ]
-         },
-         {
-         text : "buy lottery tickets",
-         leaf : true
-         }
-         ]
-         }
-         }*/root);
+        var store = Ext.create('Ext.data.TreeStore',root);
         Ext.create('Ext.tree.Panel',{
             border : false,
             width : "100%",
+            header:false,
             id : "tree",
-            height : "60%",
+            height : "100%",
             store : store,
             rootVisible : false,
             renderTo : overzicht
         });
-        if (rseq != null){
-        }
-
-
         this.editor.helpPanel.updateHelpPanel();
     },
     createRootNode : function (json){
