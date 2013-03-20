@@ -337,7 +337,7 @@ Ext.define("EditForms", {
                         id: 'ov-node', 
                         text: 'OV', 
                         checked: false, 
-                        expanded:true,
+                        expanded:false,
                         leaf: false,
                         children: ov
                     }, 
@@ -345,7 +345,7 @@ Ext.define("EditForms", {
                         id: 'hulpdienst-node', 
                         text: 'Hulpdiensten', 
                         checked: false, 
-                        expanded:true,
+                        expanded:false,
                         leaf: false,
                         children: hulpdienst
                     }
