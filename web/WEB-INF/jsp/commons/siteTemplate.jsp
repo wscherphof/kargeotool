@@ -58,7 +58,9 @@
                 uitmeldPunt:                    imgPath + '/icons/radio_rood.png',
                 uitmeldPunt_selected:           imgPath + '/icons/radio_rood_selected.png',
                 
-                cluster:                        imgPath + '/icons/cluster.png'
+                cluster:                        imgPath + '/icons/cluster.png',
+                
+                richting:                       imgPath + '/icons/richting.png'
             };
         </script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
