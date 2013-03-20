@@ -49,7 +49,6 @@ Ext.define('Ext.ux.TreeCombo',{
     alias : 'widget.treecombo',
     tree : false,
     
-    
     records : [],
     recursiveRecords : [],
     ids : [],
@@ -110,10 +109,6 @@ Ext.define('Ext.ux.TreeCombo',{
         };
 
         this.callParent(arguments);
-        var ov = this.tree.getRootNode().findChild("id", "ov-node");
-        var hulp = this.tree.getRootNode().findChild("id", "hulpdienst-node");
-        this.checkParentNodes(ov);
-        this.checkParentNodes(hulp);
     },
     itemTreeClick : function (view,record,item,index,e,eOpts,treeCombo){
         var me = treeCombo,
@@ -308,8 +303,15 @@ Ext.define('Ext.ux.TreeCombo',{
     initValue : function (){
         this.ids = this.value.split(",");
         this.setValue(this.value);
-        var ov = this.tree.getRootNode();
-        this.checkParentNodes(ov);
+        this.checkNodes(this.tree.getRootNode());
+    },
+    // Recursive function to check if parent nodes should be checked, because their children are, but the parents are not in the initialValue
+    checkNodes: function (node){
+        for(var i = 0 ; i < node.childNodes.length ;i++){
+            var child = node.childNodes[i];
+            this.checkNodes(child);
+            this.checkParentNodes(child);
+        }
     },
     getValue : function (){
         return this.value;
