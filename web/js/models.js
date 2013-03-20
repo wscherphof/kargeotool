@@ -384,6 +384,36 @@ Ext.define('RSEQ', {
         });
         
         return j;
+    },
+    getOverviewJSON : function(){
+        var signalGroups = {};
+  
+        for(var i = 0 ; i < this.movements.length; i++){
+            var mvmnt = this.movements[i];
+            for(var j = 0 ; j < mvmnt.maps.length ;j++){
+                var map = mvmnt.maps[j];
+                if(map.getSignalGroupNumber () != null){
+                    var signalGroupNumber = map.getSignalGroupNumber();
+                    if(!signalGroups.hasOwnProperty(signalGroupNumber)){
+                        signalGroups[signalGroupNumber] = new Object();
+                    }
+                    
+                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.nummer)){
+                        
+                         signalGroups[signalGroupNumber][ mvmnt.nummer] = new Object();
+                         signalGroups[signalGroupNumber][ mvmnt.nummer]["id"] = mvmnt.id;
+                         signalGroups[signalGroupNumber][ mvmnt.nummer]["points"] = new Array();
+                    }
+                        
+                    
+                    for(var k = 0 ; k < mvmnt.maps.length;k++){
+                        var point = this.getPointById(mvmnt.maps[k].pointId);
+                        signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
+                    }
+                }
+            }
+        }
+        return signalGroups;
     }
 });
 
