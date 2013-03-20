@@ -77,6 +77,7 @@
                     <img src="<c:url value="/images/"/>icons/vri.png" alt="VRI" class="legendimg" /> VRI<br />
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
+                    <img src="<c:url value="/images/"/>icons/cluster.png" alt="Meerdere verkeersystemen" class="legendimg" /> Meerdere verkeersystemen<br />
                 </div>
                 <div id="triggerpunten" class="legendseparator">
                     <b>Punten</b><br/>
