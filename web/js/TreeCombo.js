@@ -48,15 +48,8 @@ Ext.define('Ext.ux.TreeCombo',{
     extend : 'Ext.form.field.Picker',
     alias : 'widget.treecombo',
     tree : false,
-    constructor : function (config){
-        this.addEvents({
-            "itemclick" : true
-        });
-
-
-        this.listeners = config.listeners;
-        this.callParent(arguments);
-    },
+    
+    
     records : [],
     recursiveRecords : [],
     ids : [],
@@ -68,146 +61,14 @@ Ext.define('Ext.ux.TreeCombo',{
     treeWidth : 300,
     matchFieldWidth : false,
     treeHeight : 400,
-    masN : 0,
-    recursivePush : function (node,setIds){
-        var me = this;
-
-        me.addRecRecord(node);
-        if (setIds){
-            me.addIds(node);
-        }
-
-        node.eachChild(function (nodesingle){
-            if (nodesingle.hasChildNodes() == true){
-                me.recursivePush(nodesingle,setIds);
-            } else{
-                me.addRecRecord(nodesingle);
-                if (setIds)
-                    me.addIds(nodesingle);
-            }
-        });
-    },
-    recursiveUnPush : function (node){
-        var me = this;
-        me.removeIds(node);
-
-        node.eachChild(function (nodesingle){
-            if (nodesingle.hasChildNodes() == true){
-                me.recursiveUnPush(nodesingle);
-            } else{
-                me.removeIds(nodesingle);
-            }
-        });
-    },
-    addRecRecord : function (record){
-        var me = this;
-
-        for (var i = 0,j = me.recursiveRecords.length;i < j;i++){
-            var item = me.recursiveRecords[i];
-            if (item){
-                if (item.getId() == record.getId()){
-                    return;
-                }
-            }
-        }
-        me.recursiveRecords.push(record);
-    },
     afterLoadSetValue : false,
-    setValue : function (valueInit){
-        if (typeof valueInit == 'undefined'){
-            return;
-        }
-
-        var me = this,
-                tree = this.tree,
-                values = (valueInit == '') ? [] : valueInit.split(','),
-                valueFin = [];
-
-        inputEl = me.inputEl;
-
-        if (tree.store.isLoading()){
-            me.afterLoadSetValue = valueInit;
-        }
-
-        if (inputEl && me.emptyText && !Ext.isEmpty(values)){
-            inputEl.removeCls(me.emptyCls);
-        }
-
-        if (tree == false){
-            return false;
-        }
-
-        var node = tree.getRootNode();
-        if (node == null){
-            return false;
-        }
-
-        me.recursiveRecords = [];
-        me.recursivePush(node,false);
-
-        me.records = [];
-        Ext.each(me.recursiveRecords,function (record){
-            var id = record.get(me.valueField),
-                    index = values.indexOf('' + id);
-
-            if (me.multiselect == true){
-                record.set('checked',false);
-            }
-
-            if (index != -1){
-                valueFin.push(record.get(me.displayField));
-                if (me.multiselect == true)
-                    record.set('checked',true);
-                me.addRecord(record);
-            }
+    constructor : function (config){
+        this.addEvents({
+            "itemclick" : true
         });
 
-        me.value = valueInit;
-        me.setRawValue(valueFin.join(', '));
-
-        me.checkChange();
-        me.applyEmptyText();
-        return me;
-    },
-    initValue : function (){
-        this.ids = this.value.split(",");
-        this.setValue(this.value);
-    },
-    getValue : function (){
-        return this.value;
-    },
-    getSubmitValue : function (){
-        var me = this;
-        var ids = me.value.split(",");
-        for (var i = ids.length;i >= 0;i--){
-            if (ids[i] == 'NaN' || ids[i] % 1 !== 0){
-                ids.splice(i,1);
-            }
-        }
-        return ids;
-    },
-    checkParentNodes : function (node){
-        if (node == null)
-            return;
-
-        var me = this,
-                checkedAll = true;
-
-        node.eachChild(function (nodesingle){
-            var id = nodesingle.getId(),
-                    index = me.ids.indexOf('' + id);
-
-            if (index == -1)
-                checkedAll = false;
-        });
-
-        if (checkedAll == true){
-            me.addIds(node);
-            me.checkParentNodes(node.parentNode);
-        } else{
-            me.removeIds(node);
-            me.checkParentNodes(node.parentNode);
-        }
+        this.listeners = config.listeners;
+        this.callParent(arguments);
     },
     initComponent : function (){
         var me = this;
@@ -253,42 +114,6 @@ Ext.define('Ext.ux.TreeCombo',{
         var hulp = this.tree.getRootNode().findChild("id", "hulpdienst-node");
         this.checkParentNodes(ov);
         this.checkParentNodes(hulp);
-    },
-    addIds : function (record){
-        var me = this;
-
-        if (me.ids.indexOf('' + record.getId()) == -1)
-            me.ids.push('' + record.get(me.valueField));
-    },
-    removeIds : function (record){
-        var me = this,
-                index = me.ids.indexOf('' + record.getId());
-
-        if (index != -1){
-            me.ids.splice(index,1);
-        }
-    },
-    addRecord : function (record){
-        var me = this;
-
-        for (var i = 0,j = me.records.length;i < j;i++){
-            var item = me.records[i];
-            if (item){
-                if (item.getId() == record.getId())
-                    return;
-            }
-        }
-        me.records.push(record);
-    },
-    removeRecord : function (record){
-        var me = this;
-
-
-        for (var i = 0,j = me.records.length;i < j;i++){
-            var item = me.records[i];
-            if (item && item.getId() == record.getId())
-                delete(me.records[i]);
-        }
     },
     itemTreeClick : function (view,record,item,index,e,eOpts,treeCombo){
         var me = treeCombo,
@@ -349,6 +174,185 @@ Ext.define('Ext.ux.TreeCombo',{
             me.checkParentNodes(node.parentNode);
 
         me.setRecordsValue(view,record,item,index,e,eOpts,treeCombo);
+    },
+    recursivePush : function (node,setIds){
+        var me = this;
+
+        me.addRecRecord(node);
+        if (setIds){
+            me.addIds(node);
+        }
+
+        node.eachChild(function (nodesingle){
+            if (nodesingle.hasChildNodes() == true){
+                me.recursivePush(nodesingle,setIds);
+            } else{
+                me.addRecRecord(nodesingle);
+                if (setIds)
+                    me.addIds(nodesingle);
+            }
+        });
+    },
+    recursiveUnPush : function (node){
+        var me = this;
+        me.removeIds(node);
+
+        node.eachChild(function (nodesingle){
+            if (nodesingle.hasChildNodes() == true){
+                me.recursiveUnPush(nodesingle);
+            } else{
+                me.removeIds(nodesingle);
+            }
+        });
+    },
+    addRecRecord : function (record){
+        var me = this;
+
+        for (var i = 0,j = me.recursiveRecords.length;i < j;i++){
+            var item = me.recursiveRecords[i];
+            if (item){
+                if (item.getId() == record.getId()){
+                    return;
+                }
+            }
+        }
+        me.recursiveRecords.push(record);
+    },
+    setValue : function (valueInit){
+        if (typeof valueInit == 'undefined'){
+            return;
+        }
+
+        var me = this,
+                tree = this.tree,
+                values = (valueInit == '') ? [] : valueInit.split(','),
+                valueFin = [];
+
+        var inputEl = me.inputEl;
+
+        if (tree.store.isLoading()){
+            me.afterLoadSetValue = valueInit;
+        }
+
+        if (inputEl && me.emptyText && !Ext.isEmpty(values)){
+            inputEl.removeCls(me.emptyCls);
+        }
+
+        if (tree == false){
+            return false;
+        }
+
+        var node = tree.getRootNode();
+        if (node == null){
+            return false;
+        }
+
+        me.recursiveRecords = [];
+        me.recursivePush(node,false);
+
+        me.records = [];
+        Ext.each(me.recursiveRecords,function (record){
+            var id = record.get(me.valueField),
+                    index = values.indexOf('' + id);
+
+            if (me.multiselect == true){
+                record.set('checked',false);
+            }
+
+            if (index != -1){
+                valueFin.push(record.get(me.displayField));
+                if (me.multiselect == true)
+                    record.set('checked',true);
+                me.addRecord(record);
+            }
+        });
+
+        me.value = valueInit;
+        me.setRawValue(valueFin.join(', '));
+
+        me.checkChange();
+        me.applyEmptyText();
+        return me;
+    },
+    checkParentNodes : function (node){
+        if (node == null)
+            return;
+
+        var me = this,
+                checkedAll = true;
+
+        node.eachChild(function (nodesingle){
+            var id = nodesingle.getId(),
+                    index = me.ids.indexOf('' + id);
+
+            if (index == -1)
+                checkedAll = false;
+        });
+
+        if (checkedAll == true){
+            me.addIds(node);
+            me.checkParentNodes(node.parentNode);
+        } else{
+            me.removeIds(node);
+            me.checkParentNodes(node.parentNode);
+        }
+        me.setValue(me.ids.join(","));
+    },
+    addIds : function (record){
+        var me = this;
+
+        if (me.ids.indexOf('' + record.getId()) == -1){
+            me.ids.push('' + record.get(me.valueField));
+        }
+    },
+    initValue : function (){
+        this.ids = this.value.split(",");
+        this.setValue(this.value);
+        var ov = this.tree.getRootNode();
+        this.checkParentNodes(ov);
+    },
+    getValue : function (){
+        return this.value;
+    },
+    getSubmitValue : function (){
+        var me = this;
+        var ids = me.value.split(",");
+        for (var i = ids.length;i >= 0;i--){
+            if (ids[i] == 'NaN' || ids[i] % 1 !== 0){
+                ids.splice(i,1);
+            }
+        }
+        return ids;
+    },
+    removeIds : function (record){
+        var me = this,
+                index = me.ids.indexOf('' + record.getId());
+
+        if (index != -1){
+            me.ids.splice(index,1);
+        }
+    },
+    addRecord : function (record){
+        var me = this;
+
+        for (var i = 0,j = me.records.length;i < j;i++){
+            var item = me.records[i];
+            if (item){
+                if (item.getId() == record.getId())
+                    return;
+            }
+        }
+        me.records.push(record);
+    },
+    removeRecord : function (record){
+        var me = this;
+
+
+        for (var i = 0,j = me.records.length;i < j;i++){
+            var item = me.records[i];
+            if (item && item.getId() == record.getId())
+                delete(me.records[i]);
+        }
     },
     fixIds : function (){
         var me = this;
