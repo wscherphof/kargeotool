@@ -309,8 +309,11 @@ Ext.define('Ext.ux.TreeCombo',{
     checkNodes: function (node){
         for(var i = 0 ; i < node.childNodes.length ;i++){
             var child = node.childNodes[i];
-            this.checkNodes(child);
-            this.checkParentNodes(child);
+            if(child.isLeaf()){
+                this.checkParentNodes(child.parentNode);
+            }else{
+                this.checkNodes(child);
+            }
         }
     },
     getValue : function (){
@@ -324,7 +327,11 @@ Ext.define('Ext.ux.TreeCombo',{
                 ids.splice(i,1);
             }
         }
-        return ids;
+        var returnValue = [];
+        for (var j = 0; j < ids.length ; j++){
+            returnValue.push(parseInt(ids[j]));
+        }
+        return returnValue;
     },
     removeIds : function (record){
         var me = this,
