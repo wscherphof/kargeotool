@@ -359,7 +359,7 @@ Ext.define('Ext.ux.TreeCombo',{
     fixIds : function (){
         var me = this;
 
-        for (var i = 0,j = me.ids.length;i < j;i++){
+        for (var i = me.ids.length;i >= 0;i--){
             if (me.ids[i] == 'NaN')
                 me.ids.splice(i,1);
         }
