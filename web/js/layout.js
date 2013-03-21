@@ -86,7 +86,28 @@ Ext.onReady(function() {
                     },
                     {
                         contentEl: 'rseqInfoPanel',
-                        title: 'Overzicht verkeerssysteem'
+                        title: 'Overzicht verkeerssysteem',
+                        defaultType: 'container',
+                        layout: 'vbox',
+                        defaults: {
+                            border: 0,
+                            width: '100%'
+                        },
+                        items: [
+                            {
+                                contentEl: 'overzichtTitel',
+                                height: 20,
+                                margin: '3px'
+                            },
+                            {
+                                contentEl: 'overzicht',
+                                flex: 1
+                            },
+                            {
+                                contentEl: 'rseqOptions',
+                                height: 25
+                            }
+                        ]
                     },
                     {
                         contentEl: 'form',

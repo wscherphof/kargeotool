@@ -73,7 +73,7 @@ Ext.define("nl.b3p.kar.Overview",{
             selModel : {
                 mode : "MULTI"
             },
-            height : "60%",
+            height : "100%",
             store : store,
             rootVisible : false,
             renderTo : overzicht,
@@ -219,7 +219,7 @@ Ext.define("nl.b3p.kar.Overview",{
     createPointNode : function (point){
         var node = {
             text : point.getLabel(),
-            id : Ext.id(),//"point-" + point.getId(),
+            id : Ext.id(),
             leaf : true,
             pointId : point.getId(),
             type : "point",

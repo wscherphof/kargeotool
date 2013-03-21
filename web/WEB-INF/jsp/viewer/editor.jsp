@@ -45,15 +45,12 @@
             <div id="searchform" style="margin: 3px"></div>
             
             <div id="rseqInfoPanel">
-                <div style="margin: 3px">
+                <div id="overzichtTitel">
                     Huidig geselecteerde VRI: <span id="context_vri"></span><img id="memo_vri" src="${contextPath}/images/silk/attach.png" OnMouseOut="this.style.cursor='default';" OnMouseOver="this.style.cursor='pointer';" style="visibility: hidden;" onclick="editor.addMemo()"/>
-                    <p><br>
-                    <p><br>
-                    <div id="overzicht" style="margin-top: 5px; font-size: 10pt">
-                    </div>
-                    <div id="rseqOptions" style="visibility: hidden">
-                        <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate()">
-                    </div>
+                </div>
+                <div id="overzicht" style="margin-top: 5px; font-size: 10pt"></div>
+                <div id="rseqOptions" style="visibility: hidden">
+                    <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate()">
                 </div>
             </div>
             
