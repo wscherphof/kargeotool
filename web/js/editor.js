@@ -84,12 +84,12 @@ Ext.define("Editor", {
         this.domId = domId;
         
         this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
-        this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         this.editForms = Ext.create(EditForms, this);
         
         this.startLocationHash = this.parseLocationHash();
         
         this.createOpenLayersController(mapfilePath);   
+        this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         var haveCenterInHash = this.setCenterFromLocationHash();
         
         this.createContextMenu();

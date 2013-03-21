@@ -24,11 +24,23 @@
 Ext.define("nl.b3p.kar.Overview",{
     editor : null,
     domId : null,
+    tree : null,
     constructor : function (editor,domId){
         this.editor = editor;
         this.domId = domId;
         this.editor.on("activeRseqUpdated",this.updateOverview,this);
         this.editor.on("activeRseqChanged",this.updateOverview,this);
+        this.editor.on('selectedObjectChanged',this.updateSelection,this);
+        this.editor.olc.highlight.events.register('featurehighlighted',this,function (evt){
+            if (this.isPoint(evt.feature)){
+                this.highlight(evt.feature.data.id);
+            }
+        });
+        this.editor.olc.highlight.events.register('featureunhighlighted',this,function (evt){
+            if (this.isPoint(evt.feature)){
+                this.unhighlight(evt.feature.data.id);
+            }
+        });
     },
     updateOverview : function (rseq){
         Ext.get("context_vri").setHTML(rseq == null ? "" :
@@ -49,12 +61,15 @@ Ext.define("nl.b3p.kar.Overview",{
         }
         var root = this.createRootNode(rseq.getOverviewJSON());
         var store = Ext.create('Ext.data.TreeStore',root);
-        Ext.create('Ext.tree.Panel',{
+        this.tree = Ext.create('Ext.tree.Panel',{
             border : false,
             width : "100%",
             header : false,
             id : "tree",
-            height : "60%",
+            selModel : {
+                mode : "MULTI"
+            },
+            height : "500px",
             store : store,
             rootVisible : false,
             renderTo : overzicht,
@@ -78,8 +93,10 @@ Ext.define("nl.b3p.kar.Overview",{
                         var features = vectorLayer.getFeaturesByAttribute("id",id);
                         if (features != null && features.length > 0){
                             var feat = features[0];
-                            feat.renderIntent = "temporary";
-                            vectorLayer.redraw();
+                            if (feat.renderIntent != "select"){
+                                feat.renderIntent = "temporary";
+                                vectorLayer.redraw();
+                            }
                         }
                     }
                 },
@@ -87,7 +104,7 @@ Ext.define("nl.b3p.kar.Overview",{
                     if (record.raw.type == "point"){
                         var id = record.raw.pointId;
                         var currentSelectedObject = this.editor.selectedObject;
-                        if (currentSelectedObject.getId() != id){
+                        if (currentSelectedObject == null || currentSelectedObject.getId() != id){
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
                             if (features != null && features.length > 0){
@@ -101,6 +118,47 @@ Ext.define("nl.b3p.kar.Overview",{
             }
         });
         this.editor.helpPanel.updateHelpPanel();
+    },
+    updateSelection : function (point){
+        if (this.tree != null){
+            var sm = this.tree.getSelectionModel();
+            if (point != null && point instanceof Point){
+                this.unhighlight(point.getId());
+                var root = this.tree.getRootNode();
+                var nodes = new Array();
+                this.findChildrenByPointId(root,point.getId(),nodes);
+                sm.select(nodes,false,true);
+            } else{
+                sm.deselectAll();
+                this.unhighlight(point.getId());
+            }
+        }
+    },
+    highlight : function (id){
+        if (this.tree != null){
+            var view = this.tree.getView();
+            var root = this.tree.getRootNode();
+            var nodes = new Array();
+            this.findChildrenByPointId(root,id,nodes);
+            for (var i = 0;i < nodes.length;i++){
+                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
+                var nodeElement = view.getNode(myNode);
+                Ext.get(nodeElement).addCls(view.overItemCls);
+            }
+        }
+    },
+    unhighlight : function (id){
+        if (this.tree != null){
+            var view = this.tree.getView();
+            var root = this.tree.getRootNode();
+            var nodes = new Array();
+            this.findChildrenByPointId(root,id,nodes);
+            for (var i = 0;i < nodes.length;i++){
+                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
+                var nodeElement = view.getNode(myNode);
+                Ext.get(nodeElement).removeCls(view.overItemCls);
+            }
+        }
     },
     createRootNode : function (json){
         var store = {
@@ -212,5 +270,23 @@ Ext.define("nl.b3p.kar.Overview",{
             label = point.getId();
         }
         return label;
+    },
+    findChildrenByPointId : function (record,pointId,result){
+        var me = this;
+        record.eachChild(function (child){
+            if (child.raw.pointId == pointId){
+                result.push(child);
+            }
+            if (child.hasChildNodes()){
+                me.findChildrenByPointId(child,pointId,result);
+            }
+        });
+    },
+    isPoint : function (object){
+        if ((object.cluster == null || object.cluster == undefined) && object.data.type != "CROSSING" && object.data.type != "GUARD" && object.data.type != "BAR"){
+            return true;
+        } else{
+            return false;
+        }
     }
 });
