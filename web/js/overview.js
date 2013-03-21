@@ -52,12 +52,53 @@ Ext.define("nl.b3p.kar.Overview",{
         Ext.create('Ext.tree.Panel',{
             border : false,
             width : "100%",
-            header:false,
+            header : false,
             id : "tree",
-            height : "100%",
+            height : "60%",
             store : store,
             rootVisible : false,
-            renderTo : overzicht
+            renderTo : overzicht,
+            listeners : {
+                scope : this,
+                select : function (tree,record){
+                    if (record.raw.type == "point"){
+                        var id = record.raw.pointId;
+                        var vectorLayer = this.editor.olc.vectorLayer;
+                        var features = vectorLayer.getFeaturesByAttribute("id",id);
+                        if (features != null && features.length > 0){
+                            var feature = features[0];
+                            this.editor.setSelectedObject(feature);
+                        }
+                    }
+                },
+                itemmouseenter : function (tree,record){
+                    if (record.raw.type == "point"){
+                        var id = record.raw.pointId;
+                        var vectorLayer = this.editor.olc.vectorLayer;
+                        var features = vectorLayer.getFeaturesByAttribute("id",id);
+                        if (features != null && features.length > 0){
+                            var feat = features[0];
+                            feat.renderIntent = "temporary";
+                            vectorLayer.redraw();
+                        }
+                    }
+                },
+                itemmouseleave : function (tree,record){
+                    if (record.raw.type == "point"){
+                        var id = record.raw.pointId;
+                        var currentSelectedObject = this.editor.selectedObject;
+                        if (currentSelectedObject.getId() != id){
+                            var vectorLayer = this.editor.olc.vectorLayer;
+                            var features = vectorLayer.getFeaturesByAttribute("id",id);
+                            if (features != null && features.length > 0){
+                                var feat = features[0];
+                                feat.renderIntent = "default";
+                                vectorLayer.redraw();
+                            }
+                        }
+                    }
+                }
+            }
         });
         this.editor.helpPanel.updateHelpPanel();
     },
@@ -113,6 +154,7 @@ Ext.define("nl.b3p.kar.Overview",{
             text : point.getLabel(),
             id : Ext.id(),//"point-" + point.getId(),
             leaf : true,
+            pointId : point.getId(),
             type : "point",
             iconCls : 'overviewTree',
             icon : this.getIconForPoint(point)
