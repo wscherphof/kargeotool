@@ -130,7 +130,6 @@ Ext.define("nl.b3p.kar.Overview",{
                 sm.select(nodes,false,true);
             } else{
                 sm.deselectAll();
-                this.unhighlight(point.getId());
             }
         }
     },
