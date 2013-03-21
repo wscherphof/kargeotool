@@ -386,6 +386,7 @@ Ext.define("EditForms", {
                     }
                 },
                 fieldLabel: 'Signaalgroep',
+                allowBlank: false,
                 name: 'signalGroupNumber',
                 value: map.signalGroupNumber
             },{
