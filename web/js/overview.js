@@ -118,6 +118,9 @@ Ext.define("nl.b3p.kar.Overview",{
                             }
                         }
                     }
+                },
+                itemcontextmenu : function (view,record,item,index,event,eOpts){
+                    this.editor.contextMenu.show(event.xy[0], event.xy[1],false);
                 }
             }
         });
