@@ -48,7 +48,6 @@ Ext.define('Ext.ux.TreeCombo',{
     extend : 'Ext.form.field.Picker',
     alias : 'widget.treecombo',
     tree : false,
-    
     records : [],
     recursiveRecords : [],
     ids : [],
@@ -306,12 +305,12 @@ Ext.define('Ext.ux.TreeCombo',{
         this.checkNodes(this.tree.getRootNode());
     },
     // Recursive function to check if parent nodes should be checked, because their children are, but the parents are not in the initialValue
-    checkNodes: function (node){
-        for(var i = 0 ; i < node.childNodes.length ;i++){
+    checkNodes : function (node){
+        for (var i = 0;i < node.childNodes.length;i++){
             var child = node.childNodes[i];
-            if(child.isLeaf()){
+            if (child.isLeaf()){
                 this.checkParentNodes(child.parentNode);
-            }else{
+            } else{
                 this.checkNodes(child);
             }
         }
@@ -328,7 +327,7 @@ Ext.define('Ext.ux.TreeCombo',{
             }
         }
         var returnValue = [];
-        for (var j = 0; j < ids.length ; j++){
+        for (var j = 0;j < ids.length;j++){
             returnValue.push(parseInt(ids[j]));
         }
         return returnValue;
