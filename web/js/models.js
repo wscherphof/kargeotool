@@ -405,12 +405,11 @@ Ext.define('RSEQ', {
                          signalGroups[signalGroupNumber][ mvmnt.nummer]["points"] = new Array();
                     }
                         
-                    
-                    for(var k = 0 ; k < mvmnt.maps.length;k++){
-                        var point = this.getPointById(mvmnt.maps[k].pointId);
-                        signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
-                    }
                 }
+            }
+            for(var k = 0 ; k < mvmnt.maps.length;k++){
+                var point = this.getPointById(mvmnt.maps[k].pointId);
+                signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
             }
         }
         return signalGroups;
