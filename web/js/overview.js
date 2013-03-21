@@ -31,6 +31,10 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqUpdated",this.updateOverview,this);
         this.editor.on("activeRseqChanged",this.updateOverview,this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
+        var panel = viewport.items.items[3].items.items[1];
+        panel.on('collapse',this.updateSize,this);
+        panel.on('expand',this.updateSize,this);
+        panel.on('resize',this.updateSize,this);
         this.editor.olc.highlight.events.register('featurehighlighted',this,function (evt){
             if (this.isPoint(evt.feature)){
                 this.highlight(evt.feature.data.id);
@@ -69,7 +73,7 @@ Ext.define("nl.b3p.kar.Overview",{
             selModel : {
                 mode : "MULTI"
             },
-            height : "500px",
+            height : "60%",
             store : store,
             rootVisible : false,
             renderTo : overzicht,
@@ -269,6 +273,11 @@ Ext.define("nl.b3p.kar.Overview",{
             label = point.getId();
         }
         return label;
+    },
+    updateSize : function (){
+        if (this.tree != null){
+            this.tree.update();
+        }
     },
     findChildrenByPointId : function (record,pointId,result){
         var me = this;
