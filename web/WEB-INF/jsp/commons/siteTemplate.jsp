@@ -60,7 +60,8 @@
                 
                 cluster:                        imgPath + '/icons/cluster.png',
                 
-                richting:                       imgPath + '/icons/richting.png'
+                richting:                       imgPath + '/icons/richting.png',
+                gps:                            imgPath + '/icons/gps.png'
             };
         </script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>

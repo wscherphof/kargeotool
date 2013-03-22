@@ -28,6 +28,7 @@ Ext.define("EditForms", {
     rseqEditWindow: null,
     pointEditWindow: null,
     activationPointEditWindow: null,
+    editCoords:null,
     
     constructor: function(editor) {
         this.editor = editor;
@@ -527,6 +528,133 @@ Ext.define("EditForms", {
         }).show();
         Ext.getCmp("labelEdit").selectText(0);
         Ext.getCmp("labelEdit").focus(false, 100);
+    },
+    
+    editCoordinates : function (pointObject,okHandler,cancelHandler){
+        var me = this;
+        var coords = "";
+        if(pointObject instanceof RSEQ){
+            coords = pointObject.getLocation().coordinates;
+        }else{
+            coords = pointObject.getGeometry().coordinates;
+        }
+        var rdX = coords[0];
+        var rdY = coords[1];
+
+        //var point = {x:rdX,y:rdY};
+        var point = new Proj4js.Point(rdX, rdY);
+        
+        var wgs = new Proj4js.Proj("EPSG:4236");
+        var rd = new Proj4js.Proj("EPSG:28992");
+        Proj4js.transform(rd, wgs, point);            
+        var wgsX = point.x;
+        var wgsY = point.y;
+        this.editCoords = Ext.create('Ext.window.Window', {
+            title: 'Voer coördinaten',
+            height: 240,
+            width: 400,
+            modal: true,
+            icon: karTheme.gps,
+            layout: 'fit',
+            items: {  
+                xtype: 'form',
+                bodyStyle: 'padding: 5px 5px 0',
+                fieldDefaults: {
+                    msgTarget: 'side',
+                    labelWidth: 150
+                },
+                defaultType: 'textfield',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [
+                    {
+                        xtype: 'fieldset',
+                        defaultType: 'textfield',
+                        text: 'Rijksdriehoek',
+                        items:[
+                            {
+                                fieldLabel: 'RD x-coordinaat',
+                                name: 'rdX',
+                                value: rdX,
+                                id: 'rdX'
+                            },{
+                                fieldLabel: 'RD y-coordinaat',
+                                name: 'rdY',
+                                value: rdY,
+                                id: 'rdY'
+                            }]
+                    },
+                    {
+                        xtype: 'fieldset',
+                        text: 'GPS',
+                        defaultType: 'textfield',
+                        items:[
+                            {
+                                fieldLabel: 'GPS x-coordinaat',
+                                name: 'wgsX',
+                                value: wgsX,
+                                id: 'wgsX'
+                            },{
+                                fieldLabel: 'GPS y-coordinaat',
+                                name: 'wgsY',
+                                value: wgsY,
+                                id: 'wgsY'
+                            }]
+                    }
+                    ],
+                buttons: [{
+                    text: 'OK',
+                    handler: function() {
+                        var form = this.up('form').getForm();
+                        if(!form.isValid()) {
+                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
+                            return;
+                        }
+                       
+                        var formValues= form.getValues();
+                        if(rdX == formValues.rdX && rdY == formValues.rdY){
+                            if(wgsX != formValues.wgsX && wgsY == formValues.wgsY){
+                                // converteer nieuwe wgs naar rd en sla ze op
+                                var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
+                                Proj4js.transform(wgs, rd, point);
+                                rdX = point.x;
+                                rdY = point.y;
+                            }
+                        }else{
+                            rdX = formValues.rdX;
+                            rdY = formValues.rdY;
+                        }
+                        
+                        var coordObj = {coordinates:[parseFloat(rdX),parseFloat(rdY)], type: 'Point'};
+                        if(pointObject instanceof RSEQ){
+                            pointObject.setLocation(coordObj);
+                        }else{
+                            pointObject.setGeometry(coordObj);
+                        }
+                        
+                        me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
+                        me.editCoords.destroy();
+                        me.editCoords = null;
+                        
+                        if(okHandler) {
+                            okHandler(point);
+                        }                        
+                    }
+                },{
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.editCoords.destroy();
+                        me.editCoords = null;
+                        
+                        if(cancelHandler) {
+                            cancelHandler();
+                        }                        
+                    }
+                }]
+            }
+        }).show();
     }
+    
     
 });

@@ -131,6 +131,11 @@ Ext.define("ContextMenu", {
                 icon: contextPath + "/images/silk/table_save.png"
             },
             {
+                id: 'setCoordsRseq',
+                text: 'Voer coördinaten in',
+                icon: contextPath + "/images/icons/gps.png"
+            },
+            {
                 id: 'removeRseq',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
@@ -169,6 +174,9 @@ Ext.define("ContextMenu", {
                         case 'saveRseq':
                             this.editor.saveOrUpdate();
                             break;
+                        case 'setCoordsRseq':
+                            this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break
                     }
                 },
                 scope: me
@@ -190,6 +198,11 @@ Ext.define("ContextMenu", {
                 id: 'removeUitmeldpunt',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
+            },
+            {
+                id: 'setCoordsUitmeld',
+                text: 'Voer coördinaten in',
+                icon: contextPath + "/images/icons/gps.png"
             },{
                 id: "uppercheckout",
                 xtype: 'menuseparator'
@@ -284,7 +297,10 @@ Ext.define("ContextMenu", {
                             break;
                         case 'selectInmeldpunt':
                             editor.selectInmeldpunt();
-                            break;                            
+                            break;              
+                        case 'setCoordsUitmeld':
+                            this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break              
                     }
                 },
                 scope:me
@@ -306,6 +322,11 @@ Ext.define("ContextMenu", {
                 id: 'removeInmeldpunt',
                 text: 'Verwijderen...',
                 icon: contextPath + "/images/silk/table_delete.png"
+            },
+            {
+                id: 'setCoordsInmeld',
+                text: 'Voer coördinaten in',
+                icon: contextPath + "/images/icons/gps.png"
             },{
                 id: "upperIncheckin",
                 xtype: 'menuseparator'
@@ -338,6 +359,9 @@ Ext.define("ContextMenu", {
                         case 'addVoorinmeldpunt':
                             editor.addVoorinmeldpunt();
                             break;
+                        case 'setCoordsInmeld':
+                            this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break
                     }
                 },
                 scope:me
@@ -358,6 +382,10 @@ Ext.define("ContextMenu", {
                 id: 'removeNAPoint',
                 text: 'Verwijderen',
                 icon: contextPath + "/images/silk/table_delete.png"
+            },{
+                id: 'setCoordsNon',
+                text: 'Voer coördinaten in',
+                icon: contextPath + "/images/icons/gps.png"
             }
             ],
             listeners: {
@@ -369,6 +397,9 @@ Ext.define("ContextMenu", {
                         case 'removeNAPoint':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;
+                        case 'setCoordsNon':
+                            this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break
                     }
                 },
                 scope:me
