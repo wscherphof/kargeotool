@@ -159,8 +159,8 @@ var style = new OpenLayers.Style(
             label: "${count}",
             labelYOffset: 32,
             labelXOffset: 0,
-            fontColor: "#F0F000",
-            labelOutlineColor:'#000'
+            fontColor: "#000",
+            labelOutlineColor:'#F0F000'
         }
     }),
     new OpenLayers.Rule({
