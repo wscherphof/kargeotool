@@ -390,10 +390,11 @@ Ext.define('RSEQ', {
   
         for(var i = 0 ; i < this.movements.length; i++){
             var mvmnt = this.movements[i];
+            var signalGroupNumber = null;
             for(var j = 0 ; j < mvmnt.maps.length ;j++){
                 var map = mvmnt.maps[j];
                 if(map.getSignalGroupNumber () != null){
-                    var signalGroupNumber = map.getSignalGroupNumber();
+                    signalGroupNumber = map.getSignalGroupNumber();
                     if(!signalGroups.hasOwnProperty(signalGroupNumber)){
                         signalGroups[signalGroupNumber] = new Object();
                     }
@@ -407,9 +408,11 @@ Ext.define('RSEQ', {
                         
                 }
             }
-            for(var k = 0 ; k < mvmnt.maps.length;k++){
-                var point = this.getPointById(mvmnt.maps[k].pointId);
-                signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
+            if(signalGroupNumber != null){
+                for(var k = 0 ; k < mvmnt.maps.length;k++){
+                    var point = this.getPointById(mvmnt.maps[k].pointId);
+                    signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
+                }
             }
         }
         return signalGroups;

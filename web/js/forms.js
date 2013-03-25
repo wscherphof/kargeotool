@@ -540,8 +540,6 @@ Ext.define("EditForms", {
         }
         var rdX = coords[0];
         var rdY = coords[1];
-
-        //var point = {x:rdX,y:rdY};
         var point = new Proj4js.Point(rdX, rdY);
         
         var wgs = new Proj4js.Proj("EPSG:4236");
