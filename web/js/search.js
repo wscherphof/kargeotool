@@ -61,6 +61,7 @@ Ext.define("SearchManager", {
             {
                 xtype: 'textfield',
                 id: 'searchField' ,
+                width: 200,
                 enableKeyEvents:true,
                 listeners:{
                     keypress: {
