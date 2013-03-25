@@ -25,9 +25,11 @@ Ext.define("nl.b3p.kar.Overview",{
     editor : null,
     domId : null,
     tree : null,
+    heightOffset:null,
     constructor : function (editor,domId){
         this.editor = editor;
         this.domId = domId;
+        this.heightOffset = 75;
         this.editor.on("activeRseqUpdated",this.updateOverview,this);
         this.editor.on("activeRseqChanged",this.updateOverview,this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
@@ -67,13 +69,12 @@ Ext.define("nl.b3p.kar.Overview",{
         var store = Ext.create('Ext.data.TreeStore',root);
         this.tree = Ext.create('Ext.tree.Panel',{
             border : false,
-            width : "100%",
             header : false,
             id : "tree",
             selModel : {
                 mode : "MULTI"
             },
-            height : "100%",
+            height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
             store : store,
             rootVisible : false,
             renderTo : overzicht,
@@ -282,7 +283,8 @@ Ext.define("nl.b3p.kar.Overview",{
     },
     updateSize : function (){
         if (this.tree != null){
-            this.tree.update();
+            var ov = Ext.get("rseqInfoPanel-body");
+            this.tree.setHeight(ov.getHeight()- this.heightOffset);
         }
     },
     findChildrenByPointId : function (record,pointId,result){

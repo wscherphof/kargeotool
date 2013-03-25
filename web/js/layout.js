@@ -85,7 +85,7 @@ Ext.onReady(function() {
                         title: 'Zoeken'
                     },
                     {
-                        contentEl: 'rseqInfoPanel',
+                        id:'rseqInfoPanel',
                         title: 'Overzicht verkeerssysteem',
                         defaultType: 'container',
                         layout: 'vbox',
@@ -96,11 +96,11 @@ Ext.onReady(function() {
                         items: [
                             {
                                 contentEl: 'overzichtTitel',
-                                height: 20,
+                                height: 40,
                                 margin: '3px'
                             },
                             {
-                                contentEl: 'overzicht',
+                               id:'overzicht',
                                 flex: 1
                             },
                             {
