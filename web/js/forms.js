@@ -29,6 +29,7 @@ Ext.define("EditForms", {
     pointEditWindow: null,
     activationPointEditWindow: null,
     editCoords:null,
+    editDirectionWindow:null,
     
     constructor: function(editor) {
         this.editor = editor;
@@ -411,6 +412,32 @@ Ext.define("EditForms", {
                 treeHeight: 300,
                 name: 'vehicleTypes',   
                 store: vehicleTypesStore
+            },
+            {
+        xtype: 'fieldcontainer',
+        fieldLabel: 'Richting',
+        layout: 'hbox',
+        items: [
+            {
+                xtype: 'textfield',
+                value: map.richtingValue,
+                readOnly:true,
+                name: 'richtingValue',
+                id:  'richtingValue',
+                flex:1
+             }, 
+             {
+                xtype: 'button',
+                text: '...',
+                
+                handler:function(){
+                     
+                    editor.editForms.editDirections(Ext.getCmp('richtingValue').getValue(), function(val){
+                        var label = Ext.getCmp('richtingValue');
+                        label.setValue(val);
+                    });
+                }
+            }]
             }]);
         }
                 
@@ -652,7 +679,90 @@ Ext.define("EditForms", {
                 }]
             }
         }).show();
-    }
+    },
     
+    editDirections : function (dirs, okHandler,cancelhandler){
+        var me = this;
+        var left = dirs.indexOf("linksaf")!=-1;
+        var right = dirs.indexOf("rechtsaf")!=-1;
+        var ahead = dirs.indexOf("rechtdoor")!=-1;
+        this.editDirectionWindow = Ext.create('Ext.window.Window', {
+            title: 'Geef richtingen op',
+            height: 240,
+            width: 400,
+            modal: true,
+            icon: karTheme.richting,
+            layout: 'fit',
+            items: {  
+                xtype: 'form',
+                bodyStyle: 'padding: 5px 5px 0',
+                fieldDefaults: {
+                    msgTarget: 'side',
+                    labelWidth: 150
+                },
+                defaultType: 'checkbox',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [
+                    {
+                        fieldLabel: 'Linksaf',
+                        name: 'linksaf',
+                        checked: left,
+                        id: 'linksaf'
+                    },
+                    {
+                        fieldLabel: 'Rechtssaf',
+                        name: 'rechtsaf',
+                        checked:right,
+                        id: 'rechtsaf'
+                    },
+                    {
+                        fieldLabel: 'Rechtdoor',
+                        name: 'rechtdoor',
+                        checked:ahead,
+                        id: 'rchtdoor'
+                    }
+                    ],
+                buttons: [{
+                    text: 'OK',
+                    handler: function() {
+                        var form = this.up('form').getForm();
+                        if(!form.isValid()) {
+                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
+                            return;
+                        }
+                       
+                        var formValues= form.getValues();
+                        var returnValue = '';
+                        for (var key in formValues){
+                            if(returnValue != ''){
+                                returnValue += ',';
+                            }
+                            returnValue += key;
+                        }
+                      
+                        me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
+                        me.editDirectionWindow.destroy();
+                        me.editDirectionWindow = null;
+                        
+                        if(okHandler) {
+                            okHandler(returnValue);
+                        }                        
+                    }
+                },{
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.editDirectionWindow.destroy();
+                        me.editDirectionWindow = null;
+                        
+                        if(cancelHandler) {
+                            cancelHandler();
+                        }                        
+                    }
+                }]
+            }
+        }).show();
+    }
     
 });
