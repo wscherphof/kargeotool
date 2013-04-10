@@ -345,6 +345,11 @@ public class EditorActionBean implements ActionBean {
                                 signal.getVehicleTypes().add(em.find(VehicleType.class, vtids.getInt(k)));
                             }
                         }
+                        JSONArray dir = jmap.optJSONArray("direction");
+                        if(dir != null){
+                            String direction = dir.join(",");
+                            signal.setDirection(direction);
+                        }
                     }
                     m.getPoints().add(map);
                 }

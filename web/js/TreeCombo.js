@@ -47,10 +47,10 @@ if (!Array.prototype.indexOf){
 Ext.define('Ext.ux.TreeCombo',{
     extend : 'Ext.form.field.Picker',
     alias : 'widget.treecombo',
-    tree : false,
-    records : [],
-    recursiveRecords : [],
-    ids : [],
+    tree : null,
+    records : null,
+    recursiveRecords : null,
+    ids : null,
     selectChildren : true,
     canSelectFolders : true,
     multiselect : false,
@@ -65,6 +65,9 @@ Ext.define('Ext.ux.TreeCombo',{
             "itemclick" : true
         });
 
+        this.ids = new Array();
+        this.recursiveRecords = new Array();
+        this.records = new Array();
         this.listeners = config.listeners;
         this.callParent(arguments);
     },
@@ -74,7 +77,7 @@ Ext.define('Ext.ux.TreeCombo',{
         me.tree = Ext.create('Ext.tree.Panel',{
             alias : 'widget.assetstree',
             hidden : true,
-            minHeight : 300,
+            minHeight : 100,
             rootVisible : (typeof me.rootVisible != 'undefined') ? me.rootVisible : true,
             floating : true,
             lines : true,
@@ -300,9 +303,11 @@ Ext.define('Ext.ux.TreeCombo',{
         }
     },
     initValue : function (){
-        this.ids = this.value.split(",");
-        this.setValue(this.value);
-        this.checkNodes(this.tree.getRootNode());
+        if(this.value){
+            this.ids = this.value.split(",");
+            this.setValue(this.value);
+            this.checkNodes(this.tree.getRootNode());
+        }
     },
     // Recursive function to check if parent nodes should be checked, because their children are, but the parents are not in the initialValue
     checkNodes : function (node){
@@ -330,6 +335,7 @@ Ext.define('Ext.ux.TreeCombo',{
         for (var j = 0;j < ids.length;j++){
             returnValue.push(parseInt(ids[j]));
         }
+        console.log(returnValue);
         return returnValue;
     },
     removeIds : function (record){

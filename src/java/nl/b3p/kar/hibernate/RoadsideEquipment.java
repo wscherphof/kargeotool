@@ -22,6 +22,7 @@ package nl.b3p.kar.hibernate;
 import com.vividsolutions.jts.geom.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -439,6 +440,9 @@ public class RoadsideEquipment {
                         jvt.put(vt.getNummer());
                     }
                     jmap.put("vehicleTypes", jvt);
+                    
+                    String direction = signal.getDirection();
+                    jmap.put("direction",direction);
                 }
             }
         }

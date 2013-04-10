@@ -327,9 +327,42 @@ Ext.define("EditForms", {
             })   
         }];
         if(editingUitmeldpunt) {
+            var dirs = { root:{
+                text: 'Alle',
+                id: 'root',
+                iconCls: "noTreeIcon",
+                expanded: true,
+                checked: false,
+                children :[ 
+                    {
+                        id: 1,
+                        text: 'Linksaf',
+                        checked: false,
+                        leaf: true,
+                        iconCls: 'noTreeIcon'
+                    },
+                    {
+                        id: 2,
+                        text: 'Rechtsaf',
+                        checked: false,
+                        leaf: true,
+                        iconCls: 'noTreeIcon'
+                    },
+                    {
+                        id: 3,
+                        text: 'Rechtdoor',
+                        checked: false,
+                        leaf: true,
+                        iconCls: 'noTreeIcon'
+                    }
+                ]
+            }};
+            
+            var directionStore = Ext.create('Ext.data.TreeStore', dirs);
+            
             var ov = [];
             var hulpdienst = [];
-            var data = {root:{
+            var vehicles = {root:{
                 text: 'Alle',
                 id: 'root',
                 iconCls: "noTreeIcon",
@@ -376,8 +409,8 @@ Ext.define("EditForms", {
                     }
                 }
             });
-            var vehicleTypesStore = Ext.create('Ext.data.TreeStore', data);
-
+            var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
+            var dir = map.direction.join ? map.direction.join(",") : map.direction;
             signalItems = Ext.Array.merge(signalItems, [{
                 xtype: 'numberfield',
                 minValue: 0,
@@ -414,31 +447,17 @@ Ext.define("EditForms", {
                 store: vehicleTypesStore
             },
             {
-        xtype: 'fieldcontainer',
-        fieldLabel: 'Richting',
-        layout: 'hbox',
-        items: [
-            {
-                xtype: 'textfield',
-                value: map.richtingValue,
-                readOnly:true,
-                name: 'richtingValue',
-                id:  'richtingValue',
-                flex:1
-             }, 
-             {
-                xtype: 'button',
-                text: '...',
-                
-                handler:function(){
-                     
-                    editor.editForms.editDirections(Ext.getCmp('richtingValue').getValue(), function(val){
-                        var label = Ext.getCmp('richtingValue');
-                        label.setValue(val);
-                    });
-                }
-            }]
-            }]);
+                xtype: 'treecombo',
+                valueField: 'id',
+                editable:false,
+                value:  dir,
+                fieldLabel: 'Richting(en)',
+                treeWidth:290,
+                treeHeight: 150,
+                name: 'direction',   
+                store: directionStore
+            }
+        ]);
         }
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
@@ -498,7 +517,7 @@ Ext.define("EditForms", {
                         // maar moeten voor alle movements worden toegepast op
                         // alle signals
                         if(editingUitmeldpunt) {
-                            allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes"]);
+                            allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes","direction"]);
                         }
                         
                         // nieuw punt, alleen naar map mergen

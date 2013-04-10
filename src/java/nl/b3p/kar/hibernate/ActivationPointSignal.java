@@ -112,6 +112,8 @@ public class ActivationPointSignal {
      * Het virtuele lusnummer.
      */
     private Integer virtualLocalLoopNumber;
+    
+    private String direction;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
@@ -225,5 +227,14 @@ public class ActivationPointSignal {
     public void setVirtualLocalLoopNumber(Integer virtualLocalLoopNumber) {
         this.virtualLocalLoopNumber = virtualLocalLoopNumber;
     }
+    
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
     //</editor-fold>
+
 }

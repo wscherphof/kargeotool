@@ -488,7 +488,8 @@ Ext.define('MovementActivationPoint', {
         signalGroupNumber:null,
         virtualLocalLoopNumber: null,
         triggerType:null,
-        vehicleTypes:null
+        vehicleTypes:null,
+        direction:null
     },
     /**
      *@constructor
@@ -520,7 +521,7 @@ Ext.define('MovementActivationPoint', {
         if(this.beginEndOrActivation == "ACTIVATION") {
             keys = Ext.Array.merge(keys, ["commandType", "distanceTillStopLine", 
                 "triggerType", "signalGroupNumber", "virtualLocalLoopNumber", 
-                "vehicleTypes"]);
+                "vehicleTypes", "direction"]);
         }
         return objectSubset(this, keys);  
     }
