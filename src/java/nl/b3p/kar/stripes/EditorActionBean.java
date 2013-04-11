@@ -18,12 +18,10 @@
  */
 package nl.b3p.kar.stripes;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -59,6 +57,7 @@ public class EditorActionBean implements ActionBean {
 
     private static final Log log = LogFactory.getLog(EditorActionBean.class);
     private static final String JSP = "/WEB-INF/jsp/viewer/editor.jsp";
+    private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     private ActionBeanContext context;
     private boolean magWalapparaatMaken;
     @Validate
@@ -69,6 +68,9 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
+    
+    @Validate
+    private String extent;
 
     /**
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
@@ -187,7 +189,7 @@ public class EditorActionBean implements ActionBean {
 
             Point p = rseq.getLocation();
             Polygon buffer = (Polygon) p.buffer(300, 1);
-            buffer.setSRID(28992);
+            buffer.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 
             Query q = session.createQuery("from Road where intersects(geometry, ?) = true");
@@ -210,6 +212,42 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
+    
+    public Resolution surroundingPoints() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+
+            
+            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
+            WKTReader reader= new WKTReader(gf);
+            Polygon p = (Polygon)reader.read(extent);
+          //  p.setSRID(RIJKSDRIEHOEKSTELSEL);
+            Session session = (Session) em.getDelegate();
+
+            Query q = session.createQuery("from ActivationPoint where intersects(location, ?) = true and roadsideEquipment <> ?");
+            Type geometryType = GeometryUserType.TYPE;
+            q.setParameter(0, p, geometryType);
+            q.setParameter(1, rseq);
+            List<ActivationPoint> points = (List<ActivationPoint>)q.list();
+          
+            JSONArray rs = new JSONArray();
+            for (ActivationPoint r : points) {
+                
+                rs.put(r.getGeoJSON());
+            }
+            info.put("points", rs);
+
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("surroundingPoints exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+    
     /**
      * Bepaalt of een JSON object nieuw gemaakt client-side. De door JavaScript
      * client-side gestuurde JSON om een RoadsideEquipment op te slaan kan nieuw
@@ -476,5 +514,14 @@ public class EditorActionBean implements ActionBean {
     public void setJson(String json) {
         this.json = json;
     }
+    
+    public String getExtent() {
+        return extent;
+    }
+
+    public void setExtent(String extent) {
+        this.extent = extent;
+    }
     // </editor-fold>
+
 }

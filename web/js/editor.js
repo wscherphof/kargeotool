@@ -129,6 +129,7 @@ Ext.define("Editor", {
             if(snapRoads.dom.checked){
                 this.loadRoads();
             }
+            this.loadSurroundingPoints();
         }, this);
       
         this.olc.on('measureChanged', function( length, unit){
@@ -325,6 +326,10 @@ Ext.define("Editor", {
             });
         }
     },
+    
+    /**
+     * Laad de wegen rondom de actieve rseq. Wordt gebruikt om de lijn bij het toevoegen van punten aan te snappen.
+     */
     loadRoads : function(){
         if(this.activeRseq){
             Ext.Ajax.request({
@@ -360,10 +365,56 @@ Ext.define("Editor", {
         }
     },
     
+    /**
+     * Verwijder de snaplijnen
+     */
     removeRoads :function(){
         this.olc.snapLayer.removeAllFeatures();
     },
     
+    /**
+     * Haal de punten binnen de extent (+buffer) op, minus de huidig geselecteerde RSEQ-punten. Ter referentie waar punten moeten komen.
+     */
+    loadSurroundingPoints: function(){
+         if(this.activeRseq){
+             var extent = this.olc.map.getExtent().add(50,50).toGeometry().toString();
+             Ext.Ajax.request({
+                url:editorActionBeanUrl,
+                method: 'GET',
+                scope: this,
+                params:  {
+                    'surroundingPoints' : true,
+                    rseq: this.activeRseq.getId(),
+                    extent: extent
+                },
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success){
+                        var points = msg.points;
+                        var geoJSON = new Array();
+                        for (var i = 0 ; i < points.length ; i++){
+                            var obj = Ext.create(Point, points[i]);
+                            geoJSON.push(obj.toGeoJSON());
+                        }
+                        var featureCollection = {
+                            type: "FeatureCollection",
+                            features: geoJSON
+                        };
+
+                        // Dit misschien in listener
+                        this.olc.surroundingPointsLayer.removeAllFeatures();
+                        var features = this.olc.geojson_format.read(featureCollection);
+                        this.olc.surroundingPointsLayer.addFeatures(features);
+                    }else{
+                        alert("Ophalen resultaten mislukt.");
+                    }
+                },
+                failure: function (response){
+                    alert("Ophalen resultaten mislukt.");
+                }
+            });
+        }
+    },
     // === Edit functies ===
     
     /**

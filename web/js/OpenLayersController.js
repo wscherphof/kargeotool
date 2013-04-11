@@ -30,6 +30,7 @@ Ext.define("ol", {
     vectorLayer : null,
     rseqVectorLayer: null,
     snapLayer:null,
+    surroundingPointsLayer:null,
     snap:null,
     
     geojson_format : null,
@@ -109,6 +110,14 @@ Ext.define("ol", {
             })
         }
         );
+        this.surroundingPointsLayer = new OpenLayers.Layer.Vector("surroundingPointsLayer",{
+            styleMap: new OpenLayers.StyleMap( {
+                "default": style,
+                "select": selectstyle,
+                "temporary" : tempstyle
+            })
+        });
+            
         this.markerLayer = new OpenLayers.Layer.Markers( "Markers" );
         this.map.addLayer(this.markerLayer);
             
@@ -116,6 +125,7 @@ Ext.define("ol", {
         this.map.addLayer(this.vectorLayer);
         this.map.addLayer(this.rseqVectorLayer);
         this.map.addLayer(this.snapLayer);
+        this.map.addLayer(this.surroundingPointsLayer);
         this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
@@ -469,7 +479,8 @@ Ext.define("ol", {
             this.map.setLayerIndex(this.snapLayer, this.map.getLayerIndex(layer)+1);
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+2);
             this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+3);
-            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+4);
+            this.map.setLayerIndex(this.surroundingPointsLayer, this.map.getLayerIndex(layer)+4);
+            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+5);
         }
     },
     /**
