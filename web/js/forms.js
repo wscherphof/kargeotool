@@ -21,15 +21,51 @@
  * Forms om KAR objecten te editen in een popup window met ExtJS form.
  */
 
+function karAttributeClick(event, row, column) {
+    if(!event) {
+        event = window.event;
+    }
+    editor.editForms.karAttributeClick(row, column, event.target.checked);
+}
+
 Ext.define("EditForms", {
     
     editor: null,
     
     rseqEditWindow: null,
+    karAttributesEditWindow: null,
     pointEditWindow: null,
     activationPointEditWindow: null,
     editCoords:null,
     editDirectionWindow:null,
+    
+    rseqType: {
+        "": "nieuw verkeerssysteem",
+        "CROSSING": "VRI",
+        "GUARD": "bewakingssysteem nadering voertuig",
+        "BAR": "afsluittingssysteem"
+    },
+    
+    karAttributes: [
+        {n: 2, label: "Vehicle type", range: "0 - 99", desc: "0 - no information\n1 - bus\n2 - tram\netc."},
+        {n: 3, label: "Line number PT", range: "0 - 9999", desc: "Line-number (internal line number PT-company)"},
+        {n: 6, label: "Vehicle id", range: "0 - 32767", desc: "0 - no information\nFor public transport the grootwagennummer is used (practially in range 1 to 9999)"},
+        {n: 7, label: "Direction at intersection/signal group number", range: "0 - 255", desc: "For the direction selection \n" +
+                "at the intersection, it is suggested to use the signal group number. If this signal group number " +
+                "is not available a right/left/straigt ahead switch may be used:\n" +
+                "0 = no information\n1-200 = signal group number\n201 = right\n202 = left\n203 = straight ahead\n204-255 = reserved"},
+        {n: 8, label: "Vehicle status", range: "0 - 99", desc: "0 = no information\n1 = driving\n2 = stopping\n" +
+                "3 = departure from stop (start door close)\n4 = stand still (stop, not at bus stop)\n" +
+                "5 - 99 = reserved"},
+        {n: 11, label: "Punctuality [s]", range: "-3600 - +3600", desc: "- early (<0)\nlate (>0)"},
+        {n: 13, label: "Actual vehicle speed [m/s]", range: "0 - 99", desc: "Actual speed when te message is sent [m/s]"},
+        {n: 15, label: "Driving time till passage stop line", range: "0 - 255", desc: "Expected time until passage stop line " +
+            "(without delay for other traffic, for example wait-row) in seconds for th efirst Traffic Light Controller on the route"},
+        {n: 19, label: "Type of command", range: "0 - 99", desc: "0 - reserved\n1 - entering announcement\n" +
+                "2 - leave announcement\n3 - pre-announcement\n4..99 - reserved"}
+    ],
+    
+    editingKarAttributes: null,
     
     constructor: function(editor) {
         this.editor = editor;
@@ -50,17 +86,11 @@ Ext.define("EditForms", {
             this.rseqEditWindow = null;
         }   
         
-        var type = {
-            "": "nieuw verkeerssysteem",
-            "CROSSING": "VRI",
-            "GUARD": "bewakingssysteem nadering voertuig",
-            "BAR": "afsluittingssysteem"
-        };
         var me = this;
         var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + type[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 330,
+            title: 'Bewerken ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
+            height: 362,
             width: 450,
             modal: true,
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
@@ -85,17 +115,17 @@ Ext.define("EditForms", {
                         name: 'type',
                         inputValue: 'CROSSING',
                         checked: theType == 'CROSSING',
-                        boxLabel: type['CROSSING']
+                        boxLabel: me.rseqType['CROSSING']
                     },{
                         name: 'type',
                         inputValue: 'GUARD',
                         checked: theType == 'GUARD',
-                        boxLabel: type['GUARD']
+                        boxLabel: me.rseqType['GUARD']
                     },{
                         name: 'type',
                         inputValue: 'BAR',
                         checked: theType == 'BAR',
-                        boxLabel: type['BAR']
+                        boxLabel: me.rseqType['BAR']
                     }]
                 },{
                     xtype: 'combo',
@@ -164,6 +194,18 @@ Ext.define("EditForms", {
                     fieldLabel: 'Geldig tot',
                     name: 'validUntil',
                     value: rseq.validUntil
+                },{
+                    xtype: 'panel',
+                    border: false,
+                    items: [{
+                        xtype: 'button',
+                        name: 'karAttributes',
+                        width: 100,
+                        text: 'KAR attributen...',
+                        handler: function() {
+                            me.editKarAttributes(rseq);
+                        }
+                    }]
                 }],
                 buttons: [{
                     text: 'OK',
@@ -193,6 +235,137 @@ Ext.define("EditForms", {
                     }
                 }]
             }
+        }).show();
+    },
+    
+    karAttributeClick: function(row, column, checked) {
+        var field = ["", "", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"][column];
+        
+        this.editingKarAttributes[row][field] = checked;
+    },
+    
+    /**
+     * KAR attributen edit form voor een rseq.
+     */
+    editKarAttributes: function(rseq) {
+        if(this.karAttributesEditWindow != null) {
+            this.karAttributesEditWindow.destroy();
+            this.karAttributesEditWindow = null;
+        }   
+        
+        var data = [];
+        for(var i = 1; i < 25; i++) {
+            var attr = null;
+            Ext.Array.each(this.karAttributes, function(attrInfo) {
+                if(attrInfo.n == i) {
+                    attr = Ext.clone(attrInfo);
+                    return false;
+                }
+                return true;
+            });
+            if(attr == null) {
+                attr = {
+                    n: i,
+                    label: "Onbekend",
+                    range: "",
+                    desc: ""
+                };
+            }
+            
+            // index is inmeldpunt, uitmeldpunt, voorinmeldpunt
+            
+            attr.inmeldpunt = rseq.attributes["PT"][0][i-1] || rseq.attributes["ES"][0][i-1] || rseq.attributes["OT"][0][i-1];
+            attr.uitmeldpunt = rseq.attributes["PT"][1][i-1] || rseq.attributes["ES"][1][i-1] || rseq.attributes["OT"][1][i-1];
+            attr.voorinmeldpunt = rseq.attributes["PT"][2][i-1] || rseq.attributes["ES"][2][i-1] || rseq.attributes["OT"][2][i-1];
+            data.push(attr);
+        }
+        this.editingKarAttributes = data;
+        
+        var store = Ext.create("Ext.data.Store", {
+            storeId: "attributesStore",
+            fields: ["n", "label", "range", "desc", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"],
+            data: {items: data},
+            proxy: {
+                type: "memory",
+                reader: { type: "json", root: "items" }
+            }
+        });
+        
+        var me = this;
+        
+        var checkboxRenderer = function(p1,p2,record,row,column,store,grid) {
+            var field = ["", "", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"][column];
+            return Ext.String.format("<input type='checkbox' {0} onclick='karAttributeClick(event,{1},{2})'></input>",
+                record.get(field) ?  "checked='checked'" : "",
+                row,
+                column
+            );
+        };
+        me.karAttributesEditWindow = Ext.create('Ext.window.Window', {
+            title: 'Bewerken KAR attributen voor ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
+            height: 570,
+            width: 680,
+            modal: true,
+            icon: karTheme.inmeldPunt,
+            layout: 'fit',
+            items: [{  
+                xtype: 'form',
+                bodyStyle: 'padding: 5px 5px 0',
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    xtype: 'label',
+                    style: 'display: block; padding: 5px 0px 8px 0px',
+                    border: false,
+                    text: 'In dit scherm kan worden aangegeven welke KAR attributen in KAR berichten die aan dit verkeerssysteem worden verzonden moeten worden gevuld. Dit geldt voor alle vervoerstypes (openbaar vervoer, hulpdiensten en overig vervoer).'
+                },{
+                    xtype: "grid",
+                    store: store,
+                    columns: [
+                        {header: "Nr", dataIndex: "n", menuDisabled: true, draggable: false, sortable: false, width: 30 },
+                        {header: "Attribuut", dataIndex: "label", menuDisabled: true, draggable: false, sortable: false, flex: 1},
+                        {header: "Voorinmeldpunt", dataIndex: "voorinmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 90, renderer: checkboxRenderer },
+                        {header: "Inmeldpunt", dataIndex: "inmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
+                        {header: "Uitmeldpunt", dataIndex: "uitmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer }
+                    ],
+                    height: 460
+                }],
+                buttons: [{
+                    text: 'OK',
+                    handler: function() {
+                        
+                        rseq.attributes = {
+                            "PT": [ [], [], [] ],
+                            "ES": [ [], [], [] ],
+                            "OT": [ [], [], [] ]
+                        };
+                        for(var i = 0; i < me.editingKarAttributes.length; i++) {
+                            var voorinmeldpunt = Boolean(me.editingKarAttributes[i].voorinmeldpunt);
+                            var inmeldpunt = Boolean(me.editingKarAttributes[i].inmeldpunt);
+                            var uitmeldpunt = Boolean(me.editingKarAttributes[i].uitmeldpunt);
+                            rseq.attributes["PT"][0].push(inmeldpunt);
+                            rseq.attributes["ES"][0].push(inmeldpunt);
+                            rseq.attributes["OT"][0].push(inmeldpunt);
+                            rseq.attributes["PT"][1].push(uitmeldpunt);
+                            rseq.attributes["ES"][1].push(uitmeldpunt);
+                            rseq.attributes["OT"][1].push(uitmeldpunt);
+                            rseq.attributes["PT"][2].push(voorinmeldpunt);
+                            rseq.attributes["ES"][2].push(voorinmeldpunt);
+                            rseq.attributes["OT"][2].push(voorinmeldpunt);
+                        }
+                        
+                        me.karAttributesEditWindow.destroy();
+                        me.karAttributesEditWindow = null;
+                    }
+                },{
+                    text: 'Annuleren',
+                    handler: function() {
+                        me.karAttributesEditWindow.destroy();
+                        me.karAttributesEditWindow = null;
+                    }
+                }]
+            }]
         }).show();
     },
     

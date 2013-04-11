@@ -46,7 +46,8 @@ Ext.define('RSEQ', {
         points:null,
         town:null,
         type:null, // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
-        memo:null
+        memo:null,
+        attributes: null
     },
     /**
      *@constructor
@@ -371,7 +372,7 @@ Ext.define('RSEQ', {
     toJSON: function() {
         var j = objectSubset(this, ["id", "description", "validFrom", 
             "karAddress", "dataOwner", "crossingCode", "town", "type", 
-            "location","memo"]);
+            "location","memo","attributes"]);
         
         j.points = [];
         Ext.Array.each(this.points, function(point) {

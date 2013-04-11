@@ -412,6 +412,27 @@ public class RoadsideEquipment {
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
         
+        JSONObject jattrs = new JSONObject();
+        j.put("attributes", jattrs);
+        jattrs.put(KarAttributes.SERVICE_PT, new JSONArray("[ [], [], [] ]"));
+        jattrs.put(KarAttributes.SERVICE_ES, new JSONArray("[ [], [], [] ]"));
+        jattrs.put(KarAttributes.SERVICE_OT, new JSONArray("[ [], [], [] ]"));
+        
+        for(KarAttributes attribute: karAttributes) {
+            JSONArray attributes = jattrs.getJSONArray(attribute.getServiceType()).getJSONArray(attribute.getCommandType()-1);
+            
+            if(attributes.length() != 0) {
+                attributes = new JSONArray();
+                jattrs.getJSONArray(attribute.getServiceType()).put(attribute.getCommandType()-1, attributes);
+            }
+            int mask = attribute.getUsedAttributesMask();
+            for(int i = 0; i < 24; i++) {
+                boolean set = (mask & (1 << i)) != 0;
+                attributes.put(set);
+            }
+        }
+             
+        
         JSONArray jmvmts = new JSONArray();
         j.put("movements", jmvmts);
         for(Movement m: movements) {

@@ -27,6 +27,7 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -291,6 +292,35 @@ public class EditorActionBean implements ActionBean {
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
             rseq.setMemo(jrseq.has("memo") ? jrseq.getString("memo") : null);
+            
+            rseq.getKarAttributes().clear();
+            JSONObject attributes = jrseq.getJSONObject("attributes");
+            for(Iterator it = attributes.keys(); it.hasNext();) {
+                String serviceType = (String)it.next();
+                JSONArray perCommandType = attributes.getJSONArray(serviceType);
+                
+                KarAttributes ka = new KarAttributes(
+                        serviceType, 
+                        ActivationPointSignal.COMMAND_INMELDPUNT, 
+                        perCommandType.getJSONArray(0));
+                if(ka.getUsedAttributesMask() != 0) {
+                    rseq.getKarAttributes().add(ka);
+                }
+                ka = new KarAttributes(
+                        serviceType, 
+                        ActivationPointSignal.COMMAND_UITMELDPUNT, 
+                        perCommandType.getJSONArray(1));
+                if(ka.getUsedAttributesMask() != 0) {
+                    rseq.getKarAttributes().add(ka);
+                }
+                ka = new KarAttributes(
+                        serviceType, 
+                        ActivationPointSignal.COMMAND_VOORINMELDPUNT, 
+                        perCommandType.getJSONArray(2));
+                if(ka.getUsedAttributesMask() != 0) {
+                    rseq.getKarAttributes().add(ka);
+                }
+            }
 
             if (rseq.getId() == null) {
                 em.persist(rseq);

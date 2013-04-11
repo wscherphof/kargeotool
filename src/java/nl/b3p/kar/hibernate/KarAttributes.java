@@ -20,6 +20,8 @@
 package nl.b3p.kar.hibernate;
 
 import javax.persistence.*;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  * De voor een RoadsideEquipment voor een bepaald service type en command type
@@ -48,14 +50,14 @@ public class KarAttributes {
     
     /**
      * Service type waarvoor de attributen gelden; zie SERVICE_ constanten in
-     * KarAttributesKey.
+     * deze class.
      */
     @Basic(optional=false)
     private String serviceType;
     
     /**
-     * Command type waarvoor de attributen gelden; zie KAR_COMMAND_ constanten 
-     * in Movement.
+     * Command type waarvoor de attributen gelden; zie COMMAND_ constanten 
+     * in ActivationPointSignal.
      */
     @Basic(optional=false)
     private int commandType;
@@ -67,6 +69,18 @@ public class KarAttributes {
      */
     @Basic(optional=false)
     private int usedAttributesMask;
+    
+    public KarAttributes() {
+    }
+
+    public KarAttributes(String serviceType, int commandType, JSONArray ja) throws JSONException {
+        this.serviceType = serviceType;
+        this.commandType = commandType;
+        this.usedAttributesMask = 0;
+        for(int i = 0; i < ja.length(); i++) {
+            this.usedAttributesMask = this.usedAttributesMask | (ja.getBoolean(i) ? 1 << i : 0);
+        }
+    }
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
