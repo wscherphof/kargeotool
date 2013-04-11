@@ -415,36 +415,8 @@ public class RoadsideEquipment {
         JSONArray jmvmts = new JSONArray();
         j.put("movements", jmvmts);
         for(Movement m: movements) {
-            JSONObject jm = new JSONObject();
+            JSONObject jm = m.getJSON();
             jmvmts.put(jm);
-            jm.put("id", m.getId());
-            jm.put("nummer", m.getNummer());
-            
-            JSONArray maps = new JSONArray();
-            jm.put("maps", maps);
-            for(MovementActivationPoint map: m.getPoints()) {
-                JSONObject jmap = new JSONObject();
-                maps.put(jmap);
-                jmap.put("id", map.getId());
-                jmap.put("beginEndOrActivation", map.getBeginEndOrActivation());
-                jmap.put("pointId", map.getPoint().getId());
-                ActivationPointSignal signal = map.getSignal();
-                if(signal != null) {
-                    jmap.put("distanceTillStopLine", signal.getDistanceTillStopLine());
-                    jmap.put("commandType", signal.getKarCommandType());
-                    jmap.put("signalGroupNumber", signal.getSignalGroupNumber());
-                    jmap.put("virtualLocalLoopNumber", signal.getVirtualLocalLoopNumber());
-                    jmap.put("triggerType", signal.getTriggerType());
-                    JSONArray jvt = new JSONArray();
-                    for(VehicleType vt: signal.getVehicleTypes()) {
-                        jvt.put(vt.getNummer());
-                    }
-                    jmap.put("vehicleTypes", jvt);
-                    
-                    String direction = signal.getDirection();
-                    jmap.put("direction",direction);
-                }
-            }
         }
         
         Map<ActivationPoint,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
@@ -462,54 +434,14 @@ public class RoadsideEquipment {
         List<JSONObject> jpoints = new ArrayList();
         
         for(ActivationPoint ap2: points) {
-            JSONObject pj = new JSONObject();
-            pj.put("id",ap2.getId());
-            pj.put("geometry", GeoJSON.toGeoJSON(ap2.getLocation()));
-            pj.put("label", ap2.getLabel());
-            pj.put("nummer", ap2.getNummer());
+            JSONObject pj = ap2.getGeoJSON();
             
-            // Zoek soort punt op, wordt in movement.points bepaald maar is 
-            // voor alle movements die dit punt gebruiken altijd hetzelfde
-            // soort (combi beginEndOrActivation en commandType)
-            
-            List<MovementActivationPoint> maps = mapsByAp2.get(ap2);
-            String ap2type = null;
             
             SortedSet<Integer> movementNumbers = new TreeSet();
-            //SortedSet<Integer> signalGroupNumbers = new TreeSet();
             
-            if(maps != null && !maps.isEmpty()) {
-                // de waardes beginEndOrActivation en karCommandType moeten voor
-                // alle MAP's voor deze AP2 hetzelfde zijn
-                MovementActivationPoint map1 = maps.get(0);
-                 ap2type = map1.getBeginEndOrActivation();
-                if(map1.getSignal() != null) {
-                    assert(MovementActivationPoint.ACTIVATION.equals(ap2type));
-                    ap2type = ap2type + "_" + map1.getSignal().getKarCommandType();
-                }
-/*                
-                for(MovementActivationPoint map: maps) {
-                    movementNumbers.add(map.getMovement().getNummer());
-                    if(map.getSignal() != null && map.getSignal().getSignalGroupNumber() != null) {
-                        signalGroupNumbers.add(map.getSignal().getSignalGroupNumber());
-                    }
-                    if(MovementActivationPoint.END.equals(ap2type)) {
-                        for(MovementActivationPoint map2: map.getMovement().getPoints()) {
-                            ActivationPointSignal aps = map2.getSignal();
-                            if(aps != null && aps.getSignalGroupNumber() != null) {
-                                signalGroupNumbers.add(aps.getSignalGroupNumber());
-                            }
-                        }
-                    }
-                }*/
-            }
-            pj.put("type", ap2type);
             JSONArray mns = new JSONArray();
             for(Integer i: movementNumbers) { mns.put(i); };
             pj.put("movementNumbers", mns);
-            JSONArray sgns = new JSONArray();
-            //for(Integer i: signalGroupNumbers) { sgns.put(i); };
-            //pj.put("signalGroupNumbers", sgns);
             
             jpoints.add(pj);
             Collections.sort(jpoints, new Comparator<JSONObject>() {

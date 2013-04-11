@@ -1,27 +1,29 @@
 /**
- * Geo-OV - applicatie voor het registreren van KAR meldpunten               
- *                                                                           
- * Copyright (C) 2009-2013 B3Partners B.V.                                   
- *                                                                           
- * This program is free software: you can redistribute it and/or modify      
- * it under the terms of the GNU Affero General Public License as            
- * published by the Free Software Foundation, either version 3 of the        
- * License, or (at your option) any later version.                           
- *                                                                           
- * This program is distributed in the hope that it will be useful,           
- * but WITHOUT ANY WARRANTY; without even the implied warranty of            
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
- * GNU Affero General Public License for more details.                       
- *                                                                           
- * You should have received a copy of the GNU Affero General Public License  
- * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package nl.b3p.kar.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Entity voor persisteren van een Movement zoals bedoeld in BISON koppelvlak 9.
@@ -30,32 +32,31 @@ import javax.persistence.*;
  */
 @Entity
 public class Movement implements Comparable {
-    
+
     /**
-     * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
-     * in Kv9 XML export.
-     */        
+     * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet
+     * zichtbaar in Kv9 XML export.
+     */
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
     /**
      * Roadside equipment waarbij deze movement hoort.
      */
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private RoadsideEquipment roadsideEquipment;
-
     /**
      * Volgnummer van movement binnen het verkeerssysteem.
      */
     private Integer nummer;
-    
     /**
-     * Geordende lijst met punten (begin, eind en meldpunten) voor deze movement.
+     * Geordende lijst met punten (begin, eind en meldpunten) voor deze
+     * movement.
      */
-    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268    
-    @JoinTable(name="movement_points",inverseJoinColumns=@JoinColumn(name="point"))
-    @OrderColumn(name="list_index")
+    @ManyToMany(cascade = CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268    
+    @JoinTable(name = "movement_points", inverseJoinColumns =
+            @JoinColumn(name = "point"))
+    @OrderColumn(name = "list_index")
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN) // cannot use orphanRemoval=true due to workaround
     private List<MovementActivationPoint> points = new ArrayList();
 
@@ -67,7 +68,7 @@ public class Movement implements Comparable {
     public Long getId() {
         return id;
     }
-    
+
     /**
      *
      * @param id
@@ -75,7 +76,7 @@ public class Movement implements Comparable {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      *
      * @return roadsideEquipment
@@ -83,7 +84,7 @@ public class Movement implements Comparable {
     public RoadsideEquipment getRoadsideEquipment() {
         return roadsideEquipment;
     }
-    
+
     /**
      *
      * @param roadsideEquipment
@@ -91,7 +92,7 @@ public class Movement implements Comparable {
     public void setRoadsideEquipment(RoadsideEquipment roadsideEquipment) {
         this.roadsideEquipment = roadsideEquipment;
     }
-    
+
     /**
      *
      * @return nummer
@@ -99,7 +100,7 @@ public class Movement implements Comparable {
     public Integer getNummer() {
         return nummer;
     }
-    
+
     /**
      *
      * @param nummer
@@ -107,7 +108,7 @@ public class Movement implements Comparable {
     public void setNummer(Integer nummer) {
         this.nummer = nummer;
     }
-    
+
     /**
      *
      * @return points
@@ -115,7 +116,7 @@ public class Movement implements Comparable {
     public List<MovementActivationPoint> getPoints() {
         return points;
     }
-    
+
     /**
      *
      * @param points
@@ -126,6 +127,39 @@ public class Movement implements Comparable {
     //</editor-fold>
 
     public int compareTo(Object t) {
-        return nummer.compareTo(((Movement)t).nummer);
+        return nummer.compareTo(((Movement) t).nummer);
+    }
+
+    public JSONObject getJSON() throws JSONException {
+        JSONObject jm = new JSONObject();
+        jm.put("id",getId());
+        jm.put("nummer", getNummer());
+
+        JSONArray maps = new JSONArray();
+        jm.put("maps", maps);
+        for (MovementActivationPoint map : getPoints()) {
+            JSONObject jmap = new JSONObject();
+            maps.put(jmap);
+            jmap.put("id", map.getId());
+            jmap.put("beginEndOrActivation", map.getBeginEndOrActivation());
+            jmap.put("pointId", map.getPoint().getId());
+            ActivationPointSignal signal = map.getSignal();
+            if (signal != null) {
+                jmap.put("distanceTillStopLine", signal.getDistanceTillStopLine());
+                jmap.put("commandType", signal.getKarCommandType());
+                jmap.put("signalGroupNumber", signal.getSignalGroupNumber());
+                jmap.put("virtualLocalLoopNumber", signal.getVirtualLocalLoopNumber());
+                jmap.put("triggerType", signal.getTriggerType());
+                JSONArray jvt = new JSONArray();
+                for (VehicleType vt : signal.getVehicleTypes()) {
+                    jvt.put(vt.getNummer());
+                }
+                jmap.put("vehicleTypes", jvt);
+
+                String direction = signal.getDirection();
+                jmap.put("direction", direction);
+            }
+        }
+        return jm;
     }
 }

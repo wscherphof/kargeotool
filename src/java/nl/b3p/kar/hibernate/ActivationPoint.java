@@ -20,7 +20,12 @@
 package nl.b3p.kar.hibernate;
 
 import com.vividsolutions.jts.geom.Point;
+import java.util.List;
 import javax.persistence.*;
+import nl.b3p.geojson.GeoJSON;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Entity voor persisteren van een Activation Point zoals bedoeld in BISON 
@@ -62,6 +67,39 @@ public class ActivationPoint {
      * Tekstuele aanduiding van het activation point, te tonen als label op de kaart.
      */
     private String label;
+    
+    public JSONObject getGeoJSON() throws JSONException{
+        JSONObject pj = new JSONObject();
+        pj.put("id",getId());
+        pj.put("geometry", GeoJSON.toGeoJSON(getLocation()));
+        pj.put("label", getLabel());
+        pj.put("nummer", getNummer());
+        
+        
+        EntityManager em = Stripersist.getEntityManager();
+        if(em != null){
+            
+            // Zoek soort punt op, wordt in movement.points bepaald maar is 
+            // voor alle movements die dit punt gebruiken altijd hetzelfde
+            // soort (combi beginEndOrActivation en commandType)
+            List<MovementActivationPoint> maps = (List<MovementActivationPoint>) em.createQuery("from MovementActivationPoint where point = :point").setParameter("point", this)
+                        .getResultList();
+            String apType = null;
+            if(maps != null && !maps.isEmpty()) {
+                // de waardes beginEndOrActivation en karCommandType moeten voor
+                // alle MAP's voor deze AP2 hetzelfde zijn
+                MovementActivationPoint map1 = maps.get(0);
+                 apType = map1.getBeginEndOrActivation();
+                if(map1.getSignal() != null) {
+                    assert(MovementActivationPoint.ACTIVATION.equals(apType));
+                    apType = apType + "_" + map1.getSignal().getKarCommandType();
+                }
+            }
+            pj.put("type",apType);
+        }
+        
+        return pj;
+    }
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
