@@ -44,6 +44,7 @@ var styleContext = {
         }
     }
 };
+
 // <editor-fold desc="Standaardstyle">
 var style = new OpenLayers.Style(
 {
@@ -604,6 +605,94 @@ var tempstyle = new OpenLayers.Style(
 }
 );
 // </editor-fold>
+
+
+// <editor-fold desc="Standaardstyle">
+var surroundStyle = new OpenLayers.Style(
+{
+    graphicWidth: 28,
+    graphicHeight: 28,
+    graphicYOffset: -14, // shift graphic up 28 pixels
+    labelYOffset: -15,
+    labelOutlineColor:"#ffffff",
+    labelOutlineWidth:2,
+    graphicOpacity: 0.5
+},
+{
+    context: styleContext,
+    rules: [
+   
+    new OpenLayers.Rule({
+        // a rule contains an optional filter
+        elseFilter: true,
+        // if a feature matches the above filter, use this symbolizer
+        symbolizer: {
+            externalGraphic: karTheme.punt,
+            label: "",
+            strokeColor: "#99BCE8",
+            strokeLinecap: "butt",
+            strokeDashstyle: "longdash"
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_1"
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.inmeldPunt
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_2"
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.uitmeldPunt
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"ACTIVATION_3"
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.voorinmeldPunt
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"END"
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.eindPunt,
+            graphicYOffset: -25,
+            graphicXOffset: -5
+        }
+    }),
+    new OpenLayers.Rule({   
+        filter: new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "type",
+            value:"BEGIN"
+        }),
+        symbolizer: {
+            externalGraphic: karTheme.startPunt,
+            graphicYOffset: -25,
+            graphicXOffset: -5
+        }
+    })
+    ]
+}
+);
+// </editor-fold>
+
 
 var snap = new OpenLayers.Style(
 // the first argument is a base symbolizer

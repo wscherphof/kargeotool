@@ -429,7 +429,7 @@ Ext.define("Editor", {
             );            
         }
     },
-    
+     
     /**
      * Verander de actieve Rseq
      * @param rseq de nieuwe actieve Rseq

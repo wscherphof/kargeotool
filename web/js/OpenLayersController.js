@@ -112,9 +112,7 @@ Ext.define("ol", {
         );
         this.surroundingPointsLayer = new OpenLayers.Layer.Vector("surroundingPointsLayer",{
             styleMap: new OpenLayers.StyleMap( {
-                "default": style,
-                "select": selectstyle,
-                "temporary" : tempstyle
+                "default": surroundStyle
             })
         });
             
