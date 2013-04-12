@@ -33,10 +33,12 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqUpdated",this.updateOverview,this);
         this.editor.on("activeRseqChanged",this.updateOverview,this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
+        
         var panel = viewport.items.items[3].items.items[1];
         panel.on('collapse',this.updateSize,this);
         panel.on('expand',this.updateSize,this);
         panel.on('resize',this.updateSize,this);
+        
         this.editor.olc.highlight.events.register('featurehighlighted',this,function (evt){
             if (this.isPoint(evt.feature)){
                 this.highlight(evt.feature.data.id);
@@ -206,7 +208,7 @@ Ext.define("nl.b3p.kar.Overview",{
         }
         var label = this.getBewegingLabel(this.editor.activeRseq.getMovementById(json.id));
         var node = {
-            text : "Beweging " + key + ": " + label,
+            text : label,
             id : Ext.id(),//"mvmt-" + json.id,
             expanded : true,
             icon : karTheme.richting,

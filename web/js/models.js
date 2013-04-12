@@ -405,9 +405,9 @@ Ext.define('RSEQ', {
                     
                     if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.nummer)){
                         
-                         signalGroups[signalGroupNumber][ mvmnt.nummer] = new Object();
-                         signalGroups[signalGroupNumber][ mvmnt.nummer]["id"] = mvmnt.id;
-                         signalGroups[signalGroupNumber][ mvmnt.nummer]["points"] = new Array();
+                         signalGroups[signalGroupNumber][ mvmnt.id] = new Object();
+                         signalGroups[signalGroupNumber][ mvmnt.id]["id"] = mvmnt.id;
+                         signalGroups[signalGroupNumber][ mvmnt.id]["points"] = new Array();
                     }
                         
                 }
@@ -415,7 +415,7 @@ Ext.define('RSEQ', {
             if(signalGroupNumber != null){
                 for(var k = 0 ; k < mvmnt.maps.length;k++){
                     var point = this.getPointById(mvmnt.maps[k].pointId);
-                    signalGroups[signalGroupNumber][ mvmnt.nummer]["points"].push(point);
+                    signalGroups[signalGroupNumber][ mvmnt.id]["points"].push(point);
                 }
             }
         }
