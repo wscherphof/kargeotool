@@ -636,7 +636,7 @@ Ext.define("EditForms", {
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.commandType == 2 ? 284 : 203,
+            height: map.commandType == 2 ? 294 : 213,
             width: 490,
             modal: true,
             icon: karTheme[apName],
