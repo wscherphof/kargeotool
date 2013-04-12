@@ -79,6 +79,9 @@ Ext.define('RSEQ', {
         if(!config.memo){
             config.memo = "";
         }
+        if(!config.attributes){
+            config.attributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OS": [ [], [], [] ]};
+        }
         this.initConfig(config);    
     },
     /**
