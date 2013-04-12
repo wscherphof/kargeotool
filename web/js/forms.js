@@ -583,7 +583,8 @@ Ext.define("EditForms", {
                 }
             });
             var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
-            var dir = map.direction.join ? map.direction.join(",") : map.direction;
+            var direction = map.direction ? map.direction : "";
+            var dir = direction.join ? direction.join(",") : direction;
             signalItems = Ext.Array.merge(signalItems, [{
                 xtype: 'numberfield',
                 minValue: 0,
