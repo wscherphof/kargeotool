@@ -22,7 +22,6 @@ package nl.b3p.kar.hibernate;
 import com.vividsolutions.jts.geom.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -132,7 +131,7 @@ public class RoadsideEquipment {
     @ElementCollection
     //@JoinTable(inverseJoinColumns=@JoinColumn(name="roadside_equipment"))
     @OrderColumn(name="list_index")
-    private List<KarAttributes> karAttributes;
+    private List<KarAttributes> karAttributes = new ArrayList<KarAttributes>();
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
     @Sort(type=SortType.NATURAL)
