@@ -20,6 +20,7 @@
 package nl.b3p.kar.hibernate;
 
 import javax.persistence.*;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Entity voor een data eigenaar uit BISON koppelvlak 9.
@@ -27,7 +28,8 @@ import javax.persistence.*;
  * @author Matthijs Laan
  */
 @Entity
-public class DataOwner {
+public class DataOwner implements Comparable {
+
     /**
      * definitie voor vervoerder
      */
@@ -40,6 +42,10 @@ public class DataOwner {
      * definitie voor infra beheerder
      */
     public static final String CLASSIFICATIE_INFRA_BEHEERDER = "Infra Beheerder";
+
+    public static DataOwner findByCode(String code) {
+        return (DataOwner)Stripersist.getEntityManager().createQuery("from DataOwner where code = :code").setParameter("code", code).getSingleResult();
+    }
     
     @Id
     private String code;
@@ -116,4 +122,31 @@ public class DataOwner {
     }
     //</editor-fold>
     
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.code != null ? this.code.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DataOwner other = (DataOwner) obj;
+        if ((this.code == null) ? (other.code != null) : !this.code.equals(other.code)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(Object other) {
+        return code.compareTo(((DataOwner)other).getCode());
+    }
+
 }

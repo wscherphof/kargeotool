@@ -356,18 +356,17 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         
         gebruiker.getRoles().clear();        
         gebruiker.getRoles().add(em.find(Role.class, role));
-        
-        gebruiker.getDataOwnerRights().clear();
+        gebruiker.getDataOwnerRights().clear(); // XXX werkt niet
+        em.createQuery("delete from GebruikerDataOwnerRights where gebruiker = :this")
+                .setParameter("this", gebruiker)
+                .executeUpdate();
         em.flush();
-        /* XXX werkt niet meer met ID
         for(String daoId: dataOwnersEditable) {
-            DataOwner dao = em.find(DataOwner.class, daoId);
-            gebruiker.setDataOwnerRight(dao, Boolean.TRUE, null);
+            gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), Boolean.TRUE, null);
         }
         for(String daoId: dataOwnersValidatable) {
-            DataOwner dao = em.find(DataOwner.class, daoId);
-            gebruiker.setDataOwnerRight(dao, null, Boolean.TRUE);
-        } */       
+            gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), null, Boolean.TRUE);
+        } 
         
         em.persist(gebruiker);
         em.getTransaction().commit();

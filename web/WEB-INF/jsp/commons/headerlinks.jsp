@@ -33,6 +33,9 @@
         <div class="headerlink">
             <span style="font-weight: normal">Ingelogd als: </span>
             <c:out value="${pageContext.request.remoteUser}"/>
+            <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">                                    
+                <img src="${contextPath}/images/star.png" style="vertical-align: bottom">
+            </c:if>
         </div>
         <div class="headerlink">
             <stripes:link href="/logout.jsp"><img src="<c:url value="/images/"/>/exit.png" alt="icon" class="navimg" /> Uitloggen</stripes:link>

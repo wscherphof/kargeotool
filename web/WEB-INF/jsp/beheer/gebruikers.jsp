@@ -208,9 +208,9 @@
                                             <c:set var="dor" value="${mapEntry.value}"/>
                                             <tr>
                                                 <td>${dor.dataOwner.code}</td>
-                                                <td>${dor.dataOwner.name}</td>
-                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersEditable" value="${dor.dataOwner.id}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
-                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersValidatable" value="${dor.dataOwner.id}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
+                                                <td>${dor.dataOwner.omschrijving}</td>
+                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersEditable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
+                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersValidatable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
                                             </tr>
                                         </c:forEach>
                                     </table>
@@ -260,7 +260,7 @@
                     var availableDO = document.forms[0].availableDataOwners;
                     var selectedIndex = availableDO.selectedIndex;
                     if(selectedIndex > 0) {
-                        var value = parseInt(availableDO.options[selectedIndex].value);
+                        var value = availableDO.options[selectedIndex].value;
                         var text = availableDO.options[selectedIndex].text;
                         var code = text.substring(0, text.indexOf(codeNameSeparator)); /* XXX deze separator is hardcoded... */
                         var name = text.substring(text.indexOf(codeNameSeparator) + codeNameSeparator.length, text.length);

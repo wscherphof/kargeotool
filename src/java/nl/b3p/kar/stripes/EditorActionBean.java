@@ -25,6 +25,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,6 +75,17 @@ public class EditorActionBean implements ActionBean {
     @Validate
     private String extent;
 
+    private Gebruiker getGebruiker() {
+        final String attribute = this.getClass().getName() + "_GEBRUIKER";
+        Gebruiker g = (Gebruiker)getContext().getRequest().getAttribute(attribute);
+        if(g != null) {
+            return g;
+        }
+        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
+        g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
+        getContext().getRequest().setAttribute(attribute, g);
+        return g;
+    }
     /**
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
      *
@@ -83,11 +96,9 @@ public class EditorActionBean implements ActionBean {
     public Resolution view() throws Exception {
 
         EntityManager em = Stripersist.getEntityManager();
-        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
-        Gebruiker g = em.find(Gebruiker.class, principal.getId());
-        boolean isBeheerder = g.isBeheerder();
+        boolean isBeheerder = getGebruiker().isBeheerder();
 
-        Set s = g.getEditableDataOwners();
+        Set s = getGebruiker().getEditableDataOwners();
         if (s.size() >= 1 || isBeheerder) {
             magWalapparaatMaken = true;
         } else {
@@ -104,7 +115,13 @@ public class EditorActionBean implements ActionBean {
         }
 
         dataOwnersJSON = new JSONArray();
-        for (DataOwner dao : (List<DataOwner>) em.createQuery("from DataOwner order by code").getResultList()) {
+        Collection<DataOwner> dataOwners;
+        if(isBeheerder) {
+            dataOwners = (List<DataOwner>) em.createQuery("from DataOwner order by code").getResultList();
+        } else {
+            dataOwners = s;
+        }
+        for (DataOwner dao : dataOwners) {
             JSONObject jdao = new JSONObject();
             jdao.put("code", dao.getCode());
             jdao.put("classificatie", dao.getClassificatie());
@@ -137,10 +154,13 @@ public class EditorActionBean implements ActionBean {
                         .setParameter("a", karAddress)
                         .getSingleResult();
             }
+            if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(rseq2.getDataOwner())) {
+                info.put("error", "Forbidden");
+            } else {
+                info.put("roadsideEquipment", rseq2.getJSON());
 
-            info.put("roadsideEquipment", rseq2.getJSON());
-
-            info.put("success", Boolean.TRUE);
+                info.put("success", Boolean.TRUE);
+            }
         } catch (Exception e) {
             log.error("rseqJSON exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
@@ -162,10 +182,33 @@ public class EditorActionBean implements ActionBean {
         try {
             List<RoadsideEquipment> rseq2;
 
-            if (karAddress != null) {
-                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where karAddress <> :karAddress").setParameter("karAddress", karAddress).getResultList();
+            if(getGebruiker().isBeheerder()) {
+                if (karAddress != null) {
+                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where karAddress <> :karAddress").setParameter("karAddress", karAddress).getResultList();
+                } else {
+                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+                }
             } else {
-                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+                Set<DataOwner> dos = getGebruiker().getEditableDataOwners();
+                if(dos.isEmpty()) {
+                    rseq2 = Collections.EMPTY_LIST;
+                } else {
+                    if (karAddress != null) {
+                        rseq2 = (List<RoadsideEquipment>) em.createQuery(
+                                "from RoadsideEquipment "
+                              + "where karAddress <> :karAddress "
+                              + "and dataOwner in (:dos)")
+                                .setParameter("karAddress", karAddress)
+                                .setParameter("dos", dos)
+                                .getResultList();
+                    } else {
+                        rseq2 = (List<RoadsideEquipment>) em.createQuery(
+                                "from RoadsideEquipment "
+                              + "where dataOwner in (:dos)")
+                                .setParameter("dos", dos)
+                                .getResultList();
+                    }
+                }
             }
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment r : rseq2) {
@@ -220,7 +263,6 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-
             
             GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
             WKTReader reader= new WKTReader(gf);
@@ -228,11 +270,28 @@ public class EditorActionBean implements ActionBean {
           //  p.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 
-            Query q = session.createQuery("from ActivationPoint where intersects(location, ?) = true and roadsideEquipment <> ?");
-            Type geometryType = GeometryUserType.TYPE;
-            q.setParameter(0, p, geometryType);
-            q.setParameter(1, rseq);
-            List<ActivationPoint> points = (List<ActivationPoint>)q.list();
+            Collection<DataOwner> editableDataOwners = getGebruiker().getEditableDataOwners();
+            List<ActivationPoint> points;
+            if(getGebruiker().isBeheerder()) {
+                points = session.createQuery(
+                        "from ActivationPoint "
+                      + "where intersects(location, :pos) = true "
+                      + "and roadsideEquipment <> :this")
+                        .setParameter("pos", p, GeometryUserType.TYPE)
+                        .setParameter("this", rseq)
+                        .list();
+            } else if(editableDataOwners.isEmpty()) {
+                points = Collections.EMPTY_LIST;
+            } else {
+                points = session.createQuery(
+                        "from ActivationPoint "
+                      + "where roadsideEquipment.dataOwner in (:dos) "
+                      + "and intersects(location, :pos) = true and roadsideEquipment <> :this")
+                        .setParameterList("dos", getGebruiker().getEditableDataOwners())
+                        .setParameter("pos", p, GeometryUserType.TYPE)
+                        .setParameter("this", rseq)
+                        .list();
+            }
           
             JSONArray rs = new JSONArray();
             for (ActivationPoint r : points) {
@@ -275,10 +334,16 @@ public class EditorActionBean implements ActionBean {
         try {
             JSONObject jrseq = new JSONObject(json);
 
+            Gebruiker g = getGebruiker();
+            
             if (isNew(jrseq)) {
                 rseq = new RoadsideEquipment();
             } else {
                 rseq = em.find(RoadsideEquipment.class, jrseq.getLong("id"));
+                
+                if(rseq == null) {
+                    throw new IllegalStateException("Kan verkeerssysteem niet vinden, verwijderd door andere gebruiker?");
+                }
             }
 
             rseq.setLocation(GeoJSON.toPoint(jrseq.getJSONObject("location")));
@@ -288,6 +353,19 @@ public class EditorActionBean implements ActionBean {
             rseq.setKarAddress(jrseq.getInt("karAddress"));
             rseq.setCrossingCode(jrseq.optString("crossingCode"));
             rseq.setDataOwner(em.find(DataOwner.class, jrseq.getString("dataOwner")));
+            if(rseq.getDataOwner() == null) {
+                throw new IllegalArgumentException("Data owner is verplicht");
+            }
+            if(!g.isBeheerder()) {
+                if(!g.canEditDataOwner(rseq.getDataOwner())) {
+                    throw new IllegalStateException(
+                            String.format("Gebruiker \"%s\" heeft geen rechten op data owner code %s (\"%s\")",
+                            g.getUsername(),
+                            rseq.getDataOwner().getCode(),
+                            rseq.getDescription()));
+                }
+            }
+            
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
