@@ -293,11 +293,11 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                         Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
                     }
                 }else{
-                    alert("Ophalen resultaten mislukt.");
+                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             },
             failure: function() {
-                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
     },

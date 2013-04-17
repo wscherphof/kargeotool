@@ -249,11 +249,11 @@ Ext.define("Editor", {
                         successFunction(rseq);
                     }
                 }else{
-                    alert("Ophalen resultaten mislukt.");
+                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             },
             failure: function (response){
-                alert("Ophalen resultaten mislukt.");
+                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
     },
@@ -284,11 +284,11 @@ Ext.define("Editor", {
                     editor.olc.removeAllRseqs();
                     editor.olc.addRseqs(featureCollection);
                 }else{
-                    alert("Ophalen resultaten mislukt.");
+                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             },
             failure: function (response){
-                alert("Ophalen resultaten mislukt.");
+                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
     },
@@ -358,11 +358,11 @@ Ext.define("Editor", {
                         this.olc.snapLayer.addFeatures(features);
                         this.olc.snap.activate();
                     }else{
-                        alert("Ophalen resultaten mislukt.");
+                        Ext.MessageBox.show({title: "Fout: kan wegen niet laden", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                     }
                 },
                 failure: function (response){
-                    alert("Ophalen resultaten mislukt.");
+                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             });
         }
@@ -411,11 +411,11 @@ Ext.define("Editor", {
                            var features = this.olc.geojson_format.read(featureCollection);
                            this.olc.surroundingPointsLayer.addFeatures(features);
                        }else{
-                           alert("Ophalen resultaten mislukt.");
+                            Ext.MessageBox.show({title: "Fout: kan omliggende punten niet laden", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                        }
                    },
                    failure: function (response){
-                       alert("Ophalen resultaten mislukt.");
+                       Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                    }
                });
              }else{
