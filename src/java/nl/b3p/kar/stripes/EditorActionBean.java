@@ -75,7 +75,7 @@ public class EditorActionBean implements ActionBean {
     @Validate
     private String extent;
 
-    private Gebruiker getGebruiker() {
+    public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
         Gebruiker g = (Gebruiker)getContext().getRequest().getAttribute(attribute);
         if(g != null) {
@@ -86,6 +86,7 @@ public class EditorActionBean implements ActionBean {
         getContext().getRequest().setAttribute(attribute, g);
         return g;
     }
+    
     /**
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
      *

@@ -36,6 +36,17 @@ select {
     font-size: 8pt;
 }
 
+.welcome {
+    margin: 10px;
+}
+.welcome h1 {
+    margin: 8px 8px 0px 0px;
+    font-size: 14pt;
+}
+.welcome p {
+    margin: 15px 15px 0px 0px;
+}
+
 body.editor {
     width: 100%;
     min-height: 850px;
@@ -69,6 +80,10 @@ body.editor {
 .headerlink:last-child {
     border-right: 0px none;
     margin-right: 0px;
+}
+
+.headerlink:hover {
+    text-decoration: underline;
 }
 
 #headerLinks a {

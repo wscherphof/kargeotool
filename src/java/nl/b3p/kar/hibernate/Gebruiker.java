@@ -57,6 +57,12 @@ public class Gebruiker implements Principal {
     private String phone;
     private String position;
     
+    /**
+     * JSON string met profielinstellingen.
+     */
+    @Column(columnDefinition="text")
+    private String profile;
+    
     @ManyToMany
     @JoinTable(joinColumns=@JoinColumn(name="gebruiker"), inverseJoinColumns=@JoinColumn(name="role"))
     private Set<Role> roles = new HashSet();
@@ -247,6 +253,14 @@ public class Gebruiker implements Principal {
      */
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
     /**

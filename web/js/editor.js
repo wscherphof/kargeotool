@@ -229,7 +229,7 @@ Ext.define("Editor", {
      */
     loadRseqInfo: function(query, successFunction) {
         Ext.Ajax.request({
-            url:editorActionBeanUrl,
+            url: editorActionBeanUrl,
             method: 'GET',
             scope: this,
             params: Ext.Object.merge(query, {
