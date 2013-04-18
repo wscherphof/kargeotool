@@ -23,7 +23,7 @@ insert into data_owner2(code, classificatie, company_number, omschrijving) value
  ('B3P', 'Integrator', null, 'B3Partners');
 
 insert into data_owner2(code, classificatie, company_number, omschrijving) select
-    'CBSPV' || unnest(ARRAY['V0001','0002','0003','0004','0005','0006','0007','0008','0009','0010','0011','0012']),
+    'CBSPV' || unnest(ARRAY['0001','0002','0003','0004','0005','0006','0007','0008','0009','0010','0011','0012']),
     'Infra Beheerder',
     null,
     unnest(ARRAY['Provincie Groningen','Provincie Fryslân','Provincie Drenthe','Provincie Overijssel','Provincie Gelderland','Provincie Utrecht','Provincie Noord-Holland','Provincie Zuid-Holland','Provincie Zeeland','Provincie Noord-Brabant','Provincie Limburg','Provincie Flevoland']);
