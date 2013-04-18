@@ -245,7 +245,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void loadLists() {
         gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
         allRoles = Stripersist.getEntityManager().createQuery("from Role order by role").getResultList();
-        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner order by code").getResultList();
+        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
         
         JSONArray ja = new JSONArray();
         for(DataOwner dao: dataOwners) {
@@ -357,9 +357,12 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         gebruiker.getRoles().clear();        
         gebruiker.getRoles().add(em.find(Role.class, role));
         gebruiker.getDataOwnerRights().clear(); // XXX werkt niet
-        em.createQuery("delete from GebruikerDataOwnerRights where gebruiker = :this")
-                .setParameter("this", gebruiker)
-                .executeUpdate();
+        if(gebruiker.getId() != null) {
+            em.createQuery("delete from GebruikerDataOwnerRights where gebruiker = :this")
+                    .setParameter("this", gebruiker)
+                    .executeUpdate();
+        }
+        em.persist(gebruiker);
         em.flush();
         for(String daoId: dataOwnersEditable) {
             gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), Boolean.TRUE, null);
@@ -368,7 +371,6 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
             gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), null, Boolean.TRUE);
         } 
         
-        em.persist(gebruiker);
         em.getTransaction().commit();
         
         loadLists();
