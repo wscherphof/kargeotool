@@ -20,13 +20,13 @@
  * Als het document klaar is met laden, zet de layout goed.
  */
 Ext.onReady(function() {
-    Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
     viewport = Ext.create('Ext.Viewport', {
         layout: 'border',
         defaultType: 'panel',
         defaults: {
             header: false,
-            border: false
+            border: false,
+            stateful: true
         },
         items: [
             {
@@ -35,6 +35,7 @@ Ext.onReady(function() {
                 contentEl: 'header'
             }, {
                 region: 'east',
+                stateId: 'east',
                 animCollapse: true,
                 collapsible: true,
                 split: true,
@@ -61,6 +62,7 @@ Ext.onReady(function() {
                 ]
             }, {
                 region: 'west',
+                stateId: 'west',
                 animCollapse: true,
                 collapsible: true,
                 split: true,
@@ -76,16 +78,19 @@ Ext.onReady(function() {
                 defaults: {
                     border: 0,
                     width: '100%',
-                    flex: 1
+                    flex: 1,
+                    stateful: true
                 },
                 items: [
                     {
                         contentEl: 'searchform',
+                        stateId: 'searchform',
                         autoScroll: true,
                         title: 'Zoeken'
                     },
                     {
                         id:'rseqInfoPanel',
+                        stateId: 'rseqInfoPanel',
                         title: 'Overzicht verkeerssysteem',
                         defaultType: 'container',
                         layout: 'vbox',
@@ -100,7 +105,7 @@ Ext.onReady(function() {
                                 margin: '3px'
                             },
                             {
-                               id:'overzicht',
+                                id:'overzicht',
                                 flex: 1
                             },
                             {
@@ -111,6 +116,7 @@ Ext.onReady(function() {
                     },
                     {
                         contentEl: 'form',
+                        stateId: 'help',
                         title: 'Help'
                     }
                 ]

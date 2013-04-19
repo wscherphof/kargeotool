@@ -34,7 +34,7 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqChanged",this.updateOverview,this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
         
-        var panel = viewport.items.items[3].items.items[1];
+        var panel = Ext.getCmp("rseqInfoPanel");
         panel.on('collapse',this.updateSize,this);
         panel.on('expand',this.updateSize,this);
         panel.on('resize',this.updateSize,this);

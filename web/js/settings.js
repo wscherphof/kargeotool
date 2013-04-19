@@ -21,16 +21,27 @@
  * Form voor editen instellingen die worden opgeslagen in het gebruikersprofiel.
  */
 
+var savedProfile = Ext.JSON.encode(profile);
+
 function saveProfile() {
-    Ext.Ajax.request({
-        url: profileActionBeanUrl,
-        method: 'POST',
-        scope: this,
-        params: {settings: Ext.JSON.encode(profile)},
-        failure: function (response){
-            Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
-        }
-    });
+    setTimeout(checkSaveProfile, 500);
+}
+
+function checkSaveProfile() {
+    var encodedProfile = Ext.JSON.encode(profile);
+    
+    if(encodedProfile != savedProfile) {
+        savedProfile = encodedProfile;
+        Ext.Ajax.request({
+            url: profileActionBeanUrl,
+            method: 'POST',
+            scope: this,
+            params: {settings: Ext.JSON.encode(profile)},
+            failure: function (response){
+                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+            }
+        });
+    }
 }
 
 Ext.define("SettingsForm", {

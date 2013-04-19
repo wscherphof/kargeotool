@@ -36,9 +36,6 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
 
-        <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
         
         <script type="text/javascript">
             var profile = {};
@@ -47,6 +44,15 @@
                 profile = ${actionBean.gebruiker.profile};
             </c:if>
         </script>
+
+        <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/forms.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/welcome.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/editor.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
 
         <div id="leftbar">
             
@@ -111,10 +117,6 @@
             </div>
                 
                 
-            <script type="text/javascript" src="${contextPath}/js/forms.js"></script>
-            <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
-            <script type="text/javascript" src="${contextPath}/js/welcome.js"></script>
-            <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
 
                 var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map";
