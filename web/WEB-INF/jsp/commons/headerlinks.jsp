@@ -31,6 +31,12 @@
             </div>
         </c:if>
         <div class="headerlink">
+            <a href="#" onclick="settingsForm.show()">Instellingen</a>
+        </div>
+        <div class="headerlink">
+            <a href="#" onclick="showWelcome()"><img src="<c:url value="/images/silk/information.png"/>" alt="icon" class="navimg" /> Informatie</a>
+        </div>
+        <div class="headerlink">
             <span style="font-weight: normal">Ingelogd als: </span>
             <c:out value="${pageContext.request.remoteUser}"/>
             <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">                                    

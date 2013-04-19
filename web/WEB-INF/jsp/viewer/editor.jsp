@@ -39,6 +39,14 @@
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
         <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
+        
+        <script type="text/javascript">
+            var profile = {};
+            
+            <c:if test="${!empty actionBean.gebruiker.profile}">
+                profile = ${actionBean.gebruiker.profile};
+            </c:if>
+        </script>
 
         <div id="leftbar">
             
@@ -104,6 +112,8 @@
                 
                 
             <script type="text/javascript" src="${contextPath}/js/forms.js"></script>
+            <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
+            <script type="text/javascript" src="${contextPath}/js/welcome.js"></script>
             <script type="text/javascript" src="<c:url value="/js/editor.js"/>"></script>
             <script type="text/javascript">
 
@@ -111,12 +121,28 @@
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
+                var profileActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ProfileActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;
+                var settingsForm = null;
+                var welcomeForm = null;
                 Ext.onReady(function() {
                     editor = Ext.create(Editor, "map", mapfilePath);    
+                    
+                    settingsForm = Ext.create(SettingsForm, editor);
+                    
+                    if(profile.firstRun == undefined || profile.firstRun ) {
+                        showWelcome();
+                    }
                 });
+                
+                function showWelcome() {
+                    if(welcomeForm == null) {
+                        welcomeForm = Ext.create(WelcomeForm)
+                    }
+                    welcomeForm.show();
+                }
                 
                 var vehicleTypes = ${actionBean.vehicleTypesJSON};
                 var dataOwners = ${actionBean.dataOwnersJSON};
