@@ -303,6 +303,9 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
     },
     createResult : function (rseq){
         var label = rseq.properties.karAddress + " - " + rseq.properties.description;
+        if( rseq.properties.crossingCode){
+            label+= " (" + rseq.properties.crossingCode + ")";
+        }
         var addresslink = document.createElement('a');
         addresslink.href = '#';
         addresslink.className = '.resultlink';

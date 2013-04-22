@@ -43,6 +43,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
@@ -74,19 +75,17 @@ public class SearchActionBean implements ActionBean {
             Session sess = (Session) em.getDelegate();
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
 
-            Criterion desc = Restrictions.ilike("description", term, MatchMode.ANYWHERE);
-            Criterion address = null;
+            Disjunction dis = Restrictions.disjunction();
+            dis.add( Restrictions.ilike("description", term, MatchMode.ANYWHERE));
+          
             try {
                 int karAddress = Integer.parseInt(term);
-                address = Restrictions.eq("karAddress", karAddress);
+                dis.add( Restrictions.eq("karAddress", karAddress));
             } catch (NumberFormatException e) {
             }
+            
+            dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
 
-            if (address != null) {
-                criteria.add(Restrictions.or(address, desc));
-            } else {
-                criteria.add(desc);
-            }
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
