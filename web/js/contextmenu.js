@@ -219,7 +219,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'addInmeldpunt',
-                text: 'Voeg inmeldpunt toe',
+                text: 'Voeg nieuw inmeldpunt toe',
                 disabled:true,
                 icon: karTheme.inmeldPunt
             },
@@ -333,7 +333,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'addVoorinmeldpunt',
-                text: 'Voeg voorinmeldpunt toe',
+                text: 'Voeg nieuw voorinmeldpunt toe',
                 icon: karTheme.voorinmeldPunt
             },/*
             {
