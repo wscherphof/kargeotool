@@ -258,29 +258,20 @@ Ext.define("nl.b3p.kar.Overview",{
             var map = mvmnt.maps[i];
             var point = this.editor.activeRseq.getPointById(map.pointId);
             if (point.getType() == "END"){
-                eind = this.getLabelFromPoint(point);
+                eind = point.getLabel();
             }
 
             if (point.getType() == "ACTIVATION_1"){
-                begin = this.getLabelFromPoint(point);
+                begin = point.getLabel();
             }
             if (begin == null){
                 if (point.getType() == "ACTIVATION_2"){
-                    begin = this.getLabelFromPoint(point);
+                    begin = point.getLabel();
                 }
             }
         }
-
+        
         var label = "Van " + begin + " naar " + eind;
-        return label;
-    },
-    getLabelFromPoint : function (point){
-        var label = "";
-        if (point.getLabel() != ""){
-            label = point.getLabel();
-        } else{
-            label = point.getId();
-        }
         return label;
     },
     updateSize : function (){
