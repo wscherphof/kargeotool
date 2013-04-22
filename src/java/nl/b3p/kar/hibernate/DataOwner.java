@@ -20,6 +20,8 @@
 package nl.b3p.kar.hibernate;
 
 import javax.persistence.*;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
@@ -28,7 +30,7 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Matthijs Laan
  */
 @Entity
-public class DataOwner implements Comparable {
+public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparable {
 
     /**
      * definitie voor vervoerder
@@ -149,4 +151,13 @@ public class DataOwner implements Comparable {
         return code.compareTo(((DataOwner)other).getCode());
     }
 
+    @Override
+    public DataOwner unmarshal(String code) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String marshal(DataOwner dao) throws Exception {
+        return dao.getCode();
+    }
 }

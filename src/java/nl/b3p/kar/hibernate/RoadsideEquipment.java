@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -46,6 +48,20 @@ import org.json.JSONObject;
  * @author Matthijs Laan
  */
 @Entity
+@XmlRootElement(name="RSEQDEF")
+@XmlType(name="RSEQDEFType", 
+        propOrder={
+            "dataOwner",
+            "karAddress",
+            "type",
+            "validFrom",
+            "validUntil",
+            "crossingCode",
+            "town",
+            "description"
+        }
+)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RoadsideEquipment {
     
     /**
@@ -75,17 +91,22 @@ public class RoadsideEquipment {
      */    
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @XmlTransient
     private Long id;
     
     @ManyToOne(optional=false)
+    @XmlElement(name="dataownercode")
+    @XmlJavaTypeAdapter(DataOwner.class)
     private DataOwner dataOwner;
     
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
+    @XmlTransient
     private Point location;
     
     /**
      * Het KAR adres (SID) van het verkeerssysteem. Verplicht voor Kv9.
      */
+    @XmlElement(name="karaddress")
     private Integer karAddress;
     
     /**
@@ -93,36 +114,44 @@ public class RoadsideEquipment {
      * voor Kv9.
      */
     @Temporal(TemporalType.DATE)
+    @XmlElement(name="validfrom")
+    @XmlJavaTypeAdapter(TMIDateConverter.class)
     private Date validFrom;
     
     /**
      * Datum tot aan wanneer het verkeersysteem actief is (exclusief).     
      */
     @Temporal(TemporalType.DATE)
+    @XmlElement(name="validuntil")
+    @XmlJavaTypeAdapter(TMIDateConverter.class)
     private Date validUntil;
     
     /**
      * De functie van het verkeerssysteem, zie de TYPE_ constanten in 
      * RoadsideEquipment.
      */
+    @XmlElement(name="rseqtype")
     private String type;
     
     /**
      * Identificeert het kruispunt volgens codering domein DataOwner 
      * (wegbeheerder). Verplicht voor Kv9.
      */
+    @XmlElement(name="crossingcode")
     private String crossingCode;
     
     /**
      * De plaats waar het verkeerssysteem staat. Verplicht voor Kv9.
      */
     @Column(length=50)
+    @XmlElement(name="town")
     private String town;
     
     /**
      * Omschrijving van het verkeerssysteem.
      */
     @Column(length=255)
+    @XmlElement(name="description")
     private String description;
 
     /**
@@ -131,16 +160,20 @@ public class RoadsideEquipment {
     @ElementCollection
     //@JoinTable(inverseJoinColumns=@JoinColumn(name="roadside_equipment"))
     @OrderColumn(name="list_index")
+    @XmlTransient
     private List<KarAttributes> karAttributes = new ArrayList<KarAttributes>();
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
     @Sort(type=SortType.NATURAL)
+    @XmlTransient
     private SortedSet<Movement> movements = new TreeSet<Movement>();
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
+    @XmlTransient
     private Set<ActivationPoint> points = new HashSet<ActivationPoint>();
     
     @Column(length=4096)
+    @XmlTransient
     private String memo;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
