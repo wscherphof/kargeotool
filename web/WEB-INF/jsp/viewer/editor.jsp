@@ -104,13 +104,17 @@
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
                 </div><br/>
                 <b>OV-informatie</b><br/>
-                <input type="checkbox" onclick="toggleLayer('buslijnen');"/> Buslijnen<br/>
+                <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/> Buslijnen<br/>
                 <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
-                <input type="checkbox" onclick="toggleLayer('bushaltes');"/> Bushaltes<br/>
+                <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/> Bushaltes<br/>
                 <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
                 <b>Achtergrond</b><br/>
-                <input type="checkbox" onclick="toggleLayer('Luchtfoto');"/> Luchtfoto<br/>
-                <input type="checkbox" checked="checked" onclick="toggleLayer('BRT');"/> BRT<br/>
+                <div id="Luchtfoto_div" style="width: 90%; height: 38px">
+                    <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
+                </div>
+                <div id="BRT_div" style="width: 90%; height: 38px">
+                    <input type="checkbox" id="BRT_visible" onclick="toggleLayer(event);"/> BRT<br/>
+                </div>
                 <br/>
                 <b>Extra</b><br/>
                 <input type="checkbox" id="snapRoads" onclick="toggleRoad(this)"/> Wegen<br/>
@@ -130,8 +134,17 @@
                 var settingsForm = null;
                 var welcomeForm = null;
                 Ext.onReady(function() {
+                    
+                    var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'BRT'];
+                    Ext.Array.each(checkboxes, function(checkbox) {
+                        Ext.get(checkbox + "_visible").dom.checked = getLayerVisibility(checkbox);
+                    });
+
+                    createLegendSliders();
+                    
                     editor = Ext.create(Editor, "map", mapfilePath);    
                     
+                   
                     settingsForm = Ext.create(SettingsForm, editor);
                     
                     if(profile.firstRun == undefined || profile.firstRun ) {
@@ -149,15 +162,73 @@
                 var vehicleTypes = ${actionBean.vehicleTypesJSON};
                 var dataOwners = ${actionBean.dataOwnersJSON};
                 
-                function toggleLayer(layer) {
-                    var legend = document.getElementById(layer);
-                    var visible = editor.olc.isLayerVisible(layer);
-
-                    editor.olc.setLayerVisible(layer,!visible);
-                    if(legend){
-                        var attr = !visible ?  'block' : 'none' ;
-                        legend.setAttribute("style", 'display:' +attr);
+                function getLayerOpacity(layer) {
+                    return profile.state[layer + "_slider"] / 100.0 || 1;
+                }
+                
+                function getLayerVisibility(layer) {
+                    var state = profile.state[layer + "_visible"];
+                    if(state == undefined) {
+                        return layer == "BRT";
+                    } else {
+                        return state;
                     }
+                }
+                
+                function createLegendSliders() {
+                    
+                    var changeFunc = function(slider, newValue, thumb, eOpts) {
+                        profile.state[slider.id] = newValue;
+                        saveProfile();
+                        editor.setLayerOpacity(slider.id.substr(0, slider.id.indexOf('_')), newValue / 100.0);
+                    };
+                    Ext.create('Ext.slider.Single', {
+                        id: 'Luchtfoto_slider',
+                        renderTo: 'Luchtfoto_div',
+                        hideLabel: true,
+                        useTips: true,
+                        width: '100%',
+                        style: {
+                            marginLeft: '15px'
+                        },
+                        value: getLayerOpacity("Luchtfoto") * 100,
+                        increment: 10,
+                        minValue: 0,
+                        maxValue: 100,
+                        listeners: {
+                            change: changeFunc
+                        }
+                    });   
+                    
+                    Ext.create('Ext.slider.Single', {
+                        id: 'BRT_slider',
+                        renderTo: 'BRT_div',
+                        hideLabel: true,
+                        useTips: true,
+                        width: '100%',
+                        style: {
+                            marginLeft: '15px'
+                        },                        
+                        value: getLayerOpacity("BRT") * 100,
+                        increment: 10,
+                        minValue: 0,
+                        maxValue: 100,
+                        listeners: {
+                            change: changeFunc
+                        }
+                    });                     
+                }
+                
+                function toggleLayer(event) {
+                    if(!event) {
+                        event = window.event;
+                    }
+                    var layer = event.target.id.substr(0, event.target.id.indexOf('_'));
+                    var visible = event.target.checked;
+                    
+                    editor.olc.setLayerVisible(layer, visible);
+                    profile.state[layer + "_visible"] = visible;
+                    saveProfile();
                 }
                 
                 function toggleRoad(form){

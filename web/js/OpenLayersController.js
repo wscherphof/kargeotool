@@ -445,7 +445,7 @@ Ext.define("ol", {
      * @param visible Indicates whether or not the layer must be visible from start
      * @param extension Optional parameter to indicate the extension (type)
      */
-    addLayer : function (type,name, url, layers,visible,extension){
+    addLayer : function (type,name, url, layers,visible,extension,opacity){
         var layer;
         if(type == 'WMS'){
             layer = new OpenLayers.Layer.WMS(name,url,{
@@ -455,7 +455,8 @@ Ext.define("ol", {
                 singleTile: true,
                 ratio: 1,
                 isBaseLayer: false,
-                transitionEffect: 'resize'
+                transitionEffect: 'resize',
+                opacity: opacity
             });
         }else if (type == "TMS" ){
             if(!extension){
@@ -466,7 +467,8 @@ Ext.define("ol", {
                 type: extension,
                 isBaseLayer:false,
                 serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
-                tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
+                tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000),
+                opacity: opacity
             });
         }else{
         //console.log("Type " + type + " not known.");

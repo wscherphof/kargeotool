@@ -79,7 +79,7 @@ Ext.define("Editor", {
             'movementAdded',
             'movementUpdated',
             'currentEditActionChanged'
-            );
+        );
         
         this.domId = domId;
         
@@ -153,12 +153,16 @@ Ext.define("Editor", {
         this.olc = new ol(this);
         this.olc.createMap(this.domId);
         
-        this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', true, 'png8');
-        this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', false,'png?LAYERS=IPOlufo');
-        this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', false);
-        this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', false);
+        this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', getLayerVisibility("Luchtfoto"),'png?LAYERS=IPOlufo', getLayerOpacity("Luchtfoto"));
+        this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
+        this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', getLayerVisibility('buslijnen'));
+        this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', getLayerVisibility('bushaltes'));
         
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
+    },
+    
+    setLayerOpacity: function(layer, opacity) {
+        this.olc.map.getLayersByName(layer)[0].setOpacity(opacity);
     },
     
     /**
