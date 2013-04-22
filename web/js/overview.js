@@ -272,6 +272,10 @@ Ext.define("nl.b3p.kar.Overview",{
         }
         
         var label = "Van " + begin + " naar " + eind;
+        if(label == 'Van  naar '){
+            label = '';
+        }
+        
         return label;
     },
     updateSize : function (){
