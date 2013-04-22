@@ -90,7 +90,7 @@ Ext.define("EditForms", {
         var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 362,
+            height: 372,
             width: 450,
             modal: true,
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
@@ -636,7 +636,7 @@ Ext.define("EditForms", {
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.commandType == 2 ? 294 : 213,
+            height: map.commandType == 2 ? 310 : 213,
             width: 490,
             modal: true,
             icon: karTheme[apName],
