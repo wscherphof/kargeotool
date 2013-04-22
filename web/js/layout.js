@@ -36,6 +36,7 @@ Ext.onReady(function() {
             }, {
                 region: 'east',
                 stateId: 'east',
+                id:"east",
                 animCollapse: true,
                 collapsible: true,
                 split: true,
@@ -62,6 +63,7 @@ Ext.onReady(function() {
                 ]
             }, {
                 region: 'west',
+                id:'west',
                 stateId: 'west',
                 animCollapse: true,
                 collapsible: true,

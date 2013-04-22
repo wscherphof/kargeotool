@@ -115,8 +115,8 @@ Ext.define("Editor", {
         /* Indien de panelen die door layout.js zijn gemaakt worden geresized of
          * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
          */
-        var east = viewport.items.items[2];
-        var west = viewport.items.items[3];
+        var east = Ext.getCmp("east");
+        var west = Ext.getCmp("west");
         east.on('resize', this.olc.resizeMap, this.olc);
         west.on('resize', this.olc.resizeMap, this.olc);
         east.on('collapse', this.olc.resizeMap, this.olc);
