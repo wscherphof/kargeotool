@@ -184,8 +184,8 @@ public class EditorActionBean implements ActionBean {
             List<RoadsideEquipment> rseq2;
 
             if(getGebruiker().isBeheerder()) {
-                if (karAddress != null) {
-                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where karAddress <> :karAddress").setParameter("karAddress", karAddress).getResultList();
+                if (rseq != null) {
+                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where id <> :id").setParameter("id", rseq.getId()).getResultList();
                 } else {
                     rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
                 }
@@ -194,12 +194,12 @@ public class EditorActionBean implements ActionBean {
                 if(dos.isEmpty()) {
                     rseq2 = Collections.EMPTY_LIST;
                 } else {
-                    if (karAddress != null) {
+                    if (rseq != null) {
                         rseq2 = (List<RoadsideEquipment>) em.createQuery(
                                 "from RoadsideEquipment "
-                              + "where karAddress <> :karAddress "
+                              + "where id <> :id "
                               + "and dataOwner in (:dos)")
-                                .setParameter("karAddress", karAddress)
+                                .setParameter("id", rseq.getId())
                                 .setParameter("dos", dos)
                                 .getResultList();
                     } else {

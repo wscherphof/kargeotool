@@ -58,7 +58,7 @@ Ext.define("Editor", {
         this.mixins.observable.constructor.call(this, {
             listeners:{
                 activeRseqChanged : function(rseq){
-                    this.loadAllRseqs(rseq.karAddress);
+                    this.loadAllRseqs(rseq.id);
                 }
             //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
             }
@@ -266,16 +266,16 @@ Ext.define("Editor", {
     
     /**
      * Laad alle road side equipment.
-     * @param karAddress (optioneel) het kar adres
+     * @param id (optioneel) het id dat niet opgehaald moet worden
      */
-    loadAllRseqs: function(karAddress) {
+    loadAllRseqs: function(id) {
         Ext.Ajax.request({
             url:editorActionBeanUrl,
             method: 'GET',
             scope: this,
             params:  {
                 'allRseqJSON' : true,
-                karAddress: karAddress
+                rseq: id
             },
             success: function (response){
                 var msg = Ext.JSON.decode(response.responseText);
@@ -377,14 +377,14 @@ Ext.define("Editor", {
     /**
      * Verwijder de snaplijnen
      */
-    removeRoads :function(){
+    removeRoads : function(){
         this.olc.snapLayer.removeAllFeatures();
     },
     
     /**
      * Haal de punten binnen de extent (+buffer) op, minus de huidig geselecteerde RSEQ-punten. Ter referentie waar punten moeten komen.
      */
-    handleSurroundingPoints: function(){
+    handleSurroundingPoints : function(){
          if(this.activeRseq){
              var resLimit = 1;
              var resolution = this.olc.map.getResolution();
