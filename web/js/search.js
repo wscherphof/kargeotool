@@ -320,7 +320,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
             });
             me.fireEvent("searchResultClicked",result );
             editor.loadRseqInfo({
-                karAddress:  rseq.properties.karAddress
+                rseq:  rseq.properties.id
             });
         });
         this.addResult(link);

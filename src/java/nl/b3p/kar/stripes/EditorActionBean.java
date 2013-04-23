@@ -64,8 +64,6 @@ public class EditorActionBean implements ActionBean {
     private ActionBeanContext context;
     private boolean magWalapparaatMaken;
     @Validate
-    private Integer karAddress;
-    @Validate
     private RoadsideEquipment rseq;
     @Validate
     private String json;
@@ -151,9 +149,7 @@ public class EditorActionBean implements ActionBean {
             if (rseq != null) {
                 rseq2 = rseq;
             } else {
-                rseq2 = (RoadsideEquipment) em.createQuery("from RoadsideEquipment where karAddress = :a")
-                        .setParameter("a", karAddress)
-                        .getSingleResult();
+                throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
             if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(rseq2.getDataOwner())) {
                 info.put("error", "Forbidden");
@@ -526,22 +522,6 @@ public class EditorActionBean implements ActionBean {
 
     public void setContext(ActionBeanContext context) {
         this.context = context;
-    }
-
-    /**
-     *
-     * @return karAddress
-     */
-    public Integer getKarAddress() {
-        return karAddress;
-    }
-
-    /**
-     *
-     * @param karAddress
-     */
-    public void setKarAddress(Integer karAddress) {
-        this.karAddress = karAddress;
     }
 
     /**
