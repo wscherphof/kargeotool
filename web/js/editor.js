@@ -46,6 +46,8 @@ Ext.define("Editor", {
     currentEditAction: null,
     
     search:null,
+    
+    actionToCancel:null,
     // === Initialisatie ===
     
     /**
@@ -674,6 +676,7 @@ Ext.define("Editor", {
      * Selecteren bestaand eindpunt
      */
     selectEindpunt: function() {
+        this.changeCurrentEditAction("SELECT_EINDPUNT");
         this.contextMenu.showCancelSelecting(this.eindpuntSelected);
         this.on('selectedObjectChanged',this.eindpuntSelected,this);
     },
@@ -754,6 +757,7 @@ Ext.define("Editor", {
      * Selecteren bestaand inmeldpunt
      */
     selectInmeldpunt: function() {
+        this.changeCurrentEditAction("SELECT_INMELDPUNT");
         this.contextMenu.showCancelSelecting(this.inmeldpuntSelected);
         this.on('selectedObjectChanged',this.inmeldpuntSelected,this);
     },
@@ -924,6 +928,10 @@ Ext.define("Editor", {
         if(searchResult.getAddMarker()){
             this.olc.addMarker(searchResult.getLocation());
         }
+    },  
+    cancelSelection:function(){
+        this.un('selectedObjectChanged',this.actionToCancel,this);
+        this.changeCurrentEditAction(null);
     }
 });
 
@@ -969,6 +977,12 @@ Ext.define("HelpPanel", {
             case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
                 txt = "De afstand is <b>" + length[0].toFixed(0) + ' ' + length[1] + '</b>. Druk op de lineaal om het meten te stoppen.';
+                break;
+            case "SELECT_EINDPUNT":
+                txt = "Klik op een bestaand eindpunt (<img src='" +karTheme.eindPunt + "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
+                break;
+            case "SELECT_INMELDPUNT":
+                txt = "Klik op een bestaand inmeldpunt(<img src='" +karTheme.inmeldPunt+ "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
                 break;
             default:
                 if(editor.activeRseq == null) {

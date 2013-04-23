@@ -33,7 +33,6 @@ Ext.define("ContextMenu", {
     defaultMenu:null,
     
     point_with_line:null,
-    actionToCancel:null,
     /**
      * 
      * @param editor A reference to the editor.
@@ -74,12 +73,12 @@ Ext.define("ContextMenu", {
                     var pos = {
                         x: menu.x - Ext.get(this.editor.domId).getX(),
                         y: menu.y
-                    }
+                    };
                     var lonlat = this.editor.olc.map.getLonLatFromPixel(pos);
                     
                     switch (item.id) {
                         case 'cancelSelecting':
-                            this.cancelSelection();
+                            this.editor.cancelSelection();
                             break;                            
                         case 'addRseq':
                             // Voeg op huidige positie nieuwe Rseq toe 
@@ -505,8 +504,8 @@ Ext.define("ContextMenu", {
         }
     },
     /**
- * Deactiveer het menu (verberg)
- */
+    * Deactiveer het menu (verberg)
+    */
     deactivateContextMenu: function() {
         for (var key in this.menuContext){
             var mc = this.menuContext[key];
@@ -519,13 +518,10 @@ Ext.define("ContextMenu", {
     showCancelSelecting: function(action){
         var cancel = this.defaultMenu.items.getByKey("cancelSelecting");
         cancel.show();
-        this.actionToCancel = action;
+        this.editor.actionToCancel = action;
     },
     hideCancelSelecting: function(){
         var cancel = this.defaultMenu.items.getByKey("cancelSelecting");
         cancel.hide();
-    },
-    cancelSelection:function(){
-        this.editor.un('selectedObjectChanged',this.actionToCancel,this.editor);
     }
 });
