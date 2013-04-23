@@ -22,6 +22,11 @@ package nl.b3p.kar.hibernate;
 import com.vividsolutions.jts.geom.Point;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import nl.b3p.geojson.GeoJSON;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +39,15 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Matthijs Laan
  */
 @Entity
+@XmlType(name="ACTIVATIONPOINTType", 
+        propOrder={
+            "nummer",
+            "x",
+            "y",
+            "label"
+        }
+)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ActivationPoint {
     
     /**
@@ -42,18 +56,21 @@ public class ActivationPoint {
      */
     @Id 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @XmlTransient
     private Long id;
 
     /**
      * Roadside equipment waarbij deze movement hoort.
      */
     @ManyToOne(optional=false)
+    @XmlTransient
     private RoadsideEquipment roadsideEquipment;
     
     /**
      * Nummer van het activation point binnen een enkele VRI.
      */
     @Basic(optional=false)
+    @XmlElement(name="activationpointnumber")
     private Integer nummer;
     
     /**
@@ -61,7 +78,18 @@ public class ActivationPoint {
      */
     @Basic(optional=false)
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
+    @XmlTransient
     private Point location;
+    
+    @XmlElement(name="rdx-coordinate")
+    public double getX() {
+        return location.getCoordinate().x;
+    }
+    
+    @XmlElement(name="rdy-coordinate")
+    public double getY() {
+        return location.getCoordinate().y;
+    }
     
     /**
      * Tekstuele aanduiding van het activation point, te tonen als label op de kaart.

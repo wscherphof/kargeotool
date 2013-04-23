@@ -21,9 +21,16 @@ package nl.b3p.kar.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.*;
+import nl.b3p.kar.jaxb.XmlActivationPoint;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static nl.b3p.kar.hibernate.MovementActivationPoint.*;
+import nl.b3p.kar.jaxb.XmlActivationPointSignal;
+
 
 /**
  * Entity voor persisteren van een Movement zoals bedoeld in BISON koppelvlak 9.
@@ -31,6 +38,16 @@ import org.json.JSONObject;
  * @author Matthijs Laan
  */
 @Entity
+@XmlType(name="MOVEMENTType", 
+        propOrder={
+            "nummer",
+            "begin",
+            "activations",
+            "end"
+        }
+)
+@XmlAccessorType(XmlAccessType.FIELD)
+
 public class Movement implements Comparable {
 
     /**
@@ -39,16 +56,22 @@ public class Movement implements Comparable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @XmlTransient
     private Long id;
+    
     /**
      * Roadside equipment waarbij deze movement hoort.
      */
     @ManyToOne(optional = false)
+    @XmlTransient
     private RoadsideEquipment roadsideEquipment;
+    
     /**
      * Volgnummer van movement binnen het verkeerssysteem.
      */
+    @XmlElement(name="movementnumber")
     private Integer nummer;
+    
     /**
      * Geordende lijst met punten (begin, eind en meldpunten) voor deze
      * movement.
@@ -58,7 +81,36 @@ public class Movement implements Comparable {
             @JoinColumn(name = "point"))
     @OrderColumn(name = "list_index")
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN) // cannot use orphanRemoval=true due to workaround
+    @XmlTransient
     private List<MovementActivationPoint> points = new ArrayList();
+    
+    @Transient
+    @XmlElement(name="BEGIN")
+    private XmlActivationPoint begin;
+    
+    @Transient 
+    @XmlElement(name="ACTIVATION")
+    private List<XmlActivationPointSignal> activations;
+    
+    @Transient
+    @XmlElement(name="END")
+    private XmlActivationPoint end;
+    
+    public void beforeMarshal(Marshaller marshaller) {
+        activations = new ArrayList();
+        
+        for(MovementActivationPoint map: points) {
+            if(BEGIN.equals(map.getBeginEndOrActivation())) {
+                begin = new XmlActivationPoint(map);
+            } else if(END.equals(map.getBeginEndOrActivation())) {
+                end = new XmlActivationPoint(map);
+            } else { // ACTIVATION
+                for(VehicleType vt: map.getSignal().getVehicleTypes()) {
+                    activations.add(new XmlActivationPointSignal(map, vt));
+                }
+            }   
+        }
+    }
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**

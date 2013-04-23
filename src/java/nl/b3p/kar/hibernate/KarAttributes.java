@@ -19,7 +19,14 @@
 
 package nl.b3p.kar.hibernate;
 
+import java.util.Date;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -30,6 +37,12 @@ import org.json.JSONException;
  * @author Matthijs Laan
  */
 @Embeddable
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name="KARATTRIBUTESType", propOrder={
+    "serviceType",
+    "commandType",
+    "usedAttributesMask"
+})
 public class KarAttributes {
 
     /**
@@ -53,6 +66,7 @@ public class KarAttributes {
      * deze class.
      */
     @Basic(optional=false)
+    @XmlElement(name="karservicetype")
     private String serviceType;
     
     /**
@@ -60,15 +74,32 @@ public class KarAttributes {
      * in ActivationPointSignal.
      */
     @Basic(optional=false)
+    @XmlElement(name="karcommandtype")
     private int commandType;
 
+    public static class KarAttributesTypeAdapter extends XmlAdapter<String, Integer> {
+        @Override
+        public Integer unmarshal(String s) throws Exception {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String marshal(Integer i) throws Exception {
+            char[] bitstring = new char[24];
+            for(int idx = 0; idx < bitstring.length; idx++) {
+                bitstring[bitstring.length-idx-1] = (i.intValue() & (1 << idx)) != 0 ? '1' : '0';
+            }
+            return new String(bitstring);
+        }
+    }
     /**
      * Bitmask voor de te vullen attributen in het KAR bericht. LSB duidt 
      * attribuut 1 aan en de MSB (van een 24-bit waarde) attribuut 24. Verplicht
      * in Kv9.
      */
     @Basic(optional=false)
-    private int usedAttributesMask;
+    @XmlJavaTypeAdapter(KarAttributesTypeAdapter.class)
+    private Integer usedAttributesMask;
     
     public KarAttributes() {
     }
