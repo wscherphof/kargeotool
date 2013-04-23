@@ -415,6 +415,7 @@ public class RoadsideEquipment {
         p.put("dataOwner", dataOwner.getCode());
         p.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         p.put("memo", memo);
+        p.put("id",id);
         
         // geen kar attributes
         

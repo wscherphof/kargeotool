@@ -304,7 +304,7 @@ Ext.define("ol", {
                 var y = evt.clientY;
                 if(f && f.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
-                        karAddress: f.data.karAddress
+                        rseq: f.data.id
                     },function(){
                         editor.contextMenu.show(x,y);
                     });
@@ -347,7 +347,7 @@ Ext.define("ol", {
                     editor.olc.map.zoomToExtent(bounds);
                 }else if(feature && feature.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
-                        karAddress: feature.data.karAddress
+                        rseq: feature.data.id
                     });
                 }else{
                     editor.setSelectedObject(feature);

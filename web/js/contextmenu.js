@@ -433,7 +433,7 @@ Ext.define("ContextMenu", {
                 var y = e.clientY;
                 if(f.layer.name== "RseqSelect"){
                     editor.loadRseqInfo({
-                        karAddress: f.data.karAddress
+                        rseq: f.data.id
                     },function(){
                         editor.contextMenu.show(x,y);
                     });
