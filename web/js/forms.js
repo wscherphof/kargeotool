@@ -130,6 +130,22 @@ Ext.define("EditForms", {
                 },{
                     xtype: 'combo',
                     fieldLabel: 'Beheerder',
+                    validator:function(value){
+                        var list =this.store.proxy.data;
+                        var found = false;
+                        for (var i = 0 ; i < list.length ;i++){
+                            var entry = list[i];
+                            if(entry.omschrijving == value){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found){
+                            return true;
+                        }else{
+                            return "Waarde " + value + " is geen bestaande beheerder.";
+                        }
+                    },
                     name: 'dataOwner',
                     allowBlank: false,
                     blankText: 'Selecteer een optie',
