@@ -48,7 +48,7 @@ import org.stripesstuff.stripersist.Stripersist;
         }
 )
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ActivationPoint {
+public class ActivationPoint implements Comparable {
     
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
@@ -82,13 +82,13 @@ public class ActivationPoint {
     private Point location;
     
     @XmlElement(name="rdx-coordinate")
-    public double getX() {
-        return location.getCoordinate().x;
+    public int getX() {
+        return (int)Math.round(location.getCoordinate().x);
     }
     
     @XmlElement(name="rdy-coordinate")
-    public double getY() {
-        return location.getCoordinate().y;
+    public int getY() {
+        return (int)Math.round(location.getCoordinate().y);
     }
     
     /**
@@ -210,5 +210,8 @@ public class ActivationPoint {
         this.label = label;
     }
     //</editor-fold>
- 
+
+    public int compareTo(Object t) {
+        return nummer.compareTo(((ActivationPoint) t).nummer);
+    } 
 }

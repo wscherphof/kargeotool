@@ -1,20 +1,25 @@
 package nl.b3p.kar.stripes;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Arrays;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.Validate;
-import nl.b3p.kar.jaxb.Namespace;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
+import nl.b3p.kar.jaxb.TmiPush;
+import nl.b3p.kar.jaxb.TmiResponse;
 
 /**
  *
@@ -44,26 +49,33 @@ public class XmlTestActionBean implements ActionBean {
         this.rseq = rseq;
     }
     
+    @DefaultHandler
     public Resolution test() throws JAXBException {
-        JAXBContext ctx = JAXBContext.newInstance(RoadsideEquipment.class);
+        JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
         Marshaller m = ctx.createMarshaller();
-        m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapper() {
-            @Override
-            public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
-                if(Namespace.NS_BISON_TMI8_KV9_MSG.equals(namespaceUri)) {
-                    return "tmi8";
-                } else if(Namespace.NS_B3P_GEO_OV.equals(namespaceUri)) {
-                    return "b3p";
-                } else {
-                    return suggestion;
-                }
-            }
-        });
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new KarNamespacePrefixMapper());
         m.setProperty("jaxb.formatted.output", Boolean.TRUE);
         
+        TmiPush push = new TmiPush("B3P", Arrays.asList(new RoadsideEquipment[] { rseq }));
+        
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        m.marshal(rseq, bos);
+        m.marshal(push, bos);
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
     }
     
+    public Resolution testResponse() throws JAXBException {
+        
+        JAXBContext ctx = JAXBContext.newInstance(TmiResponse.class);
+        Unmarshaller u = ctx.createUnmarshaller();
+        
+        TmiResponse response = (TmiResponse)u.unmarshal(new File("kv9-RSP.xml"));
+        
+        Marshaller m = ctx.createMarshaller();
+        
+        m.setProperty("jaxb.formatted.output", Boolean.TRUE);
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        m.marshal(response, bos);
+        return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
+    }
 }

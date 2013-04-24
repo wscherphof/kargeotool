@@ -20,7 +20,7 @@
 package nl.b3p.kar.hibernate;
 
 import nl.b3p.kar.jaxb.Namespace;
-import nl.b3p.kar.jaxb.TMIDateAdapter;
+import nl.b3p.kar.jaxb.TmiDateAdapter;
 import com.vividsolutions.jts.geom.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,10 +28,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
@@ -40,6 +38,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.jaxb.GeometryTypeAdapterUtils;
+import nl.b3p.kar.jaxb.XmlB3pRseq;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.json.JSONArray;
@@ -67,8 +66,8 @@ import org.w3c.dom.Element;
             "karAttributes",
             "points",
             "movements",
-            "location",
-            "memo"
+            "delimiter",
+            "extraXml"
         }
 )
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -109,21 +108,8 @@ public class RoadsideEquipment {
     @XmlJavaTypeAdapter(DataOwner.class)
     private DataOwner dataOwner;
         
-    public static class LocationAdapter extends XmlAdapter<Element, Point> {
-        @Override
-        public Point unmarshal(Element e) throws Exception {
-            return (Point)GeometryTypeAdapterUtils.unmarshal(e, "location", Namespace.NS_B3P_GEO_OV);
-        }
-
-        @Override
-        public Element marshal(Point p) throws Exception {
-            return GeometryTypeAdapterUtils.marshal(p, "location", Namespace.NS_B3P_GEO_OV);
-        }
-    }
-    
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
-    @XmlAnyElement
-    @XmlJavaTypeAdapter(LocationAdapter.class)
+    @XmlTransient
     private Point location;
     
     /**
@@ -138,7 +124,7 @@ public class RoadsideEquipment {
      */
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validfrom")
-    @XmlJavaTypeAdapter(TMIDateAdapter.class)
+    @XmlJavaTypeAdapter(TmiDateAdapter.class)
     private Date validFrom;
     
     /**
@@ -146,7 +132,7 @@ public class RoadsideEquipment {
      */
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validuntil")
-    @XmlJavaTypeAdapter(TMIDateAdapter.class)
+    @XmlJavaTypeAdapter(TmiDateAdapter.class)
     private Date validUntil;
     
     /**
@@ -193,12 +179,23 @@ public class RoadsideEquipment {
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
     @XmlElement(name="ACTIVATIONPOINT")
-    private Set<ActivationPoint> points = new HashSet<ActivationPoint>();
+    @Sort(type=SortType.NATURAL)
+    private SortedSet<ActivationPoint> points = new TreeSet<ActivationPoint>();
     
     @Column(length=4096)
-    @XmlElement(namespace=Namespace.NS_B3P_GEO_OV)
+    @XmlTransient
     private String memo;
 
+    @XmlElement(name="b3pextra")
+    public XmlB3pRseq getExtraXml() {
+        XmlB3pRseq extra = new XmlB3pRseq(this);
+        return extra;
+    }
+    
+    @Transient
+    @XmlElement(namespace=Namespace.NS_BISON_TMI8_KV9_CORE)
+    private String delimiter = "";
+    
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
@@ -404,7 +401,7 @@ public class RoadsideEquipment {
      *
      * @return points
      */
-    public Set<ActivationPoint> getPoints() {
+    public SortedSet<ActivationPoint> getPoints() {
         return points;
     }
 
@@ -412,7 +409,7 @@ public class RoadsideEquipment {
      *
      * @param points
      */
-    public void setPoints(Set<ActivationPoint> points) {
+    public void setPoints(SortedSet<ActivationPoint> points) {
         this.points = points;
     }
     //</editor-fold>

@@ -29,7 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static nl.b3p.kar.hibernate.MovementActivationPoint.*;
-import nl.b3p.kar.jaxb.XmlActivationPointSignal;
+import nl.b3p.kar.jaxb.XmlActivation;
 
 
 /**
@@ -90,7 +90,7 @@ public class Movement implements Comparable {
     
     @Transient 
     @XmlElement(name="ACTIVATION")
-    private List<XmlActivationPointSignal> activations;
+    private List<XmlActivation> activations;
     
     @Transient
     @XmlElement(name="END")
@@ -105,9 +105,7 @@ public class Movement implements Comparable {
             } else if(END.equals(map.getBeginEndOrActivation())) {
                 end = new XmlActivationPoint(map);
             } else { // ACTIVATION
-                for(VehicleType vt: map.getSignal().getVehicleTypes()) {
-                    activations.add(new XmlActivationPointSignal(map, vt));
-                }
+                activations.add(new XmlActivation(map));
             }   
         }
     }

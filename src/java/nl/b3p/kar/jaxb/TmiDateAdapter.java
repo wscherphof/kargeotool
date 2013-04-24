@@ -19,14 +19,32 @@
 
 package nl.b3p.kar.jaxb;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 /**
- *
+ * Converteert een Date naar een TMI "tmidateType" in formaat YYYY-MM-DD, zie
+ * kv9 schema.
+ * 
  * @author Matthijs Laan
  */
-public class Namespace {
-    public static final String NS_B3P_GEO_OV_KV9 = "http://geo-ov.b3p.nl/xml/kv9";
-    // TODO add a schemaLocation pointing to this URL
+public class TmiDateAdapter extends XmlAdapter<String, Date> {
+
+    private static final String TMI_DATE_FORMAT = "yyyy-MM-dd";
     
-    public static final String NS_BISON_TMI8_KV9_MSG = "http://bison.connekt.nl/tmi8/kv9/msg";
-    public static final String NS_BISON_TMI8_KV9_CORE = "http://bison.connekt.nl/tmi8/kv9/core";
+    private SimpleDateFormat buildDateFormat() {
+        return new SimpleDateFormat(TMI_DATE_FORMAT);
+    }
+    
+    @Override
+    public Date unmarshal(String date) throws Exception {
+        return buildDateFormat().parse(date);
+    }
+
+    @Override
+    public String marshal(Date date) throws Exception {
+        return buildDateFormat().format(date);
+    }
+    
 }

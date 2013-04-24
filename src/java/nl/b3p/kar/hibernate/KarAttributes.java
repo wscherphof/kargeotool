@@ -98,6 +98,7 @@ public class KarAttributes {
      * in Kv9.
      */
     @Basic(optional=false)
+    @XmlElement(name="karusedattributes")
     @XmlJavaTypeAdapter(KarAttributesTypeAdapter.class)
     private Integer usedAttributesMask;
     

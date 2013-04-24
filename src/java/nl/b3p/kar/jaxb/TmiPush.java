@@ -19,14 +19,47 @@
 
 package nl.b3p.kar.jaxb;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.annotation.*;
+import nl.b3p.kar.hibernate.RoadsideEquipment;
+
 /**
- *
+ * 
  * @author Matthijs Laan
  */
-public class Namespace {
-    public static final String NS_B3P_GEO_OV_KV9 = "http://geo-ov.b3p.nl/xml/kv9";
-    // TODO add a schemaLocation pointing to this URL
+@XmlRootElement(name="VV_TM_PUSH")
+@XmlType(propOrder={"defs", "ends"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class TmiPush extends TmiMessage {
+    @XmlElement(name="KV9tlcdef")
+    List<Kv9Def> defs = null;
+    @XmlElement(name="KV9tlcend")
+    List<Kv9End> ends = null;
     
-    public static final String NS_BISON_TMI8_KV9_MSG = "http://bison.connekt.nl/tmi8/kv9/msg";
-    public static final String NS_BISON_TMI8_KV9_CORE = "http://bison.connekt.nl/tmi8/kv9/core";
+    public TmiPush() {
+    }
+    
+    public TmiPush(String subscriberId, List<RoadsideEquipment> rseqs) {
+        super(subscriberId);
+     
+        Kv9Def def = new Kv9Def();
+        Kv9End end = new Kv9End();
+        
+        for(RoadsideEquipment rseq: rseqs) {
+            if(rseq.getValidUntil() == null) {
+                def.rseqs.add(rseq);
+            } else {
+                end.rseqs.add(new RseqEnd(rseq));
+            }
+        }
+        
+        if(!def.rseqs.isEmpty()) {
+            defs = Collections.singletonList(def);
+        }
+        if(!end.rseqs.isEmpty()) {
+            ends = Collections.singletonList(end);
+        }
+    }
 }

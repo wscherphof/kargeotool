@@ -19,14 +19,41 @@
 
 package nl.b3p.kar.jaxb;
 
+import javax.xml.bind.annotation.*;
+
 /**
  *
  * @author Matthijs Laan
  */
-public class Namespace {
-    public static final String NS_B3P_GEO_OV_KV9 = "http://geo-ov.b3p.nl/xml/kv9";
-    // TODO add a schemaLocation pointing to this URL
+@XmlRootElement(name="VV_TM_RES")
+@XmlType(propOrder={"code", "error"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class TmiResponse extends TmiMessage {
+    public static final String CODE_OK = "OK";
+    public static final String CODE_NOK = "NOK";
+    public static final String CODE_SYNTAX_ERROR = "SE";
+    public static final String CODE_NOT_ALLOWED = "NA";
+    public static final String CODE_PROTOCOL_ERROR = "PE";
+
+    @XmlElement(name="ResponseCode")
+    private String code;
     
-    public static final String NS_BISON_TMI8_KV9_MSG = "http://bison.connekt.nl/tmi8/kv9/msg";
-    public static final String NS_BISON_TMI8_KV9_CORE = "http://bison.connekt.nl/tmi8/kv9/core";
+    @XmlElement(name="ResponseError")
+    private String error;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
 }

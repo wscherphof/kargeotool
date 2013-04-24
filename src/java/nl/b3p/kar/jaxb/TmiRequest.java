@@ -19,32 +19,14 @@
 
 package nl.b3p.kar.jaxb;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Converteert een Date naar een TMI "tmidateType" in formaat YYYY-MM-DD, zie
- * kv9 schema.
+ * Uit kv9 maar wordt niet gebruikt...
  * 
  * @author Matthijs Laan
  */
-public class TMIDateAdapter extends XmlAdapter<String, Date> {
-
-    private static final String TMI_DATE_FORMAT = "yyyy-MM-dd";
-    
-    private SimpleDateFormat buildDateFormat() {
-        return new SimpleDateFormat(TMI_DATE_FORMAT);
-    }
-    
-    @Override
-    public Date unmarshal(String date) throws Exception {
-        return buildDateFormat().parse(date);
-    }
-
-    @Override
-    public String marshal(Date date) throws Exception {
-        return buildDateFormat().format(date);
-    }
+@XmlRootElement(name="VV_TM_REQ")
+public class TmiRequest extends TmiMessage {
     
 }
