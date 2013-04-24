@@ -48,6 +48,8 @@ Ext.define("Editor", {
     search:null,
     
     actionToCancel:null,
+    
+    changeManager:null,
     // === Initialisatie ===
     
     /**
@@ -64,14 +66,6 @@ Ext.define("Editor", {
             }
         });
         
-        var me = this;
-        window.onbeforeunload = function(e) {
-            if(me.activeRseq != null) {
-                // TODO alleen indien er niet opgeslagen wijzigingen zijn
-                return "Weet u zeker dat u deze applicatie wilt verlaten? Wijzigingen aan '" + me.activeRseq.description + "' worden niet opgeslagen.";
-            }
-            return undefined;
-        };
         
         this.addEvents(
             'activeRseqChanged',
@@ -110,7 +104,7 @@ Ext.define("Editor", {
                     14 /* bepaal zoomniveau op basis van extent rseq location en alle point locations) */
                     );
                 }
-            }
+            };
         }
         this.loadAllRseqs();
         
@@ -146,6 +140,7 @@ Ext.define("Editor", {
         
         this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform'});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
+        this.changeManager = Ext.create(ChangeManager,this);
     },
     
     /**
@@ -178,7 +173,7 @@ Ext.define("Editor", {
             this.contextMenu.deactivateContextMenu();
         });
     },
-    
+            
     // === Opstarten viewer ===
     
     /**
@@ -234,34 +229,38 @@ Ext.define("Editor", {
      * @param successFunction functie die wordt aangeroepen nadat de rseq succesvol is geladen.
      */
     loadRseqInfo: function(query, successFunction) {
-        Ext.Ajax.request({
-            url: editorActionBeanUrl,
-            method: 'GET',
-            scope: this,
-            params: Ext.Object.merge(query, {
-                'rseqJSON' : true
-            }),
-            success: function (response){
-                var msg = Ext.JSON.decode(response.responseText);
-                if(msg.success){
-                    var rJson = msg.roadsideEquipment;
-                    var rseq = makeRseq(rJson);
-                    
-                    // Dit misschien in listener
-                    editor.olc.removeAllFeatures();
-                    editor.olc.addFeatures(rseq.toGeoJSON());
-                    this.setActiveRseq(rseq);
-                    if(successFunction) {
-                        successFunction(rseq);
+        var me = this;
+        var doRequest = function(){
+            Ext.Ajax.request({
+                url: editorActionBeanUrl,
+                method: 'GET',
+                scope: me,
+                params: Ext.Object.merge(query, {
+                    'rseqJSON' : true
+                }),
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success){
+                        var rJson = msg.roadsideEquipment;
+                        var rseq = makeRseq(rJson);
+
+                        // Dit misschien in listener
+                        editor.olc.removeAllFeatures();
+                        editor.olc.addFeatures(rseq.toGeoJSON());
+                        me.setActiveRseq(rseq);
+                        if(successFunction) {
+                            successFunction(rseq);
+                        }
+                    }else{
+                        Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                     }
-                }else{
-                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                },
+                failure: function (response){
+                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
-            },
-            failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
-            }
-        });
+            });
+        };
+        this.changeManager.rseqChanging(query.rseq, doRequest);
     },
     
     /**
@@ -316,6 +315,7 @@ Ext.define("Editor", {
                 success: function (response){
                     var msg = Ext.JSON.decode(response.responseText);
                     if(msg.success) {
+                        this.changeManager.rseqSaved();
                         Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
                         
                         var rseq = makeRseq(msg.roadsideEquipment);

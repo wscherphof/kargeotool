@@ -72,6 +72,7 @@
         <script type="text/javascript" src="${contextPath}/js/search.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
+        <script type="text/javascript" src="${contextPath}/js/changemanager.js" ></script>
         <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
         <stripes:layout-component name="head"/>        
