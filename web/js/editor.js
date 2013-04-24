@@ -529,6 +529,7 @@ Ext.define("Editor", {
                 point.geometry.coordinates = [x,y];
             }
         }
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
     /**
      * Reset het meten. Meet vanaf vorige punt

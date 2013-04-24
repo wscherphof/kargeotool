@@ -52,6 +52,7 @@ Ext.define("ChangeManager",{
                     function (button){
                         if (button === 'yes'){
                             this.changeDetected = false;
+                            this.editTitle();
                             continueFunction();
                         } else{
                             this.editor.olc.selectFeature(newId,"RSEQ");
@@ -60,6 +61,7 @@ Ext.define("ChangeManager",{
         } else{
             continueFunction();
         }
+        this.editTitle();
     },
     editTitle : function(){
         var title = Ext.getDoc().dom.title;
