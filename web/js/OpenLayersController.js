@@ -408,7 +408,7 @@ Ext.define("ol", {
         
         if(olFeature && (this.vectorLayer.selectedFeatures.length==0||this.vectorLayer.selectedFeatures[0].data.id != id)){
             this.selectCtrl.unselectAll();
-            this.selectCtrl.select(olFeature)
+            this.selectCtrl.select(olFeature);
         }
     },
     /**

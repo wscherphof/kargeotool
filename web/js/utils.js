@@ -115,7 +115,7 @@ function setOnload(func) {
             oldOnload();
         }
         func();
-    }
+    };
 }
 
 /* IE doesn't have Array.indexOf() */
@@ -128,7 +128,7 @@ if(!Array.indexOf){
             }
         }
         return -1;
-    }
+    };
 }
 
 /*** algemene cookie functies ***/
