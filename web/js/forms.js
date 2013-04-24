@@ -503,6 +503,7 @@ Ext.define("EditForms", {
             allowBlank: false,
             blankText: 'Selecteer een optie',
             editable: false,
+            hidden:editingUitmeldpunt,
             displayField: 'desc',
             valueField: 'value',
             value: map.triggerType,
