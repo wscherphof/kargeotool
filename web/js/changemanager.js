@@ -69,14 +69,14 @@ Ext.define("ChangeManager",{
         if(this.changeDetected){
             if(asteriksIndex < 0){
                 Ext.getDoc().dom.title += "*";
-                Ext.get("context_vri").dom.textContent += "*";
+                Ext.get("context_vri").dom.innerHTML += "*";
             }
         }else{
             if(asteriksIndex >= 0){
                 title = title.substring(0,asteriksIndex);
                 Ext.getDoc().dom.title = title;
             }
-            var overviewTitle = Ext.get("context_vri").dom.textContent;
+            var overviewTitle = Ext.get("context_vri").dom.innerHTML;
             if(overviewTitle.indexOf("*") != -1){
                 overviewTitle = overviewTitle.substring(0,overviewTitle.indexOf("*"));
             }
