@@ -49,6 +49,8 @@ Ext.define("SettingsForm", {
     editor: null,
     
     window: null,
+    
+    newDefaultKarAttributes: null,
 
     /* XXX move to common place */
     karAttributes: [
@@ -101,6 +103,34 @@ Ext.define("SettingsForm", {
                     fieldLabel: 'Test',
                     name: 'test',
                     value: profile.test
+                },{
+                    xtype: 'button',
+                    text: 'Standaard KAR attributen voor nieuw verkeerssysteem',
+                    handler: function() {
+                        
+                        if(!profile.defaultKarAttributes) {
+                            profile.defaultKarAttributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OT": [ [], [], [] ]};
+                            var vts = ["ES","PT","OT"];
+                            for(var i in vts) {
+                                var vt = vts[i];
+                                for(var j = 0; j < 24; j++) {
+                                    profile.defaultKarAttributes[vt][0].push(true);
+                                    profile.defaultKarAttributes[vt][1].push(true);
+                                    profile.defaultKarAttributes[vt][2].push(true);
+                                }
+                            }                            
+                        }
+                        
+                        Ext.create(KarAttributesEditWindow, 
+                            "Standaard KAR attributen voor nieuw verkeersysteem",        
+                            "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
+                                "voor nieuw aangemaakte verkeerssystemen moeten worden aangevinkt.",
+                            profile.defaultKarAttributes,
+                            function(atts) {
+                                me.newDefaultKarAttributes = atts;
+                            }
+                        ).show();
+                    }
                 }],
                 buttons: [{
                     text: 'Opslaan',
@@ -113,6 +143,9 @@ Ext.define("SettingsForm", {
 
                         Ext.Object.merge(profile, form.getValues());
 
+                        if(me.newDefaultKarAttributes != null) {
+                            profile.defaultKarAttributes = me.newDefaultKarAttributes;
+                        }
                         saveProfile();
                         
                         //me.editor.fireEvent("profileUpdated", rseq);
