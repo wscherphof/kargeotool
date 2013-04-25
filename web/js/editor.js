@@ -268,34 +268,36 @@ Ext.define("Editor", {
      * @param id (optioneel) het id dat niet opgehaald moet worden
      */
     loadAllRseqs: function(id) {
-        Ext.Ajax.request({
-            url:editorActionBeanUrl,
-            method: 'GET',
-            scope: this,
-            params:  {
-                'allRseqJSON' : true,
-                rseq: id
-            },
-            success: function (response){
-                var msg = Ext.JSON.decode(response.responseText);
-                if(msg.success){
-                    var rseqs = msg.rseqs;
-                    var featureCollection = {
-                        type: "FeatureCollection",
-                        features: rseqs
-                    };
-                    
-                    // Dit misschien in listener
-                    editor.olc.removeAllRseqs();
-                    editor.olc.addRseqs(featureCollection);
-                }else{
-                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+        if(id == null || id == undefined || typeof id == "number"){
+            Ext.Ajax.request({
+                url:editorActionBeanUrl,
+                method: 'GET',
+                scope: this,
+                params:  {
+                    'allRseqJSON' : true,
+                    rseq: id
+                },
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success){
+                        var rseqs = msg.rseqs;
+                        var featureCollection = {
+                            type: "FeatureCollection",
+                            features: rseqs
+                        };
+
+                        // Dit misschien in listener
+                        editor.olc.removeAllRseqs();
+                        editor.olc.addRseqs(featureCollection);
+                    }else{
+                        Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    }
+                },
+                failure: function (response){
+                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
-            },
-            failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
-            }
-        });
+            });
+        }
     },
     
     /**
