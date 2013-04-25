@@ -335,7 +335,6 @@ Ext.define('Ext.ux.TreeCombo',{
         for (var j = 0;j < ids.length;j++){
             returnValue.push(parseInt(ids[j]));
         }
-        console.log(returnValue);
         return returnValue;
     },
     removeIds : function (record){
