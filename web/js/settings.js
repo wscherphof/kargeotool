@@ -108,19 +108,6 @@ Ext.define("SettingsForm", {
                     text: 'Standaard KAR attributen voor nieuw verkeerssysteem',
                     handler: function() {
                         
-                        if(!profile.defaultKarAttributes) {
-                            profile.defaultKarAttributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OT": [ [], [], [] ]};
-                            var vts = ["ES","PT","OT"];
-                            for(var i in vts) {
-                                var vt = vts[i];
-                                for(var j = 0; j < 24; j++) {
-                                    profile.defaultKarAttributes[vt][0].push(true);
-                                    profile.defaultKarAttributes[vt][1].push(true);
-                                    profile.defaultKarAttributes[vt][2].push(true);
-                                }
-                            }                            
-                        }
-                        
                         Ext.create(KarAttributesEditWindow, 
                             "Standaard KAR attributen voor nieuw verkeersysteem",        
                             "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
