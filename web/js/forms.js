@@ -342,7 +342,7 @@ Ext.define("EditForms", {
         };
         me.karAttributesEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken KAR attributen voor ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 570,
+            height: 600,
             width: 680,
             modal: true,
             icon: karTheme.inmeldPunt,
