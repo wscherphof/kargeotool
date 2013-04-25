@@ -47,22 +47,45 @@ Ext.define("EditForms", {
     },
     
     karAttributes: [
-        {n: 2, label: "Vehicle type", range: "0 - 99", desc: "0 - no information\n1 - bus\n2 - tram\netc."},
-        {n: 3, label: "Line number PT", range: "0 - 9999", desc: "Line-number (internal line number PT-company)"},
-        {n: 6, label: "Vehicle id", range: "0 - 32767", desc: "0 - no information\nFor public transport the grootwagennummer is used (practially in range 1 to 9999)"},
-        {n: 7, label: "Direction at intersection/signal group number", range: "0 - 255", desc: "For the direction selection \n" +
+        {n: 1, label: "Virtual local loop number", desc: "Unique number within the VRI-number"},
+        {n: 2, label: "Vehicle type", desc: "0 = no information\n1 = bus\n2 = tram\netc."},
+        {n: 3, label: "Line number PT", desc: "Line-number (internal line number PT-company)"},
+        {n: 4, label: "Block number", desc: "Vehicle Service number/Block number"},
+        {n: 5, label: "Company number", desc: "For unique identification vehicle id"},
+        {n: 6, label: "Vehicle id", desc: "0 = no information\nFor public transport the " +
+                "grootwagennummer is used (practially in range 1 to 9999)\nFor emergency services the last 4 " +
+                "digits of the 14 digits C2000 number are used (the so called 'own number')"},
+        {n: 7, label: "Direction at intersection/signal group number", desc: "For the direction selection \n" +
                 "at the intersection, it is suggested to use the signal group number. If this signal group number " +
                 "is not available a right/left/straigt ahead switch may be used:\n" +
                 "0 = no information\n1-200 = signal group number\n201 = right\n202 = left\n203 = straight ahead\n204-255 = reserved"},
-        {n: 8, label: "Vehicle status", range: "0 - 99", desc: "0 = no information\n1 = driving\n2 = stopping\n" +
+        {n: 8, label: "Vehicle status", desc: "0 = no information\n1 = driving\n2 = stopping\n" +
                 "3 = departure from stop (start door close)\n4 = stand still (stop, not at bus stop)\n" +
                 "5 - 99 = reserved"},
-        {n: 11, label: "Punctuality [s]", range: "-3600 - +3600", desc: "- early (<0)\nlate (>0)"},
-        {n: 13, label: "Actual vehicle speed [m/s]", range: "0 - 99", desc: "Actual speed when te message is sent [m/s]"},
-        {n: 15, label: "Driving time till passage stop line", range: "0 - 255", desc: "Expected time until passage stop line " +
-            "(without delay for other traffic, for example wait-row) in seconds for th efirst Traffic Light Controller on the route"},
+        {n: 9, label: "Priority class", desc: "0 = no information\n1 = no priority (f.e. only request)\n" +
+                "2 = conditional\n3 = absolute\n4 = alarm light\n5 - 99 = reserved"},
+        {n: 10, label: "Punctuality class", desc: "0 = not used, no priority none (absent)\n" +
+                "1 = late\n2 = on time\n3 = early\n4 = off schedule\n5 - 99 = reserved"},
+        {n: 11, label: "Punctuality [s]", desc: "- early (<0)\nlate (>0)"},
+        {n: 12, label: "Vehicle / train length [m]", desc: "Vehicle / train length in meters"},
+        {n: 13, label: "Actual vehicle speed [m/s]", desc: "Actual speed when te message is sent [m/s]"},
+        {n: 14, label: "Distance till passage stop line [m]", desc: "Actual distance till passage stop line [meters]"},
+        {n: 15, label: "Driving time till passage stop line", desc: "Expected time until passage stop line " +
+                "(without delay for other traffic, for example wait-row) in seconds for th efirst Traffic Light Controller on the route"},
+        {n: 16, label: "Journey number", desc: "Journey number"},
+        {n: 17, label: "Type of Journey or Fortify seq number", desc: "0 = no information\n" +
+                "1 - 9 = sequence number versterkingsrit. Sequence number for extra vehicles on the same public journey\n" +
+                "10 = dienstregelingrit (public journey)\n11 = dead run\n12 = pull in journey (to remise/depot)\n" +
+                "13 = pull out journey (from remise/depot)\n14 - 99 = reserved"},
+        {n: 18, label: "Route Public Transport", desc: "0 = no information\n1 = route 1 (A-route, away direction)\n" +
+                "2 = route 2 (B-route, back direction)\n3 - 99 = free to be used for other route descriptions"},
         {n: 19, label: "Type of command", range: "0 - 99", desc: "0 - reserved\n1 - entering announcement\n" +
-                "2 - leave announcement\n3 - pre-announcement\n4..99 - reserved"}
+                "2 - leave announcement\n3 - pre-announcement\n4..99 - reserved"},
+        {n: 20, label: "Activation pointnr", desc: "Location-information (in database PT-company)\n0 = no information"},
+        {n: 21, label: "Location in WGS84 (latitude and longitude)"},
+        {n: 22, label: "Date and time when sending message in onboard computer"},
+        {n: 23, label: "Reserve"},
+        {n: 24, label: "Reserve"}
     ],
     
     editingKarAttributes: null,
