@@ -81,6 +81,22 @@ Ext.define('RSEQ', {
         }
         if(!config.attributes){
             config.attributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OT": [ [], [], [] ]};
+            var vts = ["ES","PT","OT"];
+            var defaults = profile.defaultKarAttributes;
+            for(var i in vts) {
+                var vt = vts[i];
+                for(var j = 0; j < 24; j++) {
+                    if(profile.defaultKarAttributes) {
+                        config.attributes[vt][0].push(defaults[vt][0][j]);
+                        config.attributes[vt][1].push(defaults[vt][0][j]);
+                        config.attributes[vt][2].push(defaults[vt][0][j]);
+                    } else {
+                        config.attributes[vt][0].push(true);
+                        config.attributes[vt][1].push(true);
+                        config.attributes[vt][2].push(true);
+                    }
+                }
+            }
         }
         this.initConfig(config);    
     },

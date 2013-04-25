@@ -278,7 +278,7 @@ Ext.define("EditForms", {
     },
     
     karAttributeClick: function(row, column, checked) {
-        var field = ["", "", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"][column];
+        var field = ["", "", "PT", "ES", "OT"][column];
         
         this.editingKarAttributes[row][field] = checked;
     },
@@ -311,18 +311,18 @@ Ext.define("EditForms", {
                 };
             }
             
-            // index is inmeldpunt, uitmeldpunt, voorinmeldpunt
+            // index is PT, ES, OT
             
-            attr.inmeldpunt = rseq.attributes["PT"][0][i-1] || rseq.attributes["ES"][0][i-1] || rseq.attributes["OT"][0][i-1];
-            attr.uitmeldpunt = rseq.attributes["PT"][1][i-1] || rseq.attributes["ES"][1][i-1] || rseq.attributes["OT"][1][i-1];
-            attr.voorinmeldpunt = rseq.attributes["PT"][2][i-1] || rseq.attributes["ES"][2][i-1] || rseq.attributes["OT"][2][i-1];
+            attr.PT = rseq.attributes["PT"][0][i-1] || rseq.attributes["PT"][1][i-1] || rseq.attributes["PT"][2][i-1];
+            attr.ES = rseq.attributes["ES"][0][i-1] || rseq.attributes["ES"][1][i-1] || rseq.attributes["ES"][2][i-1];
+            attr.OT = rseq.attributes["OT"][0][i-1] || rseq.attributes["OT"][1][i-1] || rseq.attributes["OT"][2][i-1];
             data.push(attr);
         }
         this.editingKarAttributes = data;
         
         var store = Ext.create("Ext.data.Store", {
             storeId: "attributesStore",
-            fields: ["n", "label", "range", "desc", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"],
+            fields: ["n", "label", "range", "desc", "PT", "ES", "OT"],
             data: {items: data},
             proxy: {
                 type: "memory",
@@ -333,7 +333,7 @@ Ext.define("EditForms", {
         var me = this;
         
         var checkboxRenderer = function(p1,p2,record,row,column,store,grid) {
-            var field = ["", "", "voorinmeldpunt", "inmeldpunt", "uitmeldpunt"][column];
+            var field = ["", "", "PT", "ES", "OT"][column];
             return Ext.String.format("<input type='checkbox' {0} onclick='karAttributeClick(event,{1},{2})'></input>",
                 record.get(field) ?  "checked='checked'" : "",
                 row,
@@ -350,25 +350,29 @@ Ext.define("EditForms", {
             items: [{  
                 xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
+                layout: 'vbox',
                 defaults: {
-                    anchor: '100%'
+                    width: '100%'
                 },
                 items: [{
                     xtype: 'label',
                     style: 'display: block; padding: 5px 0px 8px 0px',
                     border: false,
-                    text: 'In dit scherm kan worden aangegeven welke KAR attributen in KAR berichten die aan dit verkeerssysteem worden verzonden moeten worden gevuld. Dit geldt voor alle vervoerstypes (openbaar vervoer, hulpdiensten en overig vervoer).'
+                    text: 'In dit scherm kan worden aangegeven welke KAR attributen in KAR berichten die aan dit verkeerssysteem worden verzonden moeten worden gevuld. Dit geldt voor alle soorten berichten (voorinmeldpunt, inmeldpunt en uitmeldpunt).'
                 },{
                     xtype: "grid",
                     store: store,
                     columns: [
                         {header: "Nr", dataIndex: "n", menuDisabled: true, draggable: false, sortable: false, width: 30 },
                         {header: "Attribuut", dataIndex: "label", menuDisabled: true, draggable: false, sortable: false, flex: 1},
-                        {header: "Voorinmeldpunt", dataIndex: "voorinmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 90, renderer: checkboxRenderer },
-                        {header: "Inmeldpunt", dataIndex: "inmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
-                        {header: "Uitmeldpunt", dataIndex: "uitmeldpunt", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer }
+                        {header: "Openbaar vervoer", dataIndex: "PT", menuDisabled: true, draggable: false, sortable: false, width: 100, renderer: checkboxRenderer },
+                        {header: "Hulpdiensten", dataIndex: "ES", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
+                        {header: "Overig", dataIndex: "OT", menuDisabled: true, draggable: false, sortable: false, width: 60, renderer: checkboxRenderer }
                     ],
-                    height: 460
+                    flex: 1,
+                    style: {
+                        marginBottom: '5px'
+                    }
                 }],
                 buttons: [{
                     text: 'OK',
@@ -380,18 +384,18 @@ Ext.define("EditForms", {
                             "OT": [ [], [], [] ]
                         };
                         for(var i = 0; i < me.editingKarAttributes.length; i++) {
-                            var voorinmeldpunt = Boolean(me.editingKarAttributes[i].voorinmeldpunt);
-                            var inmeldpunt = Boolean(me.editingKarAttributes[i].inmeldpunt);
-                            var uitmeldpunt = Boolean(me.editingKarAttributes[i].uitmeldpunt);
-                            rseq.attributes["PT"][0].push(inmeldpunt);
-                            rseq.attributes["ES"][0].push(inmeldpunt);
-                            rseq.attributes["OT"][0].push(inmeldpunt);
-                            rseq.attributes["PT"][1].push(uitmeldpunt);
-                            rseq.attributes["ES"][1].push(uitmeldpunt);
-                            rseq.attributes["OT"][1].push(uitmeldpunt);
-                            rseq.attributes["PT"][2].push(voorinmeldpunt);
-                            rseq.attributes["ES"][2].push(voorinmeldpunt);
-                            rseq.attributes["OT"][2].push(voorinmeldpunt);
+                            var PT = Boolean(me.editingKarAttributes[i].PT);
+                            var ES = Boolean(me.editingKarAttributes[i].ES);
+                            var OT = Boolean(me.editingKarAttributes[i].OT);
+                            rseq.attributes["PT"][0].push(PT);
+                            rseq.attributes["PT"][1].push(PT);
+                            rseq.attributes["PT"][2].push(PT);
+                            rseq.attributes["ES"][0].push(ES);
+                            rseq.attributes["ES"][1].push(ES);
+                            rseq.attributes["ES"][2].push(ES);
+                            rseq.attributes["OT"][0].push(OT);
+                            rseq.attributes["OT"][1].push(OT);
+                            rseq.attributes["OT"][2].push(OT);
                         }
                         
                         me.karAttributesEditWindow.destroy();
