@@ -21,13 +21,6 @@
  * Forms om KAR objecten te editen in een popup window met ExtJS form.
  */
 
-function karAttributeClick(event, row, column) {
-    if(!event) {
-        event = window.event;
-    }
-    editor.editForms.karAttributeClick(row, column, event.target.checked);
-}
-
 Ext.define("EditForms", {
     
     editor: null,
@@ -45,50 +38,6 @@ Ext.define("EditForms", {
         "GUARD": "bewakingssysteem nadering voertuig",
         "BAR": "afsluittingssysteem"
     },
-    
-    karAttributes: [
-        {n: 1, label: "Virtual local loop number", desc: "Unique number within the VRI-number"},
-        {n: 2, label: "Vehicle type", desc: "0 = no information\n1 = bus\n2 = tram\netc."},
-        {n: 3, label: "Line number PT", desc: "Line-number (internal line number PT-company)"},
-        {n: 4, label: "Block number", desc: "Vehicle Service number/Block number"},
-        {n: 5, label: "Company number", desc: "For unique identification vehicle id"},
-        {n: 6, label: "Vehicle id", desc: "0 = no information\nFor public transport the " +
-                "grootwagennummer is used (practially in range 1 to 9999)\nFor emergency services the last 4 " +
-                "digits of the 14 digits C2000 number are used (the so called 'own number')"},
-        {n: 7, label: "Direction at intersection/signal group number", desc: "For the direction selection \n" +
-                "at the intersection, it is suggested to use the signal group number. If this signal group number " +
-                "is not available a right/left/straigt ahead switch may be used:\n" +
-                "0 = no information\n1-200 = signal group number\n201 = right\n202 = left\n203 = straight ahead\n204-255 = reserved"},
-        {n: 8, label: "Vehicle status", desc: "0 = no information\n1 = driving\n2 = stopping\n" +
-                "3 = departure from stop (start door close)\n4 = stand still (stop, not at bus stop)\n" +
-                "5 - 99 = reserved"},
-        {n: 9, label: "Priority class", desc: "0 = no information\n1 = no priority (f.e. only request)\n" +
-                "2 = conditional\n3 = absolute\n4 = alarm light\n5 - 99 = reserved"},
-        {n: 10, label: "Punctuality class", desc: "0 = not used, no priority none (absent)\n" +
-                "1 = late\n2 = on time\n3 = early\n4 = off schedule\n5 - 99 = reserved"},
-        {n: 11, label: "Punctuality [s]", desc: "- early (<0)\nlate (>0)"},
-        {n: 12, label: "Vehicle / train length [m]", desc: "Vehicle / train length in meters"},
-        {n: 13, label: "Actual vehicle speed [m/s]", desc: "Actual speed when te message is sent [m/s]"},
-        {n: 14, label: "Distance till passage stop line [m]", desc: "Actual distance till passage stop line [meters]"},
-        {n: 15, label: "Driving time till passage stop line", desc: "Expected time until passage stop line " +
-                "(without delay for other traffic, for example wait-row) in seconds for th efirst Traffic Light Controller on the route"},
-        {n: 16, label: "Journey number", desc: "Journey number"},
-        {n: 17, label: "Type of Journey or Fortify seq number", desc: "0 = no information\n" +
-                "1 - 9 = sequence number versterkingsrit. Sequence number for extra vehicles on the same public journey\n" +
-                "10 = dienstregelingrit (public journey)\n11 = dead run\n12 = pull in journey (to remise/depot)\n" +
-                "13 = pull out journey (from remise/depot)\n14 - 99 = reserved"},
-        {n: 18, label: "Route Public Transport", desc: "0 = no information\n1 = route 1 (A-route, away direction)\n" +
-                "2 = route 2 (B-route, back direction)\n3 - 99 = free to be used for other route descriptions"},
-        {n: 19, label: "Type of command", range: "0 - 99", desc: "0 - reserved\n1 - entering announcement\n" +
-                "2 - leave announcement\n3 - pre-announcement\n4..99 - reserved"},
-        {n: 20, label: "Activation pointnr", desc: "Location-information (in database PT-company)\n0 = no information"},
-        {n: 21, label: "Location in WGS84 (latitude and longitude)"},
-        {n: 22, label: "Date and time when sending message in onboard computer"},
-        {n: 23, label: "Reserve"},
-        {n: 24, label: "Reserve"}
-    ],
-    
-    editingKarAttributes: null,
     
     constructor: function(editor) {
         this.editor = editor;
@@ -277,12 +226,6 @@ Ext.define("EditForms", {
         }).show();
     },
     
-    karAttributeClick: function(row, column, checked) {
-        var field = ["", "", "PT", "ES", "OT"][column];
-        
-        this.editingKarAttributes[row][field] = checked;
-    },
-    
     /**
      * KAR attributen edit form voor een rseq.
      */
@@ -292,124 +235,20 @@ Ext.define("EditForms", {
             this.karAttributesEditWindow = null;
         }   
         
-        var data = [];
-        for(var i = 1; i < 25; i++) {
-            var attr = null;
-            Ext.Array.each(this.karAttributes, function(attrInfo) {
-                if(attrInfo.n == i) {
-                    attr = Ext.clone(attrInfo);
-                    return false;
-                }
-                return true;
-            });
-            if(attr == null) {
-                attr = {
-                    n: i,
-                    label: "Onbekend",
-                    range: "",
-                    desc: ""
-                };
+        this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow, 
+            "Bewerken KAR attributen voor " + this.rseqType[rseq.type] + 
+                (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),        
+            "In dit scherm kan worden aangegeven welke KAR attributen in KAR " +
+                "berichten die aan dit verkeerssysteem worden verzonden moeten " +
+                "worden gevuld. Dit geldt voor alle soorten berichten " +
+                "(voorinmeldpunt, inmeldpunt en uitmeldpunt).",
+            rseq.attributes,
+            function(atts) {
+                rseq.attributes = atts;
             }
-            
-            // index is PT, ES, OT
-            
-            attr.PT = rseq.attributes["PT"][0][i-1] || rseq.attributes["PT"][1][i-1] || rseq.attributes["PT"][2][i-1];
-            attr.ES = rseq.attributes["ES"][0][i-1] || rseq.attributes["ES"][1][i-1] || rseq.attributes["ES"][2][i-1];
-            attr.OT = rseq.attributes["OT"][0][i-1] || rseq.attributes["OT"][1][i-1] || rseq.attributes["OT"][2][i-1];
-            data.push(attr);
-        }
-        this.editingKarAttributes = data;
+        );
         
-        var store = Ext.create("Ext.data.Store", {
-            storeId: "attributesStore",
-            fields: ["n", "label", "range", "desc", "PT", "ES", "OT"],
-            data: {items: data},
-            proxy: {
-                type: "memory",
-                reader: { type: "json", root: "items" }
-            }
-        });
-        
-        var me = this;
-        
-        var checkboxRenderer = function(p1,p2,record,row,column,store,grid) {
-            var field = ["", "", "PT", "ES", "OT"][column];
-            return Ext.String.format("<input type='checkbox' {0} onclick='karAttributeClick(event,{1},{2})'></input>",
-                record.get(field) ?  "checked='checked'" : "",
-                row,
-                column
-            );
-        };
-        me.karAttributesEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken KAR attributen voor ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 600,
-            width: 680,
-            modal: true,
-            icon: karTheme.inmeldPunt,
-            layout: 'fit',
-            items: [{  
-                xtype: 'form',
-                bodyStyle: 'padding: 5px 5px 0',
-                layout: 'vbox',
-                defaults: {
-                    width: '100%'
-                },
-                items: [{
-                    xtype: 'label',
-                    style: 'display: block; padding: 5px 0px 8px 0px',
-                    border: false,
-                    text: 'In dit scherm kan worden aangegeven welke KAR attributen in KAR berichten die aan dit verkeerssysteem worden verzonden moeten worden gevuld. Dit geldt voor alle soorten berichten (voorinmeldpunt, inmeldpunt en uitmeldpunt).'
-                },{
-                    xtype: "grid",
-                    store: store,
-                    columns: [
-                        {header: "Nr", dataIndex: "n", menuDisabled: true, draggable: false, sortable: false, width: 30 },
-                        {header: "Attribuut", dataIndex: "label", menuDisabled: true, draggable: false, sortable: false, flex: 1},
-                        {header: "Openbaar vervoer", dataIndex: "PT", menuDisabled: true, draggable: false, sortable: false, width: 100, renderer: checkboxRenderer },
-                        {header: "Hulpdiensten", dataIndex: "ES", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
-                        {header: "Overig", dataIndex: "OT", menuDisabled: true, draggable: false, sortable: false, width: 60, renderer: checkboxRenderer }
-                    ],
-                    flex: 1,
-                    style: {
-                        marginBottom: '5px'
-                    }
-                }],
-                buttons: [{
-                    text: 'OK',
-                    handler: function() {
-                        
-                        rseq.attributes = {
-                            "PT": [ [], [], [] ],
-                            "ES": [ [], [], [] ],
-                            "OT": [ [], [], [] ]
-                        };
-                        for(var i = 0; i < me.editingKarAttributes.length; i++) {
-                            var PT = Boolean(me.editingKarAttributes[i].PT);
-                            var ES = Boolean(me.editingKarAttributes[i].ES);
-                            var OT = Boolean(me.editingKarAttributes[i].OT);
-                            rseq.attributes["PT"][0].push(PT);
-                            rseq.attributes["PT"][1].push(PT);
-                            rseq.attributes["PT"][2].push(PT);
-                            rseq.attributes["ES"][0].push(ES);
-                            rseq.attributes["ES"][1].push(ES);
-                            rseq.attributes["ES"][2].push(ES);
-                            rseq.attributes["OT"][0].push(OT);
-                            rseq.attributes["OT"][1].push(OT);
-                            rseq.attributes["OT"][2].push(OT);
-                        }
-                        
-                        me.karAttributesEditWindow.destroy();
-                        me.karAttributesEditWindow = null;
-                    }
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.karAttributesEditWindow.destroy();
-                        me.karAttributesEditWindow = null;
-                    }
-                }]
-            }]
-        }).show();
+        this.karAttributesEditWindow.show();
     },
     
     /**

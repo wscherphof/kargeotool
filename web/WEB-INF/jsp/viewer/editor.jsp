@@ -46,6 +46,7 @@
         </script>
 
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/karattributes.js"></script>
         <script type="text/javascript" src="${contextPath}/js/forms.js"></script>
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
         <script type="text/javascript" src="${contextPath}/js/welcome.js"></script>
