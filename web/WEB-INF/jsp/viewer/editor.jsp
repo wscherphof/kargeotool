@@ -114,7 +114,7 @@
                     <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
                 </div>
                 <div id="BRT_div" style="width: 90%; height: 38px">
-                    <input type="checkbox" id="BRT_visible" onclick="toggleLayer(event);"/> BRT<br/>
+                    <input type="checkbox" id="BRT_visible" onclick="toggleLayer(event);"/> Topografie (BRT)<br/>
                 </div>
                 <br/>
                 <b>Extra</b><br/>
