@@ -61,7 +61,7 @@ Ext.define("ContextMenu", {
             },
             {
                 id: 'cancelSelecting',
-                text: 'Annuleer selecteren bestaand punt.',
+                text: 'Annuleer selecteren bestaand punt',
                 icon: karTheme.cursor_delete,
                 hidden: true
             }
