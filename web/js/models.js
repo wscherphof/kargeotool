@@ -207,7 +207,7 @@ Ext.define('RSEQ', {
             maps: [map]
         }));
     },
-    
+            
     /**
      * Voeg een nieuw of bestaand eindpunt toe aan alle movements van het gegeven
      * uitmeldpunt van deze rseq.
@@ -425,6 +425,7 @@ Ext.define('RSEQ', {
                          signalGroups[signalGroupNumber][ mvmnt.id]["id"] = mvmnt.id;
                          signalGroups[signalGroupNumber][ mvmnt.id]["points"] = new Array();
                     }
+                    break;
                         
                 }
             }
@@ -574,6 +575,22 @@ Ext.define('Movement', {
         }
         this.maps.push(map);
     },
+     /**
+     * Voeg een punt toe na een ander punt
+     * @param mapToAdd Het punt dat moet toegevoegd worden aan de rseq.
+     * @param after Het punt waar het toe te voegen punt achter geplaatst moet worden.
+     */
+    addMapAfter : function (mapToAdd, after){
+        var index = this.maps.length;
+        for(var i = 0 ; i < this.maps.length;i++){
+            if(this.maps[i].pointId == after){
+                index = i+1;
+                break;
+            }
+        }
+        
+        this.maps.splice(index,0,mapToAdd);
+    },
     /**
      * Geeft een JSON object van dit object terug
      * @return een JSON object dat dit object representeert
@@ -586,6 +603,16 @@ Ext.define('Movement', {
             j.maps.push(map.toJSON());
         });
         return j;
+    },
+    getMapForPoint : function (point){
+        var map = null;
+        for (var i = 0 ; i < this.maps.length; i++){
+            if(this.maps[i].pointId == point.getId()){
+                map = this.maps[i];
+                break;
+            }
+        }
+        return map;
     }
 });
 /**

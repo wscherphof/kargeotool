@@ -26,6 +26,8 @@ Ext.define("nl.b3p.kar.Overview",{
     domId : null,
     tree : null,
     heightOffset:null,
+    uitmeldpuntMenu:null,
+    selectedMovement:null,
     constructor : function (editor,domId){
         this.editor = editor;
         this.domId = domId;
@@ -49,6 +51,133 @@ Ext.define("nl.b3p.kar.Overview",{
                 this.unhighlight(evt.feature.data.id);
             }
         });
+        
+        var me = this;
+        this.uitmeldpuntMenu = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'editUitmeldpuntOv',
+                text: 'Bewerken...',
+                icon: contextPath + "/images/silk/table_edit.png"
+            },
+            {
+                id: 'removeUitmeldpuntOv',
+                text: 'Verwijderen',
+                icon: contextPath + "/images/silk/table_delete.png"
+            },
+            {
+                id: 'setCoordsUitmeldOv',
+                text: 'Voer coördinaten in',
+                icon: contextPath + "/images/icons/gps.png"
+            },{
+                id: "uppercheckoutOv",
+                xtype: 'menuseparator'
+            },
+            {
+                id: 'addEindpuntOv',
+                text: 'Voeg nieuw eindpunt toe',
+                icon: karTheme.eindPunt
+            },
+            {
+                id: 'selectEindpuntOv',
+                text: 'Selecteer bestaand eindpunt',
+                icon: contextPath + "/images/silk/cursor.png"
+            },
+            {
+                id: 'addInmeldpuntOv',
+                text: 'Voeg nieuw inmeldpunt toe',
+                disabled:true,
+                icon: karTheme.inmeldPunt
+            },
+            {
+                id: 'selectInmeldpuntOv',
+                text: 'Selecteer bestaand inmeldpunt',
+                disabled:true,
+                icon: contextPath + "/images/silk/cursor.png"
+            },
+            {
+                id : "lowercheckoutOv",
+                xtype: 'menuseparator'
+            },
+            {
+                id: 'advancedCheckoutOv',
+                text: 'Geavanceerd',
+                menu: {
+                    items:[
+                    {
+                        id: 'addExtraUitmeldpuntOv',
+                        text: 'Voeg nieuw uitmeldpunt toe',
+                        icon: karTheme.uitmeldPunt
+                    },
+                    {
+                        id: 'selectUitmeldpuntAndereSignaalgroepOv',
+                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
+                        icon: contextPath + "/images/silk/cursor.png"
+                    },
+                    {
+                        id: 'addBeginpuntOv',
+                        text: 'Voeg beginpunt toe',
+                        icon: karTheme.startPunt
+                    }
+                    ],
+                    listeners: {
+                        click:
+                        function(menu,item,e, opts) {
+                            switch (item.id) {
+                                case 'addBeginpuntOv':
+                                    this.editor.addBeginpunt();
+                                    break;
+                                case 'addExtraUitmeldpuntOv':
+                                    Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
+                                    break;
+                                case 'selectUitmeldpuntAndereSignaalgroepOv':
+                                    this.editor.selectExistingUitmeldpunt(this.selectedMovement);
+                                    //Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
+                                    break;
+                            }
+                        },
+                        scope:me
+                    }
+                }
+            }
+            ],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    var pos = {
+                        x: menu.x - Ext.get(editor.domId).getX(),
+                        y: menu.y
+                    }
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    switch (item.id) {
+                        case 'editUitmeldpuntOv':
+                            this.editor.editSelectedObject();
+                            break;                        
+                        case 'removeCheckoutcheckoutOv':
+                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            break;                            
+                        case 'addEindpuntOv':
+                            editor.addEindpunt();
+                            break;
+                        case 'selectEindpuntOv':
+                            editor.selectEindpunt();
+                            break;
+                        case 'addInmeldpuntOv':
+                            editor.addInmeldpunt();
+                            break;
+                        case 'selectInmeldpuntOv':
+                            editor.selectInmeldpunt();
+                            break;              
+                        case 'setCoordsUitmeldOv':
+                            this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break              
+                    }
+                },
+                scope:me
+            }
+        });
+      
     },
     updateOverview : function (rseq){
         Ext.get("context_vri").setHTML(rseq == null ? "" :
@@ -124,8 +253,13 @@ Ext.define("nl.b3p.kar.Overview",{
                 },
                 itemcontextmenu : function (view,record,item,index,event,eOpts){
                     var type = record.raw.type;
-                    if (type != "signalGroup" && type != "movement"){
-                        this.editor.contextMenu.show(event.xy[0],event.xy[1],false);
+                    var point = this.editor.activeRseq.getPointById(record.raw.pointId);
+                    if (type != "signalGroup" && type != "movement" && point.type != "ACTIVATION_2"){
+                        this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
+                    }
+                    if(point.type == "ACTIVATION_2"){
+                        this.selectedMovement = record.parentNode.raw.movementId;
+                        this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
                     }
                 }
             }
@@ -212,6 +346,7 @@ Ext.define("nl.b3p.kar.Overview",{
             id : Ext.id(),//"mvmt-" + json.id,
             expanded : true,
             icon : karTheme.richting,
+            movementId: key,
             iconCls : 'overviewTree',
             type : "movement",
             children : points

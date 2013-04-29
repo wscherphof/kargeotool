@@ -537,7 +537,7 @@ Ext.define("Editor", {
      * Reset het meten. Meet vanaf vorige punt
      */
     resetMeasure : function (){
-        var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3]
+        var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3];
         this.olc.line.deactivate();
         this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
         this.olc.addMarker(lastPoint.x,lastPoint.y);
@@ -650,7 +650,30 @@ Ext.define("Editor", {
         };
         
         this.addPoint(true);
-    },     
+    },
+    
+    selectExistingUitmeldpunt : function (movementId){
+        this.changeCurrentEditAction("SELECT_EXISTING_UITMELDPUNT");
+        this.contextMenu.showCancelSelecting(this.uitmeldpuntSelected);
+        this.on('selectedObjectChanged',this.uitmeldpuntSelected,this,movementId);
+    },
+            
+    uitmeldpuntSelected : function(uitmeldpunt,movementId){
+        if(uitmeldpunt){
+            
+            var baseUitmeldpunt = this.selectedObject = this.previousSelectedObject;
+            if(uitmeldpunt instanceof Point && uitmeldpunt.getType() == "ACTIVATION_2"){
+                var destMovement = this.activeRseq.getMovementById(movementId);
+                var mvmnts = this.activeRseq.findMovementsForPoint(uitmeldpunt);
+                var srcMovement = mvmnts[0].movement;
+                var map =  srcMovement.getMapForPoint(uitmeldpunt);
+                destMovement.addMapAfter(map, baseUitmeldpunt.id);
+                
+                this.un('selectedObjectChanged',this.uitmeldpuntSelected,this);
+                this.fireEvent("activeRseqUpdated", this.activeRseq);
+            }
+        }
+    },
     
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
@@ -986,6 +1009,9 @@ Ext.define("HelpPanel", {
                 break;
             case "SELECT_INMELDPUNT":
                 txt = "Klik op een bestaand inmeldpunt(<img src='" +karTheme.inmeldPunt+ "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
+                break;
+            case "SELECT_EXISTING_UITMELDPUNT":
+                text = "Selecteer een bestaand uitmeldpunt";
                 break;
             default:
                 if(editor.activeRseq == null) {
