@@ -183,7 +183,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 (rseq.description + " (" + rseq.karAddress + ")"));
         Ext.get("rseqOptions").setVisible(rseq != null);
         var memoIcon = Ext.get("memo_vri");
-        if (rseq.memo && rseq.memo != ""){
+        if (rseq && rseq.memo && rseq.memo != ""){
             memoIcon.setVisible(true);
         } else{
             memoIcon.setVisible(false);
@@ -195,74 +195,80 @@ Ext.define("nl.b3p.kar.Overview",{
         if (tree){
             tree.remove();
         }
-        var root = this.createRootNode(rseq.getOverviewJSON());
-        var store = Ext.create('Ext.data.TreeStore',root);
-        this.tree = Ext.create('Ext.tree.Panel',{
-            border : false,
-            header : false,
-            id : "tree",
-            selModel : {
-                mode : "MULTI"
-            },
-            height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
-            store : store,
-            rootVisible : false,
-            renderTo : overzicht,
-            listeners : {
-                scope : this,
-                select : function (tree,record){
-                    if (record.raw.type == "point"){
-                        var id = record.raw.pointId;
-                        var vectorLayer = this.editor.olc.vectorLayer;
-                        var features = vectorLayer.getFeaturesByAttribute("id",id);
-                        if (features != null && features.length > 0){
-                            var feature = features[0];
-                            this.editor.setSelectedObject(feature);
-                        }
-                    }
+        if(rseq){
+            var root = this.createRootNode(rseq.getOverviewJSON());
+            var store = Ext.create('Ext.data.TreeStore',root);
+            this.tree = Ext.create('Ext.tree.Panel',{
+                border : false,
+                header : false,
+                id : "tree",
+                selModel : {
+                    mode : "MULTI"
                 },
-                itemmouseenter : function (tree,record){
-                    if (record.raw.type == "point"){
-                        var id = record.raw.pointId;
-                        var vectorLayer = this.editor.olc.vectorLayer;
-                        var features = vectorLayer.getFeaturesByAttribute("id",id);
-                        if (features != null && features.length > 0){
-                            var feat = features[0];
-                            if (feat.renderIntent != "select"){
-                                feat.renderIntent = "temporary";
-                                vectorLayer.redraw();
+                height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
+                store : store,
+                rootVisible : false,
+                renderTo : overzicht,
+                listeners : {
+                    scope : this,
+                    select : function (tree,record){
+                        if (record.raw.type == "point"){
+                            var id = record.raw.pointId;
+                            var vectorLayer = this.editor.olc.vectorLayer;
+                            var features = vectorLayer.getFeaturesByAttribute("id",id);
+                            if (features != null && features.length > 0){
+                                var feature = features[0];
+                                this.editor.setSelectedObject(feature);
                             }
                         }
-                    }
-                },
-                itemmouseleave : function (tree,record){
-                    if (record.raw.type == "point"){
-                        var id = record.raw.pointId;
-                        var currentSelectedObject = this.editor.selectedObject;
-                        if (currentSelectedObject == null || currentSelectedObject.getId() != id){
+                    },
+                    itemmouseenter : function (tree,record){
+                        if (record.raw.type == "point"){
+                            var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
                             if (features != null && features.length > 0){
                                 var feat = features[0];
-                                feat.renderIntent = "default";
-                                vectorLayer.redraw();
+                                if (feat.renderIntent != "select"){
+                                    feat.renderIntent = "temporary";
+                                    vectorLayer.redraw();
+                                }
                             }
                         }
-                    }
-                },
-                itemcontextmenu : function (view,record,item,index,event,eOpts){
-                    var type = record.raw.type;
-                    var point = this.editor.activeRseq.getPointById(record.raw.pointId);
-                    if (type != "signalGroup" && type != "movement" && point.type != "ACTIVATION_2"){
-                        this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
-                    }
-                    if(point.type == "ACTIVATION_2"){
-                        this.selectedMovement = record.parentNode.raw.movementId;
-                        this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
+                    },
+                    itemmouseleave : function (tree,record){
+                        if (record.raw.type == "point"){
+                            var id = record.raw.pointId;
+                            var currentSelectedObject = this.editor.selectedObject;
+                            if (currentSelectedObject == null || currentSelectedObject.getId() != id){
+                                var vectorLayer = this.editor.olc.vectorLayer;
+                                var features = vectorLayer.getFeaturesByAttribute("id",id);
+                                if (features != null && features.length > 0){
+                                    var feat = features[0];
+                                    feat.renderIntent = "default";
+                                    vectorLayer.redraw();
+                                }
+                            }
+                        }
+                    },
+                    itemcontextmenu : function (view,record,item,index,event,eOpts){
+                        var type = record.raw.type;
+                        var point = this.editor.activeRseq.getPointById(record.raw.pointId);
+                        if (type != "signalGroup" && type != "movement" && point.type != "ACTIVATION_2"){
+                            this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
+                        }
+                        if(point.type == "ACTIVATION_2"){
+                            this.selectedMovement = record.parentNode.raw.movementId;
+
+                            var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
+                            Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
+                            Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
+                            this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         this.editor.helpPanel.updateHelpPanel();
     },
     updateSelection : function (point){

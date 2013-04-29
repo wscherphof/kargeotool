@@ -165,7 +165,7 @@ Ext.define("ContextMenu", {
                             this.editor.editSelectedObject();
                             break;
                         case 'removeRseq':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            this.editor.removeRseq();
                             break;
                         case 'addMemo':
                             this.editor.addMemo();

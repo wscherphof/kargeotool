@@ -60,7 +60,9 @@ Ext.define("Editor", {
         this.mixins.observable.constructor.call(this, {
             listeners:{
                 activeRseqChanged : function(rseq){
-                    this.loadAllRseqs(rseq.id);
+                    if(rseq){
+                        this.loadAllRseqs(rseq.id);
+                    }
                 }
             //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
             }
@@ -338,6 +340,37 @@ Ext.define("Editor", {
         }
     },
     
+    removeRseq : function(){
+        var rseq = this.activeRseq;
+        if(rseq != null) {
+            Ext.Ajax.request({
+                url: editorActionBeanUrl,
+                method: 'POST',
+                scope: this,
+                params: {
+                    'removeRseq': true,
+                    'rseq': rseq.getId()
+                },
+                success: function (response){
+                    var msg = Ext.JSON.decode(response.responseText);
+                    if(msg.success) {
+                        this.changeManager.rseqSaved();
+                        Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
+                        
+                        editor.olc.removeAllFeatures();
+                        this.setActiveRseq(null);
+                        
+                    }else{
+                        Ext.Msg.alert('Fout', 'Fout bij verwijderen: ' + msg.error);
+                    }
+                },
+                failure: function (response){
+                    Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!')
+                }
+            });
+        }
+    },
+    
     /**
      * Laad de wegen rondom de actieve rseq. Wordt gebruikt om de lijn bij het toevoegen van punten aan te snappen.
      */
@@ -390,7 +423,8 @@ Ext.define("Editor", {
          if(this.activeRseq){
              var resLimit = 1;
              var resolution = this.olc.map.getResolution();
-             if(resolution < resLimit){
+             var isNewRseq = typeof this.activeRseq.getId() != "number";
+             if(resolution < resLimit && !isNewRseq){
                 var extent = this.olc.map.getExtent().add(50,50).toGeometry().toString();
                 Ext.Ajax.request({
                    url:editorActionBeanUrl,
@@ -452,7 +486,9 @@ Ext.define("Editor", {
      */
     setActiveRseq: function (rseq){
         this.activeRseq = rseq;
-        this.olc.selectFeature(rseq.getId(),"RSEQ");
+        if(rseq){        
+            this.olc.selectFeature(rseq.getId(),"RSEQ");
+        }
         this.fireEvent('activeRseqChanged', this.activeRseq);
     },
     
