@@ -46,6 +46,7 @@ import org.hibernate.Session;
 import org.hibernate.type.Type;
 import org.hibernatespatial.GeometryUserType;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
@@ -323,14 +324,19 @@ public class EditorActionBean implements ActionBean {
      * Ajax handler om een RSEQ te verwijderen.
      * 
      */
-    public Resolution removeRseq () throws Exception{
+    public Resolution removeRseq () throws JSONException{
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
-        em.remove(rseq);
-        em.getTransaction().commit();
-        info.put("success", Boolean.TRUE);
+        try{
+            em.remove(rseq);
+            em.getTransaction().commit();
+            info.put("success", Boolean.TRUE);
+        }catch(Exception e){
+            log.error("Removing of rseq failed.",e);
+            info.put("error",ExceptionUtils.getMessage(e));
+        }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
     /**
