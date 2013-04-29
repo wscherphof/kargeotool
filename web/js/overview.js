@@ -130,11 +130,10 @@ Ext.define("nl.b3p.kar.Overview",{
                                     this.editor.addBeginpunt();
                                     break;
                                 case 'addExtraUitmeldpuntOv':
-                                    Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
+                                    this.editor.addUitmeldpuntToExistingMovement(this.selectedMovement);
                                     break;
                                 case 'selectUitmeldpuntAndereSignaalgroepOv':
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
-                                    //Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
                                     break;
                             }
                         },

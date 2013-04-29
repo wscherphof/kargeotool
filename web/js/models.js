@@ -207,6 +207,11 @@ Ext.define('RSEQ', {
             maps: [map]
         }));
     },
+    addUitmeldpuntToMovement : function (point,map, movementId,after){
+        var movement = this.getMovementById(movementId);
+        movement.addMapAfter(map,after);
+        this.addPoint(point);
+    },
             
     /**
      * Voeg een nieuw of bestaand eindpunt toe aan alle movements van het gegeven

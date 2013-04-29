@@ -674,6 +674,41 @@ Ext.define("Editor", {
             }
         }
     },
+    addUitmeldpuntToExistingMovement: function(movementId) {
+        this.changeCurrentEditAction("ACTIVATION_2");
+        
+        var me = this;
+        this.pointFinishedHandler = function(location) {
+
+            var uitmeldpunt = Ext.create(Point, {
+                type: "ACTIVATION_2",
+                geometry: location
+            });
+            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+            if(!distance){
+                distance = new Array();
+                distance[0] = 0;
+            }
+            var map = Ext.create(MovementActivationPoint, {
+                beginEndOrActivation: "ACTIVATION",
+                commandType: 2, 
+                pointId: uitmeldpunt.getId(),
+                distanceTillStopLine: distance[0].toFixed(0),
+                vehicleTypes: [1,2,6,7,71]
+            });
+            
+            me.editForms.editActivationPoint(uitmeldpunt, map, function() {
+                var currentUitmeldpunt = me.selectedObject.getId();
+                me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
+                me.fireEvent("activeRseqUpdated", me.activeRseq);
+                
+            }, function() {
+                me.fireEvent("activeRseqUpdated", me.activeRseq);
+            });
+        };
+        
+        this.addPoint(true);
+    },
     
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
@@ -1011,7 +1046,7 @@ Ext.define("HelpPanel", {
                 txt = "Klik op een bestaand inmeldpunt(<img src='" +karTheme.inmeldPunt+ "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
                 break;
             case "SELECT_EXISTING_UITMELDPUNT":
-                text = "Selecteer een bestaand uitmeldpunt";
+                txt = "Selecteer een bestaand uitmeldpunt";
                 break;
             default:
                 if(editor.activeRseq == null) {
