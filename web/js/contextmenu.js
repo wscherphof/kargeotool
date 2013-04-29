@@ -231,23 +231,12 @@ Ext.define("ContextMenu", {
             {
                 id : "lowercheckout",
                 xtype: 'menuseparator'
-            }/*,
-            {
-                id: 'showPathcheckout',
-                text: 'Laat pad zien',
-                xtype: 'menucheckitem',
-                disabled:true
-            }*/,
+            },
             {
                 id: 'advancedCheckout',
                 text: 'Geavanceerd',
                 menu: {
                     items:[
-                    {
-                        id: 'selectUitmeldpuntAndereSignaalgroep',
-                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
-                        icon: contextPath + "/images/silk/cursor.png"
-                    },
                     {
                         id: 'addBeginpunt',
                         text: 'Voeg beginpunt toe',
@@ -260,9 +249,6 @@ Ext.define("ContextMenu", {
                             switch (item.id) {
                                 case 'addBeginpunt':
                                     this.editor.addBeginpunt();
-                                    break;
-                                case 'selectUitmeldpuntAndereSignaalgroep':
-                                    Ext.Msg.alert("'Ei van Frans' niet mogelijk", "In deze proof-of-concept is selecteren van een uitmeldpunt andere signaalgroep nog niet mogelijk!");
                                     break;
                             }
                         },
