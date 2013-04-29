@@ -334,7 +334,7 @@ Ext.define("Editor", {
                     }
                 },
                 failure: function (response){
-                    Ext.Msg.alert('Fout', 'Kan gegevens niet opslaan!')
+                    Ext.Msg.alert('Fout', 'Kan gegevens niet opslaan!');
                 }
             });
         }
@@ -365,7 +365,7 @@ Ext.define("Editor", {
                     }
                 },
                 failure: function (response){
-                    Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!')
+                    Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!');
                 }
             });
         }
@@ -569,6 +569,7 @@ Ext.define("Editor", {
         }
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
+            
     /**
      * Reset het meten. Meet vanaf vorige punt
      */
@@ -652,7 +653,7 @@ Ext.define("Editor", {
      * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de 
      * huidige rseq.
      */
-    addUitmeldpunt: function() {
+    addUitmeldpunt: function(movementId) {
         this.changeCurrentEditAction("ACTIVATION_2");
         
         var me = this;
@@ -677,7 +678,12 @@ Ext.define("Editor", {
             
             me.editForms.editActivationPoint(uitmeldpunt, map, function() {
                 
-                me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
+                if(movementId){
+                    var currentUitmeldpunt = me.selectedObject.getId();
+                    me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
+                }else{
+                    me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
+                }
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
                 
             }, function() {
@@ -710,42 +716,7 @@ Ext.define("Editor", {
             }
         }
     },
-    addUitmeldpuntToExistingMovement: function(movementId) {
-        this.changeCurrentEditAction("ACTIVATION_2");
-        
-        var me = this;
-        this.pointFinishedHandler = function(location) {
-
-            var uitmeldpunt = Ext.create(Point, {
-                type: "ACTIVATION_2",
-                geometry: location
-            });
-            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-            if(!distance){
-                distance = new Array();
-                distance[0] = 0;
-            }
-            var map = Ext.create(MovementActivationPoint, {
-                beginEndOrActivation: "ACTIVATION",
-                commandType: 2, 
-                pointId: uitmeldpunt.getId(),
-                distanceTillStopLine: distance[0].toFixed(0),
-                vehicleTypes: [1,2,6,7,71]
-            });
             
-            me.editForms.editActivationPoint(uitmeldpunt, map, function() {
-                var currentUitmeldpunt = me.selectedObject.getId();
-                me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-            });
-        };
-        
-        this.addPoint(true);
-    },
-    
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
         var me = this;

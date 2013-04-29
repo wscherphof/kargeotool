@@ -130,7 +130,7 @@ Ext.define("nl.b3p.kar.Overview",{
                                     this.editor.addBeginpunt();
                                     break;
                                 case 'addExtraUitmeldpuntOv':
-                                    this.editor.addUitmeldpuntToExistingMovement(this.selectedMovement);
+                                    this.editor.addUitmeldpunt(this.selectedMovement);
                                     break;
                                 case 'selectUitmeldpuntAndereSignaalgroepOv':
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
@@ -144,11 +144,6 @@ Ext.define("nl.b3p.kar.Overview",{
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
-                    var pos = {
-                        x: menu.x - Ext.get(editor.domId).getX(),
-                        y: menu.y
-                    }
-                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'editUitmeldpuntOv':
                             this.editor.editSelectedObject();
