@@ -34,17 +34,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
-import nl.b3p.kar.jaxb.GeometryTypeAdapterUtils;
 import nl.b3p.kar.jaxb.XmlB3pRseq;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Element;
 
 /**
  * Klasse voor het beschrijven van RoadsideEquipment zoals VRI's
