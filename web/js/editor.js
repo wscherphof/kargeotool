@@ -305,7 +305,7 @@ Ext.define("Editor", {
     /**
      * Voert de Ajax call uit om de huidige Rseq op te slaan in de database.
      */
-    saveOrUpdate: function() {
+    saveOrUpdate: function(onSaved) {
         var rseq = this.activeRseq;
         if(rseq != null) {
             Ext.Ajax.request({
@@ -320,7 +320,6 @@ Ext.define("Editor", {
                     var msg = Ext.JSON.decode(response.responseText);
                     if(msg.success) {
                         this.changeManager.rseqSaved();
-                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
                         
                         var rseq = makeRseq(msg.roadsideEquipment);
 
@@ -329,6 +328,11 @@ Ext.define("Editor", {
                         editor.olc.addFeatures(rseq.toGeoJSON());
                         this.setActiveRseq(rseq);
                         
+                        if(onSaved) {
+                            onSaved();
+                        } else {
+                            Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                        }
                     }else{
                         Ext.Msg.alert('Fout', 'Fout bij opslaan: ' + msg.error);
                     }
@@ -337,6 +341,28 @@ Ext.define("Editor", {
                     Ext.Msg.alert('Fout', 'Kan gegevens niet opslaan!');
                 }
             });
+        }
+    },
+    
+    exportXml: function() {
+        var me = this;
+        
+        var exportIt = function() {
+            window.open(exportActionBeanUrl + "?rseq=" + me.activeRseq.id, "exportwindow");
+        };
+
+        if(me.changeManager.changeDetected) {
+            Ext.MessageBox.confirm(
+                    "Opslaan verkeerssyteem",
+                    "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
+                    function (button){
+                        if(button === 'yes') {
+                            me.saveOrUpdate(exportIt);
+                        }
+                    }
+            );
+        } else {
+            exportIt();
         }
     },
     

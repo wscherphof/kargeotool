@@ -129,6 +129,7 @@
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
                 var profileActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ProfileActionBean"/>";
+                var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;

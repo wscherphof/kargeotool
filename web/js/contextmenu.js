@@ -130,6 +130,11 @@ Ext.define("ContextMenu", {
                 icon: contextPath + "/images/silk/table_save.png"
             },
             {
+                id: 'exportXml',
+                text: 'Exporteer KV9 XML',
+                icon: contextPath + "/images/silk/transmit_go.png"
+            },            
+            {
                 id: 'setCoordsRseq',
                 text: 'Voer coördinaten in',
                 icon: contextPath + "/images/icons/gps.png"
@@ -172,6 +177,9 @@ Ext.define("ContextMenu", {
                             break;
                         case 'saveRseq':
                             this.editor.saveOrUpdate();
+                            break;
+                        case 'exportXml':
+                            this.editor.exportXml();
                             break;
                         case 'setCoordsRseq':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
