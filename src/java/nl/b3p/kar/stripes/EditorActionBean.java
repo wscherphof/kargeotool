@@ -318,7 +318,21 @@ public class EditorActionBean implements ActionBean {
         String id = j.optString("id");
         return id != null && id.startsWith("ext-gen");
     }
+    
+    /**
+     * Ajax handler om een RSEQ te verwijderen.
+     * 
+     */
+    public Resolution removeRseq () throws Exception{
+        EntityManager em = Stripersist.getEntityManager();
 
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        em.remove(rseq);
+        em.getTransaction().commit();
+        info.put("success", Boolean.TRUE);
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
     /**
      * Ajax handler om een RoadsideEquipment die in de json parameter is
      * meegegeven op te slaan.
