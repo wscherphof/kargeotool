@@ -24,6 +24,8 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
@@ -70,6 +73,7 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
+    private String absoluteUrlPrefix;
     
     @Validate
     private String extent;
@@ -130,6 +134,16 @@ public class EditorActionBean implements ActionBean {
             dataOwnersJSON.put(jdao);
         }
 
+        HttpServletRequest request = context.getRequest();
+
+        String address = null;
+        try {
+            address = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), "").toString();
+        } catch (MalformedURLException ex) {
+            log.error(ex);
+        }
+        absoluteUrlPrefix = address;
+        
         return new ForwardResolution(JSP);
     }
 
@@ -631,6 +645,16 @@ public class EditorActionBean implements ActionBean {
     public void setExtent(String extent) {
         this.extent = extent;
     }
+    
+    public String getAbsoluteUrlPrefix() {
+        return absoluteUrlPrefix;
+    }
+
+    public void setAbsoluteUrlPrefix(String absoluteUrlPrefix) {
+        this.absoluteUrlPrefix = absoluteUrlPrefix;
+    }
+    
     // </editor-fold>
+
 
 }

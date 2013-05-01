@@ -124,7 +124,8 @@
                 
             <script type="text/javascript">
 
-                var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map";
+                var absoluteUrlPrefix = "${actionBean.absoluteUrlPrefix}";
+                var mapfilePath = "http://b3p-meine/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/transmodel_connexxion.map";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";

@@ -8,6 +8,15 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>viewer</web-resource-name>
+            <url-pattern>/action/sld</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        
+    </security-constraint>  
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>viewer</web-resource-name>
             <url-pattern>/action/*</url-pattern>
             <http-method>POST</http-method>
             <http-method>GET</http-method>
@@ -16,7 +25,7 @@
             <role-name>gebruiker</role-name>
             <role-name>beheerder</role-name>
         </auth-constraint>
-    </security-constraint>    
+    </security-constraint>  
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>beheer</web-resource-name>

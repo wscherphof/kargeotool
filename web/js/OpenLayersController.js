@@ -527,41 +527,22 @@ Ext.define("ol", {
         }
     },
     /**
-     * TODO: kan weg volgens mij
      * Voeg nieuw sld toe aan de kaarten.
-     * @param walsld sld voor de wal apparatuur
-     * @param trigsld sld voor de triggerpunten
-     * @param signsld sld voor de signaalgroepen
+     * @param buslijnsld sld voor de buslijnen
      */
-    addSldToKargis : function (walsld,trigsld, signsld){
-        var wal = this.map.getLayersByName("walapparatuur")[0];
-        var trig = this.map.getLayersByName("triggerpunten")[0];
-        var sign = this.map.getLayersByName("signaalgroepen")[0];
-        wal.mergeNewParams({
-            sld:walsld
-        });
-        trig.mergeNewParams({
-            sld:trigsld
-        });
-        sign.mergeNewParams({
-            sld:signsld
+    addSldToKargis : function (buslijnsld){
+        var buslijnen = this.map.getLayersByName("buslijnen")[0];
+      
+        buslijnen.mergeNewParams({
+            sld:buslijnsld
         });
     },
     /**
-     * TODO: kan weg volgens mij
-     * Haal de sld's van de layers 'walapparatuur','triggerpunten','signaalgroepen'
+     * Haal de sld's van de layers 'buslijnen'
      */
     removeSldFromKargis : function (){
-        var wal = this.map.getLayersByName("walapparatuur")[0];
-        var trig = this.map.getLayersByName("triggerpunten")[0];
-        var sign = this.map.getLayersByName("signaalgroepen")[0];
-        wal.mergeNewParams({
-            sld:null
-        });
-        trig.mergeNewParams({
-            sld:null
-        });
-        sign.mergeNewParams({
+        var buslijnen = this.map.getLayersByName("buslijnen")[0];
+        buslijnen.mergeNewParams({
             sld:null
         });
         
