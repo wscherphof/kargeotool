@@ -460,7 +460,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             var link = Ext.get(addresslink);
             var me = this;
             link.on('click', function() {
-                var sld = sldUrl + '?publicnumber=';
+                var sld = sldActionBeanUrl + '?publicnumber=';
                 sld+= busline.publicnumber;
                 editor.olc.addSldToKargis(sld);
                 var env = busline.envelope;
