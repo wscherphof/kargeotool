@@ -42,6 +42,11 @@ public class GeometryTypeAdapterUtils {
     }
 
     public static Element marshal(Geometry g, String elementName, String namespace) throws Exception {
+        
+        if(g == null) {
+            return null;
+        }
+        
         GeometryTransformer gt = new GeometryTransformer();
         ByteArrayOutputStream xml = new ByteArrayOutputStream();
         gt.transform(g, xml);

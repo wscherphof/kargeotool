@@ -11,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.DontValidate;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
@@ -63,6 +64,7 @@ public class XmlTestActionBean implements ActionBean {
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
     }
     
+    @DontValidate
     public Resolution testResponse() throws JAXBException {
         
         JAXBContext ctx = JAXBContext.newInstance(TmiResponse.class);
@@ -76,6 +78,22 @@ public class XmlTestActionBean implements ActionBean {
         
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         m.marshal(response, bos);
+        return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
+    }
+    
+    @DontValidate
+    public Resolution testLoad() throws JAXBException {
+        JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
+        Unmarshaller u = ctx.createUnmarshaller();
+        
+        TmiPush push = (TmiPush)u.unmarshal(new File("/home/matthijsln/Downloads/geo-ov_kv9_B3P_235.xml"));
+        
+        Marshaller m = ctx.createMarshaller();
+        
+        m.setProperty("jaxb.formatted.output", Boolean.TRUE);
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        m.marshal(push, bos);
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
     }
 }

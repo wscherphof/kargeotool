@@ -39,4 +39,8 @@ public class XmlB3pRseq {
         this.location = rseq.getLocation();
         this.memo = rseq.getMemo();
     }
+    
+    public boolean isEmpty() {
+        return location == null && memo == null;
+    }
 }

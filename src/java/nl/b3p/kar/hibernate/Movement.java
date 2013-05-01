@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import nl.b3p.kar.jaxb.XmlActivationPoint;
 import org.json.JSONArray;
@@ -30,6 +31,8 @@ import org.json.JSONObject;
 
 import static nl.b3p.kar.hibernate.MovementActivationPoint.*;
 import nl.b3p.kar.jaxb.XmlActivation;
+import nl.b3p.kar.jaxb.XmlActivationPointSignal;
+import org.stripesstuff.stripersist.Stripersist;
 
 
 /**
@@ -107,6 +110,65 @@ public class Movement implements Comparable {
             } else { // ACTIVATION
                 activations.add(new XmlActivation(map));
             }   
+        }
+    }
+    
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        RoadsideEquipment rseq = (RoadsideEquipment)parent;
+        
+        if(begin != null) {
+            MovementActivationPoint map = new MovementActivationPoint();
+            map.setMovement(this);
+            map.setBeginEndOrActivation(MovementActivationPoint.BEGIN);
+            map.setPoint(rseq.getPointByNumber(begin.getActivationpointnumber()));
+            points.add(map);
+        }
+        
+        for(XmlActivation xmlActivation: activations) {
+            for(XmlActivationPointSignal xmlSignal: xmlActivation.getSignals()) {
+
+                VehicleType vt = (VehicleType)Stripersist.getEntityManager().find(VehicleType.class, xmlSignal.getKarvehicletype());
+                
+                // Indien zelfde punt nummer als eerdere activation, voeg 
+                // vehicleType toe (negeer overige velden)
+                
+                for(MovementActivationPoint map: points) {
+                    if(map.getPoint() != null && map.getPoint().getNummer() == xmlSignal.getActivationpointnumber()) {
+                        if(!map.getSignal().getVehicleTypes().contains(vt)) {
+                            map.getSignal().getVehicleTypes().add(vt);
+                        }
+                        // eerdere activation met zelfde punt nummer gevonden,
+                        // vehicleType toegevoegd - geen nieuwe ActivationPointSignal
+                        // maken
+                        continue;
+                    }
+                }
+                
+                MovementActivationPoint map = new MovementActivationPoint();
+                map.setMovement(this);
+                map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION);
+                map.setPoint(rseq.getPointByNumber(xmlSignal.getActivationpointnumber()));
+                ActivationPointSignal signal = new ActivationPointSignal();
+                
+                signal.getVehicleTypes().add(vt);
+                signal.setKarCommandType(xmlSignal.getKarcommandtype());
+                signal.setTriggerType(xmlSignal.getTriggertype());
+                signal.setDistanceTillStopLine(xmlSignal.getDistancetillstopline());
+                signal.setSignalGroupNumber(xmlSignal.getSignalgroupnumber());
+                signal.setVirtualLocalLoopNumber(xmlSignal.getVirtuallocalloopnumber());
+                // TODO set direction uit b3pextra
+                
+                map.setSignal(signal);
+                points.add(map);
+            }
+        }
+        
+        if(end != null) {
+            MovementActivationPoint map = new MovementActivationPoint();
+            map.setMovement(this);
+            map.setBeginEndOrActivation(MovementActivationPoint.END);
+            map.setPoint(rseq.getPointByNumber(end.getActivationpointnumber()));
+            points.add(map);
         }
     }
 

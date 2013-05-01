@@ -29,6 +29,7 @@ import nl.b3p.kar.hibernate.MovementActivationPoint;
  * @author Matthijs Laan
  */
 @XmlType(name="BEGINType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlActivationPoint {
     
     @XmlElement
@@ -39,5 +40,13 @@ public class XmlActivationPoint {
     
     public XmlActivationPoint(MovementActivationPoint map) {
         activationpointnumber = map.getPoint().getNummer();
+    }
+
+    public Integer getActivationpointnumber() {
+        return activationpointnumber;
+    }
+
+    public void setActivationpointnumber(Integer activationpointnumber) {
+        this.activationpointnumber = activationpointnumber;
     }
 }

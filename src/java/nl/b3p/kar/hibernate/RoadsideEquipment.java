@@ -185,8 +185,14 @@ public class RoadsideEquipment {
 
     @XmlElement(name="b3pextra")
     public XmlB3pRseq getExtraXml() {
+        
         XmlB3pRseq extra = new XmlB3pRseq(this);
-        return extra;
+        
+        if(extra.isEmpty()) {
+            return null;
+        } else {
+            return extra;
+        }
     }
     
     @Transient
@@ -410,6 +416,15 @@ public class RoadsideEquipment {
         this.points = points;
     }
     //</editor-fold>
+    
+    public ActivationPoint getPointByNumber(int number) {
+        for(ActivationPoint p: points) {
+            if(p.getNummer() == number) {
+                return p;
+            }
+        }
+        return null;
+    }
     
     /**
      * Methode converteert dit RoadsideEquipment object in een JSON object

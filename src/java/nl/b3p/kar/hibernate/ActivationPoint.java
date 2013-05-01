@@ -19,6 +19,8 @@
 
 package nl.b3p.kar.hibernate;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import java.util.List;
 import javax.persistence.*;
@@ -83,12 +85,28 @@ public class ActivationPoint implements Comparable {
     
     @XmlElement(name="rdx-coordinate")
     public int getX() {
-        return (int)Math.round(location.getCoordinate().x);
+        return location == null ? 0 : (int)Math.round(location.getCoordinate().x);
+    }
+    
+    public void setX(int x) {
+        double y = 0;
+        if(location != null) {
+            y = location.getCoordinate().y;
+        }
+        location = new GeometryFactory(null, 28992).createPoint(new Coordinate(x, y));
     }
     
     @XmlElement(name="rdy-coordinate")
     public int getY() {
-        return (int)Math.round(location.getCoordinate().y);
+        return location == null ? 0 : (int)Math.round(location.getCoordinate().y);
+    }
+    
+    public void setY(int y) {
+        double x = 0;
+        if(location != null) {
+            x = location.getCoordinate().x;
+        }
+        location = new GeometryFactory(null, 28992).createPoint(new Coordinate(x, y));
     }
     
     /**

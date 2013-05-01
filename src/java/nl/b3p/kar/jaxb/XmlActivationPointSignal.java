@@ -59,4 +59,60 @@ public class XmlActivationPointSignal {
         signalgroupnumber = s.getSignalGroupNumber();
         virtuallocalloopnumber = s.getVirtualLocalLoopNumber();
     }
+
+    public int getActivationpointnumber() {
+        return activationpointnumber;
+    }
+
+    public void setActivationpointnumber(int activationpointnumber) {
+        this.activationpointnumber = activationpointnumber;
+    }
+
+    public int getKarvehicletype() {
+        return karvehicletype;
+    }
+
+    public void setKarvehicletype(int karvehicletype) {
+        this.karvehicletype = karvehicletype;
+    }
+
+    public int getKarcommandtype() {
+        return karcommandtype;
+    }
+
+    public void setKarcommandtype(int karcommandtype) {
+        this.karcommandtype = karcommandtype;
+    }
+
+    public Integer getDistancetillstopline() {
+        return distancetillstopline;
+    }
+
+    public void setDistancetillstopline(Integer distancetillstopline) {
+        this.distancetillstopline = distancetillstopline;
+    }
+
+    public Integer getSignalgroupnumber() {
+        return signalgroupnumber;
+    }
+
+    public void setSignalgroupnumber(Integer signalgroupnumber) {
+        this.signalgroupnumber = signalgroupnumber;
+    }
+
+    public Integer getVirtuallocalloopnumber() {
+        return virtuallocalloopnumber;
+    }
+
+    public void setVirtuallocalloopnumber(Integer virtuallocalloopnumber) {
+        this.virtuallocalloopnumber = virtuallocalloopnumber;
+    }
+
+    public String getTriggertype() {
+        return triggertype;
+    }
+
+    public void setTriggertype(String triggertype) {
+        this.triggertype = triggertype;
+    }
 }
