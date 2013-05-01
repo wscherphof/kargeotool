@@ -172,7 +172,7 @@ public class SearchActionBean implements ActionBean {
         try {
             
             String sql = "select j.oid,l.name,l.publicnumber,st_astext(j.the_geom) ,j.lineplanningnumber,j.code,j.destinationcode,j.direction from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) "
-                    + "where j.the_geom is not null and l.name ilike ? ";
+                    + "where j.the_geom is not null and (l.name ilike ? or l.publicnumber ilike ?)";
             
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
@@ -182,6 +182,7 @@ public class SearchActionBean implements ActionBean {
                     while(rs.next()) {
                         JSONObject line = new JSONObject();
                         try{
+                        line.put("oid", rs.getString(1));
                         line.put("publicnumber", rs.getString(3));
                         line.put("name", rs.getString(2));
                         try {
@@ -207,7 +208,7 @@ public class SearchActionBean implements ActionBean {
                     return lines;
                 }
             };
-            JSONArray lines = new QueryRunner().query(c, sql, h,"%"+term+"%");
+            JSONArray lines = new QueryRunner().query(c, sql, h,"%"+term+"%","%"+term+"%");
             info.put("buslines", lines);
             info.put("success", Boolean.TRUE);
         } catch(Exception e){
