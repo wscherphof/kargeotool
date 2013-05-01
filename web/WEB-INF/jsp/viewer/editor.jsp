@@ -123,8 +123,11 @@
                 
                 
             <script type="text/javascript">
-
-                var absoluteUrlPrefix = "${actionBean.absoluteUrlPrefix}";
+                <c:set var="sldUrl">
+                    <stripes:url beanclass="nl.b3p.kar.stripes.SLDActionBean"/>
+                </c:set>
+                    
+                var sldUrl ="${absoluteURIPrefix}" + "${sldUrl}";
                 var mapfilePath = "http://b3p-meine/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/transmodel_connexxion.map";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";

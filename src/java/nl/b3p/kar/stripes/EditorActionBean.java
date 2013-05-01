@@ -73,7 +73,6 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
-    private String absoluteUrlPrefix;
     
     @Validate
     private String extent;
@@ -132,18 +131,7 @@ public class EditorActionBean implements ActionBean {
             jdao.put("companyNumber", dao.getCompanyNumber());
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
-        }
-
-        HttpServletRequest request = context.getRequest();
-
-        String address = null;
-        try {
-            address = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), "").toString();
-        } catch (MalformedURLException ex) {
-            log.error(ex);
-        }
-        absoluteUrlPrefix = address;
-        
+        }        
         return new ForwardResolution(JSP);
     }
 
@@ -645,15 +633,6 @@ public class EditorActionBean implements ActionBean {
     public void setExtent(String extent) {
         this.extent = extent;
     }
-    
-    public String getAbsoluteUrlPrefix() {
-        return absoluteUrlPrefix;
-    }
-
-    public void setAbsoluteUrlPrefix(String absoluteUrlPrefix) {
-        this.absoluteUrlPrefix = absoluteUrlPrefix;
-    }
-    
     // </editor-fold>
 
 
