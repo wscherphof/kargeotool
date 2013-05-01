@@ -30,11 +30,21 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.*;
+import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -42,16 +52,16 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
- * Stripes klasse welke de edit functionaliteit regelt.
+ * Stripes klasse welke de zoek functionaliteit regelt.
  *
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
@@ -61,9 +71,12 @@ public class SearchActionBean implements ActionBean {
 
     private static final String GEOCODER_URL = "http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=";
     private static final Log log = LogFactory.getLog(SearchActionBean.class);
+    private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     private ActionBeanContext context;
     @Validate
     private String term;
+    
+    private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
 
     public Resolution rseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
@@ -143,6 +156,63 @@ public class SearchActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
+    
+    public Resolution busline()throws Exception {
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        
+        Connection c = getConnection();
+        try {
+            
+            String sql = "select j.oid,l.name,l.publicnumber,st_astext(j.the_geom) ,j.lineplanningnumber,j.code,j.destinationcode,j.direction from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) "
+                    + "where j.the_geom is not null and l.name ilike ? ";
+            
+            ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
+                public JSONArray handle(ResultSet rs) throws SQLException {
+                    JSONArray lines = new JSONArray();
+                    GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
+                    WKTReader reader = new WKTReader(gf);
+                    while(rs.next()) {
+                        JSONObject line = new JSONObject();
+                        try{
+                        line.put("publicnumber", rs.getString(3));
+                        line.put("name", rs.getString(2));
+                        try {
+                            String wkt = rs.getString(4);
+                            Geometry g = reader.read(wkt);
+                            if(g != null){
+                                Envelope env = g.getEnvelopeInternal();
+                                if(env != null){
+                                    JSONObject jEnv = new JSONObject();
+                                    jEnv.put("minx",env.getMinX());
+                                    jEnv.put("miny",env.getMinY());
+                                    jEnv.put("maxx",env.getMaxX());
+                                    jEnv.put("maxy",env.getMaxY());
+                                    line.put("envelope", jEnv);
+                                }
+                            }
+                        } catch (ParseException ex) {}
+                        lines.put(line);
+                        }catch(JSONException je){
+                            log.error("Kan geen buslijn ophalen: ", je);
+                        }
+                    }                    
+                    return lines;
+                }
+            };
+            JSONArray lines = new QueryRunner().query(c, sql, h,"%"+term+"%");
+            info.put("buslines", lines);
+            info.put("success", Boolean.TRUE);
+        } catch(Exception e){
+            log.error("Cannot execute query:",e);
+        }finally {
+            DbUtils.closeQuietly(c);
+        }
+
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        
+    }
 
     /**
      *
@@ -173,6 +243,14 @@ public class SearchActionBean implements ActionBean {
 
     public void setTerm(String term) {
         this.term = term;
+    }
+    
+    
+    private Connection getConnection() throws NamingException, SQLException {
+        Context initCtx = new InitialContext();
+        DataSource ds = (DataSource)initCtx.lookup(TRANSMODEL_JNDI_NAME);
+
+        return ds.getConnection();        
     }
     // </editor-fold>
 }

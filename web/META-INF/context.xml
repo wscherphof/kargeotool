@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/geo-ov">
+    
+    <Resource 
+        name="jdbc/transmodel"
+        auth="Container"
+        type="javax.sql.DataSource"
+        username="transmodel"
+        password="transmodel"
+        driverClassName="org.postgis.DriverWrapper"
+        url="jdbc:postgresql_postGIS://x13.b3p.nl/transmodel_060609"
+        maxActive="25"
+        validationQuery="select 1"
+    />
 </Context>

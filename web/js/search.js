@@ -49,6 +49,11 @@ Ext.define("SearchManager", {
         });
         this.addSearchEntity(road);
         
+        var bus = Ext.create(nl.b3p.kar.SearchBusline,{
+            dom: this.dom
+        });
+        this.addSearchEntity(bus);
+        
         this.addEvents('searchResultClicked');
         
     },
@@ -327,18 +332,14 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
     }
 });
 
-
-
 /**
 * Zoeken op wegen
 */
 Ext.define("nl.b3p.kar.SearchRoad", {
     extend: "nl.b3p.kar.Search",
     category: "Wegen",
-    a:null,
     constructor: function(config) {
         this.callParent(arguments);
-        this.a = new Array();
     },
     search: function(term){
         Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
@@ -387,6 +388,79 @@ Ext.define("nl.b3p.kar.SearchRoad", {
             var me = this;
             link.on('click', function() {
                 var env = road.envelope;
+                var bounds = new OpenLayers.Bounds([env.minx, env.miny, env.maxx, env.maxy]);
+                var location = bounds.getCenterLonLat();
+                var result = Ext.create(nl.b3p.kar.SearchResult,{
+                    bounds: bounds,
+                    location: location,
+                    addMarker:true
+                });
+                me.fireEvent("searchResultClicked",result );
+                
+            });
+            
+            this.addResult(link);
+        }
+    }
+});
+
+
+/**
+* Zoeken op wegen
+*/
+Ext.define("nl.b3p.kar.SearchBusline", {
+    extend: "nl.b3p.kar.Search",
+    category: "Buslijnen",
+    constructor: function(config) {
+        this.callParent(arguments);
+    },
+    search: function(term){
+        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
+        var me = this;
+        Ext.Ajax.request({
+            url: searchActionBeanUrl,
+            params: {
+                'busline': true,
+                term: term
+            },
+            method: 'GET',
+            scope:this,
+            success: function(response) {
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var buslines = msg.buslines;
+                    if(buslines.length > 0){
+                        var resultblock = Ext.get(this.resultDom);
+                        resultblock.dom.innerHTML = "";
+                        for ( var i = 0 ; i < buslines.length ; i++){
+                            this.createResult(buslines[i]);
+                        }
+                    }else{
+                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                    }
+                }else{
+                    alert("Ophalen resultaten mislukt.");
+                }
+            },
+            failure: function() {
+                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+            }
+        });
+    },
+    createResult : function (busline){
+        if(busline.envelope){
+            var label = busline.publicnumber;
+            if(busline.name){
+                label += " - " + busline.name;
+            }
+            var addresslink = document.createElement('a');
+            addresslink.href = '#';
+            addresslink.className = '.resultlink';
+            addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
+            var link = Ext.get(addresslink);
+            var me = this;
+            link.on('click', function() {
+                var env = busline.envelope;
                 var bounds = new OpenLayers.Bounds([env.minx, env.miny, env.maxx, env.maxy]);
                 var location = bounds.getCenterLonLat();
                 var result = Ext.create(nl.b3p.kar.SearchResult,{
