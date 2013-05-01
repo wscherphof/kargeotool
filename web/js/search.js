@@ -406,7 +406,7 @@ Ext.define("nl.b3p.kar.SearchRoad", {
 
 
 /**
-* Zoeken op wegen
+* Zoeken op buslijnen. Zoekt op basis van het publicnumber (lijnnummer) en de name (naam van de lijn).
 */
 Ext.define("nl.b3p.kar.SearchBusline", {
     extend: "nl.b3p.kar.Search",

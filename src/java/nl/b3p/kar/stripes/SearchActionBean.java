@@ -157,6 +157,12 @@ public class SearchActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
     
+    /**
+     * Doorzoekt de KV1 database. Gebruikt de parameter term voor publicnumber en name uit de jopa tabel. Alleen resultaten met een geometrie worden teruggegeven.
+     * @return Resolution Resolution met daarin een JSONObject met de gevonden buslijnen (bij succes) of een fout (bij falen).
+     * @throws Exception 
+     * 
+     */
     public Resolution busline()throws Exception {
 
         JSONObject info = new JSONObject();

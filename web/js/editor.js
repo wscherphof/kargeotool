@@ -678,6 +678,7 @@ Ext.define("Editor", {
     /**
      * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de 
      * huidige rseq.
+     * @param movementId (optioneel) Wanneer een movementId is opgegeven
      */
     addUitmeldpunt: function(movementId) {
         this.changeCurrentEditAction("ACTIVATION_2");
