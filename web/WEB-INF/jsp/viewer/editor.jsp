@@ -123,17 +123,13 @@
                 
                 
             <script type="text/javascript">
-                <c:set var="sldUrl">
-                    <stripes:url beanclass="nl.b3p.kar.stripes.SLDActionBean"/>
-                </c:set>
-                    
-                var sldUrl ="${absoluteURIPrefix}" + "${sldUrl}";
                 var mapfilePath = "http://b3p-meine/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/transmodel_connexxion.map";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
                 var profileActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ProfileActionBean"/>";
                 var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>";
+                var sldActionBeanUrl ="${absoluteURIPrefix}" + "<stripes:url beanclass="nl.b3p.kar.stripes.SLDActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;
