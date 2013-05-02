@@ -29,6 +29,7 @@ Ext.define("SearchManager", {
     },
     searchEntities:null,
     searchBox:null,
+    searchPanel:null,
     constructor: function(config) {
         this.initConfig(config);
         this.mixins.observable.constructor.call(this);  
@@ -38,13 +39,13 @@ Ext.define("SearchManager", {
             dom: this.dom
         });
         this.addSearchEntity(geocoder);
-        
+       
         var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{
             dom: this.dom
         });
         this.addSearchEntity(rseq);
-        
-        var road = Ext.create(nl.b3p.kar.SearchRoad,{
+       
+         var road = Ext.create(nl.b3p.kar.SearchRoad,{
             dom: this.dom
         });
         this.addSearchEntity(road);
@@ -58,8 +59,7 @@ Ext.define("SearchManager", {
         
     },
     createForm : function(){
-        Ext.create(Ext.panel.Panel,{
-            renderTo:this.dom,
+        var panel = Ext.create(Ext.panel.Panel,{
             border:false,
             layout:'hbox',
             items:[
@@ -95,9 +95,36 @@ Ext.define("SearchManager", {
             }
             ]
         });
+        Ext.getCmp('searchformPanel').add(panel);
+        this.searchPanel = Ext.create('Ext.panel.Panel', {
+            id: 'searchPanel',
+            flex: 1,
+            defaults: {
+                // applied to each contained panel
+                height:150
+            },
+            layout: {
+                // layout-specific configs go here
+                type: 'accordion',
+                titleCollapse: true,
+                animate: true,
+                flex:1,
+                height: 300,
+                activeOnTop: true,
+                multi:true,
+                collapsed:true
+            },
+            items: [{
+                xtype: 'panel', // << fake hidden panel
+                hidden: true,
+                collapsed: false
+            }]
+        });
+        Ext.getCmp('searchformPanel').add(this.searchPanel);
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
+            searchEntity.panel.setLoading("Zoeken...");
             searchEntity.search(term);
         });
     },
@@ -106,6 +133,8 @@ Ext.define("SearchManager", {
     },
     addSearchEntity : function (entity){
         this.searchEntities.push(entity);
+        this.searchPanel.add(entity.getPanel());
+        this.searchPanel.updateLayout();
         entity.on('searchResultClicked',this.searchResultClicked,this);
     }
 });
@@ -118,31 +147,25 @@ Ext.define("nl.b3p.kar.Search", {
         observable: 'Ext.util.Observable'
     },
     config:{
-        dom:null
     },
     resultDom:null,
-    container:null,
-    title:null,
     category:null,
+    panel:null,
     constructor: function(config) {
         this.mixins.observable.constructor.call(this);  
         this.initConfig(config);
         
-        this.dom = Ext.get(this.dom);
-        this.container = document.createElement('div');
-        this.container.setAttribute("id",this.category + "Container" + Ext.id());
-        this.dom.appendChild(this.container);
-        
         this.resultDom = document.createElement('div');
         this.resultDom.setAttribute("id",this.category + "results" + Ext.id());
-        this.resultDom.innerHTML = "&nbsp;<br/>";
-        
-        this.title = document.createElement('div');
-        this.title.setAttribute("id",this.category + "title" + Ext.id());
-        this.title.innerHTML = "<b>" + this.category + "</b><br/>";
-        
-        this.container.appendChild(this.title);
-        this.container.appendChild(this.resultDom);
+                
+        this.panel = Ext.create(Ext.panel.Panel,{
+            id:this.category + "Container" + Ext.id(),
+            title: this.category,
+            collapsed:true,
+            autoScroll:true,
+            contentEl : this.resultDom,
+            cls: 'search-accordion'
+        });
         
         this.addEvents('searchResultClicked');
     },
@@ -154,6 +177,23 @@ Ext.define("nl.b3p.kar.Search", {
         resultblock.appendChild(result);
         var breakLine = document.createElement('br');
         resultblock.appendChild(breakLine);
+    },
+    getPanel : function(){
+        return this.panel;
+    },
+    searchFinished:function(numResults,optionalText){
+        this.panel.setTitle(this.category + " (" + numResults + ")");
+        if(numResults == 0){
+            var text = "Geen resultaten gevonden.";
+            if(optionalText){
+                text = optionalText;
+            }
+            Ext.get(this.resultDom).dom.innerHTML = text;
+            this.panel.collapse();
+        }else{
+            this.panel.expand();
+        }
+        this.panel.setLoading(false);
     }
 });
 
@@ -192,7 +232,6 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
      * Do a geocoding search and display the results.
      */
     search: function(address) {
-        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: searchActionBeanUrl,
@@ -207,6 +246,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
                 
                 var resultblock = Ext.get(this.resultDom);
                 resultblock.dom.innerHTML = "";
+                this.panel.setLoading(false);
                 
                 var rl = results.responseLists[0];
                 
@@ -214,12 +254,13 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
                     Ext.Array.each(rl.features, function(feature) {
                         me.displayGeocodeResult( feature);
                     });
-                } else {
-                    resultblock.dom.innerHTML += "Geen resultaten gevonden.";
+                    this.searchFinished(rl.features.length);
+                } else{
+                    this.searchFinished(0);
                 }
             },
             failure: function() {
-                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                this.searchFinished(0, "Ophalen resultaten mislukt.");
             }
         });
     },
@@ -274,7 +315,6 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
         this.callParent(arguments);
     },
     search: function(term){
-        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: searchActionBeanUrl,
@@ -289,20 +329,17 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                 if(msg.success){
                     var rseqs = msg.rseqs;
                     if(rseqs.length > 0){
-                        var resultblock = Ext.get(this.resultDom);
-                        resultblock.dom.innerHTML = "";
                         for ( var i = 0 ; i < rseqs.length ; i++){
                             this.createResult(rseqs[i]);
                         }
-                    }else{
-                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
                     }
+                    this.searchFinished(rseqs.length);
                 }else{
-                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    this.searchFinished(0,"Fout: " +msg.error);               
                 }
             },
             failure: function() {
-                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                this.searchFinished(0, "Fout: " +  response.responseText);
             }
         });
     },
@@ -342,7 +379,6 @@ Ext.define("nl.b3p.kar.SearchRoad", {
         this.callParent(arguments);
     },
     search: function(term){
-        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: searchActionBeanUrl,
@@ -362,15 +398,15 @@ Ext.define("nl.b3p.kar.SearchRoad", {
                         for ( var i = 0 ; i < roads.length ; i++){
                             this.createResult(roads[i]);
                         }
-                    }else{
-                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
                     }
+                    this.searchFinished(roads.length);
+                    
                 }else{
-                    alert("Ophalen resultaten mislukt.");
+                    this.searchFinished(0,"Ophalen resultaten mislukt.");
                 }
             },
             failure: function() {
-                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                this.searchFinished(0,"Ophalen resultaten mislukt.");
             }
         });
     },
@@ -415,7 +451,6 @@ Ext.define("nl.b3p.kar.SearchBusline", {
         this.callParent(arguments);
     },
     search: function(term){
-        Ext.get(this.resultDom).dom.innerHTML = "Zoeken...";
         var me = this;
         Ext.Ajax.request({
             url: searchActionBeanUrl,
@@ -430,20 +465,19 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 if(msg.success){
                     var buslines = msg.buslines;
                     if(buslines.length > 0){
-                        var resultblock = Ext.get(this.resultDom);
-                        resultblock.dom.innerHTML = "";
                         for ( var i = 0 ; i < buslines.length ; i++){
                             this.createResult(buslines[i]);
                         }
+                        this.searchFinished(buslines.length);
                     }else{
-                        Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                        this.searchFinished(0);
                     }
                 }else{
-                    alert("Ophalen resultaten mislukt.");
+                    this.searchFinished(0,"Ophalen resultaten mislukt.");
                 }
             },
             failure: function() {
-                Ext.get(this.resultDom).dom.innerHTML = "Geen resultaten gevonden.";
+                this.searchFinished(0,"Ophalen resultaten mislukt.");
             }
         });
     },

@@ -85,10 +85,15 @@ Ext.onReady(function() {
                 },
                 items: [
                     {
-                        contentEl: 'searchform',
+                        id: 'searchformPanel',
                         stateId: 'searchform',
                         autoScroll: true,
-                        title: 'Zoeken'
+                        title: 'Zoeken',
+                        layout: 'vbox',
+                        defaults: {
+                            border: 0,
+                            width: '100%'
+                        }
                     },
                     {
                         id:'rseqInfoPanel',

@@ -177,3 +177,15 @@ body.editor {
     width: 20px;
     
 }
+
+
+.search-accordion .x-accordion-hd {
+	
+    background: #658FBE !important;
+    opacity: 0.5;
+}
+
+.search-accordion .x-accordion-hd .x-panel-header-text {
+	color: black;
+	font-size:11px;
+}
