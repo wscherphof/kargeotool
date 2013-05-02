@@ -175,8 +175,6 @@ public class SearchActionBean implements ActionBean {
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
                     JSONArray lines = new JSONArray();
-                    GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
-                    WKTReader reader = new WKTReader(gf);
                     while(rs.next()) {
                         JSONObject line = new JSONObject();
                         try{

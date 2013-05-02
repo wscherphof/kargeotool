@@ -469,7 +469,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 var result = Ext.create(nl.b3p.kar.SearchResult,{
                     bounds: bounds,
                     location: location,
-                    addMarker:true
+                    addMarker:false
                 });
                 me.fireEvent("searchResultClicked",result );
                 
