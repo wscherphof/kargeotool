@@ -75,7 +75,6 @@ public class SearchActionBean implements ActionBean {
     private ActionBeanContext context;
     @Validate
     private String term;
-    
     private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
 
     public Resolution rseq() throws Exception {
@@ -89,20 +88,22 @@ public class SearchActionBean implements ActionBean {
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
 
             Disjunction dis = Restrictions.disjunction();
-            dis.add( Restrictions.ilike("description", term, MatchMode.ANYWHERE));
-          
+            dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
+
             try {
                 int karAddress = Integer.parseInt(term);
-                dis.add( Restrictions.eq("karAddress", karAddress));
+                dis.add(Restrictions.eq("karAddress", karAddress));
             } catch (NumberFormatException e) {
             }
-            
+
             dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
 
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
-                rseqs.put(roadsideEquipment.getRseqGeoJSON());
+                if(getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())) {
+                    rseqs.put(roadsideEquipment.getRseqGeoJSON());
+                }
             }
             info.put("rseqs", rseqs);
             info.put("success", Boolean.TRUE);
@@ -122,7 +123,7 @@ public class SearchActionBean implements ActionBean {
 
             Session sess = (Session) em.getDelegate();
             Query q = sess.createSQLQuery("SELECT ref,name,astext(st_union(geometry)) FROM Road where ref ilike :ref group by ref,name");
-            q.setParameter("ref", "%"+term+"%");
+            q.setParameter("ref", "%" + term + "%");
 
             List<Object[]> l = (List<Object[]>) q.list();
             JSONArray roads = new JSONArray();
@@ -131,24 +132,25 @@ public class SearchActionBean implements ActionBean {
             for (Object[] road : l) {
                 JSONObject jRoad = new JSONObject();
                 jRoad.put("weg", road[0]);
-                if(road[1] != null){
+                if (road[1] != null) {
                     jRoad.put("name", road[1]);
                 }
                 try {
                     Geometry g = reader.read((String) road[2]);
                     Envelope env = g.getEnvelopeInternal();
-                    if(env != null){
+                    if (env != null) {
                         JSONObject jEnv = new JSONObject();
-                        jEnv.put("minx",env.getMinX());
-                        jEnv.put("miny",env.getMinY());
-                        jEnv.put("maxx",env.getMaxX());
-                        jEnv.put("maxy",env.getMaxY());
+                        jEnv.put("minx", env.getMinX());
+                        jEnv.put("miny", env.getMinY());
+                        jEnv.put("maxx", env.getMaxX());
+                        jEnv.put("maxy", env.getMaxY());
                         jRoad.put("envelope", jEnv);
                     }
-                } catch (ParseException ex) {}
+                } catch (ParseException ex) {
+                }
                 roads.put(jRoad);
             }
-            info.put("roads",roads);
+            info.put("roads", roads);
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {
             log.error("search road exception", e);
@@ -156,57 +158,73 @@ public class SearchActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
     /**
-     * Doorzoekt de KV1 database. Gebruikt de parameter term voor publicnumber en name uit de jopa tabel. Alleen resultaten met een geometrie worden teruggegeven.
-     * @return Resolution Resolution met daarin een JSONObject met de gevonden buslijnen (bij succes) of een fout (bij falen).
-     * @throws Exception 
-     * 
+     * Doorzoekt de KV1 database. Gebruikt de parameter term voor publicnumber
+     * en name uit de jopa tabel. Alleen resultaten met een geometrie worden
+     * teruggegeven.
+     *
+     * @return Resolution Resolution met daarin een JSONObject met de gevonden
+     * buslijnen (bij succes) of een fout (bij falen).
+     * @throws Exception
+     *
      */
-    public Resolution busline()throws Exception {
+    public Resolution busline() throws Exception {
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
-        
+
         Connection c = getConnection();
         try {
-            
-            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name order by l.name"; 
+
+            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name order by l.name";
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
                     JSONArray lines = new JSONArray();
-                    while(rs.next()) {
+                    while (rs.next()) {
                         JSONObject line = new JSONObject();
-                        try{
-                        line.put("oid", rs.getString(1));
-                        line.put("publicnumber", rs.getString(3));
-                        line.put("name", rs.getString(2));
-                        JSONObject jEnv = new JSONObject();
-                        jEnv.put("minx",rs.getDouble(4));
-                        jEnv.put("miny",rs.getDouble(5));
-                        jEnv.put("maxx",rs.getDouble(6));
-                        jEnv.put("maxy",rs.getDouble(7));
-                        line.put("envelope", jEnv);
-                        lines.put(line);
-                        
-                        }catch(JSONException je){
+                        try {
+                            line.put("oid", rs.getString(1));
+                            line.put("publicnumber", rs.getString(3));
+                            line.put("name", rs.getString(2));
+                            JSONObject jEnv = new JSONObject();
+                            jEnv.put("minx", rs.getDouble(4));
+                            jEnv.put("miny", rs.getDouble(5));
+                            jEnv.put("maxx", rs.getDouble(6));
+                            jEnv.put("maxy", rs.getDouble(7));
+                            line.put("envelope", jEnv);
+                            lines.put(line);
+
+                        } catch (JSONException je) {
                             log.error("Kan geen buslijn ophalen: ", je);
                         }
-                    }                    
+                    }
                     return lines;
                 }
             };
-            JSONArray lines = new QueryRunner().query(c, sql, h,"%"+term+"%","%"+term+"%");
+            JSONArray lines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%");
             info.put("buslines", lines);
             info.put("success", Boolean.TRUE);
-        } catch(Exception e){
-            log.error("Cannot execute query:",e);
-        }finally {
+        } catch (Exception e) {
+            log.error("Cannot execute query:", e);
+        } finally {
             DbUtils.closeQuietly(c);
         }
 
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
-        
+
+    }
+
+    public Gebruiker getGebruiker() {
+        final String attribute = this.getClass().getName() + "_GEBRUIKER";
+        Gebruiker g = (Gebruiker) getContext().getRequest().getAttribute(attribute);
+        if (g != null) {
+            return g;
+        }
+        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
+        g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
+        getContext().getRequest().setAttribute(attribute, g);
+        return g;
     }
 
     /**
@@ -239,13 +257,12 @@ public class SearchActionBean implements ActionBean {
     public void setTerm(String term) {
         this.term = term;
     }
-    
-    
+
     private Connection getConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
-        DataSource ds = (DataSource)initCtx.lookup(TRANSMODEL_JNDI_NAME);
+        DataSource ds = (DataSource) initCtx.lookup(TRANSMODEL_JNDI_NAME);
 
-        return ds.getConnection();        
+        return ds.getConnection();
     }
     // </editor-fold>
 }

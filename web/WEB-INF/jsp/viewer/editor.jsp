@@ -119,7 +119,7 @@
                 </div>
                 <br/>
                 <b>Extra</b><br/>
-                <input type="checkbox" id="snapRoads" onclick="toggleRoad(this)"/> Wegen<br/>
+                <input type="checkbox" id="snapRoads" onclick="toggleRoad(this);"/> Wegen<br/>
             </div>
                 
                 
