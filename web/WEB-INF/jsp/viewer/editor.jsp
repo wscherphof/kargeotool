@@ -106,6 +106,7 @@
                 </div><br/>
                 <b>OV-informatie</b><br/>
                 <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/> Buslijnen<br/>
+                <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href='JavaScript: void(0);' id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
                 <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
                 <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/> Bushaltes<br/>
                 <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
@@ -252,6 +253,11 @@
                     }else{
                         editor.removeRoads();
                     }
+                }
+                
+                function removeFilter(){
+                    editor.olc.removeSldFromKargis();
+                    Ext.get("buslijnen_filter").setDisplayed(false);
                 }
                     
             </script>

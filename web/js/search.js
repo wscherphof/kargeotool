@@ -14,7 +14,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along witthis program. If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  * Searchmanager managet alle zoekingangen. Dit is de klasse waar alle verzoeken binnenkomen en uitgaan.
@@ -460,6 +460,8 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 var sld = sldActionBeanUrl + '?publicnumber=';
                 sld+= busline.publicnumber;
                 editor.olc.addSldToKargis(sld);
+                Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
+                Ext.get("buslijnen_filter").setDisplayed(true);
                 var env = busline.envelope;
                 var bounds = new OpenLayers.Bounds([env.minx, env.miny, env.maxx, env.maxy]);
                 var location = bounds.getCenterLonLat();
