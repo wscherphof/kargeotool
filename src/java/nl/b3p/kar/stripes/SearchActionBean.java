@@ -171,7 +171,7 @@ public class SearchActionBean implements ActionBean {
         Connection c = getConnection();
         try {
             
-            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name"; 
+            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name order by l.name"; 
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
                     JSONArray lines = new JSONArray();

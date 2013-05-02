@@ -449,10 +449,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
     },
     createResult : function (busline){
         if(busline.envelope){
-            var label = busline.publicnumber;
-            if(busline.name){
-                label += " - " + busline.name;
-            }
+            var label = busline.publicnumber+ " - " +busline.name;
             var addresslink = document.createElement('a');
             addresslink.href = '#';
             addresslink.className = '.resultlink';
