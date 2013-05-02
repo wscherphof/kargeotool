@@ -171,9 +171,7 @@ public class SearchActionBean implements ActionBean {
         Connection c = getConnection();
         try {
             
-            String sql = "select j.oid,l.name,l.publicnumber,st_astext(j.the_geom) ,j.lineplanningnumber,j.code,j.destinationcode,j.direction from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) "
-                    + "where j.the_geom is not null and (l.name ilike ? or l.publicnumber ilike ?)";
-            
+            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name"; 
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
                     JSONArray lines = new JSONArray();
@@ -185,22 +183,14 @@ public class SearchActionBean implements ActionBean {
                         line.put("oid", rs.getString(1));
                         line.put("publicnumber", rs.getString(3));
                         line.put("name", rs.getString(2));
-                        try {
-                            String wkt = rs.getString(4);
-                            Geometry g = reader.read(wkt);
-                            if(g != null){
-                                Envelope env = g.getEnvelopeInternal();
-                                if(env != null){
-                                    JSONObject jEnv = new JSONObject();
-                                    jEnv.put("minx",env.getMinX());
-                                    jEnv.put("miny",env.getMinY());
-                                    jEnv.put("maxx",env.getMaxX());
-                                    jEnv.put("maxy",env.getMaxY());
-                                    line.put("envelope", jEnv);
-                                }
-                            }
-                        } catch (ParseException ex) {}
+                        JSONObject jEnv = new JSONObject();
+                        jEnv.put("minx",rs.getDouble(4));
+                        jEnv.put("miny",rs.getDouble(5));
+                        jEnv.put("maxx",rs.getDouble(6));
+                        jEnv.put("maxy",rs.getDouble(7));
+                        line.put("envelope", jEnv);
                         lines.put(line);
+                        
                         }catch(JSONException je){
                             log.error("Kan geen buslijn ophalen: ", je);
                         }
