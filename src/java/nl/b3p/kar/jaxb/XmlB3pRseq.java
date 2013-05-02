@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -41,6 +42,6 @@ public class XmlB3pRseq {
     }
     
     public boolean isEmpty() {
-        return location == null && memo == null;
+        return location == null && StringUtils.isBlank(memo);
     }
 }
