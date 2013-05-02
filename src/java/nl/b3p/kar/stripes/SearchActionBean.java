@@ -86,7 +86,6 @@ public class SearchActionBean implements ActionBean {
 
             Session sess = (Session) em.getDelegate();
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
-
             Disjunction dis = Restrictions.disjunction();
             dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
 
@@ -97,7 +96,7 @@ public class SearchActionBean implements ActionBean {
             }
 
             dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
-
+            criteria.add(dis);
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
