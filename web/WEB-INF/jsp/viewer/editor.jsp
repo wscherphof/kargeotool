@@ -107,7 +107,7 @@
                 <b>OV-informatie</b><br/>
                 <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/> Buslijnen<br/>
                 <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href='JavaScript: void(0);' id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
-                <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
+                <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
                 <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/> Bushaltes<br/>
                 <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
                 <b>Achtergrond</b><br/>
@@ -124,7 +124,7 @@
                 
                 
             <script type="text/javascript">
-                var mapfilePath = "http://b3p-meine/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/transmodel_connexxion.map";
+                var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&schema=cxx_20130429";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";

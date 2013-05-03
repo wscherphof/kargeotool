@@ -1,0 +1,175 @@
+map
+
+name transmodel
+status on
+extent 12000 304000 280000 620000
+units meters
+imagecolor 255 255 255
+fontset "fonts.list"
+
+
+web
+  metadata
+    "ows_title"				"Transmodel"
+    "ows_onlineresource"		"http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map"
+    "ows_srs"				"EPSG:28992"
+    "ows_extent"			"12000 304000 280000 620000"
+    "ows_schemas_location"		"http://schemas.opengeospatial.net"
+  end
+  imagepath "/tmp"
+end
+
+projection
+  "init=epsg:28992" 
+end
+
+OUTPUTFORMAT
+	NAME png
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGBA
+	EXTENSION "png"
+	TRANSPARENT ON
+END
+
+legend
+  status on
+  position lr
+  transparent true
+  
+  label
+    type truetype
+    font "freesans"
+    antialias false # werkt niet
+    size 8
+    color 0 0 0
+  end    
+end
+
+symbol
+  name "circle"
+  type ellipse
+  filled true
+  points 1 1 end
+end
+
+symbol
+  name "pijl"
+  type truetype
+  font "freesans"
+  character ">"
+  antialias true
+  gap -50
+end
+
+layer
+  name buslijnen
+  metadata
+    "wms_title" "buslijnen"
+    "gml_include_items" "all"
+    "wfs_featureid" "oid"
+  end
+  type line
+  dump true
+  template bla  
+  status off
+  validation
+    "schema"    "[a-z_]+"
+  end
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "the_geom from (select j.oid,l.name,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique oid"
+  projection
+    "init=epsg:28992"
+  end
+  labelitem "linepublicnumber"
+  class 
+    name ""
+    style      
+	color 130 130 200
+  end
+    #style
+    #	color 255 0 0
+    #   symbol "pijl"
+    #   size 20
+    #end
+  end		
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+layer
+  name bushaltes_symbol
+  metadata
+    "wms_title" "bushaltes_symbol"
+    "gml_include_items" "all"
+    "gml_exclude_items" "oid"        
+    "wfs_title" "bushaltes"
+    "wfs_srs"  "EPSG:28992"
+    "gml_featureid" "oid"
+  end
+  group bushaltes
+  type point
+  dump true
+  template bla  
+  tolerance 6
+  status off
+  validation
+    "schema"    "[a-z_]+"
+  end  
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom,name,code,dataowner,validfrom from %schema%.point where name is not null) as bla using srid=28992 using unique oid"
+  projection
+    "init=epsg:28992"
+  end
+  labelitem "name"  
+  class 
+    name ""
+    style      
+      symbol "bushalte.gif"      
+    end 
+  end
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+layer
+  name bushaltes_labels
+  metadata
+    "wms_title" "bushaltes_labels"
+    "gml_include_items" "all"
+  end
+  group bushaltes
+  type point
+  dump false
+  template bla  
+  status off
+  validation
+    "schema"    "[a-z_]+"
+  end  
+  connectiontype postgis
+  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select oid,point_geom,name from %schema%.point where name is not null) as bla using srid=28992 using unique oid"
+  projection
+    "init=epsg:28992"
+  end
+  maxscale 25000
+  labelitem "name"    
+  class 
+    style
+    end
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 8
+        color 2 2 2
+        outlinecolor 255 255 255
+        buffer 2
+	force true
+	position auto
+    end  
+  end
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+end
