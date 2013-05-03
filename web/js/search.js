@@ -484,11 +484,11 @@ Ext.define("nl.b3p.kar.SearchBusline", {
 
                     if(this.beheerder.isValid()){
                         var f = function(numResults, entity){
-                            console.log("expand");
                             this.panel.expand();
                             this.un('searchFinished',f,this);
                         };
                         this.on('searchFinished',f,this);
+                        this.resultDom.innerHTML = "";
                         this.search();
                     }
                 }
