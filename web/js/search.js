@@ -41,7 +41,7 @@ Ext.define("SearchManager", {
         var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{});
         this.addSearchEntity(rseq);
        
-         var road = Ext.create(nl.b3p.kar.SearchRoad,{});
+        var road = Ext.create(nl.b3p.kar.SearchRoad,{});
         this.addSearchEntity(road);
         
         var bus = Ext.create(nl.b3p.kar.SearchBusline,{});
@@ -100,7 +100,7 @@ Ext.define("SearchManager", {
                 // layout-specific configs go here
                 type: 'accordion',
                 titleCollapse: true,
-                animate: true,
+                animate: false,
                 flex:1,
                 height: 300,
                 activeOnTop: true,
@@ -187,6 +187,7 @@ Ext.define("nl.b3p.kar.Search", {
             this.panel.expand();
         }
         this.panel.setLoading(false);
+        this.fireEvent('searchFinished', numResults, this);
     }
 });
 
@@ -433,17 +434,80 @@ Ext.define("nl.b3p.kar.SearchRoad", {
 Ext.define("nl.b3p.kar.SearchBusline", {
     extend: "nl.b3p.kar.Search",
     category: "Buslijnen",
+    beheerder:null,
     constructor: function(config) {
         this.callParent(arguments);
+        this.beheerder = Ext.create(Ext.form.ComboBox,{
+            fieldLabel: 'Beheerder',
+            id:Ext.id(),
+            validator:function(value){
+                var list =this.store.proxy.data;
+                var found = false;
+                for (var i = 0 ; i < list.length ;i++){
+                    var entry = list[i];
+                    if(entry.omschrijving == value){
+                        found = true;
+                        break;
+                    }
+                }
+                if(found || value == ''){
+                    return true;
+                }else{
+                    return "Waarde " + value + " is geen bestaande beheerder.";
+                }
+            },
+            name: 'dataOwner',
+            allowBlank: true,
+            blankText: 'Selecteer een optie',
+            displayField: 'omschrijving',
+            queryMode:'local',
+            typeAhead:true,
+            minChars:2,
+            valueField: 'code',
+            store: Ext.create('Ext.data.Store', {
+                fields: ['code', 'classificatie', 'companyNumber', 'omschrijving'],
+                data: dataOwners
+            }),
+            listeners: {
+                buffer: 50,
+                scope: this,
+                change: function() {
+                    var store = this.beheerder.store;
+                    //store.suspendEvents();
+                    store.clearFilter();
+                    //store.resumeEvents();
+                    store.filter({
+                        property: 'omschrijving',
+                        anyMatch: true,
+                        value   : this.beheerder.getValue()
+                    });
+
+                    if(this.beheerder.isValid()){
+                        var f = function(numResults, entity){
+                            console.log("expand");
+                            this.panel.expand();
+                            this.un('searchFinished',f,this);
+                        };
+                        this.on('searchFinished',f,this);
+                        this.search();
+                    }
+                }
+            }
+        });
+        this.panel.addDocked([this.beheerder]);
     },
     search: function(term){
         var me = this;
+        var params = {
+            'busline': true,
+            term: term
+        };
+        if(this.beheerder.isValid()){
+            params.dataOwner = this.beheerder.getValue();
+        }
         Ext.Ajax.request({
             url: searchActionBeanUrl,
-            params: {
-                'busline': true,
-                term: term
-            },
+            params: params,
             method: 'GET',
             scope:this,
             success: function(response) {

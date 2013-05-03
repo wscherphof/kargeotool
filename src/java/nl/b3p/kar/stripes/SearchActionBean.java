@@ -71,10 +71,11 @@ public class SearchActionBean implements ActionBean {
 
     private static final String GEOCODER_URL = "http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=";
     private static final Log log = LogFactory.getLog(SearchActionBean.class);
-    private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     private ActionBeanContext context;
     @Validate
     private String term;
+    @Validate(required = false) // niet noodzakelijk: extra filter voor buslijnen, maar hoeft niet ingevuld te zijn
+    private String dataOwner;
     private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
 
     public Resolution rseq() throws Exception {
@@ -176,7 +177,14 @@ public class SearchActionBean implements ActionBean {
         Connection c = getConnection();
         try {
 
-            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)) from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?) group by l.publicnumber,l.name order by l.name";
+            String sql = "select distinct(l.publicnumber,l.name),l.name,l.publicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), max(ymax(j.the_geom)), j.linedataowner "
+                    + "from jopa j left join line l on (j.lineplanningnumber = l.planningnumber) "
+                    + "where j.the_geom is not null and (l.publicnumber ilike ? or l.name ilike ?)";
+
+            if(dataOwner != null){
+                sql += " and linedataowner = ?";
+            }
+            sql += " group by l.publicnumber,l.name, linedataowner order by l.name";
             ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                 public JSONArray handle(ResultSet rs) throws SQLException {
                     JSONArray lines = new JSONArray();
@@ -201,7 +209,15 @@ public class SearchActionBean implements ActionBean {
                     return lines;
                 }
             };
-            JSONArray lines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%");
+            if(term == null){
+                term = "";
+            }
+            JSONArray lines = null;
+            if(dataOwner != null){
+                lines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%", dataOwner);
+            }else{
+                lines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%");
+            }
             info.put("buslines", lines);
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {
@@ -247,6 +263,14 @@ public class SearchActionBean implements ActionBean {
 
     public void setContext(ActionBeanContext context) {
         this.context = context;
+    }
+
+    public String getDataOwner() {
+        return dataOwner;
+    }
+
+    public void setDataOwner(String dataOwner) {
+        this.dataOwner = dataOwner;
     }
 
     public String getTerm() {

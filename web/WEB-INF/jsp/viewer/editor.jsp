@@ -169,7 +169,7 @@
                 
                 function showWelcome() {
                     if(welcomeForm == null) {
-                        welcomeForm = Ext.create(WelcomeForm)
+                        welcomeForm = Ext.create(WelcomeForm);
                     }
                     welcomeForm.show();
                 }
