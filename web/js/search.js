@@ -35,24 +35,16 @@ Ext.define("SearchManager", {
         this.mixins.observable.constructor.call(this);  
         this.searchEntities = new Array();
         this.createForm();
-        var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{
-            dom: this.dom
-        });
+        var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{});
         this.addSearchEntity(geocoder);
        
-        var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{
-            dom: this.dom
-        });
+        var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{});
         this.addSearchEntity(rseq);
        
-         var road = Ext.create(nl.b3p.kar.SearchRoad,{
-            dom: this.dom
-        });
+         var road = Ext.create(nl.b3p.kar.SearchRoad,{});
         this.addSearchEntity(road);
         
-        var bus = Ext.create(nl.b3p.kar.SearchBusline,{
-            dom: this.dom
-        });
+        var bus = Ext.create(nl.b3p.kar.SearchBusline,{});
         this.addSearchEntity(bus);
         
         this.addEvents('searchResultClicked');
@@ -66,7 +58,8 @@ Ext.define("SearchManager", {
             {
                 xtype: 'textfield',
                 id: 'searchField' ,
-                width: 200,
+                fieldLabel: 'Zoekwoord',
+                flex:1,
                 enableKeyEvents:true,
                 listeners:{
                     keypress: {
@@ -125,6 +118,7 @@ Ext.define("SearchManager", {
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
             searchEntity.panel.setLoading("Zoeken...");
+            searchEntity.resultDom.innerHTML = "";
             searchEntity.search(term);
         });
     },
@@ -134,7 +128,6 @@ Ext.define("SearchManager", {
     addSearchEntity : function (entity){
         this.searchEntities.push(entity);
         this.searchPanel.add(entity.getPanel());
-        this.searchPanel.updateLayout();
         entity.on('searchResultClicked',this.searchResultClicked,this);
     }
 });
@@ -243,11 +236,6 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
             scope:this,
             success: function(response) {
                 var results = new OpenLayers.Format.XLS().read(response.responseXML);
-                
-                var resultblock = Ext.get(this.resultDom);
-                resultblock.dom.innerHTML = "";
-                this.panel.setLoading(false);
-                
                 var rl = results.responseLists[0];
                 
                 if(rl) {
@@ -393,8 +381,6 @@ Ext.define("nl.b3p.kar.SearchRoad", {
                 if(msg.success){
                     var roads = msg.roads;
                     if(roads.length > 0){
-                        var resultblock = Ext.get(this.resultDom);
-                        resultblock.dom.innerHTML = "";
                         for ( var i = 0 ; i < roads.length ; i++){
                             this.createResult(roads[i]);
                         }
