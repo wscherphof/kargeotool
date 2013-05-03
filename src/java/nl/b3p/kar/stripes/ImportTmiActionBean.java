@@ -50,6 +50,9 @@ public class ImportTmiActionBean implements ActionBean {
     @Validate
     private int batch = 1;
     
+    @Validate
+    private boolean transaction;
+    
     public ActionBeanContext getContext() {
         return context;
     }
@@ -97,6 +100,14 @@ public class ImportTmiActionBean implements ActionBean {
     public void setBatch(int batch) {
         this.batch = batch;
     }
+
+    public boolean isTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(boolean transaction) {
+        this.transaction = transaction;
+    }
     
     @HandlesEvent("import")
     public Resolution doImport() {
@@ -112,7 +123,7 @@ public class ImportTmiActionBean implements ActionBean {
             public void stream(HttpServletResponse response) throws Exception {
                 PrintWriter out = new PrintWriter(response.getWriter());
                 out.format("Inlezen zip-bestand \"%s\"...\n", zipFile.getFileName());
-                new TmiDbImport(out, jndi, schema, batch).loadFromZip(zipFile.getInputStream(), encoding);
+                new TmiDbImport(out, jndi, schema, batch, transaction).loadFromZip(zipFile.getInputStream(), encoding);
                 out.flush();
             }            
         };

@@ -12,7 +12,8 @@
         <h1>Importeren OV-gegevens koppelvlak 1</h1>
         
         <stripes:form beanclass="nl.b3p.kar.stripes.ImportTmiActionBean">
-            
+            <stripes:messages/>
+            <stripes:errors/>
             <fieldset>
                 <legend>Import</legend>
                 <table>
@@ -28,7 +29,8 @@
                     </tr>
                     <tr><td>JNDI naam database:</td><td><stripes:text name="jndi" value="java:comp/env/jdbc/transmodel" size="30"/></td></tr>
                     <tr><td>Database schema:</td><td><stripes:text name="schema" value="automatisch" size="30"/></td></tr>
-                    <tr><td>SQL insert batch size:</td><td><stripes:text name="batch" value="50" size="3"/></td></tr>
+                    <tr><td>SQL insert batch size:</td><td><stripes:text name="batch" value="500" size="3"/></td></tr>
+                    <tr><td>Database transactie:</td><td><label><stripes:checkbox name="transaction"/> gebruiken</label></td></tr>
                 </table>
             </fieldset>
             <p>

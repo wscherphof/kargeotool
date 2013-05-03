@@ -59,6 +59,10 @@
             <param-value>net.sourceforge.stripes.controller.multipart.CommonsMultipartWrapper</param-value>
         </init-param>
         <init-param>
+            <param-name>FileUpload.MaximumPostSize</param-name>
+            <param-value>31457280</param-value>
+        </init-param>
+        <init-param>
             <param-name>CoreInterceptor.Classes</param-name>
             <param-value>
                 org.stripesstuff.plugin.waitpage.WaitPageInterceptor,
