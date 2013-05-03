@@ -25,7 +25,8 @@ Ext.define("SearchManager", {
     },
     config:{
         searchField:null,
-        dom:null
+        dom:null,
+        editor:null
     },
     searchEntities:null,
     searchBox:null,
@@ -35,16 +36,16 @@ Ext.define("SearchManager", {
         this.mixins.observable.constructor.call(this);  
         this.searchEntities = new Array();
         this.createForm();
-        var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{});
+        var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{editor:this.editor});
         this.addSearchEntity(geocoder);
        
-        var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{});
+        var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{editor:this.editor});
         this.addSearchEntity(rseq);
        
-        var road = Ext.create(nl.b3p.kar.SearchRoad,{});
+        var road = Ext.create(nl.b3p.kar.SearchRoad,{editor:this.editor});
         this.addSearchEntity(road);
         
-        var bus = Ext.create(nl.b3p.kar.SearchBusline,{});
+        var bus = Ext.create(nl.b3p.kar.SearchBusline,{editor:this.editor});
         this.addSearchEntity(bus);
         
         this.addEvents('searchResultClicked');
@@ -129,6 +130,9 @@ Ext.define("SearchManager", {
         this.searchEntities.push(entity);
         this.searchPanel.add(entity.getPanel());
         entity.on('searchResultClicked',this.searchResultClicked,this);
+    },
+    getTerm : function (){
+        return Ext.getCmp("searchField").getValue();
     }
 });
 
@@ -140,6 +144,7 @@ Ext.define("nl.b3p.kar.Search", {
         observable: 'Ext.util.Observable'
     },
     config:{
+        editor:null
     },
     resultDom:null,
     category:null,
@@ -489,7 +494,8 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                         };
                         this.on('searchFinished',f,this);
                         this.resultDom.innerHTML = "";
-                        this.search();
+                        var term = this.editor.search.getTerm();
+                        this.search(term);
                     }
                 }
             }

@@ -140,7 +140,7 @@ Ext.define("Editor", {
             }
         },this);
         
-        this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform'});
+        this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform',editor:this});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
         this.changeManager = Ext.create(ChangeManager,this);
     },
