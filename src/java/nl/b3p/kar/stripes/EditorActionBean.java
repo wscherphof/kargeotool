@@ -26,6 +26,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -166,6 +168,15 @@ public class EditorActionBean implements ActionBean {
                     for(Map.Entry<String,Object> entry: meta.entrySet()) {
                         ovSchema.put(entry.getKey(), entry.getValue());
                     }
+                    
+                    Object[] extent = new QueryRunner().query(conn, "select st_xmin(ext),st_xmax(ext),st_ymin(ext),st_ymax(ext) from (select st_extent(the_geom) as ext from " + schema + ".jopa) e", new ArrayHandler());
+                    JSONObject jExtent = new JSONObject();
+                    jExtent.put("xmin", (Double)extent[0]);
+                    jExtent.put("xmax", (Double)extent[1]);
+                    jExtent.put("ymin", (Double)extent[2]);
+                    jExtent.put("ymax", (Double)extent[3]);
+                    ovSchema.put("extent", jExtent);
+                    
                     ovInfoMap.put(ovSchema.getString("title"), ovSchema);
                 } catch(Exception e) {
                     log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);

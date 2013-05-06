@@ -106,10 +106,11 @@
                 </div><br/>
                 <b>OV-informatie</b><br/>
                 <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/> Buslijnen<br/>
-                <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href='JavaScript: void(0);' id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
-                <div style="display:none;" id="buslijnen"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/></div>
+                <div id="buslijnen_div">
+                </div>
                 <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/> Bushaltes<br/>
-                <div style="display:none;" id="bushaltes"><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/></div><br/>
+                <div id="haltes_div">
+                </div>
                 <b>Achtergrond</b><br/>
                 <div id="Luchtfoto_div" style="width: 90%; height: 38px">
                     <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
@@ -124,7 +125,7 @@
                 
                 
             <script type="text/javascript">
-                var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&schema=cxx_20130429";
+                var mapfilePath = "http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&schema={0}";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
@@ -145,7 +146,7 @@
 
                     createLegendSliders();
                     
-                    editor = Ext.create(Editor, "map", mapfilePath);    
+                    editor = Ext.create(Editor, "map", mapfilePath, ovInfo);    
                    
                     settingsForm = Ext.create(SettingsForm, editor);
 

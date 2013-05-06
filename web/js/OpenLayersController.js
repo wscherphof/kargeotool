@@ -444,18 +444,20 @@ Ext.define("ol", {
      * @param visible Indicates whether or not the layer must be visible from start
      * @param extension Optional parameter to indicate the extension (type)
      */
-    addLayer : function (type,name, url, layers,visible,extension,opacity){
+    addLayer : function (type,name, url, layers,visible,extension,opacity,maxResolution,maxExtent,noSingleTile){
         var layer;
         if(type == 'WMS'){
             layer = new OpenLayers.Layer.WMS(name,url,{
                 'layers':layers,
                 'transparent': true
             },{
-                singleTile: true,
+                singleTile: !noSingleTile,
                 ratio: 1,
                 isBaseLayer: false,
                 transitionEffect: 'resize',
-                opacity: opacity
+                opacity: opacity,
+                maxResolution: maxResolution,
+                maxExtent: maxExtent
             });
         }else if (type == "TMS" ){
             if(!extension){

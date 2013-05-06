@@ -55,7 +55,7 @@ Ext.define("Editor", {
     /**
      * @constructor
      */
-    constructor: function(domId, mapfilePath) {
+    constructor: function(domId, mapfilePath, ovInfo) {
 
         this.mixins.observable.constructor.call(this, {
             listeners:{
@@ -87,6 +87,8 @@ Ext.define("Editor", {
         this.startLocationHash = this.parseLocationHash();
         
         this.createOpenLayersController(mapfilePath);   
+        this.createOvInfoLayers(mapfilePath, ovInfo);
+        
         this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         var haveCenterInHash = this.setCenterFromLocationHash();
         
@@ -154,10 +156,17 @@ Ext.define("Editor", {
         
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', getLayerVisibility("Luchtfoto"),'png?LAYERS=IPOlufo', getLayerOpacity("Luchtfoto"));
         this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
-        this.olc.addLayer("WMS","buslijnen",mapfilePath,'buslijnen', getLayerVisibility('buslijnen'));
-        this.olc.addLayer("WMS","bushaltes",mapfilePath,'bushaltes', getLayerVisibility('bushaltes'));
         
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
+    },
+    
+    createOvInfoLayers: function(mapfilePath, ovInfos) {
+        
+        Ext.Array.each(ovInfos, function(ovInfo) {
+            var bounds = new OpenLayers.Bounds(ovInfo.extent.xmin, ovInfo.extent.ymin, ovInfo.extent.xmax, ovInfo.extent.ymax);
+            this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', /*getLayerVisibility('buslijnen')*/true,null, null, 12, bounds);
+            this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', /*getLayerVisibility('bushaltes')*/true,null, null, 12, bounds);
+        }, this);
     },
     
     setLayerOpacity: function(layer, opacity) {
