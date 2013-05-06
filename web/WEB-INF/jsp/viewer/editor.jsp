@@ -176,6 +176,7 @@
                 
                 var vehicleTypes = ${actionBean.vehicleTypesJSON};
                 var dataOwners = ${actionBean.dataOwnersJSON};
+                var ovInfo = ${actionBean.ovInfoJSON};
                 
                 function getLayerOpacity(layer) {
                     return profile.state[layer + "_slider"] / 100.0 || 1;

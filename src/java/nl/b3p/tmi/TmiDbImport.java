@@ -311,6 +311,14 @@ public class TmiDbImport {
         // Index voor mapfile
         update("create index line_lineplanningnummber_idx on line(lineplanningnumber)");
         update("create index jopa_geom_idx on jopa using gist(the_geom)");
+        
+        update("create table geo_ov_metainfo(data_owner_code varchar, title varchar, " +
+            "original_filename varchar, valid_from date, valid_until date, " +
+            "description text);");
+        update("insert into geo_ov_metainfo(data_owner_code,title,original_filename,valid_from,valid_until,description) values (?,?,?,?,?,?)",
+                dataOwner, null, null, null, null, null);
+                
+                
     }
     
     private void readTmi(InputStream input, String table, TmiField[] fields) throws Exception {

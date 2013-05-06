@@ -24,8 +24,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,12 +34,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,6 +77,7 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
+    private JSONArray ovInfoJSON;
     
     @Validate
     private String extent;
@@ -132,7 +137,44 @@ public class EditorActionBean implements ActionBean {
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
         }        
+        
+        ovInfoJSON = makeOvInfoJSON();
+        
         return new ForwardResolution(JSP);
+    }
+    
+    private JSONArray makeOvInfoJSON() {
+        JSONArray ovInfo = new JSONArray();
+        
+        try {
+            Context initCtx = new InitialContext();
+            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");            
+            Connection conn = ds.getConnection();
+            
+            List<String> schemas = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
+            
+            for(String schema: schemas) {
+                JSONObject ovSchema = new JSONObject();
+                ovSchema.put("schema", schema);
+
+                try {
+                    Map<String,Object> meta = new QueryRunner().query(conn, "select * from " + schema + ".geo_ov_metainfo", new MapHandler());
+                    
+                    for(Map.Entry<String,Object> entry: meta.entrySet()) {
+                        ovSchema.put(entry.getKey(), entry.getValue());
+                    }
+                    ovInfo.put(ovSchema);
+                } catch(Exception e) {
+                    log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
+                    // schema waarschijnlijk niet via geo-ov geimporteerd
+                }
+                
+            }
+            
+        } catch(Exception e) {
+            log.error("Kan geen ov info ophalen: ", e);
+        }
+        return ovInfo;
     }
 
     /**
@@ -633,7 +675,13 @@ public class EditorActionBean implements ActionBean {
     public void setExtent(String extent) {
         this.extent = extent;
     }
+    
+    public JSONArray getOvInfoJSON() {
+        return ovInfoJSON;
+    }
+
+    public void setOvInfoJSON(JSONArray ovInfoJSON) {
+        this.ovInfoJSON = ovInfoJSON;
+    }
     // </editor-fold>
-
-
 }
