@@ -105,9 +105,9 @@
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
                 </div><br/>
                 <b>OV-informatie</b><br/>
-                <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
+                <input type="checkbox" id="buslijnen_visible" onclick="toggleOvInfoLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
                 <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href="#" id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
-                <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
+                <input type="checkbox" id="bushaltes_visible" onclick="toggleOvInfoLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
                 <div style="display:block;" id="bushaltes"></div><br/>
                 <b>Achtergrond</b><br/>
                 <div id="Luchtfoto_div" style="width: 90%; height: 38px">
@@ -233,6 +233,21 @@
                         }
                     });                     
                 }
+                
+                function toggleOvInfoLayer(event) {
+                    if(!event) {
+                        event = window.event;
+                    }
+                    var layer = event.target.id.substr(0, event.target.id.indexOf('_'));
+                    var visible = event.target.checked;
+                    
+                    Ext.Array.each(ovInfo, function(ov) {
+                        editor.olc.setLayerVisible(layer + "_" + ov.schema, visible);
+                    });
+                    
+                    profile.state[layer + "_visible"] = visible;
+                    saveProfile();
+                }                
                 
                 function toggleLayer(event) {
                     if(!event) {
