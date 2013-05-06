@@ -7,8 +7,8 @@
         type="javax.sql.DataSource"
         username="transmodel"
         password="transmodel"
-        driverClassName="org.postgis.DriverWrapper"
-        url="jdbc:postgresql_postGIS://x13.b3p.nl/transmodel"
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://localhost/transmodel"
         maxActive="25"
         validationQuery="select 1"
     />
