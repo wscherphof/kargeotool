@@ -34,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -153,6 +155,7 @@ public class EditorActionBean implements ActionBean {
             
             List<String> schemas = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
             
+            SortedMap<String,JSONObject> ovInfoMap = new TreeMap();
             for(String schema: schemas) {
                 JSONObject ovSchema = new JSONObject();
                 ovSchema.put("schema", schema);
@@ -163,14 +166,16 @@ public class EditorActionBean implements ActionBean {
                     for(Map.Entry<String,Object> entry: meta.entrySet()) {
                         ovSchema.put(entry.getKey(), entry.getValue());
                     }
-                    ovInfo.put(ovSchema);
+                    ovInfoMap.put(ovSchema.getString("title"), ovSchema);
                 } catch(Exception e) {
                     log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
                     // schema waarschijnlijk niet via geo-ov geimporteerd
                 }
-                
             }
-            
+
+            for(JSONObject ovSchema: ovInfoMap.values()) {
+                ovInfo.put(ovSchema);
+            }
         } catch(Exception e) {
             log.error("Kan geen ov info ophalen: ", e);
         }
