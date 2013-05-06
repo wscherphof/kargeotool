@@ -104,19 +104,14 @@ Ext.define("SettingsForm", {
                     name: 'test',
                     value: profile.test
                 },{
+                    layout:{
+                        anchor: 300
+                    },
                     xtype: 'button',
                     text: 'Standaard KAR attributen voor nieuw verkeerssysteem',
                     handler: function() {
                         
-                        Ext.create(KarAttributesEditWindow, 
-                            "Standaard KAR attributen voor nieuw verkeersysteem",        
-                            "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
-                                "voor nieuw aangemaakte verkeerssystemen moeten worden aangevinkt.",
-                            profile.defaultKarAttributes,
-                            function(atts) {
-                                me.newDefaultKarAttributes = atts;
-                            }
-                        ).show();
+                       showDefaultAttributes();
                     }
                 }],
                 buttons: [{
@@ -151,3 +146,14 @@ Ext.define("SettingsForm", {
         }).show();
     }
 });
+function showDefaultAttributes(){
+    Ext.create(KarAttributesEditWindow, 
+        "Standaard KAR attributen voor nieuw verkeersysteem",        
+        "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
+            "voor nieuw aangemaakte verkeerssystemen moeten worden aangevinkt.",
+        profile.defaultKarAttributes,
+        function(atts) {
+            profile.defaultKarAttributes = atts;
+        }
+    ).show();
+}

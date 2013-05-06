@@ -31,7 +31,7 @@
             </div>
         </c:if>
         <div class="headerlink">
-            <a href="#" onclick="settingsForm.show()">Instellingen</a>
+            <a href="#" onclick="showDefaultAttributes();">Instellingen</a>
         </div>
         <div class="headerlink">
             <a href="#" onclick="showWelcome()"><img src="<c:url value="/images/silk/information.png"/>" alt="icon" class="navimg" /> Informatie</a>
