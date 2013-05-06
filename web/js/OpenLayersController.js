@@ -533,7 +533,7 @@ Ext.define("ol", {
      */
     addSldToKargis : function (buslijnsld, name){
         var buslijnen = this.map.getLayersByName(name)[0];
-      
+        buslijnen.maxResolution =4000;
         buslijnen.mergeNewParams({
             sld:buslijnsld
         });
@@ -543,6 +543,8 @@ Ext.define("ol", {
      */
     removeSldFromKargis : function (layer){
         var buslijnen = this.map.getLayersByName(layer)[0];
+        
+        buslijnen.maxResolution =12;
         buslijnen.mergeNewParams({
             sld:null
         });
