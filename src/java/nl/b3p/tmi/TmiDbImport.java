@@ -99,6 +99,31 @@ public class TmiDbImport {
             new TmiField("description","s")//,
             //new TmiField("transporttype","s")
         });  
+        
+        tmiData.put("usrstop", new TmiField[] {
+            new TmiField("dataowner","s"),
+            new TmiField("userstopcode","s"),
+            new TmiField("timingpointcode","s"),
+            new TmiField("getin","b"),
+            new TmiField("getout","b"),
+            null,
+            new TmiField("name","s"),
+            new TmiField("town","s"),
+            new TmiField("userstopareacode","s"),
+            new TmiField("stopsidecode","s"),
+            new TmiField("roadsideeqdataownercode","s"),
+            new TmiField("roadsideequnitnumber","l")
+        });
+        
+        tmiData.put("usrstar", new TmiField[] {
+            new TmiField("dataowner","s"),
+            new TmiField("userstopareacode","s"),
+            new TmiField("name","s"),
+            new TmiField("town","s"),
+            new TmiField("roadsideeqdataownercode","s"),
+            new TmiField("roadsideequnitnumber","l"),
+            new TmiField("description","s")
+        });
     }
     
     private String dataOwner;
@@ -107,6 +132,9 @@ public class TmiDbImport {
     private String schema;
     private int batch;
     private boolean transaction;
+    
+    private String filename, titel, description;
+    private java.sql.Date validFrom, validUntil;
     
     private Connection connection;
     
@@ -311,13 +339,15 @@ public class TmiDbImport {
         // Index voor mapfile
         update("create index line_lineplanningnummber_idx on line(lineplanningnumber)");
         update("create index jopa_geom_idx on jopa using gist(the_geom)");
+
+        // View voor mapfile met bushaltes
+        update("create view bushaltes as select usrstop.*,point.point_geom from usrstop join point on (point.code=usrstop.userstopcode)");
         
         update("create table geo_ov_metainfo(data_owner_code varchar, title varchar, " +
             "original_filename varchar, valid_from date, valid_until date, " +
             "description text);");
         update("insert into geo_ov_metainfo(data_owner_code,title,original_filename,valid_from,valid_until,description) values (?,?,?,?,?,?)",
-                dataOwner, null, null, null, null, null);
-                
+                dataOwner, titel, filename, validFrom, validUntil, description);
                 
     }
     
@@ -379,8 +409,8 @@ public class TmiDbImport {
                 }
             }
             count++;
-            if(count % 100 == 0) {
-                out.print(" " + count + "..." + (count % 25000 == 0 ? "\n" : ""));
+            if(count % 25000 == 0) {
+                out.print(" " + count + "..." + (count % 250000 == 0 ? "\n" : ""));
                 out.flush();
             }
         }
@@ -391,7 +421,12 @@ public class TmiDbImport {
         out.format("\nAantal records: %d, snelheid: %d per seconde\n", count, duration > 0 ? Math.round(count/(duration/1000.0)) : 0);
     }            
 
-    public void loadFromZip(InputStream input, String encoding) {
+    public void loadFromZip(InputStream input, String filename, String encoding, String titel, Date validFrom, Date validUntil, String description) {
+        this.filename = filename;
+        this.titel = titel;
+        this.validFrom = validFrom == null ? null : new java.sql.Date(validFrom.getTime());
+        this.validUntil = validUntil == null ? null: new java.sql.Date(validUntil.getTime());
+        this.description = description;
 
         ZipInputStream zip = null;
         try {

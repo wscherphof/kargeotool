@@ -31,6 +31,10 @@
                     <tr><td>Database schema:</td><td><stripes:text name="schema" value="automatisch" size="30"/></td></tr>
                     <tr><td>SQL insert batch size:</td><td><stripes:text name="batch" value="500" size="3"/></td></tr>
                     <tr><td>Database transactie:</td><td><label><stripes:checkbox name="transaction"/> gebruiken</label></td></tr>
+                    <tr><td>Titel voor weergave:</td><td><stripes:text name="titel" size="30"/></td></tr>
+                    <tr><td>Geldig vanaf:</td><td><stripes:text formatPattern="yyyy-MM-dd" formatType="date" name="validFrom"/></td></tr>
+                    <tr><td>Geldig tot:</td><td><stripes:text formatPattern="yyyy-MM-dd" formatType="date" name="validUntil"/></td></tr>
+                    <tr><td>Omschrijving:</td><td><stripes:text name="description" size="30"/></td></tr>
                 </table>
             </fieldset>
             <p>

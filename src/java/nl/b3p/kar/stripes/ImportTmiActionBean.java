@@ -19,11 +19,15 @@
 package nl.b3p.kar.stripes;
 
 import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
+import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Role;
 import nl.b3p.tmi.TmiDbImport;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  *
@@ -52,6 +56,18 @@ public class ImportTmiActionBean implements ActionBean {
     
     @Validate
     private boolean transaction;
+    
+    @Validate
+    private String titel;
+    
+    @Validate
+    private Date validFrom;
+    
+    @Validate
+    private Date validUntil;
+    
+    @Validate
+    private String description;
     
     public ActionBeanContext getContext() {
         return context;
@@ -108,7 +124,39 @@ public class ImportTmiActionBean implements ActionBean {
     public void setTransaction(boolean transaction) {
         this.transaction = transaction;
     }
-    
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public Date getValidUntil() {
+        return validUntil;
+    }
+
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+   
     @HandlesEvent("import")
     public Resolution doImport() {
         
@@ -123,7 +171,7 @@ public class ImportTmiActionBean implements ActionBean {
             public void stream(HttpServletResponse response) throws Exception {
                 PrintWriter out = new PrintWriter(response.getWriter());
                 out.format("Inlezen zip-bestand \"%s\"...\n", zipFile.getFileName());
-                new TmiDbImport(out, jndi, schema, batch, transaction).loadFromZip(zipFile.getInputStream(), encoding);
+                new TmiDbImport(out, jndi, schema, batch, transaction).loadFromZip(zipFile.getInputStream(), zipFile.getFileName(), encoding, titel, validFrom, validUntil, description);
                 out.flush();
             }            
         };
