@@ -127,7 +127,6 @@ Ext.define("ol", {
         this.createControls(domId);
         
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
-        OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
     },
     /**
      * Private method which adds all the controls
