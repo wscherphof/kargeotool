@@ -45,8 +45,8 @@ Ext.define("WelcomeForm", {
         var me = this;
         me.window = Ext.create('Ext.window.Window', {
             title: 'Welkom',
-            width: 500,
-            height: 400,
+            width: 575,
+            height: 625,
             modal: true,
             icon: contextPath + '/images/silk/information.png',
             layout: 'fit',
@@ -67,5 +67,10 @@ Ext.define("WelcomeForm", {
                 }
             }]
         }).show();
+        
+        var ovTpl = new Ext.Template("<tr><td>{0}</td><td>{1}</td></tr>");
+        Ext.Array.each(ovInfo, function(ov) {
+            ovTpl.append("welcomeOvInfo", [ov.title, ov.original_filename]);
+        });
     }
 });
