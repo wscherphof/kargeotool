@@ -67,7 +67,7 @@ layer
   metadata
     "wms_title" "buslijnen"
     "gml_include_items" "all"
-    "wfs_featureid" "oid"
+    "wfs_featureid" "id"
   end
   type line
   dump true
@@ -78,7 +78,7 @@ layer
   end
   connectiontype postgis
   connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
-  data "the_geom from (select j.oid,l.name,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique oid"
+  data "the_geom from (select j.id,l.name,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
   end
@@ -86,7 +86,7 @@ layer
   class 
     name ""
     style      
-	color 130 130 200
+	color 200 0 0
   end
     #style
     #	color 255 0 0
@@ -105,7 +105,7 @@ layer
     "gml_exclude_items" "oid"        
     "wfs_title" "bushaltes"
     "wfs_srs"  "EPSG:28992"
-    "gml_featureid" "oid"
+    "gml_featureid" "userstopcode"
   end
   group bushaltes
   type point
@@ -117,11 +117,12 @@ layer
     "schema"    "[a-z_]+"
   end  
   connectiontype postgis
-  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,name,code,dataowner,validfrom from %schema%.point where name is not null) as bla using srid=28992 using unique oid"
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select * from %schema%.bushaltes) as bla using srid=28992 using unique userstopcode"
   projection
     "init=epsg:28992"
   end
+  maxscale 50000  
   labelitem "name"  
   class 
     name ""
@@ -147,12 +148,12 @@ layer
     "schema"    "[a-z_]+"
   end  
   connectiontype postgis
-  connection "host=localhost dbname=transmodel_060609 password=transmodel port=5432 user=transmodel"
-  data "point_geom from (select oid,point_geom,name from %schema%.point where name is not null) as bla using srid=28992 using unique oid"
+  connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
+  data "point_geom from (select * from %schema%.bushaltes) as bla using srid=28992 using unique userstopcode"
   projection
     "init=epsg:28992"
   end
-  maxscale 25000
+  maxscale 7000
   labelitem "name"    
   class 
     style
