@@ -105,12 +105,10 @@
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
                 </div><br/>
                 <b>OV-informatie</b><br/>
-                <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/> Buslijnen<br/>
-                <div id="buslijnen_div">
-                </div>
-                <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/> Bushaltes<br/>
-                <div id="haltes_div">
-                </div>
+                <input type="checkbox" id="buslijnen_visible" onclick="toggleLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
+                <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href="#" id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
+                <input type="checkbox" id="bushaltes_visible" onclick="toggleLayer(event);"/><img src="http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel_connexxion.map&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
+                <div style="display:block;" id="bushaltes"></div><br/>
                 <b>Achtergrond</b><br/>
                 <div id="Luchtfoto_div" style="width: 90%; height: 38px">
                     <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
