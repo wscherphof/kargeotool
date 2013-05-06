@@ -336,6 +336,9 @@ public class TmiDbImport {
                 ")"
         );
 */         
+        // Voor mapfile using unique
+        update("alter table jopa add column id serial");
+        
         // Index voor mapfile
         update("create index line_lineplanningnummber_idx on line(lineplanningnumber)");
         update("create index jopa_geom_idx on jopa using gist(the_geom)");
