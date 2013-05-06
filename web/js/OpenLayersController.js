@@ -531,8 +531,8 @@ Ext.define("ol", {
      * Voeg nieuw sld toe aan de kaarten.
      * @param buslijnsld sld voor de buslijnen
      */
-    addSldToKargis : function (buslijnsld){
-        var buslijnen = this.map.getLayersByName("buslijnen")[0];
+    addSldToKargis : function (buslijnsld, name){
+        var buslijnen = this.map.getLayersByName(name)[0];
       
         buslijnen.mergeNewParams({
             sld:buslijnsld
@@ -541,8 +541,8 @@ Ext.define("ol", {
     /**
      * Haal de sld's van de layers 'buslijnen'
      */
-    removeSldFromKargis : function (){
-        var buslijnen = this.map.getLayersByName("buslijnen")[0];
+    removeSldFromKargis : function (layer){
+        var buslijnen = this.map.getLayersByName(layer)[0];
         buslijnen.mergeNewParams({
             sld:null
         });

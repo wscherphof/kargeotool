@@ -271,10 +271,16 @@
                 }
                 
                 function removeFilter(){
-                    editor.olc.removeSldFromKargis();
+                    Ext.Array.each(ovInfo, function(ov) {
+                        var currentName = "buslijnen_" + ov.schema;
+                    
+                        var visible = true;
+                        editor.olc.setLayerVisible(currentName, visible);
+                        editor.olc.removeSldFromKargis(currentName);
+                    });
+
                     Ext.get("buslijnen_filter").setDisplayed(false);
                 }
-                    
             </script>
         </div>
 

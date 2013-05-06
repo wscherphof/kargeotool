@@ -113,7 +113,7 @@ public class SLDActionBean implements ActionBean {
 
         Node propertyIsEqualTo = doc.createElementNS(OGCNS, "PropertyIsEqualTo");
         Node propertyName = doc.createElementNS(OGCNS, "PropertyName");
-        propertyName.appendChild(doc.createTextNode("publicnumber"));
+        propertyName.appendChild(doc.createTextNode("linepublicnumber"));
         propertyIsEqualTo.appendChild(propertyName);
         Node literal = doc.createElementNS(OGCNS, "Literal");
         literal.appendChild(doc.createTextNode(publicnumber));

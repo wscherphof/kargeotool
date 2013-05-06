@@ -553,11 +553,6 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             var link = Ext.get(addresslink);
             var me = this;
             link.on('click', function() {
-                var sld = sldActionBeanUrl + '?publicnumber=';
-                sld+= busline.publicnumber;
-                editor.olc.addSldToKargis(sld);
-                Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
-                Ext.get("buslijnen_filter").setDisplayed(true);
                 var env = busline.envelope;
                 var bounds = new OpenLayers.Bounds([env.minx, env.miny, env.maxx, env.maxy]);
                 var location = bounds.getCenterLonLat();
@@ -566,6 +561,26 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                     location: location,
                     addMarker:false
                 });
+                
+                
+                var layerName = "buslijnen_" +schema;
+                
+                Ext.Array.each(ovInfo, function(ov) {
+                    var currentName = "buslijnen_" + ov.schema;
+                    var visible = false;
+                    if(currentName == layerName){
+                        visible = true;
+                    }
+                    editor.olc.setLayerVisible(currentName, visible);
+                });
+                    
+                var sld = sldActionBeanUrl + '?publicnumber=';
+                sld+= busline.publicnumber;
+                editor.olc.addSldToKargis(sld,layerName);
+                Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
+                Ext.get("buslijnen_filter").setDisplayed(true);
+                
+                
                 me.fireEvent("searchResultClicked",result );
                 
             });
