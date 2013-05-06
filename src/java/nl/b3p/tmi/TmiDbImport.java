@@ -308,6 +308,9 @@ public class TmiDbImport {
                 ")"
         );
 */         
+        // Index voor mapfile
+        update("create index line_lineplanningnummber_idx on line(lineplanningnumber)");
+        update("create index jopa_geom_idx on jopa using gist(the_geom)");
     }
     
     private void readTmi(InputStream input, String table, TmiField[] fields) throws Exception {
