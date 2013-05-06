@@ -164,8 +164,8 @@ Ext.define("Editor", {
         
         Ext.Array.each(ovInfos, function(ovInfo) {
             var bounds = new OpenLayers.Bounds(ovInfo.extent.xmin, ovInfo.extent.ymin, ovInfo.extent.xmax, ovInfo.extent.ymax);
-            this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', /*getLayerVisibility('buslijnen')*/true,null, null, 12, bounds);
-            this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', /*getLayerVisibility('bushaltes')*/true,null, null, 12, bounds);
+            this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', getLayerVisibility('buslijnen'),null, null, 12, bounds);
+            this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', getLayerVisibility('bushaltes'),null, null, 12, bounds);
         }, this);
     },
     
