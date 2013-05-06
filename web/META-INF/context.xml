@@ -8,7 +8,7 @@
         username="transmodel"
         password="transmodel"
         driverClassName="org.postgis.DriverWrapper"
-        url="jdbc:postgresql_postGIS://x13.b3p.nl/transmodel_060609"
+        url="jdbc:postgresql_postGIS://x13.b3p.nl/transmodel"
         maxActive="25"
         validationQuery="select 1"
     />
