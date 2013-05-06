@@ -519,12 +519,18 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             success: function(response) {
                 var msg = Ext.JSON.decode(response.responseText);
                 if(msg.success){
-                    var buslines = msg.buslines;
-                    if(buslines.length > 0){
-                        for ( var i = 0 ; i < buslines.length ; i++){
-                            this.createResult(buslines[i]);
+                    var schemas = msg.buslines;
+                    if(schemas.length > 0){
+                        var totalLines = 0;
+                        for(var j = 0 ; j < schemas.length ; j++ ){
+                            var schema = schemas[j];
+                            var buslines = schema.lines;
+                            totalLines += schema.lines.length;
+                            for ( var i = 0 ; i < buslines.length ; i++){
+                                this.createResult(schema.schema,buslines[i]);
+                            }
                         }
-                        this.searchFinished(buslines.length);
+                        this.searchFinished(totalLines);
                     }else{
                         this.searchFinished(0);
                     }
@@ -537,9 +543,9 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             }
         });
     },
-    createResult : function (busline){
+    createResult : function (schema,busline){
         if(busline.envelope){
-            var label = busline.publicnumber+ " - " +busline.name;
+            var label = schema + ": " + busline.publicnumber+ " - " +busline.name;
             var addresslink = document.createElement('a');
             addresslink.href = '#';
             addresslink.className = '.resultlink';
