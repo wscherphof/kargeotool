@@ -450,7 +450,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 var found = false;
                 for (var i = 0 ; i < list.length ;i++){
                     var entry = list[i];
-                    if(entry.omschrijving == value){
+                    if(entry.title == value){
                         found = true;
                         break;
                     }
@@ -464,14 +464,14 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             name: 'dataOwner',
             allowBlank: true,
             blankText: 'Selecteer een optie',
-            displayField: 'omschrijving',
+            displayField: 'title',
             queryMode:'local',
             typeAhead:true,
             minChars:2,
-            valueField: 'code',
+            valueField: 'data_owner_code',
             store: Ext.create('Ext.data.Store', {
-                fields: ['code', 'classificatie', 'companyNumber', 'omschrijving'],
-                data: dataOwners
+                fields: ['title', 'schema', 'data_owner_code'],
+                data: ovInfo
             }),
             listeners: {
                 buffer: 50,
@@ -482,7 +482,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                     store.clearFilter();
                     //store.resumeEvents();
                     store.filter({
-                        property: 'omschrijving',
+                        property: 'title',
                         anyMatch: true,
                         value   : this.beheerder.getValue()
                     });
@@ -527,7 +527,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                             var buslines = schema.lines;
                             totalLines += schema.lines.length;
                             for ( var i = 0 ; i < buslines.length ; i++){
-                                this.createResult(schema.schema,buslines[i]);
+                                this.createResult(schema.company,buslines[i], schema.schema);
                             }
                         }
                         this.searchFinished(totalLines);
@@ -543,9 +543,9 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             }
         });
     },
-    createResult : function (schema,busline){
+    createResult : function (company,busline,schema){
         if(busline.envelope){
-            var label = schema + ": " + busline.publicnumber+ " - " +busline.name;
+            var label = company + ": " + busline.publicnumber+ " - " +busline.name;
             var addresslink = document.createElement('a');
             addresslink.href = '#';
             addresslink.className = '.resultlink';

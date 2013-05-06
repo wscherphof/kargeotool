@@ -226,7 +226,8 @@ public class SearchActionBean implements ActionBean {
                         term = "";
                     }
                     JSONObject s = new JSONObject();
-                    s.put("schema", company);
+                    s.put("company", company);
+                    s.put("schema", schema);
                     if (dataOwner != null) {
                         s.put("lines", new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%", dataOwner));
                     } else {
@@ -259,8 +260,6 @@ public class SearchActionBean implements ActionBean {
             List<String> schemaList = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
             
             for(String schema: schemaList) {
-                JSONObject ovSchema = new JSONObject();
-                ovSchema.put("schema", schema);
 
                 try {
                     Map<String,Object> meta = new QueryRunner().query(conn, "select data_owner_code from " + schema + ".geo_ov_metainfo", new MapHandler());
