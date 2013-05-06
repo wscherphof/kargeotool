@@ -238,8 +238,10 @@
                     if(!event) {
                         event = window.event;
                     }
-                    var layer = event.target.id.substr(0, event.target.id.indexOf('_'));
-                    var visible = event.target.checked;
+                    var target = event.target ? event.target : event.srcElement;
+                    
+                    var layer = target.id.substr(0, target.id.indexOf('_'));
+                    var visible = target.checked;
                     
                     Ext.Array.each(ovInfo, function(ov) {
                         editor.olc.setLayerVisible(layer + "_" + ov.schema, visible);
@@ -253,8 +255,10 @@
                     if(!event) {
                         event = window.event;
                     }
-                    var layer = event.target.id.substr(0, event.target.id.indexOf('_'));
-                    var visible = event.target.checked;
+                    var target = event.target ? event.target : event.srcElement;
+                    
+                    var layer = target.id.substr(0, target.id.indexOf('_'));
+                    var visible = target.checked;
                     
                     editor.olc.setLayerVisible(layer, visible);
                     profile.state[layer + "_visible"] = visible;
