@@ -442,6 +442,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
     beheerder:null,
     constructor: function(config) {
         this.callParent(arguments);
+        var me = this;
         this.beheerder = Ext.create(Ext.form.ComboBox,{
             fieldLabel: 'Beheerder',
             id:Ext.id(),
@@ -475,27 +476,27 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             }),
             listeners: {
                 buffer: 50,
-                scope: this,
+                
                 change: function() {
-                    var store = this.beheerder.store;
+                    var store = this.store;
                     //store.suspendEvents();
                     store.clearFilter();
                     //store.resumeEvents();
                     store.filter({
                         property: 'title',
                         anyMatch: true,
-                        value   : this.beheerder.getValue()
+                        value   : this.getValue()
                     });
 
-                    if(this.beheerder.isValid()){
+                    if(this.isValid()){
                         var f = function(numResults, entity){
-                            this.panel.expand();
-                            this.un('searchFinished',f,this);
+                            me.panel.expand();
+                            me.un('searchFinished',f,me);
                         };
-                        this.on('searchFinished',f,this);
-                        this.resultDom.innerHTML = "";
-                        var term = this.editor.search.getTerm();
-                        this.search(term);
+                        me.on('searchFinished',f,me);
+                        me.resultDom.innerHTML = "";
+                        var term = me.editor.search.getTerm();
+                        me.search(term);
                     }
                 }
             }

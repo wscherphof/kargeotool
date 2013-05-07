@@ -540,6 +540,7 @@ Ext.define("ol", {
     },
     /**
      * Haal de sld's van de layers 'buslijnen'
+     * @param layer De laag waarvan het SLD gehaald moet worden
      */
     removeSldFromKargis : function (layer){
         var buslijnen = this.map.getLayersByName(layer)[0];
