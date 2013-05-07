@@ -446,29 +446,11 @@ Ext.define("nl.b3p.kar.SearchBusline", {
         this.beheerder = Ext.create(Ext.form.ComboBox,{
             fieldLabel: 'Beheerder',
             id:Ext.id(),
-            validator:function(value){
-                var list =this.store.proxy.data;
-                var found = false;
-                for (var i = 0 ; i < list.length ;i++){
-                    var entry = list[i];
-                    if(entry.title == value){
-                        found = true;
-                        break;
-                    }
-                }
-                if(found || value == ''){
-                    return true;
-                }else{
-                    return "Waarde " + value + " is geen bestaande beheerder.";
-                }
-            },
             name: 'dataOwner',
             allowBlank: true,
             blankText: 'Selecteer een optie',
             displayField: 'title',
-            queryMode:'local',
-            typeAhead:true,
-            minChars:2,
+            editable:false,
             valueField: 'data_owner_code',
             store: Ext.create('Ext.data.Store', {
                 fields: ['title', 'schema', 'data_owner_code'],
@@ -476,26 +458,17 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             }),
             listeners: {
                 buffer: 50,
-                
                 change: function() {
-                    var store = this.store;
-                    //store.suspendEvents();
-                    store.clearFilter();
-                    //store.resumeEvents();
-                    store.filter({
-                        property: 'title',
-                        anyMatch: true,
-                        value   : this.getValue()
-                    });
-
                     if(this.isValid()){
                         var f = function(numResults, entity){
                             me.panel.expand();
+                            me.panel.setLoading(false);
                             me.un('searchFinished',f,me);
                         };
                         me.on('searchFinished',f,me);
                         me.resultDom.innerHTML = "";
                         var term = me.editor.search.getTerm();
+                        me.panel.setLoading("Zoeken..");
                         me.search(term);
                     }
                 }
