@@ -244,9 +244,7 @@ public class SearchActionBean implements ActionBean {
         } finally {
             DbUtils.closeQuietly(c);
         }
-
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
-
     }
     
      private Map<String, List<String>> getSchemas() {
