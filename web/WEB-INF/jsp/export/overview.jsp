@@ -62,6 +62,7 @@
                     <stripes:option value="incaa" >INCAA .ptx</stripes:option>
                     <stripes:option value="kv9" >KV9 XML</stripes:option>
                 </stripes:select>
+                <stripes:hidden name="rseqs" id="rseqs"/>
                 <stripes:submit name="export">Exporteer</stripes:submit>
             </stripes:form>
 

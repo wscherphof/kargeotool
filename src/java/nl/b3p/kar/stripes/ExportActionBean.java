@@ -28,14 +28,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.controller.LifecycleStage;
+import net.sourceforge.stripes.validation.OneToManyTypeConverter;
 import net.sourceforge.stripes.validation.SimpleError;
 import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
@@ -74,8 +78,16 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
     private static final String NIEUW_DEELGEBIED = "/WEB-INF/jsp/export/deelgebied.jsp";
     private final int SRID = 28992;
     private ActionBeanContext context;
+    
     @Validate(required = true, on = {"exportPtx", "exportXml"})
     private RoadsideEquipment rseq;
+    
+    
+    @Validate(converter = OneToManyTypeConverter.class,on = "export")
+    private List<Long> rseqs;
+    
+    private List<RoadsideEquipment> roadsideEquipmentList;
+    
     private List<Deelgebied> deelgebieden = new ArrayList();
     
     @Validate(converter = EntityTypeConverter.class,on ={"saveDeelgebied", "bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"} )
@@ -102,6 +114,13 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
     }
     
     public Resolution export() throws Exception {
+        
+        EntityManager em = Stripersist.getEntityManager();
+        roadsideEquipmentList = new ArrayList();
+        for (Long id : rseqs) {
+            RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
+            roadsideEquipmentList.add(r);
+        }
         if (exportType.equals("incaa")) {
             return exportPtx();
         } else if (exportType.equals("kv9")) {
@@ -120,24 +139,45 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
         m.setProperty("jaxb.formatted.output", Boolean.TRUE);
 
         /* TODO subscriberId per dataOwner of in gebruikersprofiel instellen/vragen oid */
-        TmiPush push = new TmiPush("B3P", Arrays.asList(new RoadsideEquipment[]{rseq}));
-
+        if(rseq != null){
+            roadsideEquipmentList = Arrays.asList(new RoadsideEquipment[]{rseq});
+        }
+        TmiPush push = new TmiPush("B3P", roadsideEquipmentList);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         m.marshal(push, bos);
+        
+        Date now = new Date();
+        DateFormat sdf = new SimpleDateFormat("yyyyMMDDHHmmss");
+        String filename = "geo-ov_kv9_" + sdf.format(now);
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()))
                 .setAttachment(true)
-                .setFilename("geo-ov_kv9_" + rseq.getDataOwner().getCode() + "_" + rseq.getKarAddress() + ".xml")
+                .setFilename( filename + ".xml")
                 .setLength(bos.size());
     }
-
+    
     public Resolution exportPtx() throws Exception {
 
         IncaaExport exporter = new IncaaExport();
-        File f = exporter.convert(rseq);
-        FileInputStream fis = new FileInputStream(f);
-        return new StreamingResolution("text/ptx", fis)
-                .setAttachment(true)
-                .setFilename("geo-ov_incaa_" + rseq.getDataOwner().getCode() + "_" + rseq.getKarAddress() + ".ptx");
+        
+        File f = null;
+        if(rseq != null){
+            f = exporter.convert(rseq);
+        }else if( roadsideEquipmentList != null){
+            f = exporter.convert(roadsideEquipmentList);
+        }
+        if(f != null){
+            FileInputStream fis = new FileInputStream(f);
+
+            String filename = "HLPXXXXX";
+            Date now = new Date();
+            DateFormat sdf = new SimpleDateFormat("yyyyMMDDHHmmss");
+            filename += sdf.format(now);
+            return new StreamingResolution("text/ptx", fis)
+                    .setAttachment(true)
+                    .setFilename(filename+ ".ptx");
+        }else{
+            throw new Exception("Could not find roadsideequipments");
+        }
     }
     
     @DontValidate
@@ -169,6 +209,7 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
             JSONArray rseqArray = new JSONArray();
             for (RoadsideEquipment rseqObj : rseqs) {
                 JSONObject jRseq = new JSONObject();
+                jRseq.put("id", rseqObj.getId());
                 jRseq.put("naam", rseqObj.getDescription());
                 jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
                 String type = rseqObj.getType();
@@ -265,6 +306,15 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
         this.exportType = exportType;
     }
 
+    public List<Long> getRseqs() {
+        return rseqs;
+    }
+
+    public void setRseqs(List<Long> rseqs) {
+        this.rseqs = rseqs;
+    }
+
+  
     public RoadsideEquipment getRseq() {
         return rseq;
     }

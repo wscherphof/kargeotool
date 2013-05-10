@@ -21,7 +21,8 @@ package nl.b3p.incaa;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import nl.b3p.kar.hibernate.ActivationPoint;
+import java.util.ArrayList;
+import java.util.List;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
@@ -41,10 +42,12 @@ public class IncaaExport {
     }
 
     public File convert(RoadsideEquipment rseq) {
-        return convert(new RoadsideEquipment[]{rseq});
+        List<RoadsideEquipment> list = new ArrayList<RoadsideEquipment>();
+        list.add(rseq);
+        return convert(list);
     }
 
-    public File convert(RoadsideEquipment[] rseqs) {
+    public File convert(List<RoadsideEquipment>rseqs) {
         File f = null;
         PrintWriter pw = null;
         try {

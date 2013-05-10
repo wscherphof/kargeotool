@@ -22,7 +22,7 @@ var grid = null;
 Ext.onReady(function (){
     store = Ext.create('Ext.data.Store',{
         storeId : 'rseqStore',
-        fields : ['naam','dataowner','type'],
+        fields : ['id','naam','dataowner','type'],
         data : {
             'items' : []
         },
@@ -94,4 +94,12 @@ function deelgebiedChanged (){
 function rseqsReceived (rseqs,naam){
     store.loadData(rseqs);
     grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
+    var ids = '';
+    for(var i = 0 ; i < rseqs.length ; i++){
+        if(ids.length > 0){
+            ids+= ', ';
+        }
+        ids += rseqs[i].id;
+    }
+    Ext.get("rseqs").dom.value =ids;
 }
