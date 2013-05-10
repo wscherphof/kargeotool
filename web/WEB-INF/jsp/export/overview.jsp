@@ -47,6 +47,7 @@
         <h1>Exporteer verkeerssystemen</h1>
         <div id="body" class="exportBody">
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean"  >
+             
                 <stripes:messages/>
                 <stripes:errors/>
                 <p>

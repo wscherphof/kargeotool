@@ -131,7 +131,7 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
             roadsideEquipmentList.add(r);
         }
         if(exportType == null){
-            this.context.getMessages().add(new SimpleError(("Selecteer een exporttype")));
+            this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
         }else if (exportType.equals("incaa")) {
             return exportPtx();

@@ -57,6 +57,8 @@ Ext.onReady(function (){
         width : 400,
         renderTo : 'rseqGrid'
     });
+    
+    deelgebiedChanged();
 });
 
 function deelgebiedChanged (){

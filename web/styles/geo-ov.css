@@ -202,3 +202,11 @@ body.editor {
     margin-top: 50px;
     margin-left: 50px;
 }
+
+.errors {
+    color: #f00;
+}
+
+.info {
+    color: #00f;
+}
