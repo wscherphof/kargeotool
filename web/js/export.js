@@ -73,7 +73,7 @@ function deelgebiedChanged (){
             scope: me,
             params: {
                 'rseqByDeelgebied' : true,
-                'deelgebied': deelgebied
+                'filter': deelgebied
             },
             success: function (response){
                 var msg = Ext.JSON.decode(response.responseText);
@@ -88,6 +88,8 @@ function deelgebiedChanged (){
                 Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
+    }else{
+        rseqsReceived([], "...");
     }
 }
 
@@ -102,4 +104,9 @@ function rseqsReceived (rseqs,naam){
         ids += rseqs[i].id;
     }
     Ext.get("rseqs").dom.value =ids;
+    if(rseqs.length > 0){
+        Ext.get("exportSubmit").dom.disabled =false;
+    }else{
+        Ext.get("exportSubmit").dom.disabled =true;
+    }
 }

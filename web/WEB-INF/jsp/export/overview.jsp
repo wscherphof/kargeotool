@@ -31,7 +31,7 @@
 
 
         <script type="text/javascript">
-            
+
             var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean" />";
             var profile = {
             };
@@ -44,30 +44,38 @@
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
         <script type="text/javascript" src="${contextPath}/js/export.js"></script>
-        <div id="body">
+        <h1>Exporteer verkeerssystemen</h1>
+        <div id="body" class="exportBody">
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean"  >
-                <stripes:select name="deelgebied" onchange="deelgebiedChanged();" id="deelgebied" >
-                    <stripes:option>Selecteer een deelgebied</stripes:option>
-                    <stripes:options-collection collection="${actionBean.deelgebieden}" label="name" value="id" />
-                </stripes:select>
-                <stripes:submit name="maakDeelgebied">Nieuw</stripes:submit>
-                <stripes:submit name="bewerkDeelgebied">Bewerk</stripes:submit>
-                <stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="removeDeelgebied">Verwijder</stripes:link>
-                <div>
-                    rseqs
-                    <div id="rseqGrid"/>
-                </div>
-                <stripes:select name="exportType">
-                    <stripes:option>Selecteer een type</stripes:option>
-                    <stripes:option value="incaa" >INCAA .ptx</stripes:option>
-                    <stripes:option value="kv9" >KV9 XML</stripes:option>
-                </stripes:select>
-                <stripes:hidden name="rseqs" id="rseqs"/>
-                <stripes:submit name="export">Exporteer</stripes:submit>
+                <stripes:messages/>
+                <stripes:errors/>
+                <p>
+                    Deelgebied
+                    <stripes:select name="filter" onchange="deelgebiedChanged();" id="deelgebied" >
+                        <stripes:option>Selecteer een deelgebied</stripes:option>
+                        <stripes:options-collection collection="${actionBean.deelgebieden}" label="name" value="id" />
+                    </stripes:select>
+                    <stripes:submit name="maakDeelgebied">Nieuw</stripes:submit>
+                    <stripes:submit name="bewerkDeelgebied">Bewerk</stripes:submit>
+                    <stripes:submit name="removeDeelgebied">Verwijder</stripes:submit>
+                </p><br/>
+                <p>
+                    <div id="rseqGrid"></div> <br/>
+                </p>
+                <p>
+                    Exporttype
+                    <stripes:select name="exportType">
+                        <stripes:option value="">Selecteer een type</stripes:option>
+                        <stripes:option value="incaa" >INCAA .ptx</stripes:option>
+                        <stripes:option value="kv9" >KV9 XML</stripes:option>
+                    </stripes:select>
+                    <stripes:hidden name="rseqs" id="rseqs"/>
+                    <stripes:submit name="export" disabled="true" id="exportSubmit">Exporteer</stripes:submit>
+                </p>
             </stripes:form>
 
         </div>
-        
+
 
     </stripes:layout-component>
 </stripes:layout-render>

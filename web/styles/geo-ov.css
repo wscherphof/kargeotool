@@ -195,3 +195,10 @@ body.editor {
     /* when OL encounters a 404, don't display the pink image */
     display: none !important;
 } 
+
+.exportBody{
+    width: 500px;
+   
+    margin-top: 50px;
+    margin-left: 50px;
+}

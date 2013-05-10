@@ -52,12 +52,12 @@
             </c:choose>
 
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean">
-                <stripes:hidden name="deelgebied" />
+                <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />
                 <stripes:hidden name="geom" id="geom"/>
                 Naam: <stripes:text name="deelgebied.name">asdf</stripes:text> <br/>
                 Definieer een gebied:
                 <div id="kaart" style="width:400px;height:400px;">
-                    <div id="map" style="width: 100%; height: 100%;"></div>
+                    <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
                 </div>
                 <button onclick="drawArea();
                     return false;">Teken deelgebied</button>
@@ -121,8 +121,8 @@
                     Ext.get("geom").dom.value = geom;
                     draw.deactivate();
                 }
-                var testgeom = new OpenLayers.Geometry.fromWKT("POLYGON((92208.32 447517.12,85327.04 405369.28,123174.08 407949.76,141237.44 449237.44,92208.32 447517.12))");
-                draw.drawFeature(testgeom);
+               // var testgeom = new OpenLayers.Geometry.fromWKT("POLYGON((92208.32 447517.12,85327.04 405369.28,123174.08 407949.76,141237.44 449237.44,92208.32 447517.12))");
+                //draw.drawFeature(testgeom);
         </script>
     </stripes:layout-component>
 </stripes:layout-render>
