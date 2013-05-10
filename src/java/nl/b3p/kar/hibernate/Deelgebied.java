@@ -50,7 +50,7 @@ public class Deelgebied {
     private Polygon geom;
     
     
-    @ManyToOne(optional=false,cascade=CascadeType.ALL) 
+    @ManyToOne(optional=false) 
     private Gebruiker gebruiker;
 
     public Integer getId() {
