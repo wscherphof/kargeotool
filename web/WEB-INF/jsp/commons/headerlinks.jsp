@@ -31,6 +31,9 @@
             </div>
         </c:if>
         <div class="headerlink">
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>">Exporteer</a>
+        </div>
+        <div class="headerlink">
             <a href="#" onclick="showDefaultAttributes();">Instellingen</a>
         </div>
         <div class="headerlink">
