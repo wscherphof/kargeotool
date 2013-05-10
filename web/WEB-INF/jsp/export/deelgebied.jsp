@@ -54,59 +54,52 @@
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean">
                 <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />
                 <stripes:hidden name="geom" id="geom"/>
-                Naam: <stripes:text name="deelgebied.name">asdf</stripes:text> <br/>
-                Definieer een gebied:
-                <div id="kaart" style="width:400px;height:400px;">
-                    <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
-                </div>
-                <button onclick="drawArea();
-                    return false;">Teken deelgebied</button>
-                <button onclick="resetArea();
-                    return false;">Reset</button> <br/>
+                Naam: <stripes:text name="deelgebied.name"></stripes:text> <br/>
+                    Definieer een gebied:
+                    <div id="kaart" style="width:400px;height:400px;">
+                        <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
+                    </div>
+                    <button onclick="drawArea();return false;">Teken deelgebied</button>
+                    <button onclick="resetArea();return false;">Reset</button> <br/>
                 <stripes:submit name="saveDeelgebied">Opslaan</stripes:submit>
             </stripes:form>
 
         </div>
 
         <script>
-                var vector = new OpenLayers.Layer.Vector("deelgebied");
-                var map = new OpenLayers.Map({
-                    div : "map",
-                    layers : [
-                        new OpenLayers.Layer.TMS(
-                                "osm-rd-TMS",
-                                "http://openbasiskaart.nl/mapcache/tms/",
-                                {
-                                    layername : 'osm@rd',
-                                    type : "png",
-                                    serviceVersion : "1.0.0",
-                                    gutter : 0,
-                                    buffer : 0,
-                                    isBaseLayer : true,
-                                    transitionEffect : 'resize',
-                                    tileOrigin : new OpenLayers.LonLat(-285401.920000,22598.080000),
-                                    resolutions : [3440.63999999999987267074,1720.31999999999993633537,860.15999999999996816769,430.07999999999998408384,215.03999999999999204192,107.51999999999999602096,53.75999999999999801048,26.87999999999999900524,13.43999999999999950262,6.71999999999999975131,3.35999999999999987566,1.67999999999999989342,0.84000000000000003553,0.42000000000000001776,0.21000000000000000888],
-                                    zoomOffset : 0,
-                                    units : "m",
-                                    maxExtent : new OpenLayers.Bounds(-285401.920000,22598.080000,595401.920000,903401.920000),
-                                    projection : new OpenLayers.Projection("epsg:28992".toUpperCase()),
-                                    sphericalMercator : false
-                                }
-                        ),
-                        vector
-                    ]
-                });
-                //map.addLayer(osm_rd_tms_layer);
-                var draw = new OpenLayers.Control.DrawFeature(vector,OpenLayers.Handler.Polygon,{
-                    displayClass : 'olControlDrawFeaturePoint',
-                    featureAdded : featureAdded
-                }
-                );
-                map.addControl(draw);
-                if(!map.getCenter())
-                    map.zoomToMaxExtent();
-                map.zoomTo(2);
+            var draw =null;
+            var map = null;
+                function loadMap (){
+                    var brt = new OpenLayers.Layer.TMS('BRT','http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
+                        layername : 'brtachtergrondkaart',
+                        type : 'png8',
+                        maxExtent : new OpenLayers.Bounds(-285401.920000,22598.080000,595401.920000,903401.920000),
+                        projection : new OpenLayers.Projection("epsg:28992".toUpperCase()),
+                        isBaseLayer : true,
+                        serverResolutions : [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
+                        tileOrigin : new OpenLayers.LonLat(-285401.920000,22598.080000)
+                    });
 
+                    var vector = new OpenLayers.Layer.Vector("deelgebied");
+                    map = new OpenLayers.Map({
+                        resolutions : [860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21,0.105,0.0525],
+                        units : 'm',
+                        div : "map",
+                        layers : [
+                            brt,
+                            vector
+                        ]
+                    });
+                    draw = new OpenLayers.Control.DrawFeature(vector,OpenLayers.Handler.Polygon,{
+                        displayClass : 'olControlDrawFeaturePoint',
+                        featureAdded : featureAdded
+                    });
+                    
+                    map.addControl(draw);
+                    if(!map.getCenter()){
+                        map.zoomToMaxExtent();
+                    }
+                }
 
                 function drawArea (){
                     draw.activate();
@@ -121,8 +114,10 @@
                     Ext.get("geom").dom.value = geom;
                     draw.deactivate();
                 }
-               // var testgeom = new OpenLayers.Geometry.fromWKT("POLYGON((92208.32 447517.12,85327.04 405369.28,123174.08 407949.76,141237.44 449237.44,92208.32 447517.12))");
-                //draw.drawFeature(testgeom);
+                
+                Ext.onReady(function (){
+                    loadMap();
+                });
         </script>
     </stripes:layout-component>
 </stripes:layout-render>
