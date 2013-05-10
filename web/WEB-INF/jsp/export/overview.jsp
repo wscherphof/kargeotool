@@ -31,6 +31,8 @@
 
 
         <script type="text/javascript">
+            
+            var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean" />";
             var profile = {
             };
 
@@ -41,9 +43,10 @@
 
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/export.js"></script>
         <div id="body">
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean"  >
-                <stripes:select name="deelgebied" >
+                <stripes:select name="deelgebied" onchange="deelgebiedChanged();" id="deelgebied" >
                     <stripes:option>Selecteer een deelgebied</stripes:option>
                     <stripes:options-collection collection="${actionBean.deelgebieden}" label="name" value="id" />
                 </stripes:select>
@@ -52,6 +55,7 @@
                 <stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="removeDeelgebied">Verwijder</stripes:link>
                 <div>
                     rseqs
+                    <div id="rseqGrid"/>
                 </div>
                 <stripes:select name="exportType">
                     <stripes:option>Selecteer een type</stripes:option>

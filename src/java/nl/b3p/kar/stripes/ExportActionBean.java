@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +47,16 @@ import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
 import nl.b3p.kar.jaxb.TmiPush;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.type.Type;
+import org.hibernatespatial.GeometryUserType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.stripesstuff.stripersist.EntityTypeConverter;
 import org.stripesstuff.stripersist.Stripersist;
 
@@ -69,7 +78,7 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
     private RoadsideEquipment rseq;
     private List<Deelgebied> deelgebieden = new ArrayList();
     
-    @Validate(converter = EntityTypeConverter.class,on ={"saveDeelgebied", "bewerkDeelgebied", "removeDeelgebied"} )
+    @Validate(converter = EntityTypeConverter.class,on ={"saveDeelgebied", "bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"} )
     @ValidateNestedProperties({
         @Validate(field = "name")
     })
@@ -139,6 +148,47 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
     
     public Resolution bewerkDeelgebied(){
         return new ForwardResolution(NIEUW_DEELGEBIED);
+    }
+    
+    public Resolution rseqByDeelgebied() throws JSONException{
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+
+            Session sess = (Session) em.getDelegate();
+            
+            Polygon deelgebiedPoly =deelgebied.getGeom();
+            
+            Query q = sess.createQuery("from RoadsideEquipment where intersects(location, ?) = true");
+            Type geometryType = GeometryUserType.TYPE;
+            q.setParameter(0, deelgebiedPoly, geometryType);
+            List<RoadsideEquipment> rseqs = (List<RoadsideEquipment>)q.list();
+            
+            JSONArray rseqArray = new JSONArray();
+            for (RoadsideEquipment rseqObj : rseqs) {
+                JSONObject jRseq = new JSONObject();
+                jRseq.put("naam", rseqObj.getDescription());
+                jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
+                String type = rseqObj.getType();
+                if(type.equalsIgnoreCase("CROSSING")){
+                    jRseq.put("type", "VRI");
+                }else if(type.equalsIgnoreCase("BAR")){
+                    jRseq.put("type", "Afsluitingssysteem");
+                }else if(type.equalsIgnoreCase("GUARD")){
+                    jRseq.put("type", "Waarschuwingssyteem");
+                }
+                rseqArray.put(jRseq);
+            }
+          
+            info.put("rseqs", rseqArray);
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("search rseq exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
     public Resolution saveDeelgebied() {
