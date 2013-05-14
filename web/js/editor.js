@@ -357,7 +357,7 @@ Ext.define("Editor", {
         var me = this;
         
         var exportIt = function() {
-            window.open(exportActionBeanUrl + "?rseq=" + me.activeRseq.id, "exportwindow");
+            window.open(exportActionBeanUrl + "?exportXml=&rseq=" + me.activeRseq.id, "exportwindow");
         };
 
         if(me.changeManager.changeDetected) {
