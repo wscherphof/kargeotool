@@ -45,5 +45,30 @@ psql naar geo-ov
 Voer uit:
 	\i dump.backup
 	
+	
+
+	CREATE INDEX idx_geom
+	  ON road
+	  USING gist
+	  (geometry);
+
+	-- Index: road_name
+
+	-- DROP INDEX road_name;
+
+	CREATE INDEX road_name
+	  ON road
+	  USING btree
+	  (name);
+
+	-- Index: road_ref
+
+	-- DROP INDEX road_ref;
+
+	CREATE INDEX road_ref
+	  ON road
+	  USING btree
+	  (ref);
+
 	\q
 	
