@@ -301,7 +301,9 @@ Ext.define("ol", {
                 var f = editor.olc.getFeatureFromEvent(evt);
                 var x = evt.clientX;
                 var y = evt.clientY;
-                if(f && f.layer.name == "RseqSelect"){
+                if(f && f.cluster ){
+                    
+                }else if(f && f.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
                         rseq: f.data.id
                     },function(){

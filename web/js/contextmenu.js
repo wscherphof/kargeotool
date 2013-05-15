@@ -447,7 +447,7 @@ Ext.define("ContextMenu", {
             
             var f = editor.olc.getFeatureFromEvent(e);
             
-            if(f){
+            if(f&& !f.cluster){
                 var x = e.clientX;
                 var y = e.clientY;
                 if(f.layer.name== "RseqSelect"){
