@@ -129,10 +129,38 @@ Ext.define("ContextMenu", {
                 text: 'Opslaan',
                 icon: contextPath + "/images/silk/table_save.png"
             },
+            
             {
-                id: 'exportXml',
-                text: 'Exporteer KV9 XML',
-                icon: contextPath + "/images/silk/transmit_go.png"
+                id: 'exportMenu',
+                text: 'Exporteer',
+                menu: {
+                    items:[
+                        {
+                            id: 'exportXml',
+                            text: 'Exporteer KV9 XML',
+                            icon: contextPath + "/images/silk/transmit_go.png"
+                        },
+                        {
+                            id: 'exportPtx',
+                            text: 'Exporteer Incaa PTX',
+                            icon: contextPath + "/images/silk/transmit_go.png"
+                        }
+                    ],
+                    listeners: {
+                        click:
+                        function(menu,item,e, opts) {
+                            switch (item.id) {
+                                case 'exportXml':
+                                    this.editor.exportXml();
+                                    break;
+                                case 'exportPtx':
+                                    this.editor.exportPtx();
+                                    break;
+                            }
+                        },
+                        scope:me
+                    }
+                }
             },            
             {
                 id: 'setCoordsRseq',
@@ -177,9 +205,6 @@ Ext.define("ContextMenu", {
                             break;
                         case 'saveRseq':
                             this.editor.saveOrUpdate();
-                            break;
-                        case 'exportXml':
-                            this.editor.exportXml();
                             break;
                         case 'setCoordsRseq':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);

@@ -374,6 +374,27 @@ Ext.define("Editor", {
             exportIt();
         }
     },
+    exportPtx: function() {
+        var me = this;
+        
+        var exportIt = function() {
+            window.open(exportActionBeanUrl + "?exportPtx=&rseq=" + me.activeRseq.id, "exportwindow");
+        };
+
+        if(me.changeManager.changeDetected) {
+            Ext.MessageBox.confirm(
+                    "Opslaan verkeerssyteem",
+                    "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
+                    function (button){
+                        if(button === 'yes') {
+                            me.saveOrUpdate(exportIt);
+                        }
+                    }
+            );
+        } else {
+            exportIt();
+        }
+    },
     
     removeRseq : function(){
         var rseq = this.activeRseq;

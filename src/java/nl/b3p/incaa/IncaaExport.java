@@ -97,10 +97,10 @@ public class IncaaExport {
                     line += time; // 7
                     line += TAB;
                     line += map.getSignal().getKarCommandType();
-                    line += TAB;
+                 /*   line += TAB;
                     line += map.getPoint().getLabel();
                     line += TAB;
-                    line += map.getPoint().getId();
+                    line += map.getPoint().getId();*/
                 } else {
                     continue;
                 }
