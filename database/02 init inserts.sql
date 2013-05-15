@@ -6,4 +6,3 @@ INSERT INTO gebruiker_roles (gebruiker, role) VALUES (1, 2);
 
 
 select setval('gebruiker_id_seq', (select max(id) from gebruiker)); 
-select setval('role_id_seq', (select max(id) from role)); 
