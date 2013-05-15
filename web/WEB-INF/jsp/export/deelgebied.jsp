@@ -53,7 +53,7 @@
 
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean">
                 <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />
-                <stripes:hidden name="geom" id="geom"/>
+                <stripes:hidden name="geom" id="geom" value="${actionBean.deelgebied.geom}"/>
                 Naam: <stripes:text name="deelgebied.name"></stripes:text> <br/>
                     Definieer een gebied:
                     <div id="kaart" style="width:400px;height:400px;">
@@ -67,8 +67,10 @@
         </div>
 
         <script>
-            var draw =null;
-            var map = null;
+                var draw =null;
+                var map = null;
+                var vector = null;
+                var wkt = "${actionBean.deelgebied.geom}";
                 function loadMap (){
                     var brt = new OpenLayers.Layer.TMS('BRT','http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
                         layername : 'brtachtergrondkaart',
@@ -80,7 +82,7 @@
                         tileOrigin : new OpenLayers.LonLat(-285401.920000,22598.080000)
                     });
 
-                    var vector = new OpenLayers.Layer.Vector("deelgebied");
+                    vector = new OpenLayers.Layer.Vector("deelgebied");
                     map = new OpenLayers.Map({
                         resolutions : [860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21,0.105,0.0525],
                         units : 'm',
@@ -99,9 +101,14 @@
                     if(!map.getCenter()){
                         map.zoomToMaxExtent();
                     }
+                    if(wkt){
+                        var feat = new OpenLayers.Geometry.fromWKT(wkt);
+                        draw.drawFeature(feat);
+                    }
                 }
 
                 function drawArea (){
+                    resetArea();
                     draw.activate();
                 }
 
