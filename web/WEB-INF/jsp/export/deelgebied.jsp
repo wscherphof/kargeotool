@@ -52,6 +52,9 @@
             </c:choose>
 
             <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean">
+                
+                <stripes:messages/>
+                <stripes:errors/>
                 <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />
                 <stripes:hidden name="geom" id="geom" value="${actionBean.deelgebied.geom}"/>
                 Naam: <stripes:text name="deelgebied.name"></stripes:text> <br/>

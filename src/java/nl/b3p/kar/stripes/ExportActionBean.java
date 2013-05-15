@@ -105,7 +105,7 @@ public class ExportActionBean implements ActionBean,ValidationErrorHandler{
     @Validate(converter = EntityTypeConverter.class,on ={"bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"} )
     private Deelgebied filter;
     
-    @Validate(on = "saveDeelgebied")
+    @Validate(on = "saveDeelgebied", required = true)
     private String geom;
     
     @Validate(on = "export")
