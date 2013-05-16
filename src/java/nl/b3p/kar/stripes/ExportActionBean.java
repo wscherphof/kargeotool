@@ -105,6 +105,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     
     @Validate ( on={"rseqByDeelgebied", "allRseqs"})
     private boolean onlyValid;
+    @Validate ( on={"rseqByDeelgebied", "allRseqs"})
+    private String vehicleType;
 
     @DefaultHandler
     public Resolution overview() {
@@ -284,6 +286,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 if(onlyValid && !rseqObj.isValid()){
                     continue;
                 }
+                if(vehicleType != null && ! rseqObj.hasSignalForVehicleType(vehicleType)){
+                    continue;
+                }
                 JSONObject jRseq = new JSONObject();
                 jRseq.put("id", rseqObj.getId());
                 jRseq.put("naam", rseqObj.getDescription());
@@ -390,6 +395,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setOnlyValid(boolean onlyValid) {
         this.onlyValid = onlyValid;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     public RoadsideEquipment getRseq() {

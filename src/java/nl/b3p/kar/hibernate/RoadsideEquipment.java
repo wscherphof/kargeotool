@@ -435,6 +435,29 @@ public class RoadsideEquipment {
             return false;
         }
     }
+    
+    /**
+     * Checkt of dit rseq signaalgroepen voor het opgegeven @param vehicleType heeft. 
+     * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Beide/<null> (geeft altijd true)
+     * @return 
+     */
+    public boolean hasSignalForVehicleType(String vehicleType){
+        if(vehicleType == null || vehicleType.equalsIgnoreCase("beide")){
+            return true;
+        }
+        for (Movement movement : movements) {
+            for (MovementActivationPoint movementActivationPoint : movement.getPoints()) {
+                if( movementActivationPoint.getBeginEndOrActivation().equalsIgnoreCase(MovementActivationPoint.ACTIVATION)){
+                    for (VehicleType vehicleType1 : movementActivationPoint.getSignal().getVehicleTypes()) {
+                        if(vehicleType1.getGroep().equalsIgnoreCase(vehicleType)){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Methode converteert dit RoadsideEquipment object in een JSON object
      * 
