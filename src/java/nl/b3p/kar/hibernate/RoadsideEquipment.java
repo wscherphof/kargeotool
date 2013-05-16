@@ -426,6 +426,15 @@ public class RoadsideEquipment {
         return null;
     }
     
+    
+    public boolean isValid(){
+        Date now = new Date();
+        if(validFrom.compareTo(now) <= 0 && (validUntil == null || validUntil.after(now))){
+            return true;
+        }else{
+            return false;
+        }
+    }
     /**
      * Methode converteert dit RoadsideEquipment object in een JSON object
      * 

@@ -22,7 +22,7 @@ var grid = null;
 Ext.onReady(function (){
     store = Ext.create('Ext.data.Store',{
         storeId : 'rseqStore',
-        fields : ['id','naam','dataowner','type'],
+        fields : ['id','naam','dataowner','type','karAddress'],
         data : {
             'items' : []
         },
@@ -48,7 +48,8 @@ Ext.onReady(function (){
         // Fields will be arranged vertically, stretched to full width
         layout : 'anchor',
         defaults : {
-            anchor : '100%'
+            anchor : '100%',
+            labelWidth : '190px'
         },
         // The fields
         defaultType : 'textfield',
@@ -70,7 +71,7 @@ Ext.onReady(function (){
                         name : 'filterType',
                         inputValue : 'all',
                         checked : true,
-                        handler : function (item, checked){
+                        handler : function (item,checked){
                             if(checked){
                                 allRseqs();
                             }
@@ -162,6 +163,10 @@ Ext.onReady(function (){
                     {
                         text : 'Type',
                         dataIndex : 'type'
+                    },
+                    {
+                        text : 'KAR Adres',
+                        dataIndex : 'karAddress'
                     }
                 ],
                 height : 200,
@@ -170,7 +175,7 @@ Ext.onReady(function (){
             {
                 xtype : "combo",
                 fieldLabel : 'Type export',
-                allowBlank:false,
+                allowBlank : false,
                 store : Ext.create('Ext.data.Store',{
                     fields : ['type','label'],
                     data : [
@@ -187,14 +192,20 @@ Ext.onReady(function (){
                 queryMode : 'local',
                 displayField : 'label',
                 valueField : 'type',
-                layout:{
-                    width: 150
+                layout : {
+                    width : 150
                 },
                 name : 'exportType',
                 emptyText : "Selecteer"
-            }],
-            // Reset and Submit buttons
-            buttons : [{
+            },{
+                xtype : "checkbox",
+                name : 'onlyValid',
+                id : 'onlyValid',
+                fieldLabel : 'Alleen geldige verkeerssystemen'
+            }
+        ],
+        // Reset and Submit buttons
+        buttons : [{
                 text : 'Reset',
                 handler : function (){
                     this.up('form').getForm().reset();
@@ -226,58 +237,31 @@ Ext.onReady(function (){
 
 function deelgebiedChanged (deelgebied,text){
     if(deelgebied){
-        var me = this;
         var deelgebiedText = text;
-        Ext.Ajax.request({
-            url : exportActionBeanUrl,
-            method : 'GET',
-            scope : me,
-            params : {
-                'rseqByDeelgebied' : true,
-                'filter' : deelgebied
-            },
-            success : function (response){
-                var msg = Ext.JSON.decode(response.responseText);
-                if(msg.success){
-                    var rseqsJson = msg.rseqs;
-                    rseqsReceived(rseqsJson,deelgebiedText);
-                } else{
-                    Ext.MessageBox.show({
-                        title : "Fout",
-                        msg : msg.error,
-                        buttons : Ext.MessageBox.OK,
-                        icon : Ext.MessageBox.ERROR
-                    });
-                }
-            },
-            failure : function (response){
-                Ext.MessageBox.show({
-                    title : "Ajax fout",
-                    msg : response.responseText,
-                    buttons : Ext.MessageBox.OK,
-                    icon : Ext.MessageBox.ERROR
-                });
-            }
-        });
+        doRseqRequest( {'rseqByDeelgebied' : true,'filter' : deelgebied},deelgebiedText);
     } else{
         rseqsReceived([],"...");
     }
 }
 
 function allRseqs (){
+    doRseqRequest({'allRseqs' : true}, " gebruiker.");
+}
+
+function doRseqRequest (params,text){
     var me = this;
+    var onlyValid = Ext.getCmp("onlyValid").getValue();
+    params.onlyValid = onlyValid;
     Ext.Ajax.request({
         url : exportActionBeanUrl,
         method : 'GET',
         scope : me,
-        params : {
-            'allRseqs' : true
-        },
+        params : params,
         success : function (response){
             var msg = Ext.JSON.decode(response.responseText);
             if(msg.success){
                 var rseqsJson = msg.rseqs;
-                rseqsReceived(rseqsJson," gebruiker");
+                rseqsReceived(rseqsJson,text);
             } else{
                 Ext.MessageBox.show({
                     title : "Fout",

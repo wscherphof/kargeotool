@@ -100,8 +100,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private String geom;
     @Validate(on = "export")
     private String exportType;
-    @Validate()
+    @Validate
     private String filterType;
+    
+    @Validate ( on={"rseqByDeelgebied", "allRseqs"})
+    private boolean onlyValid;
 
     @DefaultHandler
     public Resolution overview() {
@@ -278,9 +281,13 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
             if (isBeheerder || rights.contains(rseqObj.getDataOwner())) {
+                if(onlyValid && !rseqObj.isValid()){
+                    continue;
+                }
                 JSONObject jRseq = new JSONObject();
                 jRseq.put("id", rseqObj.getId());
                 jRseq.put("naam", rseqObj.getDescription());
+                jRseq.put("karAddress",rseqObj.getKarAddress());
                 jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
                 String type = rseqObj.getType();
                 if (type.equalsIgnoreCase("CROSSING")) {
@@ -375,6 +382,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setFilterType(String filterType) {
         this.filterType = filterType;
+    }
+
+    public boolean isOnlyValid() {
+        return onlyValid;
+    }
+
+    public void setOnlyValid(boolean onlyValid) {
+        this.onlyValid = onlyValid;
     }
 
     public RoadsideEquipment getRseq() {
