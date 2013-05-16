@@ -387,8 +387,8 @@ Ext.define("nl.b3p.kar.Overview",{
 
     },
     getBewegingLabel : function (mvmnt){
-        var begin = null;
-        var eind = null;
+        var begin = "";
+        var eind = "";
         for (var i = 0;i < mvmnt.maps.length;i++){
             var map = mvmnt.maps[i];
             var point = this.editor.activeRseq.getPointById(map.pointId);
