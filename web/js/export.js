@@ -34,81 +34,279 @@ Ext.onReady(function (){
             }
         }
     });
-
-    grid = Ext.create('Ext.grid.Panel',{
-        title : 'Geselecteerde verkeerssystemen',
-        store : store,
-        columns : [
-            {
-                text : 'Omschrijving',
-                dataIndex : 'naam'
-            },
-            {
-                text : 'Dataowner',
-                dataIndex : 'dataowner',
-                flex : 1
-            },
-            {
-                text : 'Type',
-                dataIndex : 'type'
-            }
-        ],
-        height : 200,
-        width : 400,
-        renderTo : 'rseqGrid'
+    var dgStore = Ext.create('Ext.data.Store',{
+        fields : ['id','name'],
+        data : deelgebieden
     });
-    
-    deelgebiedChanged();
+    var form = Ext.create(Ext.form.Panel,{
+        title : 'Exporteer verkeerssystemen',
+        bodyPadding : 5,
+        width : 650,
+        // The form will submit an AJAX request to this URL when submitted
+        url : exportActionBeanUrl + '?export',
+        standardSubmit : true,
+        // Fields will be arranged vertically, stretched to full width
+        layout : 'anchor',
+        defaults : {
+            anchor : '100%'
+        },
+        // The fields
+        defaultType : 'textfield',
+        items : [
+            {
+                xtype : "hidden",
+                name : "rseqs",
+                id : "rseqs"
+            },
+            {
+                xtype : 'radiogroup',
+                fieldLabel : 'Filter type',
+                // Arrange radio buttons into two columns, distributed vertically
+                columns : 1,
+                vertical : true,
+                items : [
+                    {
+                        boxLabel : 'Alle verkeerssystemen',
+                        name : 'filterType',
+                        inputValue : 'all',
+                        checked : true,
+                        handler : function (item, checked){
+                            if(checked){
+                                allRseqs();
+                            }
+                        }
+                    },
+                    {
+                        boxLabel : 'Deelgebied',
+                        name : 'filterType',
+                        inputValue : 'deelgebied',
+                        handler : function (checkbox,checked){
+                            Ext.getCmp('deelgebied').setDisabled(!checked);
+                        }
+                    },
+                    {
+                        xtype : 'container',
+                        layout : {
+                            type : 'hbox',
+                            align : 'middle'
+                        },
+                        items : [
+                            {
+                                id : 'deelgebied',
+                                xtype : "combo",
+                                fieldLabel : 'Kies een deelgebied',
+                                store : dgStore,
+                                queryMode : 'local',
+                                displayField : 'name',
+                                disabled : true,
+                                valueField : 'id',
+                                emptyText : "Selecteer",
+                                flex : 1,
+                                listeners : {
+                                    scope : this,
+                                    select : {
+                                        fn : function (combo,record,index){
+                                            var value = record[0].get(combo.valueField);
+                                            var text = record[0].get(combo.displayField);
+                                            deelgebiedChanged(value,text);
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                xtype : "button",
+                                text : 'Nieuw',
+                                handler : function (){
+                                    var url = exportActionBeanUrl + "?maakDeelgebied=true"
+                                    document.location.href = url;
+                                }
+                            },
+                            {
+                                xtype : "button",
+                                text : 'Bewerk',
+                                handler : function (){
+                                    var dgId = Ext.getCmp("deelgebied").getValue();
+                                    var url = exportActionBeanUrl + "?bewerkDeelgebied=true&filter=" + dgId;
+                                    document.location.href = url;
+                                }
+                            },
+                            {
+                                xtype : "button",
+                                text : 'Verwijder',
+                                handler : function (){
+                                    var dgId = Ext.getCmp("deelgebied").getValue();
+                                    var url = exportActionBeanUrl + "?removeDeelgebied=true&filter=" + dgId;
+                                    document.location.href = url;
+                                }
+                            }
+                        ]
+                    }
+
+                ]
+            },
+            {
+                title : 'Geselecteerde verkeerssystemen',
+                xtype : "grid",
+                id : "grid",
+                store : store,
+                columns : [
+                    {
+                        text : 'Omschrijving',
+                        dataIndex : 'naam'
+                    },
+                    {
+                        text : 'Dataowner',
+                        dataIndex : 'dataowner',
+                        flex : 1
+                    },
+                    {
+                        text : 'Type',
+                        dataIndex : 'type'
+                    }
+                ],
+                height : 200,
+                width : 400
+            },
+            {
+                xtype : "combo",
+                fieldLabel : 'Type export',
+                allowBlank:false,
+                store : Ext.create('Ext.data.Store',{
+                    fields : ['type','label'],
+                    data : [
+                        {
+                            "type" : "incaa",
+                            "label" : "INCAA .ptx"
+                        },
+                        {
+                            "type" : "kv9",
+                            "label" : "KV9 XML"
+                        }
+                    ]
+                }),
+                queryMode : 'local',
+                displayField : 'label',
+                valueField : 'type',
+                layout:{
+                    width: 150
+                },
+                name : 'exportType',
+                emptyText : "Selecteer"
+            }],
+            // Reset and Submit buttons
+            buttons : [{
+                text : 'Reset',
+                handler : function (){
+                    this.up('form').getForm().reset();
+                }
+            },{
+                text : 'Exporteer',
+                formBind : true, //only enabled once the form is valid
+                disabled : true,
+                handler : function (){
+                    var form = this.up('form').getForm();
+                    if(form.isValid()){
+                        form.submit({
+                            target : '_blank',
+                            success : function (form,action){
+                                Ext.Msg.alert('Success',action.result.msg);
+                            },
+                            failure : function (form,action){
+                                Ext.Msg.alert('Failed',action.result.msg);
+                            }
+                        });
+                    }
+                }
+            }],
+        renderTo : 'body'
+    });
+    grid = Ext.getCmp("grid");
+    allRseqs();
 });
 
-function deelgebiedChanged (){
-    var select =Ext.get("deelgebied").dom; 
-    var index = select.selectedIndex;
-    if(index != 0){
-        var me =this;
-        var deelgebied = select.options[index].value;
-        var deelgebiedText = select.options[index].text;
-        
+function deelgebiedChanged (deelgebied,text){
+    if(deelgebied){
+        var me = this;
+        var deelgebiedText = text;
         Ext.Ajax.request({
-            url: exportActionBeanUrl,
-            method: 'GET',
-            scope: me,
-            params: {
+            url : exportActionBeanUrl,
+            method : 'GET',
+            scope : me,
+            params : {
                 'rseqByDeelgebied' : true,
-                'filter': deelgebied
+                'filter' : deelgebied
             },
-            success: function (response){
+            success : function (response){
                 var msg = Ext.JSON.decode(response.responseText);
                 if(msg.success){
                     var rseqsJson = msg.rseqs;
                     rseqsReceived(rseqsJson,deelgebiedText);
-                }else{
-                    Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                } else{
+                    Ext.MessageBox.show({
+                        title : "Fout",
+                        msg : msg.error,
+                        buttons : Ext.MessageBox.OK,
+                        icon : Ext.MessageBox.ERROR
+                    });
                 }
             },
-            failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+            failure : function (response){
+                Ext.MessageBox.show({
+                    title : "Ajax fout",
+                    msg : response.responseText,
+                    buttons : Ext.MessageBox.OK,
+                    icon : Ext.MessageBox.ERROR
+                });
             }
         });
-    }else{
-        rseqsReceived([], "...");
+    } else{
+        rseqsReceived([],"...");
     }
+}
+
+function allRseqs (){
+    var me = this;
+    Ext.Ajax.request({
+        url : exportActionBeanUrl,
+        method : 'GET',
+        scope : me,
+        params : {
+            'allRseqs' : true
+        },
+        success : function (response){
+            var msg = Ext.JSON.decode(response.responseText);
+            if(msg.success){
+                var rseqsJson = msg.rseqs;
+                rseqsReceived(rseqsJson," gebruiker");
+            } else{
+                Ext.MessageBox.show({
+                    title : "Fout",
+                    msg : msg.error,
+                    buttons : Ext.MessageBox.OK,
+                    icon : Ext.MessageBox.ERROR
+                });
+            }
+        },
+        failure : function (response){
+            Ext.MessageBox.show({
+                title : "Ajax fout",
+                msg : response.responseText,
+                buttons : Ext.MessageBox.OK,
+                icon : Ext.MessageBox.ERROR
+            });
+        }
+    });
 }
 
 function rseqsReceived (rseqs,naam){
     store.loadData(rseqs);
     grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
     var ids = '';
-    for(var i = 0 ; i < rseqs.length ; i++){
+    for (var i = 0;i < rseqs.length;i++){
         if(ids.length > 0){
-            ids+= ', ';
+            ids += ', ';
         }
         ids += rseqs[i].id;
     }
-    Ext.get("rseqs").dom.value =ids;
-    if(rseqs.length > 0){
-        Ext.get("exportSubmit").dom.disabled =false;
-    }else{
-        Ext.get("exportSubmit").dom.disabled =true;
-    }
+    Ext.getCmp("rseqs").setValue(ids);
 }
