@@ -156,6 +156,10 @@ Ext.onReady(function (){
                         dataIndex : 'naam'
                     },
                     {
+                        text : 'KAR Adres',
+                        dataIndex : 'karAddress'
+                    },
+                    {
                         text : 'Dataowner',
                         dataIndex : 'dataowner',
                         flex : 1
@@ -163,10 +167,6 @@ Ext.onReady(function (){
                     {
                         text : 'Type',
                         dataIndex : 'type'
-                    },
-                    {
-                        text : 'KAR Adres',
-                        dataIndex : 'karAddress'
                     }
                 ],
                 height : 200,
