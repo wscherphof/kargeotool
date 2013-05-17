@@ -277,7 +277,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private JSONArray makeRseqArray(List<RoadsideEquipment> rseqs) throws JSONException {
 
         Gebruiker g = getGebruiker();
-        Set<DataOwner> rights = g.getEditableDataOwners();
+        Set<DataOwner> rights = g.getAvailableDataOwners();
 
         boolean isBeheerder = g.isBeheerder();
         JSONArray rseqArray = new JSONArray();

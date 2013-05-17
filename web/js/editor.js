@@ -254,6 +254,8 @@ Ext.define("Editor", {
                     if(msg.success){
                         var rJson = msg.roadsideEquipment;
                         var rseq = makeRseq(rJson);
+                        var editable = msg.editable;
+                        rseq.setEditable (editable);
 
                         // Dit misschien in listener
                         editor.olc.removeAllFeatures();
@@ -658,6 +660,7 @@ Ext.define("Editor", {
         var newRseq = Ext.create("RSEQ", {
             location: this.createGeoJSONPoint(x, y),
             id: Ext.id(),
+            editable:true,
             type: ""
         });
             

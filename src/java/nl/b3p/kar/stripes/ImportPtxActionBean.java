@@ -23,10 +23,12 @@ import java.util.List;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
+import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  *
@@ -70,7 +72,7 @@ public class ImportPtxActionBean implements ActionBean {
         final FileBean zipFile = bestand;
         IncaaImport importer = new IncaaImport();
         try {
-            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader());
+            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker());
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + rseqs.size() + " verkeerssystemen succesvol geïmporteerd.")));
         } catch (Exception e) {
             log.error(e);
@@ -83,5 +85,17 @@ public class ImportPtxActionBean implements ActionBean {
             }
         }
         return new ForwardResolution(OVERVIEW);
+    }
+    
+    public Gebruiker getGebruiker() {
+        final String attribute = this.getClass().getName() + "_GEBRUIKER";
+        Gebruiker g = (Gebruiker)getContext().getRequest().getAttribute(attribute);
+        if(g != null) {
+            return g;
+        }
+        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
+        g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
+        getContext().getRequest().setAttribute(attribute, g);
+        return g;
     }
 }

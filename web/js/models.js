@@ -47,7 +47,8 @@ Ext.define('RSEQ', {
         town:null,
         type:null, // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
         memo:null,
-        attributes: null
+        attributes: null,
+        editable:null
     },
     /**
      *@constructor

@@ -81,7 +81,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     private List<String> dataOwnersEditable = new ArrayList();
     
     @Validate
-    private List<String> dataOwnersValidatable = new ArrayList();
+    private List<String> dataOwnersReadable = new ArrayList();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public ActionBeanContext getContext() {
@@ -203,21 +203,13 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setDataOwnersEditable(List<String> dataOwnersEditable) {
         this.dataOwnersEditable = dataOwnersEditable;
     }
-    
-    /**
-     *
-     * @return
-     */
-    public List<String> getDataOwnersValidatable() {
-        return dataOwnersValidatable;
+
+    public List<String> getDataOwnersReadable() {
+        return dataOwnersReadable;
     }
-    
-    /**
-     *
-     * @param dataOwnersValidatable
-     */
-    public void setDataOwnersValidatable(List<String> dataOwnersValidatable) {
-        this.dataOwnersValidatable = dataOwnersValidatable;
+
+    public void setDataOwnersReadable(List<String> dataOwnersReadable) {
+        this.dataOwnersReadable = dataOwnersReadable;
     }
     
     /**
@@ -273,14 +265,14 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void loadGebruikerLists() {
         if(gebruiker != null) {
             dataOwnersEditable = new ArrayList();
-            dataOwnersValidatable = new ArrayList();
+            dataOwnersReadable = new ArrayList();
 
             for(GebruikerDataOwnerRights dor: gebruiker.getDataOwnerRights().values()) {
                 if(dor.isEditable()) {
                     dataOwnersEditable.add(dor.getDataOwner().getCode());
                 }
-                if(dor.isValidatable()) {
-                    dataOwnersValidatable.add(dor.getDataOwner().getCode());
+                if(dor.isReadable()) {
+                    dataOwnersReadable.add(dor.getDataOwner().getCode());
                 }
             }
         }
@@ -367,7 +359,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         for(String daoId: dataOwnersEditable) {
             gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), Boolean.TRUE, null);
         }
-        for(String daoId: dataOwnersValidatable) {
+        for(String daoId: dataOwnersReadable) {
             gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), null, Boolean.TRUE);
         } 
         

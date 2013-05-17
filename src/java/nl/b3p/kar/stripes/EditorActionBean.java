@@ -212,10 +212,11 @@ public class EditorActionBean implements ActionBean {
             } else {
                 throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
-            if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(rseq2.getDataOwner())) {
-                info.put("error", "Forbidden");
+            if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(rseq2.getDataOwner())&& !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
+                info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
                 info.put("roadsideEquipment", rseq2.getJSON());
+                info.put("editable",getGebruiker().canEditDataOwner(rseq2.getDataOwner()));
 
                 info.put("success", Boolean.TRUE);
             }
@@ -247,7 +248,7 @@ public class EditorActionBean implements ActionBean {
                     rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
                 }
             } else {
-                Set<DataOwner> dos = getGebruiker().getEditableDataOwners();
+                Set<DataOwner> dos = getGebruiker().getAvailableDataOwners();
                 if(dos.isEmpty()) {
                     rseq2 = Collections.EMPTY_LIST;
                 } else {
@@ -268,9 +269,13 @@ public class EditorActionBean implements ActionBean {
                     }
                 }
             }
+            Gebruiker g =getGebruiker();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment r : rseq2) {
-                rseqs.put(r.getRseqGeoJSON());
+                JSONObject rseqJson = r.getRseqGeoJSON();
+                rseqJson.put("editable", g.canEditDataOwner(r.getDataOwner()));
+                rseqs.put(rseqJson);
+                
             }
             info.put("rseqs", rseqs);
 
@@ -328,7 +333,7 @@ public class EditorActionBean implements ActionBean {
           //  p.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 
-            Collection<DataOwner> editableDataOwners = getGebruiker().getEditableDataOwners();
+            Collection<DataOwner> dos = getGebruiker().getAvailableDataOwners();
             List<ActivationPoint> points;
             if(getGebruiker().isBeheerder()) {
                 points = session.createQuery(
@@ -338,14 +343,14 @@ public class EditorActionBean implements ActionBean {
                         .setParameter("pos", p, GeometryUserType.TYPE)
                         .setParameter("this", rseq)
                         .list();
-            } else if(editableDataOwners.isEmpty()) {
+            } else if(dos.isEmpty()) {
                 points = Collections.EMPTY_LIST;
             } else {
                 points = session.createQuery(
                         "from ActivationPoint "
                       + "where roadsideEquipment.dataOwner in (:dos) "
                       + "and intersects(location, :pos) = true and roadsideEquipment <> :this")
-                        .setParameterList("dos", getGebruiker().getEditableDataOwners())
+                        .setParameterList("dos", dos)
                         .setParameter("pos", p, GeometryUserType.TYPE)
                         .setParameter("this", rseq)
                         .list();

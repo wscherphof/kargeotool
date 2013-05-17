@@ -33,6 +33,7 @@ import javax.persistence.EntityManager;
 import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
+import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
@@ -66,7 +67,7 @@ public class IncaaImport {
      * @return De lijst van geïmporteerde roadside equipments
      * @throws Exception 
      */
-    public List<RoadsideEquipment> importPtx(Reader in) throws Exception {
+    public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g) throws Exception {
         // (Her)initialiseer de intermediate formats. 
         movements = new HashMap();
         rseqs = new HashMap();
@@ -81,20 +82,22 @@ public class IncaaImport {
 
         // Sla de boel op
         EntityManager em = Stripersist.getEntityManager();
-
+        List<RoadsideEquipment> savedRseqs = new ArrayList();
         for (Integer karAddress : rseqs.keySet()) {
             RoadsideEquipment rseq = rseqs.get(karAddress);
-            
-            // Maak van alle punten binnen een rseq een centroïde en gebruik dat als locatie van de rseq zelf
-            List<Point> points = rseqLocations.get(rseq.getKarAddress());
-            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
-            GeometryCollection gc = new GeometryCollection(points.toArray(new Point[points.size()]), gf);
-            rseq.setLocation(gc.getCentroid());
-            
-            em.persist(rseq);
+            if(g.canEditDataOwner(rseq.getDataOwner())){
+                // Maak van alle punten binnen een rseq een centroïde en gebruik dat als locatie van de rseq zelf
+                List<Point> points = rseqLocations.get(rseq.getKarAddress());
+                GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
+                GeometryCollection gc = new GeometryCollection(points.toArray(new Point[points.size()]), gf);
+                rseq.setLocation(gc.getCentroid());
+
+                em.persist(rseq);
+                savedRseqs.add(rseq);
+            }
         }
         em.getTransaction().commit();
-        return new ArrayList(rseqs.values());
+        return savedRseqs;
     }
 
     private void parseRecord(CSVRecord record) {

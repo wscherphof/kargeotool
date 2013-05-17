@@ -38,8 +38,8 @@ public class GebruikerDataOwnerRights implements Serializable {
     private DataOwner dataOwner;
     
     private boolean editable;
-    private boolean validatable;
-
+    private boolean readable;
+    
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
@@ -89,20 +89,13 @@ public class GebruikerDataOwnerRights implements Serializable {
         this.editable = editable;
     }
     
-    /**
-     *
-     * @return mag er gevalideerd worden?
-     */
-    public boolean isValidatable() {
-        return validatable;
+    public boolean isReadable() {
+        return readable;
     }
-    
-    /**
-     *
-     * @param validatable
-     */
-    public void setValidatable(boolean validatable) {
-        this.validatable = validatable;
+
+    public void setReadable(boolean readable) {
+        this.readable = readable;
     }
     //</editor-fold>
+
 }

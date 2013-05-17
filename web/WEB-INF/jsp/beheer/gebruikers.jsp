@@ -189,28 +189,28 @@
                             <c:set var="isBeheerder" value="${actionBean.gebruiker.beheerder}"/>
                             <div id="roListHeader">
                                 <div id="beheerder" style="display: ${isBeheerder ? 'block' : 'none'} ">
-                                    Een beheerder kan van alle wegbeheerders gegevens bewerken en valideren.
+                                    Een beheerder kan van alle wegbeheerders gegevens lezen en bewerken.
                                 </div>
                                 <div id="nietBeheerder" style="display: ${isBeheerder ? 'none' : 'block'}">
-                                    Gebruiker kan gegevens van de onderstaande wegbeheerders bewerken of valideren:
+                                    Gebruiker kan gegevens van de onderstaande wegbeheerders lezen of bewerken:
                                 </div>
                             </div>
                             <div id="daoedit" style="display: ${isBeheerder ? 'none' : 'block'}">
                                 <div id="roList">
-                                    <table id="roListTable" style="font-size: 8pt">
+                                    <table id="roListTable" style="font-size: 8pt;">
                                         <tr>
                                             <th style="width: 35px">Code</th>
                                             <th style="width: 160px">Naam</th>
-                                            <th style="width: 60px">Bewerken</th>
-                                            <th style="width: 60px">Valideren</th>
+                                            <th style="width: 60px">Lezen</th>
+                                            <th style="width: 60px">bewerken</th>
                                         </tr>
                                         <c:forEach var="mapEntry" items="${actionBean.gebruiker.dataOwnerRights}">
                                             <c:set var="dor" value="${mapEntry.value}"/>
                                             <tr>
                                                 <td>${dor.dataOwner.code}</td>
                                                 <td>${dor.dataOwner.omschrijving}</td>
+                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersReadable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
                                                 <td style="text-align: center"><stripes:checkbox name="dataOwnersEditable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
-                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersValidatable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
                                             </tr>
                                         </c:forEach>
                                     </table>
@@ -236,11 +236,11 @@
 
                     usedDataOwners = {};
                     var editable = document.forms[0].dataOwnersEditable;
-                    var validatable = document.forms[0].dataOwnersValidatable;
+                    var readable = document.forms[0].dataOwnersReadable;
                     if(editable != undefined) {
                         for(var i = 0; i < editable.length; i++) {
                             var value = editable[i].value;
-                            if(editable[i].checked || validatable[i].checked) {
+                            if(editable[i].checked || readable[i].checked) {
                                 usedDataOwners[value] = true;
                             }
                         }
@@ -279,7 +279,7 @@
 
                     var id = target.value;
 
-                    var bothUnchecked = !isChecked("dataOwnersEditable", id) && !isChecked("dataOwnersValidatable", id);
+                    var bothUnchecked = !isChecked("dataOwnersEditable", id) && !isChecked("dataOwnersReadable", id);
 
                     if(bothUnchecked) {
                         if(confirm("Wilt u deze wegbeheerder uit de lijst verwijderen?")) {
@@ -325,7 +325,7 @@
                     cell = row.insertCell(2);
                     cell.style.textAlign = "center";
                     var input = document.createElement("input");
-                    input.name = "dataOwnersEditable";
+                    input.name = "dataOwnersReadable";
                     input.type = "checkbox";
                     input.value = id + "";
                     input.checked = true;
@@ -335,7 +335,7 @@
                     cell = row.insertCell(3);
                     cell.style.textAlign = "center";
                     input = document.createElement("input");
-                    input.name = "dataOwnersValidatable";
+                    input.name = "dataOwnersEditable";
                     input.type = "checkbox";
                     input.value = id + "";
                     input.checked = false;

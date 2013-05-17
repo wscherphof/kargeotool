@@ -315,11 +315,11 @@ public class Gebruiker implements Principal {
     /**
      *
      * @param d
-     * @return kan/mag gebruiker DataOwner valideren
+     * @return kan/mag gebruiker DataOwner lezen
      */
-    public boolean canValidateDataOwner(DataOwner d) {
+    public boolean canReadDataOwner(DataOwner d) {
         GebruikerDataOwnerRights r = dataOwnerRights.get(d);
-        return r != null && r.isValidatable();
+        return r != null && r.isReadable();
     }
 
     /**
@@ -328,23 +328,26 @@ public class Gebruiker implements Principal {
      */
     public Set<DataOwner> getEditableDataOwners() {
         HashSet<DataOwner> dataOwners = new HashSet<DataOwner>();
-        for(Iterator it = dataOwnerRights.entrySet().iterator(); it.hasNext();) {
-            Entry<DataOwner, GebruikerDataOwnerRights> entry = (Entry<DataOwner, GebruikerDataOwnerRights>)it.next();
+        for (Entry<DataOwner, GebruikerDataOwnerRights> entry : dataOwnerRights.entrySet()) {
             if(entry.getValue().isEditable()) {
                 dataOwners.add(entry.getValue().getDataOwner());
             }
         }
         return dataOwners;
     }
+    
+    public Set<DataOwner> getAvailableDataOwners(){
+        return dataOwnerRights.keySet();
+    }
 
     /**
      * Zet de rechten mbt de DataOwner
      * @param dao het dataowner object
      * @param editable mag geedit worden
-     * @param validatable mag gevalideerd worden
+     * @param readable mag gelezen worden
      * @throws Exception
      */
-    public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean validatable) throws Exception {
+    public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean readable) throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         GebruikerDataOwnerRights dor = getDataOwnerRights().get(dao);
         if(dor == null) {
@@ -357,8 +360,8 @@ public class Gebruiker implements Principal {
         if(editable != null) {
             dor.setEditable(editable);
         }
-        if(validatable != null) {
-            dor.setValidatable(validatable);
+        if(readable != null) {
+            dor.setReadable(readable);
         }
     }
 }

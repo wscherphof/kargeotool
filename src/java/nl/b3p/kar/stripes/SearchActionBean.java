@@ -106,7 +106,7 @@ public class SearchActionBean implements ActionBean {
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
-                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())) {
+                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner())) {
                     rseqs.put(roadsideEquipment.getRseqGeoJSON());
                 }
             }

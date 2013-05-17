@@ -68,6 +68,8 @@ Ext.define("EditForms", {
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
             layout: 'fit',
             items: {  
+                id: 'rseqForm',
+                disabled: !rseq.editable,
                 xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
