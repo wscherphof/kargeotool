@@ -18,13 +18,22 @@
  */
 package nl.b3p.kar.stripes;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.jaxb.Kv9Def;
+import nl.b3p.kar.jaxb.TmiPush;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,13 +44,13 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Meine Toonen
  */
 @StrictBinding
-@UrlBinding("/action/ptx_import")
-public class ImportPtxActionBean implements ActionBean {
+@UrlBinding("/action/import")
+public class ImportActionBean implements ActionBean {
 
     private final Log log = LogFactory.getLog(this.getClass());
-    private final static String OVERVIEW = "/WEB-INF/jsp/import/import_incaa.jsp";
+    private final static String OVERVIEW = "/WEB-INF/jsp/import/import.jsp";
     private ActionBeanContext context;
-    @Validate(required = true, on = "doImport")
+    @Validate(required = true, on = {"importPtx", "importXml"})
     private FileBean bestand;
 
     // <editor-fold desc="getters and setters">
@@ -68,7 +77,33 @@ public class ImportPtxActionBean implements ActionBean {
         return new ForwardResolution(OVERVIEW);
     }
 
-    public Resolution doImport() {
+    public Resolution importXml() {
+        try {
+            JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
+            Unmarshaller u = ctx.createUnmarshaller();
+
+            EntityManager em = Stripersist.getEntityManager();
+            TmiPush push = (TmiPush) u.unmarshal(bestand.getInputStream());
+            List<Kv9Def> defs = push.getRseqs();
+            for (Kv9Def kv9Def : defs) {
+                List<RoadsideEquipment> rseqs = kv9Def.getRoadsideEquipments();
+                for (RoadsideEquipment roadsideEquipment : rseqs) {
+                    em.persist(roadsideEquipment);
+                }
+            }
+            em.getTransaction().commit();
+            int a = 0;
+
+        } catch (JAXBException jaxbEx) {
+            this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(jaxbEx)));
+        } catch (IOException ex) {
+
+            this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(ex)));
+        }
+        return new ForwardResolution(OVERVIEW);
+    }
+
+    public Resolution importPtx() {
         final FileBean zipFile = bestand;
         IncaaImport importer = new IncaaImport();
         try {
@@ -86,11 +121,11 @@ public class ImportPtxActionBean implements ActionBean {
         }
         return new ForwardResolution(OVERVIEW);
     }
-    
+
     public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
-        Gebruiker g = (Gebruiker)getContext().getRequest().getAttribute(attribute);
-        if(g != null) {
+        Gebruiker g = (Gebruiker) getContext().getRequest().getAttribute(attribute);
+        if (g != null) {
             return g;
         }
         Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();

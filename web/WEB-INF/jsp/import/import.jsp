@@ -29,18 +29,14 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
 
-        <div class="exportBody">
-            <stripes:form beanclass="nl.b3p.kar.stripes.ImportPtxActionBean">
-                <stripes:errors/>
-                <stripes:messages/>
-                <h1>Exporteer verkeerssystemen</h1>
-                <br/>
-                Voer een INCAA .ptx bestand in en druk op importeren.<br/>
-                PTX-bestand <stripes:file name="bestand"/>
-                <br/>
-                <stripes:submit name="doImport" value="Importeren"/>
+        <script type="text/javascript" src="${contextPath}/js/import.js"></script>
 
-            </stripes:form>
+        <script type="text/javascript">
+            var importActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean" />";
+        </script>
+        <h1>Importeer verkeerssystemen</h1>
+        <div id="body" class="exportBody">
+           
         </div>
 
     </stripes:layout-component>
