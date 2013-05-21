@@ -84,20 +84,20 @@ public class ImportActionBean implements ActionBean {
 
             EntityManager em = Stripersist.getEntityManager();
             TmiPush push = (TmiPush) u.unmarshal(bestand.getInputStream());
+            int num = 0;
             List<Kv9Def> defs = push.getRseqs();
             for (Kv9Def kv9Def : defs) {
                 List<RoadsideEquipment> rseqs = kv9Def.getRoadsideEquipments();
                 for (RoadsideEquipment roadsideEquipment : rseqs) {
                     em.persist(roadsideEquipment);
+                    num ++;
                 }
             }
             em.getTransaction().commit();
-            int a = 0;
-
+            this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch (JAXBException jaxbEx) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(jaxbEx)));
         } catch (IOException ex) {
-
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(ex)));
         }
         return new ForwardResolution(OVERVIEW);
