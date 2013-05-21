@@ -62,4 +62,8 @@ public class TmiPush extends TmiMessage {
             ends = Collections.singletonList(end);
         }
     }
+    
+    public List<Kv9Def> getRseqs (){
+        return defs;
+    }
 }

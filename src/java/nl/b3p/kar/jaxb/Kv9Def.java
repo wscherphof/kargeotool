@@ -14,6 +14,8 @@ public class Kv9Def {
     @XmlElementWrapper(name="RSEQDEFS")
     @XmlElement(name="RSEQDEF")
     List<RoadsideEquipment> rseqs = new ArrayList();
-    
-    
+
+    public List<RoadsideEquipment> getRoadsideEquipments() {
+        return rseqs;
+    }
 }
