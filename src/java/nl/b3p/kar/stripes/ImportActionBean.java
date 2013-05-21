@@ -81,7 +81,7 @@ public class ImportActionBean implements ActionBean {
         try {
             JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
             Unmarshaller u = ctx.createUnmarshaller();
-
+            Gebruiker g = getGebruiker();
             EntityManager em = Stripersist.getEntityManager();
             TmiPush push = (TmiPush) u.unmarshal(bestand.getInputStream());
             int num = 0;
@@ -89,8 +89,10 @@ public class ImportActionBean implements ActionBean {
             for (Kv9Def kv9Def : defs) {
                 List<RoadsideEquipment> rseqs = kv9Def.getRoadsideEquipments();
                 for (RoadsideEquipment roadsideEquipment : rseqs) {
-                    em.persist(roadsideEquipment);
-                    num ++;
+                    if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())){
+                        em.persist(roadsideEquipment);
+                        num ++;
+                    }
                 }
             }
             em.getTransaction().commit();
