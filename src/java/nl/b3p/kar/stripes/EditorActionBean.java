@@ -200,8 +200,6 @@ public class EditorActionBean implements ActionBean {
      * @throws Exception
      */
     public Resolution rseqJSON() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
@@ -212,11 +210,12 @@ public class EditorActionBean implements ActionBean {
             } else {
                 throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
-            if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(rseq2.getDataOwner())&& !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
-                info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
+            boolean editable = getGebruiker().canEditDataOwner(rseq2.getDataOwner());
+            if(!getGebruiker().isBeheerder() && !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
+                info.put("error", "De gebruiker is!get niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
                 info.put("roadsideEquipment", rseq2.getJSON());
-                info.put("editable",getGebruiker().canEditDataOwner(rseq2.getDataOwner()));
+                info.put("editable",editable);
 
                 info.put("success", Boolean.TRUE);
             }
