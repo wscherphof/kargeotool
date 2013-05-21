@@ -19,9 +19,12 @@
 
 package nl.b3p.kar.hibernate;
 
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import nl.b3p.kar.jaxb.Namespace;
 import nl.b3p.kar.jaxb.TmiDateAdapter;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +36,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
@@ -70,6 +74,7 @@ import org.json.JSONObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RoadsideEquipment {
     
+    private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     /**
      * Waarde voor de functie van het verkeerssysteem welke een verkeersregel-
      * installatie (VRI) aanduidt.
@@ -581,5 +586,16 @@ public class RoadsideEquipment {
         }       
         
         return j;
+    }
+    
+    
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        List<Point> ps = new ArrayList();
+        for (ActivationPoint activationPoint : points) {
+            ps.add(activationPoint.getLocation());
+        }
+        GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
+        GeometryCollection gc = new GeometryCollection(ps.toArray(new Point[ps.size()]), gf);
+        this.location = gc.getCentroid();
     }
 }

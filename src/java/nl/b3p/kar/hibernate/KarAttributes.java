@@ -80,7 +80,12 @@ public class KarAttributes {
     public static class KarAttributesTypeAdapter extends XmlAdapter<String, Integer> {
         @Override
         public Integer unmarshal(String s) throws Exception {
-            throw new UnsupportedOperationException("Not supported yet.");
+            Integer num = 0;
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(s.length() -i -1);
+                num += c == '1' ? 1 << i : 0;
+            }
+            return num;
         }
 
         @Override

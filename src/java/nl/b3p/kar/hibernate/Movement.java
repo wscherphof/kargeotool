@@ -115,7 +115,7 @@ public class Movement implements Comparable {
     
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         RoadsideEquipment rseq = (RoadsideEquipment)parent;
-        
+        this.roadsideEquipment = rseq;
         if(begin != null) {
             MovementActivationPoint map = new MovementActivationPoint();
             map.setMovement(this);
@@ -131,12 +131,13 @@ public class Movement implements Comparable {
                 
                 // Indien zelfde punt nummer als eerdere activation, voeg 
                 // vehicleType toe (negeer overige velden)
-                
+                MovementActivationPoint same = null;
                 for(MovementActivationPoint map: points) {
                     if(map.getPoint() != null && map.getPoint().getNummer() == xmlSignal.getActivationpointnumber()) {
                         if(!map.getSignal().getVehicleTypes().contains(vt)) {
                             map.getSignal().getVehicleTypes().add(vt);
                         }
+                        same = map;
                         // eerdere activation met zelfde punt nummer gevonden,
                         // vehicleType toegevoegd - geen nieuwe ActivationPointSignal
                         // maken
@@ -144,22 +145,24 @@ public class Movement implements Comparable {
                     }
                 }
                 
-                MovementActivationPoint map = new MovementActivationPoint();
-                map.setMovement(this);
-                map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION);
-                map.setPoint(rseq.getPointByNumber(xmlSignal.getActivationpointnumber()));
-                ActivationPointSignal signal = new ActivationPointSignal();
-                
-                signal.getVehicleTypes().add(vt);
-                signal.setKarCommandType(xmlSignal.getKarcommandtype());
-                signal.setTriggerType(xmlSignal.getTriggertype());
-                signal.setDistanceTillStopLine(xmlSignal.getDistancetillstopline());
-                signal.setSignalGroupNumber(xmlSignal.getSignalgroupnumber());
-                signal.setVirtualLocalLoopNumber(xmlSignal.getVirtuallocalloopnumber());
-                // TODO set direction uit b3pextra
-                
-                map.setSignal(signal);
-                points.add(map);
+                if (same == null){
+                    MovementActivationPoint map = new MovementActivationPoint();
+                    map.setMovement(this);
+                    map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION);
+                    map.setPoint(rseq.getPointByNumber(xmlSignal.getActivationpointnumber()));
+                    ActivationPointSignal signal = new ActivationPointSignal();
+
+                    signal.getVehicleTypes().add(vt);
+                    signal.setKarCommandType(xmlSignal.getKarcommandtype());
+                    signal.setTriggerType(xmlSignal.getTriggertype());
+                    signal.setDistanceTillStopLine(xmlSignal.getDistancetillstopline());
+                    signal.setSignalGroupNumber(xmlSignal.getSignalgroupnumber());
+                    signal.setVirtualLocalLoopNumber(xmlSignal.getVirtuallocalloopnumber());
+                    // TODO set direction uit b3pextra
+
+                    map.setSignal(signal);
+                    points.add(map);
+                }
             }
         }
         
