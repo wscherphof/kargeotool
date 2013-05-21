@@ -29,7 +29,7 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
 
-    <h2>Gebruikersbeheer 2</h2>
+    <h2>Gebruikersbeheer</h2>
 
 <stripes:form beanclass="nl.b3p.kar.stripes.GebruikersActionBean">
     <stripes:hidden name="gebruiker"/>
