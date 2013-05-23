@@ -210,8 +210,8 @@ public class EditorActionBean implements ActionBean {
             } else {
                 throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
-            boolean editable = getGebruiker().canEditDataOwner(rseq2.getDataOwner());
-            if(!getGebruiker().isBeheerder() && !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
+            boolean editable = getGebruiker().canEditDataOwner(rseq2.getDataOwner()) || getGebruiker().isBeheerder();
+            if( !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
                 info.put("error", "De gebruiker is!get niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
                 info.put("roadsideEquipment", rseq2.getJSON());
