@@ -1076,9 +1076,29 @@ Ext.define("HelpPanel", {
         
         var action = this.editor.currentEditAction;
         var txt;
+        var signalGroupNumbers = null;
+        if(this.editor.selectedObject instanceof Point){
+            var mvmnts = this.editor.activeRseq.findMovementsForPoint(this.editor.selectedObject);
+            signalGroupNumbers = "";
+            for (var i = 0 ; i < mvmnts.length ; i++){
+                var mvmObj = mvmnts[i];
+                if(mvmObj){
+                    var movement = mvmObj.movement;
+                    var signalGroupNumber = movement.nummer;
+                    var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) != -1;
+                    if(signalGroupNumbers.length > 0 && !alreadyPresent){
+                        signalGroupNumbers += ', ';
+                    }
+                    if(!alreadyPresent){
+                        signalGroupNumbers += signalGroupNumber;
+                    }
+                }
+            }
+        }
+        
         switch(action) {
             case "ACTIVATION_1":
-                txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) X. " +
+                txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) " + signalGroupNumbers + "." +
                 "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
                 "van het inmeldpunt om de afstand te bepalen. " + 
                 "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop <i>Meten vanaf vorig punt</i> te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
@@ -1090,17 +1110,15 @@ Ext.define("HelpPanel", {
                 "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "ACTIVATION_3":
-                txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) X." +
+                txt = "Dubbelklik om het voorinmeldpunt te plaatsen voor signaalgroep(en) " + signalGroupNumbers + "." +
                 "<p>Let op: De afstand vanaf de stopstreep tot inmeldpunt wordt opgeteld bij de afstand van inmeldpunt tot voorinmeldpunt."+
                 "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
             case "BEGIN":
-                txt = "Dubbelklik om een beginpunt te plaatsen voor signaalgroep(en) "
-                + "X" + ".";
+                txt = "Dubbelklik om een beginpunt te plaatsen voor signaalgroep(en) " + signalGroupNumbers + ".";
                 break;
             case "END":
-                txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep "
-                + "X" + ".";
+                txt = "Dubbelklik om een eindpunt te plaatsen voor signaalgroep " + signalGroupNumbers + ".";
                 break;
             case "MEASURE_STANDALONE":
                 var length = this.editor.olc.standaloneMeasure.lastLength;
