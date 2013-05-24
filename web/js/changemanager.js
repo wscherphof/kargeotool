@@ -48,16 +48,28 @@ Ext.define("ChangeManager",{
         if (this.editor.activeRseq == null || this.editor.activeRseq.id == newId){
             continueFunction();
         } else if (this.changeDetected){
-            Ext.MessageBox.confirm("Er zijn niet opgeslagen veranderingen","Er zijn niet opgeslagen veranderingen. Wilt u deze weggooien?",
-                    function (button){
-                        if (button === 'yes'){
-                            this.changeDetected = false;
-                            this.editTitle();
-                            continueFunction();
-                        } else{
-                            this.editor.olc.selectFeature(newId,"RSEQ");
-                        }
-                    },this);
+            Ext.Msg.show({
+                title:"Er zijn niet opgeslagen veranderingen",
+                msg: "Er zijn niet opgeslagen veranderingen. Wilt u deze weggooien?",
+                fn: function (button){
+                    if (button === 'yes'){
+                        this.changeDetected = false;
+                        this.editTitle();
+                        continueFunction();
+                    } else{
+                        this.editor.olc.selectFeature(newId,"RSEQ");
+                    }
+                },
+                scope:this,
+                buttons: Ext.Msg.YESNO,
+                buttonText: {
+                    no: "Nee",
+                    yes: "Ja"
+                },
+                icon: Ext.Msg.WARNING
+                
+            });
+                    
         } else{
             continueFunction();
         }

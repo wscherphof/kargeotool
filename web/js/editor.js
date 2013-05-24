@@ -363,15 +363,23 @@ Ext.define("Editor", {
         };
 
         if(me.changeManager.changeDetected) {
-            Ext.MessageBox.confirm(
-                    "Opslaan verkeerssyteem",
-                    "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
-                    function (button){
-                        if(button === 'yes') {
-                            me.saveOrUpdate(exportIt);
-                        }
+             Ext.Msg.show({
+                title:"Opslaan verkeerssyteem",
+                msg: "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
+                fn: function (button){
+                    if(button === 'yes') {
+                        me.saveOrUpdate(exportIt);
                     }
-            );
+                },
+                scope:this,
+                buttons: Ext.Msg.YESNO,
+                buttonText: {
+                    no: "Nee",
+                    yes: "Ja"
+                },
+                icon: Ext.Msg.WARNING
+                
+            });
         } else {
             exportIt();
         }
@@ -384,15 +392,23 @@ Ext.define("Editor", {
         };
 
         if(me.changeManager.changeDetected) {
-            Ext.MessageBox.confirm(
-                    "Opslaan verkeerssyteem",
-                    "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
-                    function (button){
-                        if(button === 'yes') {
-                            me.saveOrUpdate(exportIt);
-                        }
+             Ext.Msg.show({
+                title:"Opslaan verkeerssyteem",
+                msg: "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
+                fn: function (button){
+                    if(button === 'yes') {
+                        me.saveOrUpdate(exportIt);
                     }
-            );
+                },
+                scope:this,
+                buttons: Ext.Msg.YESNO,
+                buttonText: {
+                    no: "Nee",
+                    yes: "Ja"
+                },
+                icon: Ext.Msg.WARNING
+                
+            });
         } else {
             exportIt();
         }
@@ -820,17 +836,24 @@ Ext.define("Editor", {
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
                 
                 var me = this;
-                Ext.Msg.confirm(
-                    'Eindpunt selecteren', 
-                    'Wilt u eindpunt ' + eindpunt.getLabel() + " selecteren voor een beweging vanaf uitmeldpunt " + this.selectedObject.getLabel() + "?",
-                    function(buttonId) {
+                Ext.Msg.show({
+                    title:'Eindpunt selecteren', 
+                    msg:'Wilt u eindpunt ' + eindpunt.getLabel() + " selecteren voor een beweging vanaf uitmeldpunt " + this.selectedObject.getLabel() + "?",
+                    fn: function(buttonId) {
                         if(buttonId == "yes") {
                             me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, true);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
-                    }
-                    );
-                
+                    },
+                    scope:this,
+                    buttons: Ext.Msg.YESNO,
+                    buttonText: {
+                        no: "Nee",
+                        yes: "Ja"
+                    },
+                    icon: Ext.Msg.WARNING
+
+                });
                 this.un('selectedObjectChanged',this.eindpuntSelected,this);
                 this.contextMenu.hideCancelSelecting();
             }else{
@@ -902,10 +925,10 @@ Ext.define("Editor", {
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
                 
                 var me = this;
-                Ext.Msg.confirm(
-                    'Inmeldpunt selecteren', 
-                    'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
-                    function(buttonId) {
+                 Ext.Msg.show({
+                    title:'Inmeldpunt selecteren', 
+                    msg:'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
+                    fn: function(buttonId) {
                         if(buttonId == "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
@@ -916,9 +939,15 @@ Ext.define("Editor", {
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     },
-                     me
-                    );
-                
+                    scope:this,
+                    buttons: Ext.Msg.YESNO,
+                    buttonText: {
+                        no: "Nee",
+                        yes: "Ja"
+                    },
+                    icon: Ext.Msg.WARNING
+
+                });
                 this.un('selectedObjectChanged',this.inmeldpuntSelected,this);
                 this.contextMenu.hideCancelSelecting();
             }else{
