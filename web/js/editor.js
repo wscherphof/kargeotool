@@ -417,31 +417,48 @@ Ext.define("Editor", {
     removeRseq : function(){
         var rseq = this.activeRseq;
         if(rseq != null) {
-            Ext.Ajax.request({
-                url: editorActionBeanUrl,
-                method: 'POST',
-                scope: this,
-                params: {
-                    'removeRseq': true,
-                    'rseq': rseq.getId()
-                },
-                success: function (response){
-                    var msg = Ext.JSON.decode(response.responseText);
-                    if(msg.success) {
-                        this.changeManager.rseqSaved();
-                        Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
-                        
-                        editor.olc.removeAllFeatures();
-                        this.setActiveRseq(null);
-                        
-                    }else{
-                        Ext.Msg.alert('Fout', 'Fout bij verwijderen: ' + msg.error);
+             Ext.Msg.show({
+                title:"Weet u het zeker?",
+                msg: "Weet u zeker dat u dit verkeerssysteem wilt weggooien?",
+                fn: function (button){
+                    if (button === 'yes'){
+                        Ext.Ajax.request({
+                            url: editorActionBeanUrl,
+                            method: 'POST',
+                            scope: this,
+                            params: {
+                                'removeRseq': true,
+                                'rseq': rseq.getId()
+                            },
+                            success: function (response){
+                                var msg = Ext.JSON.decode(response.responseText);
+                                if(msg.success) {
+                                    this.changeManager.rseqSaved();
+                                    Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
+
+                                    editor.olc.removeAllFeatures();
+                                    this.setActiveRseq(null);
+
+                                }else{
+                                    Ext.Msg.alert('Fout', 'Fout bij verwijderen: ' + msg.error);
+                                }
+                            },
+                            failure: function (response){
+                                Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!');
+                            }
+                        });
                     }
                 },
-                failure: function (response){
-                    Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!');
-                }
+                scope:this,
+                buttons: Ext.Msg.YESNO,
+                buttonText: {
+                    no: "Nee",
+                    yes: "Ja"
+                },
+                icon: Ext.Msg.WARNING
+                
             });
+            
         }
     },
     
