@@ -277,7 +277,7 @@ Ext.define("ol", {
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
         //maak en voeg achtergrond kaartlaag toe.
-        var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/1.0.0',{
+        var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/',{
             layername:'brtachtergrondkaart', 
             type: 'png8',
             isBaseLayer:true,
