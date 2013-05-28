@@ -82,6 +82,9 @@ public class SearchActionBean implements ActionBean {
     @Validate(required = false) // niet noodzakelijk: extra filter voor buslijnen, maar hoeft niet ingevuld te zijn
     private String dataOwner;
     private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
+    
+    @Validate
+    private String vehicleType;
 
     public Resolution rseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
@@ -92,22 +95,27 @@ public class SearchActionBean implements ActionBean {
 
             Session sess = (Session) em.getDelegate();
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
-            Disjunction dis = Restrictions.disjunction();
-            dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
+            if(term != null){
+                Disjunction dis = Restrictions.disjunction();
+                dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
 
-            try {
-                int karAddress = Integer.parseInt(term);
-                dis.add(Restrictions.eq("karAddress", karAddress));
-            } catch (NumberFormatException e) {
+                try {
+                    int karAddress = Integer.parseInt(term);
+                    dis.add(Restrictions.eq("karAddress", karAddress));
+                } catch (NumberFormatException e) {
+                }
+
+                dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
+
+                criteria.add(dis);
             }
-
-            dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
-            criteria.add(dis);
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
                 if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner())) {
-                    rseqs.put(roadsideEquipment.getRseqGeoJSON());
+                    if(vehicleType == null || roadsideEquipment.hasSignalForVehicleType(vehicleType) ){
+                        rseqs.put(roadsideEquipment.getRseqGeoJSON());
+                    }
                 }
             }
             info.put("rseqs", rseqs);
@@ -323,6 +331,14 @@ public class SearchActionBean implements ActionBean {
 
     public void setDataOwner(String dataOwner) {
         this.dataOwner = dataOwner;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     public String getTerm() {
