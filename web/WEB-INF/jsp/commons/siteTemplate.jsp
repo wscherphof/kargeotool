@@ -81,7 +81,9 @@
         <div id="viewportcontainer">
             <stripes:layout-component name="headerlinks"/>
             <div id="contentcontainer">
+                <noscript><h1><font color="red">Uw browser ondersteund geen javascript, of u heeft javascript uitgezet. Zet javascript aan om de website te gebruiken.</font></h1></noscript>
                 <stripes:layout-component name="content"/>
+                
             </div>
         </div>
     </body>
