@@ -210,3 +210,9 @@ body.editor {
 .info {
     color: #00f;
 }
+
+.myDisabledClass input{
+    opacity: .3;
+    -moz-opacity: .3;
+    filter: alpha(opacity=30);
+}

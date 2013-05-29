@@ -25,6 +25,9 @@
         <div class="headerlink">
             <a href="<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean"/>"><img src="<c:url value="/images/"/>/pencil.png" alt="icon" class="navimg" /> Beheer VRI-informatie</a>
         </div>
+        <div class="headerlink">
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.RightsActionBean"/>">Beheer VRI-toegang</a>
+        </div>
         <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">
             <div class="headerlink">
                 <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean"><img src="<c:url value="/images/"/>/users.png" alt="icon" class="navimg" /> Beheer gebruikers</stripes:link>
