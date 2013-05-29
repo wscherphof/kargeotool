@@ -234,9 +234,6 @@ function rseqFrame (){
                 xtype : 'toolbar',
                 dock : 'bottom',
                 ui : 'footer',
-                defaults : {
-                    minWidth : 100
-                },
                 items : [
                     {
                         xtype : "combo",
@@ -250,9 +247,6 @@ function rseqFrame (){
                         queryMode : 'local',
                         displayField : 'fullname',
                         valueField : 'id',
-                        layout : {
-                            width : 150
-                        },
                         name : 'gebruikerCombo',
                         emptyText : "Selecteer",
                         flex : 1
@@ -260,6 +254,23 @@ function rseqFrame (){
                      {
                         xtype : 'button',
                         text : 'Voeg toe',
+                        handler: function(){
+                            var combo = Ext.getCmp("gebruikerCombo");
+                            var userId = combo.getValue();
+                            if(userId){
+                                var displayValue = combo.getDisplayValue();
+                                rightsStore.loadData([{
+                                    id:userId,
+                                    user:displayValue, 
+                                    read:false,
+                                    write:false
+                                }],true);
+                            }
+                        }
+                    },
+                     {
+                        xtype : 'button',
+                        text : 'Verwijder',
                         handler: function(){
                             var a = 0;
                         }
