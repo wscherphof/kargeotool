@@ -30,18 +30,24 @@
 
     </stripes:layout-component>
     <stripes:layout-component name="content">
-        <script type="text/javascript" src="${contextPath}/js/rights.js"></script>
-        <script type="text/javascript">
-            var rseq = ${actionBean.rseqJson};
-            var dataOwner = "${actionBean.dataOwner}";
-            var gebruikers = ${actionBean.gebruikers};
-            Ext.onReady(function (){
-                rseqFrame();
-            });
-        </script>
-        <div id="rseq" style="float:left;"></div> <div style="padding-left:10px;" id="rseqRights"></div>
-
-
+        <script type="text/javascript" src="${contextPath}/js/vridetails.js"></script>
+        <stripes:form beanclass="nl.b3p.kar.stripes.RightsActionBean">
+            <stripes:hidden name="rightsList" id="rightsList" />
+            <stripes:hidden name="rseq" />
+            <script type="text/javascript">
+                var rseq = ${actionBean.rseqJson};
+                var dataOwner = "${actionBean.dataOwner}";
+                var gebruikers = ${actionBean.gebruikers};
+                rights = ${actionBean.rightsList};
+                Ext.onReady(function (){
+                    rseqFrame();
+                });
+            </script>
+            <div id="rseq" style="float:left;"></div> <div style="padding-left:10px;" id="rseqRights"></div>
+            <div>
+                <stripes:submit name="save" onclick="getRights();" value="Opslaan"/>
+            </div>
+        </stripes:form>
     </stripes:layout-component>
 
 </stripes:layout-render>

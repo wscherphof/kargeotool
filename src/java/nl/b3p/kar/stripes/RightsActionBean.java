@@ -18,7 +18,7 @@
  */
 package nl.b3p.kar.stripes;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -56,6 +56,8 @@ public class RightsActionBean implements ActionBean {
     private JSONObject rseqJson;
     private String dataOwner;
     private JSONArray gebruikers;
+    @Validate
+    private JSONArray rightsList;
 
     /**
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
@@ -123,7 +125,7 @@ public class RightsActionBean implements ActionBean {
                 geb.put("fullname", gebruiker.getFullname());
                 gebruikers.put(geb);
             } catch (JSONException ex) {
-                log.error("Kan gebruiker niet ophalen:",ex);
+                log.error("Kan gebruiker niet ophalen:", ex);
             }
         }
     }
@@ -132,8 +134,53 @@ public class RightsActionBean implements ActionBean {
 
         EntityManager em = Stripersist.getEntityManager();
         rseqJson = rseq.getJSON();
-     
+
         dataOwner = rseq.getDataOwner().getOmschrijving();
+        Gebruiker geb = getGebruiker();
+        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq and gebruiker = :geb", GebruikerVRIRights.class)
+                .setParameter("rseq", rseq).setParameter("geb", geb).getResultList();
+
+        rightsList = new JSONArray();
+        for (GebruikerVRIRights gebruikerVRIRights : lijst) {
+            JSONObject rights = new JSONObject();
+            rights.put("userId", gebruikerVRIRights.getGebruiker().getId());
+            rights.put("fullname", gebruikerVRIRights.getGebruiker().getFullname());
+            rights.put("read", gebruikerVRIRights.isReadable());
+            rights.put("write", gebruikerVRIRights.isEditable());
+            rightsList.put(rights);
+        }
+        return new ForwardResolution(detail);
+    }
+
+    public Resolution save() {
+        EntityManager em = Stripersist.getEntityManager();
+        Gebruiker geb = getGebruiker();
+        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq and gebruiker = :geb", GebruikerVRIRights.class)
+                .setParameter("rseq", rseq).setParameter("geb", geb).getResultList();
+
+        for (GebruikerVRIRights gebruikerVRIRights : lijst) {
+            em.remove(gebruikerVRIRights);
+        }
+
+        for (int i = 0; i < rightsList.length(); i++) {
+            try {
+                JSONObject userRights = rightsList.getJSONObject(i);
+
+                Integer userId = userRights.getInt("userId");
+
+                Gebruiker gebruiker = em.find(Gebruiker.class, userId);
+
+                GebruikerVRIRights gvr = new GebruikerVRIRights();
+                gvr.setGebruiker(gebruiker);
+                gvr.setRoadsideEquipment(rseq);
+                gvr.setReadable(userRights.getBoolean("read"));
+                gvr.setEditable(userRights.getBoolean("write"));
+                em.persist(gvr);
+            } catch (JSONException ex) {
+                log.error(ex);
+            }
+        }
+        em.getTransaction().commit();
 
         return new ForwardResolution(detail);
     }
@@ -189,6 +236,14 @@ public class RightsActionBean implements ActionBean {
 
     public void setDataOwner(String dataOwner) {
         this.dataOwner = dataOwner;
+    }
+
+    public JSONArray getRightsList() {
+        return rightsList;
+    }
+
+    public void setRightsList(JSONArray rightsList) {
+        this.rightsList = rightsList;
     }
 
     public JSONArray getRseqs() {
