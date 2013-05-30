@@ -32,7 +32,7 @@
         <script type="text/javascript" src="${contextPath}/js/rights.js"></script>
         <script type="text/javascript">
             var rseqs = ${actionBean.rseqs};
-            var righsUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.RightsActionBean" event="edit"/>";
+            var rightsUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.RightsActionBean" event="edit"/>";
             Ext.onReady(function(){
                 loadGrid();
             });

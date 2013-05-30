@@ -74,5 +74,5 @@ function loadGrid (){
 function rowSelected (rowmodel,record){
     var selectedId = record.data.id;
     var iframe = Ext.get("VRIDetail").dom;
-    iframe.src = righsUrl + "&rseq=" + selectedId;
+    iframe.src = rightsUrl + "&rseq=" + selectedId;
 }

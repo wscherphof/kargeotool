@@ -43,7 +43,6 @@
                     rseqFrame();
                 });
             </script>
-            <div id="rseq" style="float:left;"></div> <div style="padding-left:10px;" id="rseqRights"></div>
             <div>
                 <stripes:submit name="save" onclick="getRights();" value="Opslaan"/>
             </div>

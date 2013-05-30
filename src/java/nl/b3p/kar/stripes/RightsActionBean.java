@@ -18,11 +18,9 @@
  */
 package nl.b3p.kar.stripes;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import net.sourceforge.stripes.action.*;
@@ -38,7 +36,7 @@ import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
- * Stripes klasse welke de edit functionaliteit regelt.
+ * Stripes klasse welke het opslaan van rechten van gebruikers per VRI regelt
  *
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
@@ -115,19 +113,7 @@ public class RightsActionBean implements ActionBean {
             context.getValidationErrors().add("VRI", new SimpleError("Kan geen verkeerssystemen ophalen.", e.getMessage()));
         }
 
-        List<Gebruiker> gebruikersList = em.createQuery("FROM Gebruiker order by fullname", Gebruiker.class).getResultList();
-        gebruikers = new JSONArray();
-        for (Gebruiker gebruiker : gebruikersList) {
-            try {
-                JSONObject geb = new JSONObject();
-                geb.put("id", gebruiker.getId());
-                geb.put("username", gebruiker.getUsername());
-                geb.put("fullname", gebruiker.getFullname());
-                gebruikers.put(geb);
-            } catch (JSONException ex) {
-                log.error("Kan gebruiker niet ophalen:", ex);
-            }
-        }
+
     }
 
     public Resolution edit() throws JSONException {
@@ -141,6 +127,7 @@ public class RightsActionBean implements ActionBean {
                 .setParameter("rseq", rseq).setParameter("geb", geb).getResultList();
 
         rightsList = new JSONArray();
+        List<Gebruiker> exclude = new ArrayList();
         for (GebruikerVRIRights gebruikerVRIRights : lijst) {
             JSONObject rights = new JSONObject();
             rights.put("userId", gebruikerVRIRights.getGebruiker().getId());
@@ -148,11 +135,37 @@ public class RightsActionBean implements ActionBean {
             rights.put("read", gebruikerVRIRights.isReadable());
             rights.put("write", gebruikerVRIRights.isEditable());
             rightsList.put(rights);
+            exclude.add(gebruikerVRIRights.getGebruiker());
         }
+
+        String q = "FROM Gebruiker g";
+        if(!exclude.isEmpty()){
+            q += " WHERE g not in :list";
+        }
+        q += " order by fullname";
+        Query query = em.createQuery(q, Gebruiker.class);
+        if(!exclude.isEmpty()){
+            query.setParameter("list", exclude);
+        }
+        List<Gebruiker> gebruikersList = query.getResultList();
+        
+        gebruikers = new JSONArray();
+        for (Gebruiker g : gebruikersList) {
+            try {
+                JSONObject gebruiker = new JSONObject();
+                gebruiker.put("id", g.getId());
+                gebruiker.put("username", g.getUsername());
+                gebruiker.put("fullname", g.getFullname());
+                gebruikers.put(gebruiker);
+            } catch (JSONException ex) {
+                log.error("Kan gebruiker niet ophalen:", ex);
+            }
+        }
+
         return new ForwardResolution(detail);
     }
 
-    public Resolution save() {
+    public Resolution save() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
         Gebruiker geb = getGebruiker();
         List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq and gebruiker = :geb", GebruikerVRIRights.class)
@@ -182,7 +195,7 @@ public class RightsActionBean implements ActionBean {
         }
         em.getTransaction().commit();
 
-        return new ForwardResolution(detail);
+        return edit();
     }
 
     public Gebruiker getGebruiker() {

@@ -154,17 +154,20 @@ function rseqFrame (){
             {
                 text : 'Gebruiker',
                 dataIndex : 'fullname',
-                flex : 1
+                flex : 1,
+                draggable : false
             },
             {
                 text : 'Lezen',
                 dataIndex : 'read',
-                renderer : checkboxRenderer
+                renderer : checkboxRenderer,
+                draggable : false
             },
             {
                 text : 'Schrijven',
                 dataIndex : 'write',
-                renderer : checkboxRenderer
+                renderer : checkboxRenderer,
+                draggable : false
             }
         ],
         height : 300,
@@ -179,10 +182,14 @@ function rseqFrame (){
                         xtype : "combo",
                         id : "gebruikerCombo",
                         fieldLabel : 'Gebruiker',
-                        allowBlank : false,
                         store : Ext.create('Ext.data.Store',{
                             fields : ['fullname','id'],
-                            data : me.gebruikers
+                            data : me.gebruikers,
+                            sorters:[
+                                {
+                                    property: "fullname"
+                                }
+                            ]
                         }),
                         queryMode : 'local',
                         displayField : 'fullname',
@@ -207,7 +214,11 @@ function rseqFrame (){
                         xtype : 'button',
                         text : 'Verwijder',
                         handler : function (){
-                            var a = 0;
+                            var sm = rightsGrid.getSelectionModel();
+                            var selection = sm.getSelection()[0];
+                            if(selection){
+                                removeUser(selection.data.userId);
+                            }
                         }
                     }
                 ]
@@ -243,8 +254,8 @@ function rightsClick (event,row,column){
 
 function addUser (userId,displayValue){
     rightsStore.add({
-        id : userId,
-        user : displayValue,
+        userId : userId,
+        fullname : displayValue,
         read : false,
         write : false
     });
@@ -254,8 +265,36 @@ function addUser (userId,displayValue){
     settings.read = false;
     settings.write = false;
     rights.push(settings);
+
+
+    var combo = Ext.getCmp("gebruikerCombo");
+    var comboStore = combo.getStore();
+    var index = comboStore.find("id",userId);
+    if(index != null && index >= 0){
+        comboStore.removeAt(index);
+        combo.select(null);
+    }
 }
 
 function removeUser (userId){
+    
+    var fullName = rightsStore.findRecord("userId",userId).data.fullname;
+    var combo = Ext.getCmp("gebruikerCombo");
+    var comboStore = combo.getStore();
 
+    comboStore.add({
+        id : userId,
+        fullname : fullName
+    });
+
+    var index = rightsStore.find("userId",userId);
+    if(index != null && index >= 0){
+        rightsStore.removeAt(index);
+    }
+   
+    for (var i = 0;i < rights.length;i++){
+        if(rights[i].userId == userId){
+            delete rights[i];
+        }
+    }
 }
