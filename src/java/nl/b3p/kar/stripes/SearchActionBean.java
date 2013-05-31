@@ -112,7 +112,7 @@ public class SearchActionBean implements ActionBean {
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
-                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner())) {
+                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner()) || getGebruiker().hasVRIRight(roadsideEquipment)) {
                     if(vehicleType == null || roadsideEquipment.hasSignalForVehicleType(vehicleType) ){
                         rseqs.put(roadsideEquipment.getRseqGeoJSON());
                     }
