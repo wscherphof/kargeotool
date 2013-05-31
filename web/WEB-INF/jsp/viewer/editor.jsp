@@ -278,9 +278,10 @@
                     Ext.Array.each(ovInfo, function(ov) {
                         var currentName = "buslijnen_" + ov.schema;
                     
-                        var visible = true;
-                        editor.olc.setLayerVisible(currentName, visible);
+                        // Prevent old image from showing
+                        editor.olc.setLayerVisible(currentName, false);
                         editor.olc.removeSldFromKargis(currentName);
+                        editor.olc.setLayerVisible(currentName, true);
                     });
 
                     Ext.get("buslijnen_filter").setDisplayed(false);
