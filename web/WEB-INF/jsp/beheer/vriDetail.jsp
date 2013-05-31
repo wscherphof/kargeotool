@@ -44,7 +44,11 @@
                 });
             </script>
             <div>
-                <stripes:submit name="save" onclick="getRights();" value="Opslaan"/>
+                <div class="rseqOverview">
+                    <div id="rseq" ></div>
+                        <stripes:submit name="save" onclick="getRights();" value="Opslaan"/>
+                </div>
+                <div id="rseqRights"  class="rseqRights"></div>
             </div>
         </stripes:form>
     </stripes:layout-component>

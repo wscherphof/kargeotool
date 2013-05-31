@@ -216,3 +216,14 @@ body.editor {
     -moz-opacity: .3;
     filter: alpha(opacity=30);
 }
+
+.rseqOverview{
+    float: left;
+    width: 200px;
+    margin-left: 25px;
+}
+
+.rseqRights{
+    float: right;
+    margin-right: 200px;
+}
