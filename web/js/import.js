@@ -2,7 +2,6 @@ function createForms (){
     Ext.create('Ext.tab.Panel',{
         width : 400,
         height : 400,
-        activeItem: 'kv9tab',
         renderTo : 'body',
         items : [{
                 title : 'INCAA .ptx',

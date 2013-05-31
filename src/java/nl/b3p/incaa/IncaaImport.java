@@ -85,7 +85,7 @@ public class IncaaImport {
         List<RoadsideEquipment> savedRseqs = new ArrayList();
         for (Integer karAddress : rseqs.keySet()) {
             RoadsideEquipment rseq = rseqs.get(karAddress);
-            if(g.isBeheerder() || g.canEditDataOwner(rseq.getDataOwner())){
+            if(g.isBeheerder() || g.canEditDataOwner(rseq.getDataOwner()) || g.canEditVRI(rseq)){
                 // Maak van alle punten binnen een rseq een centroïde en gebruik dat als locatie van de rseq zelf
                 List<Point> points = rseqLocations.get(rseq.getKarAddress());
                 GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);

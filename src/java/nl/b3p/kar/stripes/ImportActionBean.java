@@ -89,7 +89,7 @@ public class ImportActionBean implements ActionBean {
             for (Kv9Def kv9Def : defs) {
                 List<RoadsideEquipment> rseqs = kv9Def.getRoadsideEquipments();
                 for (RoadsideEquipment roadsideEquipment : rseqs) {
-                    if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())){
+                    if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())|| g.canEditVRI(roadsideEquipment)){
                         em.persist(roadsideEquipment);
                         num ++;
                     }
