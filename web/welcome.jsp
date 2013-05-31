@@ -52,7 +52,10 @@
         <tbody id="welcomeOvInfo">
         </tbody>
     </table>
-    
+    <h1>Resolutie</h1>
+    <p>
+    Deze applicatie werkt het beste met een minimale resolutie van 1024x768.
+    </p>
     <h1>Over deze applicatie</h1>
     <p>
         Deze applicatie is ontwikkeld door <a href="http://www.b3partners.nl/" target="_blank">B3Partners</a>.
