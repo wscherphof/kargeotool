@@ -42,7 +42,7 @@
            
         </div>
         
-        <iframe style="width:100%; height:500px;border:1px solid red;" id="VRIDetail" src=""/>
+        <iframe style="width:100%; height:500px;border:0px;" id="VRIDetail" src=""/>
 
     </stripes:layout-component>
 </stripes:layout-render>
