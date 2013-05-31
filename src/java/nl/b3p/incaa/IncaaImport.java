@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
@@ -239,10 +240,13 @@ public class IncaaImport {
     }
 
     private DataOwner getDataOwner(String code) {
-
-        EntityManager em = Stripersist.getEntityManager();
-        DataOwner dataOwner = (DataOwner) em.createQuery("from DataOwner where code = :code ").setParameter("code", code).getSingleResult();
-        return dataOwner;
+        try{
+            EntityManager em = Stripersist.getEntityManager();
+            DataOwner dataOwner = (DataOwner) em.createQuery("from DataOwner where code = :code ").setParameter("code", code).getSingleResult();
+            return dataOwner;
+        }catch(NoResultException ex){
+            throw new NoResultException("Kan databeheerder niet ophalen voor code: "+ code);
+        }
     }
 
     /**

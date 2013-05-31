@@ -30,13 +30,15 @@
     <stripes:layout-component name="content">
 
         <script type="text/javascript" src="${contextPath}/js/import.js"></script>
-
         <script type="text/javascript">
             var importActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean" />";
         </script>
         <h1>Importeer verkeerssystemen</h1>
+
+        <stripes:messages/>
+        <stripes:errors/>
         <div id="body" class="exportBody">
-           
+
         </div>
 
     </stripes:layout-component>
