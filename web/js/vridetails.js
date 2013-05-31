@@ -74,7 +74,6 @@ function rseqFrame (){
                 }
                 ,{
                     fieldLabel : 'Beheerder',
-                    //xtype: 'text',
                     name : 'dataOwner',
                     value : dataOwner
                 }
@@ -83,7 +82,6 @@ function rseqFrame (){
                     name : 'crossingCode',
                     value : rseq.crossingCode
                 },{
-                    xtype : 'numberfield',
                     fieldLabel : 'KAR adres',
                     name : 'karAddress',
                     allowBlank : false,
@@ -104,13 +102,11 @@ function rseqFrame (){
                     name : 'description',
                     value : rseq.description
                 },{
-                    xtype : 'datefield',
                     format : 'Y-m-d',
                     fieldLabel : 'Geldig vanaf',
                     name : 'validFrom',
                     value : rseq.validFrom
                 },{
-                    xtype : 'datefield',
                     format : 'Y-m-d',
                     fieldLabel : 'Geldig tot',
                     name : 'validUntil',
@@ -243,6 +239,7 @@ function rightsClick (event,row,column){
     for (var i = 0;i < rights.length;i++){
         if(rights[i].userId == user){
             settings = rights[i];
+            break;
         }
     }
     if(settings != null){
