@@ -210,9 +210,9 @@ public class EditorActionBean implements ActionBean {
             } else {
                 throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
-            boolean editable = getGebruiker().canEditDataOwner(rseq2.getDataOwner()) || getGebruiker().isBeheerder();
-            if( !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner())) {
-                info.put("error", "De gebruiker is!get niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
+            boolean editable = getGebruiker().canEditDataOwner(rseq2.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq2);
+            if( !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner()) && !getGebruiker().canReadVRI(rseq2)) {
+                info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
                 info.put("roadsideEquipment", rseq2.getJSON());
                 info.put("editable",editable);
@@ -252,6 +252,12 @@ public class EditorActionBean implements ActionBean {
                     rseq2 = Collections.EMPTY_LIST;
                 } else {
                     if (rseq != null) {
+                        List<RoadsideEquipment> allowedRseqs = em.createQuery(
+                                "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
+                              + "where gebruiker = :geb and gv.roadsideEquipment <> :rseq")
+                                .setParameter("geb", getGebruiker())
+                                .setParameter("rseq", rseq)
+                                .getResultList();
                         rseq2 = (List<RoadsideEquipment>) em.createQuery(
                                 "from RoadsideEquipment "
                               + "where id <> :id "
@@ -259,20 +265,33 @@ public class EditorActionBean implements ActionBean {
                                 .setParameter("id", rseq.getId())
                                 .setParameter("dos", dos)
                                 .getResultList();
+                        rseq2.addAll(allowedRseqs);
                     } else {
+                        
+                        List<RoadsideEquipment> allowedRseqs = em.createQuery(
+                                "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
+                              + "where gebruiker = :geb")
+                                .setParameter("geb", getGebruiker())
+                                .getResultList();
+                        
+                        
                         rseq2 = (List<RoadsideEquipment>) em.createQuery(
                                 "from RoadsideEquipment "
                               + "where dataOwner in (:dos)")
                                 .setParameter("dos", dos)
                                 .getResultList();
+                        rseq2.addAll(allowedRseqs);
                     }
                 }
+                
+                
             }
             Gebruiker g =getGebruiker();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment r : rseq2) {
                 JSONObject rseqJson = r.getRseqGeoJSON();
-                rseqJson.put("editable", g.canEditDataOwner(r.getDataOwner()));
+                boolean editable = g.canEditDataOwner(r.getDataOwner()) || g.canEditVRI(r);
+                rseqJson.put("editable", editable);
                 rseqs.put(rseqJson);
                 
             }
@@ -438,7 +457,7 @@ public class EditorActionBean implements ActionBean {
                 throw new IllegalArgumentException("Data owner is verplicht");
             }
             if(!g.isBeheerder()) {
-                if(!g.canEditDataOwner(rseq.getDataOwner())) {
+                if(!g.canEditDataOwner(rseq.getDataOwner())&& !g.canEditVRI(rseq)) {
                     throw new IllegalStateException(
                             String.format("Gebruiker \"%s\" heeft geen rechten op data owner code %s (\"%s\")",
                             g.getUsername(),
