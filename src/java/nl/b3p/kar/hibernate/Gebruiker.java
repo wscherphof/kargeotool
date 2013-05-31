@@ -23,8 +23,10 @@ import javax.persistence.*;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -71,6 +73,9 @@ public class Gebruiker implements Principal {
     @MapKeyJoinColumn(name="data_owner")
     @Sort(type=SortType.NATURAL)
     private SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner, GebruikerDataOwnerRights>();
+    
+    @OneToMany(mappedBy="gebruiker")
+    private List<GebruikerVRIRights>  vriRights = new ArrayList();
 
     /**
      * Verandert het wachtwoord
@@ -334,6 +339,41 @@ public class Gebruiker implements Principal {
             }
         }
         return dataOwners;
+    }
+
+    public List<GebruikerVRIRights> getVriRights() {
+        return vriRights;
+    }
+
+    public void setVriRights(List<GebruikerVRIRights> vriRights) {
+        this.vriRights = vriRights;
+    }
+    
+    public boolean canEditVRI(RoadsideEquipment rseq){
+        for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
+            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isEditable()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean canReadVRI(RoadsideEquipment rseq){
+         for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
+            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isReadable()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean hasVRIRight(RoadsideEquipment rseq ){
+        for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
+            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() ){
+                return true;
+            }
+        }
+        return false;
     }
     
     public Set<DataOwner> getAvailableDataOwners(){

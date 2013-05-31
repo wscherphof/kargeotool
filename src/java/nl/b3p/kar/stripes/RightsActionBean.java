@@ -123,8 +123,8 @@ public class RightsActionBean implements ActionBean {
 
         dataOwner = rseq.getDataOwner().getOmschrijving();
         Gebruiker geb = getGebruiker();
-        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq and gebruiker = :geb", GebruikerVRIRights.class)
-                .setParameter("rseq", rseq).setParameter("geb", geb).getResultList();
+        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq", GebruikerVRIRights.class)
+                .setParameter("rseq", rseq).getResultList();
 
         rightsList = new JSONArray();
         List<Gebruiker> exclude = new ArrayList();
@@ -168,12 +168,14 @@ public class RightsActionBean implements ActionBean {
     public Resolution save() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
         Gebruiker geb = getGebruiker();
-        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq and gebruiker = :geb", GebruikerVRIRights.class)
-                .setParameter("rseq", rseq).setParameter("geb", geb).getResultList();
+        List<GebruikerVRIRights> lijst = em.createQuery("FROM GebruikerVRIRights WHERE roadsideEquipment = :rseq", GebruikerVRIRights.class)
+                .setParameter("rseq", rseq).getResultList();
 
         for (GebruikerVRIRights gebruikerVRIRights : lijst) {
             em.remove(gebruikerVRIRights);
         }
+        
+        em.flush();
 
         for (int i = 0; i < rightsList.length(); i++) {
             try {
