@@ -356,8 +356,33 @@ Ext.define('RSEQ', {
         });        
     },
             
-    removeCheckoutPoint : function(point){
-
+    removeCheckoutPoint : function(checkout){
+        var mvmnts = this.findMovementsForPoint(checkout);
+        for(var i= 0 ; i < mvmnts.length ;i++){
+            var movement = mvmnts[i].movement;
+            for (var j = movement.maps.length-1 ;j >= 0 ; j--){
+                var point = this.getPointById(movement.maps[j].pointId);
+                if(point.id != checkout.id){
+                    var ms = this.findMovementsForPoint(point);
+                    if(ms.length == 1){
+                        this.removeNonCheckoutPoint(point);
+                    }else{
+                        movement.removeMapForPoint(point);
+                    }
+                }
+            }
+            this.removeMovement(movement.id);
+        }
+        this.removeNonCheckoutPoint(checkout);
+    },
+            
+    removeMovement: function(id){
+        for (var i = 0 ; i < this.movements.length ;i++){
+            if(this.movements[i].getId() == id){
+                this.movements.splice(i,1);
+                break;
+            }
+        }
     },
     
     removeNonCheckoutPoint: function (point){
