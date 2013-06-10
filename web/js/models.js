@@ -365,7 +365,7 @@ Ext.define('RSEQ', {
                 if(point.id != checkout.id){
                     var ms = this.findMovementsForPoint(point);
                     if(ms.length == 1){
-                        this.removeNonCheckoutPoint(point);
+                        this.removePoint(point);
                     }else{
                         movement.removeMapForPoint(point);
                     }
@@ -373,7 +373,7 @@ Ext.define('RSEQ', {
             }
             this.removeMovement(movement.id);
         }
-        this.removeNonCheckoutPoint(checkout);
+        this.removePoint(checkout);
     },
             
     removeMovement: function(id){
@@ -385,7 +385,7 @@ Ext.define('RSEQ', {
         }
     },
     
-    removeNonCheckoutPoint: function (point){
+    removePoint: function (point){
         var mvmnts = this.findMovementsForPoint(point);
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
