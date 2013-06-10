@@ -302,7 +302,7 @@ Ext.define("ContextMenu", {
                             this.editor.editSelectedObject();
                             break;                        
                         case 'removeCheckoutcheckout':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            this.editor.removeCheckoutPoint();
                             break;                            
                         case 'addEindpunt':
                             editor.addEindpunt();
@@ -372,7 +372,7 @@ Ext.define("ContextMenu", {
                             this.editor.editSelectedObject();
                             break;
                         case 'removeInmeldpunt':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            this.editor.removeOtherPoint();
                             break;                               
                         case 'addVoorinmeldpunt':
                             editor.addVoorinmeldpunt();
@@ -413,7 +413,7 @@ Ext.define("ContextMenu", {
                             editor.editSelectedObject();
                             break;
                         case 'removeNAPoint':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
+                            this.editor.removeOtherPoint();
                             break;
                         case 'setCoordsNon':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);

@@ -355,7 +355,24 @@ Ext.define('RSEQ', {
             mvmtAndMap.movement.maps.splice(0, 0, newMap);
         });        
     },
+            
+    removeCheckoutPoint : function(point){
+
+    },
     
+    removeNonCheckoutPoint: function (point){
+        var mvmnts = this.findMovementsForPoint(point);
+        for(var i= 0 ; i < mvmnts.length ;i++){
+            var movement = mvmnts[i].movement;
+            movement.removeMapForPoint(point);
+        }
+        
+        for(var j = this.points.length - 1 ; j >= 0 ; j--){
+            if(this.points[j].getId() == point.getId()){
+                this.points.splice(j,1);
+            }
+        }
+    },
     /**
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
@@ -619,6 +636,13 @@ Ext.define('Movement', {
             }
         }
         return map;
+    },
+    removeMapForPoint:function(point){
+        for (var i = this.maps.length-1 ; i >= 0 ; i--){
+            if(this.maps[i].pointId == point.getId()){
+                this.maps.splice(i,1);
+            }
+        }
     }
 });
 /**

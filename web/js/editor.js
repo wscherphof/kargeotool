@@ -462,6 +462,16 @@ Ext.define("Editor", {
         }
     },
     
+    removeCheckoutPoint: function(){
+        this.activeRseq.removeCheckoutPoint(this.selectedObject);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+            
+    removeOtherPoint : function(){
+        this.activeRseq.removeNonCheckoutPoint(this.selectedObject);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+    
     /**
      * Laad de wegen rondom de actieve rseq. Wordt gebruikt om de lijn bij het toevoegen van punten aan te snappen.
      */
