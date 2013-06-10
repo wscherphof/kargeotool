@@ -99,8 +99,10 @@ public class ImportActionBean implements ActionBean {
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch (JAXBException jaxbEx) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(jaxbEx)));
+            log.error(jaxbEx);
         } catch (IOException ex) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(ex)));
+            log.error(ex);
         }
         return new ForwardResolution(OVERVIEW);
     }
