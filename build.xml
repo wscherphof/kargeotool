@@ -68,5 +68,6 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <import file="deploy/build.xml"/>
     <import file="database/hibernate-schemaexport.xml"/>
 </project>

@@ -8,7 +8,7 @@
         username="transmodel"
         password="transmodel"
         driverClassName="org.postgresql.Driver"
-        url="jdbc:postgresql://x17.b3p.nl/transmodel_acc"
+        url="jdbc:postgresql://localhost/transmodel_acc"
         maxActive="25"
         validationQuery="select 1"
     />

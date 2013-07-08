@@ -10,6 +10,11 @@
         <param-name>javax.servlet.jsp.jstl.fmt.locale</param-name>
         <param-value>nl</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>mapserver-url</param-name>
+        <param-value>http://x17.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel_acc.map</param-value>
+    </context-param>
     <filter>
         <filter-name>Security Filter</filter-name>
         <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
