@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/geo-ov">
+    
+    <Resource 
+        name="jdbc/transmodel"
+        auth="Container"
+        type="javax.sql.DataSource"
+        username="transmodel"
+        password="transmodel"
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://localhost/transmodel"
+        maxActive="25"
+        validationQuery="select 1"
+    />
+    <Parameter name="mapserver-url" value="http://geo-ov-acc.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel.map" override="false"/>
+</Context>
