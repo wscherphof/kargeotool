@@ -11,10 +11,11 @@ fontset "fonts.list"
 web
   metadata
     "ows_title"				"Transmodel"
-    "ows_onlineresource"		"http://x13.b3p.nl/cgi-bin/mapserv?map=/home/matthijsln/geo-ov/transmodel.map"
+    "ows_onlineresource"		"http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel.map"
     "ows_srs"				"EPSG:28992"
     "ows_extent"			"12000 304000 280000 620000"
     "ows_schemas_location"		"http://schemas.opengeospatial.net"
+	"ows_enable_request"   "*"
   end
   imagepath "/tmp"
 end
@@ -53,14 +54,14 @@ symbol
   points 1 1 end
 end
 
-symbol
-  name "pijl"
-  type truetype
-  font "freesans"
-  character ">"
-  antialias true
-  gap -50
-end
+#symbol
+#  name "pijl"
+#  type truetype
+#  font "freesans"
+#  character ">"
+#  antialias true
+#  gap -50
+#end
 
 layer
   name buslijnen
@@ -78,7 +79,7 @@ layer
   end
   connectiontype postgis
   connection "host=localhost dbname=transmodel password=transmodel port=5432 user=transmodel"
-  data "the_geom from (select j.id,l.name,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique id"
+  data "the_geom from (select j.id,l.linename,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
   end
