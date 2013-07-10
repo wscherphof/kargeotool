@@ -12,5 +12,5 @@
         maxActive="25"
         validationQuery="select 1"
     />
-    <Parameter name="mapserver-url" value="http://geo-ov-acc.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel.map" override="false"/>
+    <Parameter name="mapserver-url" value="http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel.map" override="false"/>
 </Context>
