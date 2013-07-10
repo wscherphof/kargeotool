@@ -68,7 +68,9 @@ layer
   metadata
     "wms_title" "buslijnen"
     "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
     "wfs_featureid" "id"
+	'default_filtering' 'no'
   end
   type line
   dump true
@@ -76,7 +78,9 @@ layer
   status off
   validation
     "schema"    "[a-z_]+"
+	"filtering"	"[0-9]*"
   end
+  
   connectiontype postgis
   connection "host=localhost dbname=transmodel_acc password=transmodel port=5432 user=transmodel"
   data "the_geom from (select j.id,l.linename,l.linepublicnumber,j.lineplanningnumber,j.journeypatterncode,j.direction,j.the_geom from %schema%.jopa j left join %schema%.line l on (j.lineplanningnumber = l.lineplanningnumber)) as bla using srid=28992 using unique id"
@@ -84,17 +88,16 @@ layer
     "init=epsg:28992"
   end
   labelitem "linepublicnumber"
+  filter ("linepublicnumber" = '%filtering%' or 'no' = '%filtering%')
+  	
+  
   class 
     name ""
     style      
-	color 200 0 0
-  end
-    #style
-    #	color 255 0 0
-    #   symbol "pijl"
-    #   size 20
-    #end
-  end		
+		color 255 0 0
+	end
+   END
+	 
   processing "CLOSE_CONNECTION=DEFER"
 end
 

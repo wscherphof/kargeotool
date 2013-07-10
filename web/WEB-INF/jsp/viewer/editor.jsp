@@ -129,7 +129,6 @@
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";
                 var profileActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ProfileActionBean"/>";
                 var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>";
-                var sldActionBeanUrl ="${absoluteURIPrefix}" + "<stripes:url beanclass="nl.b3p.kar.stripes.SLDActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;
@@ -280,7 +279,7 @@
                     
                         // Prevent old image from showing
                         editor.olc.setLayerVisible(currentName, false);
-                        editor.olc.removeSldFromKargis(currentName);
+                        editor.olc.removeFilterFromKargis(currentName);
                         editor.olc.setLayerVisible(currentName, true);
                     });
 

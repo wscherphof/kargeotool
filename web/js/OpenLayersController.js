@@ -534,25 +534,26 @@ Ext.define("ol", {
     },
     /**
      * Voeg nieuw sld toe aan de kaarten.
-     * @param buslijnsld sld voor de buslijnen
+     * @param publiclinenumber nummer van de buslijnen die gefilterd moeten worden
+     * @param name De naam van de layer
      */
-    addSldToKargis : function (buslijnsld, name){
+    addFilterToKargis : function (publiclinenumber, name){
         var buslijnen = this.map.getLayersByName(name)[0];
         buslijnen.maxResolution =4000;
         buslijnen.mergeNewParams({
-            sld:buslijnsld
+            filtering:publiclinenumber
         });
     },
     /**
      * Haal de sld's van de layers 'buslijnen'
      * @param layer De laag waarvan het SLD gehaald moet worden
      */
-    removeSldFromKargis : function (layer){
+    removeFilterFromKargis : function (layer){
         var buslijnen = this.map.getLayersByName(layer)[0];
         
         buslijnen.maxResolution =12;
         buslijnen.mergeNewParams({
-            sld:null
+            filtering:null
         });
         
     },

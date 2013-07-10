@@ -8,7 +8,6 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>viewer</web-resource-name>
-            <url-pattern>/action/sld</url-pattern>
             <http-method>POST</http-method>
             <http-method>GET</http-method>
         </web-resource-collection>

@@ -586,9 +586,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                     editor.olc.setLayerVisible(currentName, visible);
                 });
                     
-                var sld = sldActionBeanUrl + '?publicnumber=';
-                sld+= busline.publicnumber;
-                editor.olc.addSldToKargis(sld,layerName);
+                editor.olc.addFilterToKargis(busline.publicnumber,layerName);
                 Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
                 Ext.get("buslijnen_filter").setDisplayed(true);
                 
