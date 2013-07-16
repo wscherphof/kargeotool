@@ -58,6 +58,26 @@ Ext.define("EditForms", {
             this.rseqEditWindow = null;
         }   
         
+        var okFunction = function (form) {
+            var form = Ext.getCmp ("rseqForm").getForm();
+            
+            if(!form.isValid()) {
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                return;
+            }
+
+            Ext.Object.merge(rseq, form.getValues());
+            if(rseq == me.editor.activeRseq) {
+                me.editor.fireEvent("activeRseqUpdated", rseq);
+            }
+            me.rseqEditWindow.destroy();
+            me.rseqEditWindow = null;
+
+            if(okHandler) {
+                okHandler(rseq);
+            }
+        };
+
         var me = this;
         var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
@@ -67,6 +87,14 @@ Ext.define("EditForms", {
             modal: true,
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
             layout: 'fit',
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             items: {  
                 id: 'rseqForm',
                 disabled: !rseq.editable,
@@ -199,24 +227,7 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
-                            return;
-                        }
-
-                        Ext.Object.merge(rseq, form.getValues());
-                        if(rseq == me.editor.activeRseq) {
-                            me.editor.fireEvent("activeRseqUpdated", rseq);
-                        }
-                        me.rseqEditWindow.destroy();
-                        me.rseqEditWindow = null;
-                        
-                        if(okHandler) {
-                            okHandler(rseq);
-                        }
-                    }
+                    handler: okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {
@@ -264,7 +275,24 @@ Ext.define("EditForms", {
             this.pointEditWindow.destroy();
             this.pointEditWindow = null;
         }   
-        
+        var okFunction =function() {
+            var form = Ext.getCmp("nonActivationForm").getForm();
+            if(!form.isValid()) {
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                return;
+            }
+
+            Ext.Object.merge(point, form.getValues());
+            if(rseq == me.editor.activeRseq) {
+                me.editor.fireEvent("activeRseqUpdated", rseq);
+            }
+            me.pointEditWindow.destroy();
+            me.pointEditWindow = null;
+
+            if(okHandler) {
+                okHandler(point);
+            }                        
+        };
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
@@ -274,8 +302,17 @@ Ext.define("EditForms", {
             modal: true,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
             layout: 'fit',
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             items: {  
                 xtype: 'form',
+                id:'nonActivationForm',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
@@ -293,24 +330,7 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
-                            return;
-                        }
-                        
-                        Ext.Object.merge(point, form.getValues());
-                        if(rseq == me.editor.activeRseq) {
-                            me.editor.fireEvent("activeRseqUpdated", rseq);
-                        }
-                        me.pointEditWindow.destroy();
-                        me.pointEditWindow = null;
-                        
-                        if(okHandler) {
-                            okHandler(point);
-                        }                        
-                    }
+                    handler: okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {
@@ -518,6 +538,68 @@ Ext.define("EditForms", {
             }
         ]);
         }
+        
+        var okFunction = function() {
+            var form = Ext.getCmp('activationForm').getForm();
+            if(!form.isValid()) {
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                return;
+            }
+
+            // merge label naar point
+            var formValues = form.getValues();
+            Ext.Object.merge(point, objectSubset(formValues, ["label"]));
+
+            // deze waardes naar alle maps van movements die dit
+            // pointId gebruiken
+            var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "triggerType"]);
+
+            // Alleen bij uitmeldpunt kunnen deze worden ingesteld
+            // maar moeten voor alle movements worden toegepast op
+            // alle signals
+            if(editingUitmeldpunt) {
+                allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes","direction"]);
+            }
+
+            // nieuw punt, alleen naar map mergen
+            if(!movements) {
+                Ext.Object.merge(map, pointSignalValues);
+                if(editingUitmeldpunt) {
+                    Ext.Object.merge(map, allSignalValues);
+                }
+            } else {
+
+                // merge naar alle movements 
+
+                Ext.Array.each(movements, function(mvmtAndMap) {
+                    //console.log("movement nummer " + mvmtAndMap.movement.nummer);
+                    if(mvmtAndMap.map) {
+                        //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
+                        Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
+                    }
+                    if(editingUitmeldpunt) {
+                        // merge allSignalValues naar alle MovementActivationPoints
+                        // van movements die dit pointId gebruiken
+                        Ext.each(mvmtAndMap.movement.maps, function(theMap) {
+                            if(theMap.beginEndOrActivation == "ACTIVATION") {
+                                //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
+                                Ext.Object.merge(theMap, allSignalValues);
+                            }
+                        });
+                    }
+                });
+            }
+
+            if(rseq == me.editor.activeRseq) {
+                me.editor.fireEvent("activeRseqUpdated", rseq);
+            }
+            me.activationPointEditWindow.destroy();
+            me.activationPointEditWindow = null;
+
+            if(okHandler) {
+                okHandler(point);
+            }
+        };
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
@@ -526,8 +608,17 @@ Ext.define("EditForms", {
             modal: true,
             icon: karTheme[apName],
             layout: 'fit',
+             listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             items: {  
                 xtype: 'form',
+                id: 'activationForm',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
@@ -557,67 +648,7 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
-                            return;
-                        }
-                        
-                        // merge label naar point
-                        var formValues = form.getValues();
-                        Ext.Object.merge(point, objectSubset(formValues, ["label"]));
-
-                        // deze waardes naar alle maps van movements die dit
-                        // pointId gebruiken
-                        var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "triggerType"]);
-                        
-                        // Alleen bij uitmeldpunt kunnen deze worden ingesteld
-                        // maar moeten voor alle movements worden toegepast op
-                        // alle signals
-                        if(editingUitmeldpunt) {
-                            allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes","direction"]);
-                        }
-                        
-                        // nieuw punt, alleen naar map mergen
-                        if(!movements) {
-                            Ext.Object.merge(map, pointSignalValues);
-                            if(editingUitmeldpunt) {
-                                Ext.Object.merge(map, allSignalValues);
-                            }
-                        } else {
-                            
-                            // merge naar alle movements 
-                            
-                            Ext.Array.each(movements, function(mvmtAndMap) {
-                                //console.log("movement nummer " + mvmtAndMap.movement.nummer);
-                                if(mvmtAndMap.map) {
-                                    //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
-                                    Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
-                                }
-                                if(editingUitmeldpunt) {
-                                    // merge allSignalValues naar alle MovementActivationPoints
-                                    // van movements die dit pointId gebruiken
-                                    Ext.each(mvmtAndMap.movement.maps, function(theMap) {
-                                        if(theMap.beginEndOrActivation == "ACTIVATION") {
-                                            //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
-                                            Ext.Object.merge(theMap, allSignalValues);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        
-                        if(rseq == me.editor.activeRseq) {
-                            me.editor.fireEvent("activeRseqUpdated", rseq);
-                        }
-                        me.activationPointEditWindow.destroy();
-                        me.activationPointEditWindow = null;
-                        
-                        if(okHandler) {
-                            okHandler(point);
-                        }
-                    }
+                    handler: okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {
@@ -652,15 +683,61 @@ Ext.define("EditForms", {
         Proj4js.transform(rd, wgs, point);            
         var wgsX = point.x;
         var wgsY = point.y;
+        
+        var okFunction = function() {
+            var form = Ext.getCmp('coordinatesForm').getForm();
+            if(!form.isValid()) {
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
+                return;
+            }
+
+            var formValues= form.getValues();
+            if(rdX == formValues.rdX && rdY == formValues.rdY){
+                if(wgsX != formValues.wgsX && wgsY == formValues.wgsY){
+                    // converteer nieuwe wgs naar rd en sla ze op
+                    var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
+                    Proj4js.transform(wgs, rd, point);
+                    rdX = point.x;
+                    rdY = point.y;
+                }
+            }else{
+                rdX = formValues.rdX;
+                rdY = formValues.rdY;
+            }
+
+            var coordObj = {coordinates:[parseFloat(rdX),parseFloat(rdY)], type: 'Point'};
+            if(pointObject instanceof RSEQ){
+                pointObject.setLocation(coordObj);
+            }else{
+                pointObject.setGeometry(coordObj);
+            }
+
+            me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
+            me.editCoords.destroy();
+            me.editCoords = null;
+
+            if(okHandler) {
+                okHandler(point);
+            }                        
+        };
         this.editCoords = Ext.create('Ext.window.Window', {
             title: 'Voer coördinaten',
             height: 240,
             width: 400,
             modal: true,
             icon: karTheme.gps,
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             layout: 'fit',
             items: {  
                 xtype: 'form',
+                id: 'coordinatesForm',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
@@ -708,131 +785,12 @@ Ext.define("EditForms", {
                     ],
                 buttons: [{
                     text: 'OK',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
-                            return;
-                        }
-                       
-                        var formValues= form.getValues();
-                        if(rdX == formValues.rdX && rdY == formValues.rdY){
-                            if(wgsX != formValues.wgsX && wgsY == formValues.wgsY){
-                                // converteer nieuwe wgs naar rd en sla ze op
-                                var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
-                                Proj4js.transform(wgs, rd, point);
-                                rdX = point.x;
-                                rdY = point.y;
-                            }
-                        }else{
-                            rdX = formValues.rdX;
-                            rdY = formValues.rdY;
-                        }
-                        
-                        var coordObj = {coordinates:[parseFloat(rdX),parseFloat(rdY)], type: 'Point'};
-                        if(pointObject instanceof RSEQ){
-                            pointObject.setLocation(coordObj);
-                        }else{
-                            pointObject.setGeometry(coordObj);
-                        }
-                        
-                        me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
-                        me.editCoords.destroy();
-                        me.editCoords = null;
-                        
-                        if(okHandler) {
-                            okHandler(point);
-                        }                        
-                    }
+                    handler:okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {
                         me.editCoords.destroy();
                         me.editCoords = null;
-                        
-                        if(cancelHandler) {
-                            cancelHandler();
-                        }                        
-                    }
-                }]
-            }
-        }).show();
-    },
-    
-    editDirections : function (dirs, okHandler,cancelhandler){
-        var me = this;
-        var left = dirs.indexOf("linksaf")!=-1;
-        var right = dirs.indexOf("rechtsaf")!=-1;
-        var ahead = dirs.indexOf("rechtdoor")!=-1;
-        this.editDirectionWindow = Ext.create('Ext.window.Window', {
-            title: 'Geef richtingen op',
-            height: 240,
-            width: 400,
-            modal: true,
-            icon: karTheme.richting,
-            layout: 'fit',
-            items: {  
-                xtype: 'form',
-                bodyStyle: 'padding: 5px 5px 0',
-                fieldDefaults: {
-                    msgTarget: 'side',
-                    labelWidth: 150
-                },
-                defaultType: 'checkbox',
-                defaults: {
-                    anchor: '100%'
-                },
-                items: [
-                    {
-                        fieldLabel: 'Linksaf',
-                        name: 'linksaf',
-                        checked: left,
-                        id: 'linksaf'
-                    },
-                    {
-                        fieldLabel: 'Rechtssaf',
-                        name: 'rechtsaf',
-                        checked:right,
-                        id: 'rechtsaf'
-                    },
-                    {
-                        fieldLabel: 'Rechtdoor',
-                        name: 'rechtdoor',
-                        checked:ahead,
-                        id: 'rchtdoor'
-                    }
-                    ],
-                buttons: [{
-                    text: 'OK',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
-                            return;
-                        }
-                       
-                        var formValues= form.getValues();
-                        var returnValue = '';
-                        for (var key in formValues){
-                            if(returnValue != ''){
-                                returnValue += ',';
-                            }
-                            returnValue += key;
-                        }
-                      
-                        me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
-                        me.editDirectionWindow.destroy();
-                        me.editDirectionWindow = null;
-                        
-                        if(okHandler) {
-                            okHandler(returnValue);
-                        }                        
-                    }
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.editDirectionWindow.destroy();
-                        me.editDirectionWindow = null;
                         
                         if(cancelHandler) {
                             cancelHandler();
