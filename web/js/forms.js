@@ -769,17 +769,17 @@ Ext.define("EditForms", {
                         xtype: 'fieldset',
                         text: 'GPS',
                         defaultType: 'textfield',
-                        items:[
+                        items:[{
+                                fieldLabel: 'GPS y-coordinaat',
+                                name: 'wgsY',
+                                value: wgsY,
+                                id: 'wgsY'
+                            },
                             {
                                 fieldLabel: 'GPS x-coordinaat',
                                 name: 'wgsX',
                                 value: wgsX,
                                 id: 'wgsX'
-                            },{
-                                fieldLabel: 'GPS y-coordinaat',
-                                name: 'wgsY',
-                                value: wgsY,
-                                id: 'wgsY'
                             }]
                     }
                     ],
