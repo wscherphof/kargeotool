@@ -7,7 +7,7 @@
             <property name="hibernate.connection.username" value="geo_ov"/>
             <property name="hibernate.connection.driver_class" value="org.postgis.DriverWrapper"/>
             <property name="hibernate.connection.password" value="xXxXxXxXxXx"/>
-            <property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://x13.b3p.nl/geo_ov"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql_postGIS://x17.b3p.nl/geo_ov_acc"/>
             <property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
             <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
             <property name="hibernate.dialect" value="org.hibernatespatial.postgis.PostgisDialect"/>

@@ -699,20 +699,26 @@ Ext.define("Editor", {
      * @param y y coordinaat
      */
     addRseq: function(x, y) {
-
-        var newRseq = Ext.create("RSEQ", {
-            location: this.createGeoJSONPoint(x, y),
-            id: Ext.id(),
-            editable:true,
-            type: ""
-        });
-            
+        
         var me = this;
-        this.editForms.editRseq(newRseq, function() {
-            
-            me.setActiveRseq(newRseq);
-            me.selectedObject = newRseq;
-            me.fireEvent("activeRseqUpdated", me.activeRseq);
+        function makeNewRseq(){
+            var newRseq = Ext.create("RSEQ", {
+                location: me.createGeoJSONPoint(x, y),
+                id: Ext.id(),
+                editable:true,
+                type: ""
+            });
+
+            me.editForms.editRseq(newRseq, function() {
+
+                me.setActiveRseq(newRseq);
+                me.selectedObject = newRseq;
+                me.fireEvent("activeRseqUpdated", me.activeRseq);
+            });
+        }
+        
+        this.changeManager.rseqChanging (Ext.id(), function(){
+            makeNewRseq();
         });
     },
     
