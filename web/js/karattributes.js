@@ -142,6 +142,32 @@ Ext.define('KarAttributesEditWindow', {
                 column
             );
         };        
+        var okFunction = function() {
+
+            attributes = {
+                "PT": [[], [], []],
+                "ES": [[], [], []],
+                "OT": [[], [], []]
+            };
+            for (var i = 0; i < me.editingData.length; i++) {
+                var PT = Boolean(me.editingData[i].PT);
+                var ES = Boolean(me.editingData[i].ES);
+                var OT = Boolean(me.editingData[i].OT);
+                attributes["PT"][0].push(PT);
+                attributes["PT"][1].push(PT);
+                attributes["PT"][2].push(PT);
+                attributes["ES"][0].push(ES);
+                attributes["ES"][1].push(ES);
+                attributes["ES"][2].push(ES);
+                attributes["OT"][0].push(OT);
+                attributes["OT"][1].push(OT);
+                attributes["OT"][2].push(OT);
+            }
+            me.onSave(attributes);
+            me.window.destroy();
+            me.window = null;
+            globalKarAttributesEditWindow = null;
+        };
         
         this.window = Ext.create(Ext.window.Window, {
             title: me.title,
@@ -150,6 +176,14 @@ Ext.define('KarAttributesEditWindow', {
             modal: true,
             icon: karTheme.inmeldPunt,
             layout: 'fit',
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             items: [{  
                 xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
@@ -179,32 +213,7 @@ Ext.define('KarAttributesEditWindow', {
                 }],
                 buttons: [{
                     text: 'OK',
-                    handler: function() {
-
-                        attributes = {
-                            "PT": [ [], [], [] ],
-                            "ES": [ [], [], [] ],
-                            "OT": [ [], [], [] ]
-                        };
-                        for(var i = 0; i < me.editingData.length; i++) {
-                            var PT = Boolean(me.editingData[i].PT);
-                            var ES = Boolean(me.editingData[i].ES);
-                            var OT = Boolean(me.editingData[i].OT);
-                            attributes["PT"][0].push(PT);
-                            attributes["PT"][1].push(PT);
-                            attributes["PT"][2].push(PT);
-                            attributes["ES"][0].push(ES);
-                            attributes["ES"][1].push(ES);
-                            attributes["ES"][2].push(ES);
-                            attributes["OT"][0].push(OT);
-                            attributes["OT"][1].push(OT);
-                            attributes["OT"][2].push(OT);
-                        }
-                        me.onSave(attributes);
-                        me.window.destroy();
-                        me.window = null;
-                        globalKarAttributesEditWindow = null;
-                    }
+                    handler: okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {

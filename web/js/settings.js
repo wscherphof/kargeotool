@@ -81,6 +81,26 @@ Ext.define("SettingsForm", {
             this.window.destroy();
             this.window = null;
         }   
+        
+        var okFunction = function() {
+            var form = Ext.getCmp('settingsForm').getForm();
+            if (!form.isValid()) {
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                return;
+            }
+
+            Ext.Object.merge(profile, form.getValues());
+
+            if (me.newDefaultKarAttributes != null) {
+                profile.defaultKarAttributes = me.newDefaultKarAttributes;
+            }
+            saveProfile();
+
+            //me.editor.fireEvent("profileUpdated", rseq);
+
+            me.window.destroy();
+            me.window = null;
+        };
         var me = this;
         me.window = Ext.create('Ext.window.Window', {
             title: 'Instellingen',
@@ -88,8 +108,17 @@ Ext.define("SettingsForm", {
             width: 550,
             modal: true,
             layout: 'fit',
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: okFunction,
+                        scope: this
+                    });
+                }
+            },
             items: {  
                 xtype: 'form',
+                id: 'settingsForm',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
@@ -116,25 +145,7 @@ Ext.define("SettingsForm", {
                 }],
                 buttons: [{
                     text: 'Opslaan',
-                    handler: function() {
-                        var form = this.up('form').getForm();
-                        if(!form.isValid()) {
-                            Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
-                            return;
-                        }
-
-                        Ext.Object.merge(profile, form.getValues());
-
-                        if(me.newDefaultKarAttributes != null) {
-                            profile.defaultKarAttributes = me.newDefaultKarAttributes;
-                        }
-                        saveProfile();
-                        
-                        //me.editor.fireEvent("profileUpdated", rseq);
-
-                        me.window.destroy();
-                        me.window = null;
-                    }
+                    handler: okFunction
                 },{
                     text: 'Annuleren',
                     handler: function() {
