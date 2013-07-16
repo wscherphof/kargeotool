@@ -146,16 +146,23 @@
                     editor = Ext.create(Editor, "map", mapfilePath, ovInfo);    
                    
                     settingsForm = Ext.create(SettingsForm, editor);
-
+                    var disabledDefaults = [0,3,4,7,8,9,11,15,16,17,19,20,21,22,23];
                     if(!profile.defaultKarAttributes) {
                         profile.defaultKarAttributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OT": [ [], [], [] ]};
                         var vts = ["ES","PT","OT"];
                         for(var i in vts) {
                             var vt = vts[i];
                             for(var j = 0; j < 24; j++) {
-                                profile.defaultKarAttributes[vt][0].push(true);
-                                profile.defaultKarAttributes[vt][1].push(true);
-                                profile.defaultKarAttributes[vt][2].push(true);
+                                if(!Ext.Array.contains(disabledDefaults,j)){
+                                    profile.defaultKarAttributes[vt][0].push(true);
+                                    profile.defaultKarAttributes[vt][1].push(true);
+                                    profile.defaultKarAttributes[vt][2].push(true);
+                                }else{
+                                    profile.defaultKarAttributes[vt][0].push(false);
+                                    profile.defaultKarAttributes[vt][1].push(false);
+                                    profile.defaultKarAttributes[vt][2].push(false);
+                                    
+                                }
                             }
                         }                            
                     }
