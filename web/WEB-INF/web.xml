@@ -17,7 +17,7 @@
     </context-param>
     <context-param>
         <param-name>debug_editoractionbean_view</param-name>
-        <parma-value>false</parma-value>
+        <param-value>false</param-value>
     </context-param>
     <filter>
         <filter-name>Security Filter</filter-name>
