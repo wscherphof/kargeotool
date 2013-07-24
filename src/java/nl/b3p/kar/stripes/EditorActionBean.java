@@ -26,7 +26,6 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
+import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
@@ -52,6 +52,8 @@ import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.type.Type;
@@ -106,10 +108,18 @@ public class EditorActionBean implements ActionBean {
      */
     @DefaultHandler
     public Resolution view() throws Exception {
+        
+        if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_view"))) {
+            log.info("view() start, setting root log level to DEBUG");
+            LogManager.getRootLogger().setLevel(Level.DEBUG);
+        }
 
         EntityManager em = Stripersist.getEntityManager();
+        log.debug("view(): getGebruiker()");
+        
         boolean isBeheerder = getGebruiker().isBeheerder();
 
+        log.debug("view(): getGebruiker().getEditableDataOwners()");
         Set s = getGebruiker().getEditableDataOwners();
         if (s.size() >= 1 || isBeheerder) {
             magWalapparaatMaken = true;
@@ -117,6 +127,7 @@ public class EditorActionBean implements ActionBean {
             magWalapparaatMaken = false;
         }
 
+        log.debug("view(): vehicleTypesJSON");
         vehicleTypesJSON = new JSONArray();
         for (VehicleType vt : (List<VehicleType>) em.createQuery("from VehicleType order by nummer").getResultList()) {
             JSONObject jvt = new JSONObject();
@@ -126,6 +137,7 @@ public class EditorActionBean implements ActionBean {
             vehicleTypesJSON.put(jvt);
         }
 
+        log.debug("view(): dataOwnersJSON");
         dataOwnersJSON = new JSONArray();
         Collection<DataOwner> dataOwners;
         if(isBeheerder) {
@@ -142,7 +154,11 @@ public class EditorActionBean implements ActionBean {
             dataOwnersJSON.put(jdao);
         }        
         
+        log.debug("view(): ovInfoJSON");
         ovInfoJSON = makeOvInfoJSON();
+        
+        log.debug("view forwarding to JSP, setting root log level to INFO");
+        LogManager.getRootLogger().setLevel(Level.INFO);
         
         return new ForwardResolution(JSP);
     }
@@ -150,11 +166,15 @@ public class EditorActionBean implements ActionBean {
     private JSONArray makeOvInfoJSON() {
         JSONArray ovInfo = new JSONArray();
         
+        Connection conn = null;
         try {
+            log.debug("  makeOvInfoJSON(): lookup transmodel datasource");
             Context initCtx = new InitialContext();
             DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");            
-            Connection conn = ds.getConnection();
+            log.debug("  makeOvInfoJSON(): open connection");
+            conn = ds.getConnection();
             
+            log.debug("  makeOvInfoJSON(): get schemas");
             List<String> schemas = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
             
             SortedMap<String,JSONObject> ovInfoMap = new TreeMap();
@@ -163,12 +183,14 @@ public class EditorActionBean implements ActionBean {
                 ovSchema.put("schema", schema);
 
                 try {
+                    log.debug("  makeOvInfoJSON(): get metainfo for " + schema);
                     Map<String,Object> meta = new QueryRunner().query(conn, "select * from " + schema + ".geo_ov_metainfo", new MapHandler());
                     
                     for(Map.Entry<String,Object> entry: meta.entrySet()) {
                         ovSchema.put(entry.getKey(), entry.getValue());
                     }
                     
+                    log.debug("  makeOvInfoJSON(): get extent for " + schema);
                     Object[] extent = new QueryRunner().query(conn, "select st_xmin(ext),st_xmax(ext),st_ymin(ext),st_ymax(ext) from (select st_extent(the_geom) as ext from " + schema + ".jopa) e", new ArrayHandler());
                     JSONObject jExtent = new JSONObject();
                     jExtent.put("xmin", (Double)extent[0]);
@@ -189,6 +211,9 @@ public class EditorActionBean implements ActionBean {
             }
         } catch(Exception e) {
             log.error("Kan geen ov info ophalen: ", e);
+        } finally {
+            log.debug("  makeOvInfoJSON(): close connection");
+            DbUtils.closeQuietly(conn);
         }
         return ovInfo;
     }
