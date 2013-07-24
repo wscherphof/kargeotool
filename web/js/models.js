@@ -84,8 +84,7 @@ Ext.define('RSEQ', {
             config.attributes = { "ES": [ [], [], [] ], "PT": [ [], [], [] ], "OT": [ [], [], [] ]};
             var vts = ["ES","PT","OT"];
             var defaults = profile.defaultKarAttributes;
-            for(var i in vts) {
-                var vt = vts[i];
+            Ext.Array.each(vts, function(vt) {
                 for(var j = 0; j < 24; j++) {
                     if(profile.defaultKarAttributes) {
                         config.attributes[vt][0].push(defaults[vt][0][j]);
@@ -97,7 +96,7 @@ Ext.define('RSEQ', {
                         config.attributes[vt][2].push(true);
                     }
                 }
-            }
+            });
         }
         this.initConfig(config);    
     },
