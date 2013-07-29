@@ -258,10 +258,11 @@ public class SearchActionBean implements ActionBean {
      private Map<String, List<String>> getSchemas() {
         Map<String, List<String>> schemas = new HashMap<String,List<String>>();
         
+        Connection conn = null;
         try {
             Context initCtx = new InitialContext();
             DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");            
-            Connection conn = ds.getConnection();
+            conn = ds.getConnection();
             
             List<String> schemaList = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
             
@@ -286,6 +287,8 @@ public class SearchActionBean implements ActionBean {
             
         } catch(Exception e) {
             log.error("Kan geen ov info ophalen: ", e);
+        } finally {
+            DbUtils.closeQuietly(conn);
         }
         return schemas;
     }
