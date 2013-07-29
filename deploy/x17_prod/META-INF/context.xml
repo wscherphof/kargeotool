@@ -21,6 +21,6 @@
     />
     <Parameter name="mapserver-url" value="http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel.map" override="false"/>
 
-    <Parameter name="debug_editoractionbean_view" value="true" override="false"/>
+    <Parameter name="debug_editoractionbean_view" value="false" override="false"/>
 
 </Context>
