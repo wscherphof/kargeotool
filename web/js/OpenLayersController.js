@@ -551,7 +551,7 @@ Ext.define("ol", {
     removeFilterFromKargis : function (layer){
         var buslijnen = this.map.getLayersByName(layer)[0];
         
-        buslijnen.maxResolution =12;
+        buslijnen.maxResolution =13;
         buslijnen.mergeNewParams({
             filtering:null
         });
