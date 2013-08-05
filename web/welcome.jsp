@@ -31,6 +31,9 @@
     overzicht kunt u ook met rechts klikken context-menu's openen voor alle onderdelen
     van het verkeerssysteem.
     </p>
+    <p>
+        Een uitgebreide gebruikershandleiding is <a href="${contextPath}/Gebruikershandleiding.pdf">hier</a> te downloaden.
+    </p>
     <h1>Instellingen</h1>
     <p>
     U kunt instellen welke KAR-attributen standaard moeten worden verstuurd 
@@ -61,6 +64,6 @@
         Deze applicatie is ontwikkeld door <a href="http://www.b3partners.nl/" target="_blank">B3Partners</a>.
     </p>
     <p>
-        Versie: 2.0 (beta, 06-05-2013)
+        Versie: 2.1(beta, 05-08-2013)
     </p>
 </div>
