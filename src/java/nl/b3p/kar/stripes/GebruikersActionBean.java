@@ -62,7 +62,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     
     private String dataOwnersJson;
     
-    @Validate(required=true)
+    @Validate(required=true, on="save")
     private Integer role;
     
     @Validate(maxlength=50)
@@ -70,7 +70,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     
     @Validate(converter = EntityTypeConverter.class)
     @ValidateNestedProperties({
-        @Validate(field="username", required=true, maxlength=30),
+        @Validate(field="username", required=true, maxlength=30, on="save"),
         @Validate(field="fullname", maxlength=50),
         @Validate(field="email", converter=EmailTypeConverter.class, maxlength=50),
         @Validate(field="phone", maxlength=15)
