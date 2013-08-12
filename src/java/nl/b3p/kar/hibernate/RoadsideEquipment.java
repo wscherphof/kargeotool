@@ -509,7 +509,7 @@ public class RoadsideEquipment {
         j.put("town", town);
         j.put("type", type);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        j.put("validFrom", sdf.format(validFrom));
+        j.put("validFrom", validFrom == null ? null : sdf.format(validFrom));
         j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
