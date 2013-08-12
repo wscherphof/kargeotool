@@ -100,7 +100,8 @@
                             <td>
                                 <%-- niet gebruiker zichzelf laten verwijderen --%>
                                 <c:if test="${g.username != pageContext.request.userPrincipal.username}">
-                                    <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="delete">
+                                    <c:set var="delaccount" value="${g.username}"/>
+                                    <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="delete" onclick="return confirm('Weet u zeker dat u het account ${delaccount} wilt verwijderen?');">
                                         <stripes:param name="gebruiker" value="${g.id}"/>
                                         <img src="${contextPath}/images/delete.gif" border="0">
                                     </stripes:link>
