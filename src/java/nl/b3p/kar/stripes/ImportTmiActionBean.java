@@ -20,14 +20,11 @@ package nl.b3p.kar.stripes;
 
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
-import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Role;
 import nl.b3p.tmi.TmiDbImport;
-import org.stripesstuff.stripersist.Stripersist;
 
 /**
  *
