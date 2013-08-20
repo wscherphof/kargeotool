@@ -437,7 +437,24 @@ public class EditorActionBean implements ActionBean {
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
-        try{
+        try {
+            /// XXX verwijderen gaat niet goed
+            Set<Long> mIds = new HashSet();
+            for(Movement m : rseq.getMovements()) {
+                m.getPoints().clear();
+                mIds.add(m.getId());
+            }
+            em.flush();
+            if (!mIds.isEmpty()) {
+                em.createNativeQuery("delete from movement_activation_point where movement in (:m)")
+                        .setParameter("m", mIds)
+                        .executeUpdate();
+            }
+            rseq.getMovements().clear();
+            rseq.getPoints().clear();
+            em.createNativeQuery("delete from activation_point where roadside_equipment = :r")
+                    .setParameter("r", rseq.getId())
+                    .executeUpdate();
             em.remove(rseq);
             em.getTransaction().commit();
             info.put("success", Boolean.TRUE);
