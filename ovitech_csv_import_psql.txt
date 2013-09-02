@@ -1,0 +1,114 @@
+rseq.txt -> enters vervangen door \n
+
+set session authorization geo_ov;
+set client_encoding = 'LATIN1';
+create table ovitech_rseq(
+    id integer primary key, 
+    dataownerid integer, 
+    unitnumber integer, 
+    type varchar, 
+    radioaddress integer, 
+    ipaddress integer,
+    description varchar,
+    validfrom date,
+    supplier varchar,
+    suppliertypenumber varchar,
+    installationdate date,
+    selectivedetectionloop boolean,
+    inactivefrom date,
+    update varchar,
+    updatetime timestamp,
+    validator varchar,
+    validationtime timestamp,
+    location varchar);
+\copy ovitech_rseq from 'RSEQ.csv' with delimiter ';' null '(null)' csv header escape '\'
+
+create table ovitech_dao(
+    id integer,
+    code varchar,
+    type varchar,
+    name varchar,
+    companynumber varchar,
+    description varchar,
+    code2 varchar,
+    type2 varchar,
+    name2 varchar,
+    companynumber2 varchar,
+    description2 varchar);
+\copy ovitech_dao from 'DAOW.csv' with delimiter ';' null '(null)' csv header escape '\'
+
+-- dubbele records verwijderen
+delete from ovitech_dao dao1 
+where code2 = 'ALGEMEEN' 
+and exists (select 1 from ovitech_dao dao2 where dao2.id = dao1.id and code2 <> 'ALGEMEEN');
+
+-- laatste dubbel record verwijderen
+delete from ovitech_dao where name='Zeeland' and code2='RWSZL';
+
+alter table ovitech_dao add primary key (id);
+
+-- controle alle data owners aanwezig (moet 0 opleveren)
+select count(*) from ovitech_rseq where not exists (select 1 from ovitech_dao dao where dao.id = dataownerid);
+
+create table ovitech_activation(
+    id integer primary key,
+    groupid integer,
+    karcommandtype varchar,
+    validfrom timestamp,
+    karusagetype varchar,
+    triggertype varchar,
+    radiopower varchar,
+    groupmetersbapoint varchar,
+    angletonorth varchar,
+    kardistancetillstopline double precision,
+    kartimetillstopline double precision,
+    updater varchar,
+    updatetime timestamp,
+    validator varchar,
+    validationtime timestamp,
+    remark varchar,
+    index integer,
+    location varchar);
+\copy ovitech_activation from 'ACTIVAT.csv' with delimiter ';' null '(null)' csv header escape '\'
+
+-- activatgrp.txt -> enters vervangen door \n
+
+create table ovitech_activationgroup(
+    id integer primary key,
+    dataownerid integer,
+    rseqid integer,
+    karsignalgroup integer,
+    type varchar,
+    triggertype varchar,
+    metersbapoint integer,
+    karradiomessagetype varchar,
+    description varchar,
+    angletonorth varchar,
+    updater varchar,
+    updatetime timestamp,
+    validator varchar,
+    validationtime varchar,
+    validfrom timestamp,
+    directionatintersection integer,
+    inactivefrom timestamp,
+    followdirection boolean,
+    leaveannouncement boolean,
+    stoplinelocation varchar);
+\copy ovitech_activationgroup from 'ACTIVATGRP.csv' with delimiter ';' null '(null)' csv header escape '\'
+
+-- werkwijze:
+
+
+loop over rseq
+
+  insert roadside_equipment
+  
+  - loop over activationgroups
+  
+  - maak movement van activation group
+  - maak activation_point s
+    (id serial,
+    label -> afhankelijk van type: VI1 I1 U1 (1 = activationgroup of volgnummer)
+    nummer -> ++counter
+    rseq)
+    
