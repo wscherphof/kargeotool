@@ -38,7 +38,7 @@ function checkSaveProfile() {
             scope: this,
             params: {settings: Ext.JSON.encode(profile)},
             failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                Ext.MessageBox.show({title: "Ajax fout", msg: "Profiel niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder. " +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
     }

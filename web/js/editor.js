@@ -265,11 +265,11 @@ Ext.define("Editor", {
                             successFunction(rseq);
                         }
                     }else{
-                        Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                        Ext.MessageBox.show({title: "Fout",  msg: "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                     }
                 },
                 failure: function (response){
-                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Ajax fout", msg:  "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             });
         };
@@ -303,11 +303,11 @@ Ext.define("Editor", {
                         editor.olc.removeAllRseqs();
                         editor.olc.addRseqs(featureCollection);
                     }else{
-                        Ext.MessageBox.show({title: "Fout", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                        Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                     }
                 },
                 failure: function (response){
-                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             });
         }
@@ -345,11 +345,11 @@ Ext.define("Editor", {
                             Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
                         }
                     }else{
-                        Ext.Msg.alert('Fout', 'Fout bij opslaan: ' + msg.error);
+                        Ext.Msg.alert('Fout', 'Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
                     }
                 },
                 failure: function (response){
-                    Ext.Msg.alert('Fout', 'Kan gegevens niet opslaan!');
+                    Ext.Msg.alert('Fout','Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' );
                 }
             });
         }
@@ -440,11 +440,11 @@ Ext.define("Editor", {
                                     this.setActiveRseq(null);
 
                                 }else{
-                                    Ext.Msg.alert('Fout', 'Fout bij verwijderen: ' + msg.error);
+                                    Ext.Msg.alert('Fout',  'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.'+ msg.error);
                                 }
                             },
                             failure: function (response){
-                                Ext.Msg.alert('Fout', 'Kan roadside equipment niet verwijderen!');
+                                Ext.Msg.alert('Fout', 'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.');
                             }
                         });
                     }
@@ -504,7 +504,7 @@ Ext.define("Editor", {
                     }
                 },
                 failure: function (response){
-                    Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Fout", msg:  'Kan wegen niet laden.  Probeer het opnieuw of neem contact op met de applicatie beheerder.'+response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
             });
         }
@@ -554,11 +554,11 @@ Ext.define("Editor", {
                            var features = this.olc.geojson_format.read(featureCollection);
                            this.olc.surroundingPointsLayer.addFeatures(features);
                        }else{
-                            Ext.MessageBox.show({title: "Fout: kan omliggende punten niet laden", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                            Ext.MessageBox.show({title: "Fout: kan omliggende punten niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder.", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                        }
-                   },
+                   }, 
                    failure: function (response){
-                       Ext.MessageBox.show({title: "Ajax fout", msg: response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                       Ext.MessageBox.show({title: "Fout", msg: 'Probeer het opnieuw of neem contact op met de applicatie beheerder.' +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                    }
                });
              }else{

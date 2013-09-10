@@ -315,7 +315,7 @@ function doRseqRequest (params,text){
             } else{
                 Ext.MessageBox.show({
                     title : "Fout",
-                    msg : msg.error,
+                    msg : "Kan VRI's niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+msg.error,
                     buttons : Ext.MessageBox.OK,
                     icon : Ext.MessageBox.ERROR
                 });
@@ -325,7 +325,7 @@ function doRseqRequest (params,text){
         failure : function (response){
             Ext.MessageBox.show({
                 title : "Ajax fout",
-                msg : response.responseText,
+                msg : "Kan VRI's niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+response.responseText,
                 buttons : Ext.MessageBox.OK,
                 icon : Ext.MessageBox.ERROR
             });

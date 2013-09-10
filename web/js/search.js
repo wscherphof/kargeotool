@@ -367,11 +367,11 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                     }
                     this.searchFinished(rseqs.length);
                 }else{
-                    this.searchFinished(0,"Fout: " +msg.error);               
+                    this.searchFinished(0,"Ophalen resultaten mislukt.");               
                 }
             },
             failure: function() {
-                this.searchFinished(0, "Fout: " +  response.responseText);
+                this.searchFinished(0, "Ophalen resultaten mislukt.");
             }
         });
     },
