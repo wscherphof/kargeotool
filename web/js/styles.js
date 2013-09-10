@@ -68,7 +68,7 @@ var style = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -83,7 +83,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.crossing,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -113,7 +113,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -142,7 +142,7 @@ var style = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -156,7 +156,7 @@ var style = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.cluster,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${count}",
             labelYOffset: 32,
             labelXOffset: 0,
@@ -260,7 +260,7 @@ var selectstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_selected_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -273,7 +273,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.crossing_selected,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -287,7 +287,7 @@ var selectstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.bar_selected_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -300,7 +300,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar_selected,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -314,7 +314,7 @@ var selectstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.guard_selected_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -327,7 +327,7 @@ var selectstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard_selected,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -341,7 +341,7 @@ var selectstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.cluster,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${count}",
             labelYOffset: 32,
             labelXOffset: 0,
@@ -445,7 +445,7 @@ var tempstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.crossing_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -458,7 +458,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.crossing,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -474,7 +474,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -488,7 +488,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.guard,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -502,7 +502,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar_attachment,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -515,7 +515,7 @@ var tempstyle = new OpenLayers.Style(
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
             externalGraphic: karTheme.bar,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${getLabel}"
         }
     }),
@@ -529,7 +529,7 @@ var tempstyle = new OpenLayers.Style(
         }),
         symbolizer: {
             externalGraphic: karTheme.cluster,
-            graphicYOffset: -52,
+            graphicYOffset: -26,
             label: "${count}",
             labelYOffset: 32,
             labelXOffset: 0,

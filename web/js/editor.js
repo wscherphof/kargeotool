@@ -710,7 +710,7 @@ Ext.define("Editor", {
         var me = this;
         function makeNewRseq(){
             var newRseq = Ext.create("RSEQ", {
-                location: me.createGeoJSONPoint(x, y),
+                location: me.createGeoJSONPoint(x, y+10),
                 id: Ext.id(),
                 editable:true,
                 type: ""
