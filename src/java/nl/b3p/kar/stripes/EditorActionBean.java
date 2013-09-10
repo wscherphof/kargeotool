@@ -438,7 +438,6 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            /// XXX verwijderen gaat niet goed
             Set<Long> mIds = new HashSet();
             for(Movement m : rseq.getMovements()) {
                 m.getPoints().clear();
@@ -452,10 +451,13 @@ public class EditorActionBean implements ActionBean {
             }
             rseq.getMovements().clear();
             rseq.getPoints().clear();
+            em.flush();
             em.createNativeQuery("delete from activation_point where roadside_equipment = :r")
                     .setParameter("r", rseq.getId())
                     .executeUpdate();
+            em.flush();
             em.remove(rseq);
+            em.flush();
             em.getTransaction().commit();
             info.put("success", Boolean.TRUE);
         }catch(Exception e){
