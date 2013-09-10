@@ -103,6 +103,10 @@ public class ImportActionBean implements ActionBean {
         } catch (IOException ex) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(ex)));
             log.error(ex);
+        }catch(Exception e){
+            this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
+            log.error(e);
+            
         }
         return new ForwardResolution(OVERVIEW);
     }
