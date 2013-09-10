@@ -261,7 +261,8 @@ Ext.define('RSEQ', {
         // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
         // eindpunten
         
-        Ext.Array.each(pointMovements, function(mvmtAndMap) {
+        if(pointMovements.length >0 ){
+            var mvmtAndMap = pointMovements[0]; // Neem eerste movement, want je kan niet weten welke movement bedoelt wordt.
             Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
                 if(map.beginEndOrActivation != "END") {
                     
@@ -284,7 +285,7 @@ Ext.define('RSEQ', {
                     newMovement.maps.push(newMap);
                 }
             });
-        });
+        };
         
         newMap = Ext.create(MovementActivationPoint, {
             id: Ext.id(),
