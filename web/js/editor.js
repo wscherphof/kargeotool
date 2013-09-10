@@ -416,37 +416,44 @@ Ext.define("Editor", {
     
     removeRseq : function(){
         var rseq = this.activeRseq;
-        if(rseq != null) {
+        var isNewRseq = typeof this.activeRseq.getId() != "number";
+       
+        if(rseq != null && !isNewRseq) {
              Ext.Msg.show({
                 title:"Weet u het zeker?",
                 msg: "Weet u zeker dat u dit verkeerssysteem wilt weggooien?",
                 fn: function (button){
                     if (button === 'yes'){
-                        Ext.Ajax.request({
-                            url: editorActionBeanUrl,
-                            method: 'POST',
-                            scope: this,
-                            params: {
-                                'removeRseq': true,
-                                'rseq': rseq.getId()
-                            },
-                            success: function (response){
-                                var msg = Ext.JSON.decode(response.responseText);
-                                if(msg.success) {
-                                    this.changeManager.rseqSaved();
-                                    Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
+                        if(isNewRseq){
+                                editor.olc.removeAllFeatures();
+                            this.setActiveRseq(null);
+                        }else{
+                            Ext.Ajax.request({
+                                url: editorActionBeanUrl,
+                                method: 'POST',
+                                scope: this,
+                                params: {
+                                    'removeRseq': true,
+                                    'rseq': rseq.getId()
+                                },
+                                success: function(response) {
+                                    var msg = Ext.JSON.decode(response.responseText);
+                                    if (msg.success) {
+                                        this.changeManager.rseqSaved();
+                                        Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
 
-                                    editor.olc.removeAllFeatures();
-                                    this.setActiveRseq(null);
+                                        editor.olc.removeAllFeatures();
+                                        this.setActiveRseq(null);
 
-                                }else{
-                                    Ext.Msg.alert('Fout',  'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.'+ msg.error);
+                                    } else {
+                                        Ext.Msg.alert('Fout', 'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
+                                    }
+                                },
+                                failure: function(response) {
+                                    Ext.Msg.alert('Fout', 'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.');
                                 }
-                            },
-                            failure: function (response){
-                                Ext.Msg.alert('Fout', 'VRI niet verwijderd.  Probeer het opnieuw of neem contact op met de applicatie beheerder.');
-                            }
-                        });
+                            });
+                        }
                     }
                 },
                 scope:this,
