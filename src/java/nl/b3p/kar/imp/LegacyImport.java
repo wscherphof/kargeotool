@@ -1,16 +1,15 @@
 package nl.b3p.kar.imp;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +21,7 @@ import javax.persistence.EntityManager;
 import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
+import nl.b3p.kar.hibernate.KarAttributes;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
@@ -29,6 +29,8 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.geotools.geometry.jts.WKTReader2;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
@@ -40,7 +42,7 @@ public class LegacyImport {
     private PrintWriter out;
     private Map<Integer, String> daoCodes = new HashMap();
     private Map<Integer, Map<Integer, ActivationPoint>> activations = new HashMap();
-    
+    private List<KarAttributes> karAttributes = new ArrayList();
     private String where = " WHERE id = 1698 and location is not null";
 
     public LegacyImport(PrintWriter out) {
@@ -67,7 +69,7 @@ public class LegacyImport {
             out.println("Begin importing");
             out.println("***********");
 
-            List<Map<String, Object>> rseqs = new QueryRunner().query(c, "select * from ovitech_rseq" +where, new MapListHandler());
+            List<Map<String, Object>> rseqs = new QueryRunner().query(c, "select * from ovitech_rseq" + where, new MapListHandler());
 
             for (Map<String, Object> rseq : rseqs) {
                 try {
@@ -126,6 +128,7 @@ public class LegacyImport {
                         em.persist(movement);
                         newRseq.getMovements().add(movement);
                     }
+                    newRseq.setKarAttributes(karAttributes);
                     em.persist(newRseq);
                     em.getTransaction().commit();
                     savedRseqs.add(newRseq);
@@ -173,7 +176,7 @@ public class LegacyImport {
         return mvmnts;
     }
 
-    private Movement createMovement(Map<String, Object> activationGroup,  RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps) {
+    private Movement createMovement(Map<String, Object> activationGroup, RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps) {
         Movement m = new Movement();
         Integer signalgroup = (Integer) activationGroup.get("karsignalgroup");
         m.setNummer(signalgroup);
@@ -229,18 +232,19 @@ public class LegacyImport {
         ActivationPointSignal activationPointSignal = new ActivationPointSignal();
 
         /*
-         PRQA=automatisch
-         PRQM=halteknop
-         SDCAS=start deur sluiten
-         PRQAA=altijd automatisch
-         PRQI=via koppelkabel
+         *  Mail Marcel Fick:  06.09.2013 09:20 
+         PRQA: Keuze aan vervoerder: Halteknop of automatisch
+         PRQM: Altijd halteknop
+         PRQAA: Altijd automatisch
+         SDCAS: Keuze aan vervoerder: Halteknop of automatisch
+         PRQI: Altijd automatisch
          */
         String triggerType = null;
-        if (oviTriggerType.equalsIgnoreCase("PRQA") || oviTriggerType.equalsIgnoreCase("PRQAA")) {
+        if (oviTriggerType.equalsIgnoreCase("PRQAA") || oviTriggerType.equalsIgnoreCase("PRQI")) {
             triggerType = ActivationPointSignal.TRIGGER_FORCED;
-        } else if (oviTriggerType.equalsIgnoreCase("PRQM") || oviTriggerType.equalsIgnoreCase("SDCAS") || oviTriggerType.equalsIgnoreCase("PRQI")) {
+        } else if (oviTriggerType.equalsIgnoreCase("PRQM")) {
             triggerType = ActivationPointSignal.TRIGGER_MANUAL;
-        } else {
+        } else if (oviTriggerType.equalsIgnoreCase("PRQA") || oviTriggerType.equalsIgnoreCase("SDCAS")) {
             triggerType = ActivationPointSignal.TRIGGER_STANDARD;
         }
 
@@ -275,6 +279,7 @@ public class LegacyImport {
         out.println("***********");
         initDaoCodes(c);
         initActivations();
+        initKarattributes();
         out.println("***********");
         out.println("Pre-processing finished.");
         out.println("***********");
@@ -332,7 +337,7 @@ public class LegacyImport {
             label += "U";
         } else {
         }
-        label += signalgroup;// + ""+number;
+        label += signalgroup;
         ap.setLabel(label);
 
         ap.setNummer(number);
@@ -349,6 +354,7 @@ public class LegacyImport {
     }
 
     private void initDaoCodes(Connection c) throws Exception {
+        out.println("Initializing Dao codes:");
         List<Map<String, Object>> dataOwners = new QueryRunner().query(c, "select * from ovitech_dao", new MapListHandler());
         for (Map<String, Object> dao : dataOwners) {
             Integer id = (Integer) dao.get("id");
@@ -381,6 +387,40 @@ public class LegacyImport {
         }
         out.println("daoCodes: " + daoCodes);
     }
+
+    private void initKarattributes() throws JSONException {
+        out.println("Initializing KAR-attributes:");
+        JSONArray ptBitmask = new JSONArray();
+        JSONArray esBitmask = new JSONArray();
+        JSONArray otBitmask = new JSONArray();
+        Integer[] disabledDefaults = {0, 3, 4, 7, 8, 9, 11, 15, 16, 17, 19, 20, 21, 22, 23};
+        List<Integer> disabled = Arrays.asList(disabledDefaults);
+
+        for (int i = 0; i < 24; i++) {
+            if (disabled.contains(i)) {
+                ptBitmask.put(false);
+                esBitmask.put(false);
+                otBitmask.put(false);
+            } else {
+                ptBitmask.put(true);
+                esBitmask.put(true);
+                otBitmask.put(true);
+            }
+
+        }
+
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+
+        out.println("KAR-attributes initialized.");
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="PostProcessing methods">
@@ -388,21 +428,10 @@ public class LegacyImport {
         out.println("***********");
         out.println("Begin post-processing.");
         out.println("***********");
-        //  makeActivationGeoms(rseqs);
 
         out.println("***********");
         out.println("Post-processing finished.");
         out.println("***********");
     }
-
-    /*private void makeActivationGeom(RoadsideEquipment roadsideEquipment, ActivationPoint activationPoint) {
-        out.println("Make sure all the activations have geometries.");
-        if (activationPoint.getLocation() == null) {
-            AffineTransformation a = AffineTransformation.translationInstance(15, 0);
-            Point p = roadsideEquipment.getLocation();
-            Geometry transformedPoint = a.transform(p);
-            activationPoint.setLocation((Point) transformedPoint);
-        }
-    }*/
     // </editor-fold>
 }
