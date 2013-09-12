@@ -377,8 +377,8 @@ Ext.define("EditForms", {
             map = movements[0].map;
         }
         
-        var editingUitmeldpunt = map.commandType == 2;
-        
+        var editingUitmeldpunt = map.commandType === 2;
+        var edittingInmeldpunt = map.commandType === 1;
         var signalItems = [{
             xtype: 'numberfield',
             fieldLabel: 'Afstand tot stopstreep',
@@ -391,7 +391,7 @@ Ext.define("EditForms", {
             allowBlank: false,
             blankText: 'Selecteer een optie',
             editable: false,
-            hidden:!editingUitmeldpunt,
+            hidden:!edittingInmeldpunt,
             displayField: 'desc',
             valueField: 'value',
             value: map.triggerType,
