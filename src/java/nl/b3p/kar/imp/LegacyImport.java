@@ -25,6 +25,7 @@ import nl.b3p.kar.hibernate.KarAttributes;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
@@ -44,6 +45,7 @@ public class LegacyImport {
     private Map<Integer, Map<Integer, ActivationPoint>> activations = new HashMap();
     private List<KarAttributes> karAttributes = new ArrayList();
     private String where = " WHERE id = 1698 and location is not null";
+    private Map<String, List<VehicleType>> vehicleTypes = new HashMap();
 
     public LegacyImport(PrintWriter out) {
         this.out = out;
@@ -220,6 +222,7 @@ public class LegacyImport {
         Integer karsignalgroup = (Integer) activationGroup.get("karsignalgroup");
         String oviTriggerType = (String) activation.get("triggertype");
         Double distance = (Double) activation.get("kardistancetillstopline");
+        String karusagetype = (String) activation.get("karusagetype");
 
 
         map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION);
@@ -240,12 +243,14 @@ public class LegacyImport {
          PRQI: Altijd automatisch
          */
         String triggerType = null;
-        if (oviTriggerType.equalsIgnoreCase("PRQAA") || oviTriggerType.equalsIgnoreCase("PRQI")) {
+        if (oviTriggerType.equalsIgnoreCase("PRQAA")) {
             triggerType = ActivationPointSignal.TRIGGER_FORCED;
         } else if (oviTriggerType.equalsIgnoreCase("PRQM")) {
             triggerType = ActivationPointSignal.TRIGGER_MANUAL;
         } else if (oviTriggerType.equalsIgnoreCase("PRQA") || oviTriggerType.equalsIgnoreCase("SDCAS")) {
             triggerType = ActivationPointSignal.TRIGGER_STANDARD;
+        } else if (oviTriggerType.equalsIgnoreCase("PRQI")) {
+            return null;
         }
 
         int commandType = -1;
@@ -263,10 +268,9 @@ public class LegacyImport {
         activationPointSignal.setSignalGroupNumber(karsignalgroup);
         activationPointSignal.setDistanceTillStopLine(distance.intValue());
         activationPointSignal.setKarCommandType(commandType);
-
+        activationPointSignal.setVehicleTypes(getVehicleTypes(karusagetype));
+        
         map.setSignal(activationPointSignal);
-        // ToDo virtual local loop number
-        // ToDo vehicletypes
 
         return map;
     }
@@ -279,6 +283,7 @@ public class LegacyImport {
         out.println("***********");
         initDaoCodes(c);
         initActivations();
+        initVehicleTypes();
         initKarattributes();
         out.println("***********");
         out.println("Pre-processing finished.");
@@ -421,6 +426,45 @@ public class LegacyImport {
 
         out.println("KAR-attributes initialized.");
     }
+
+    private void initVehicleTypes() {
+        EntityManager em = Stripersist.getEntityManager();
+        
+        // PT
+        VehicleType bus = em.find(VehicleType.class, 1);
+        VehicleType tram = em.find(VehicleType.class, 2);
+        VehicleType hov = em.find(VehicleType.class, 71);
+        List<VehicleType> pt = new ArrayList();
+        pt.add(hov);
+        pt.add(tram);
+        pt.add(bus);
+        vehicleTypes.put(KarAttributes.SERVICE_PT, pt);
+        
+        // ES
+        VehicleType politie = em.find(VehicleType.class, 3);
+        VehicleType brandweer = em.find(VehicleType.class, 4);
+        VehicleType ambulance = em.find(VehicleType.class, 5);
+        List<VehicleType> es = new ArrayList();
+        es.add(politie);
+        es.add(brandweer);
+        es.add(ambulance);
+        vehicleTypes.put(KarAttributes.SERVICE_ES, es);
+        
+        // OT
+        VehicleType cvv = em.find(VehicleType.class, 6);
+        VehicleType taxi = em.find(VehicleType.class, 7);
+        VehicleType pniu = em.find(VehicleType.class, 69);
+        VehicleType marechaussee = em.find(VehicleType.class, 70);
+        
+        List<VehicleType> ot = new ArrayList();
+        ot.add(cvv);
+        ot.add(taxi);
+        ot.add(pniu);
+        ot.add(marechaussee);
+        vehicleTypes.put(KarAttributes.SERVICE_OT, ot);
+        
+        
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="PostProcessing methods">
@@ -434,4 +478,23 @@ public class LegacyImport {
         out.println("***********");
     }
     // </editor-fold>
+
+    private List<VehicleType> getVehicleTypes(String karusagetype) {
+        List<VehicleType> types = new ArrayList();
+
+            if (karusagetype.equalsIgnoreCase("PT")) {
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+            }else if(karusagetype.equalsIgnoreCase("ES")) {
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+            }else if(karusagetype.equalsIgnoreCase("ESPT")){
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+            }else if(karusagetype.equalsIgnoreCase("ALL")){
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_OT));
+            }
+
+        return types;
+    }
 }
