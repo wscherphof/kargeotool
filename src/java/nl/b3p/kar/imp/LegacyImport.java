@@ -44,7 +44,7 @@ public class LegacyImport {
     private Map<Integer, String> daoCodes = new HashMap();
     private Map<Integer, Map<Integer, ActivationPoint>> activations = new HashMap();
     private List<KarAttributes> karAttributes = new ArrayList();
-    private String where = " WHERE id = 1698 and location is not null";
+    private String where = "";
     private Map<String, List<VehicleType>> vehicleTypes = new HashMap();
 
     public LegacyImport(PrintWriter out) {
@@ -222,6 +222,9 @@ public class LegacyImport {
         Integer karsignalgroup = (Integer) activationGroup.get("karsignalgroup");
         String oviTriggerType = (String) activation.get("triggertype");
         Double distance = (Double) activation.get("kardistancetillstopline");
+        if(distance == null){
+            distance = 0.0;
+        }
         String karusagetype = (String) activation.get("karusagetype");
 
 
@@ -313,15 +316,15 @@ public class LegacyImport {
                     Integer groupId = (Integer) activationGroup.get("id");
                     Integer signalgroup = (Integer) activationGroup.get("karsignalgroup");
 
-                    List<Map<String, Object>> acts = new QueryRunner().query(c, "select * from ovitech_activation where groupid = ? and location is not null", new MapListHandler(), groupId);
+                    List<Map<String, Object>> acts = new QueryRunner().query(c, "select * from ovitech_activation where groupid = ?", new MapListHandler(), groupId);
                     for (Map<String, Object> ovActivation : acts) {
-                        ActivationPoint ap = createActivationPoint(ovActivation, counter, signalgroup);
-
-                        rseqAps.put((Integer) ovActivation.get("id"), ap);
-                        counter++;
+                        ActivationPoint ap = createActivationPoint(ovActivation, counter, signalgroup,activationGroup);
+                        if(ap != null){
+                            rseqAps.put((Integer) ovActivation.get("id"), ap);
+                            counter++;
+                        }
                     }
                 }
-                out.println(" has " + counter + " activations.");
             }
 
         } catch (Exception e) {
@@ -329,11 +332,42 @@ public class LegacyImport {
         }
     }
 
-    private ActivationPoint createActivationPoint(Map<String, Object> activation, int number, int signalgroup) throws ParseException {
+    private ActivationPoint createActivationPoint(Map<String, Object> activation, int number, int signalgroup,Map<String, Object> activationGroup) throws ParseException {
 
         ActivationPoint ap = new ActivationPoint();
+        
         String karcommandtype = (String) activation.get("karcommandtype");
+        
+        String label = createLabel(activation,signalgroup);
+        ap.setLabel(label);
+
+        ap.setNummer(number);
+        Object geom = activation.get("location");
+
+        if (geom == null) {
+            if (karcommandtype.equalsIgnoreCase("OUT")){
+                String stoplinelocation = (String)activationGroup.get("stoplinelocation");
+                if(stoplinelocation == null){
+                    return null;
+                }
+                geom = stoplinelocation;
+            }else{
+                return null;
+            }
+        }
+        
+        GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
+        WKTReader reader = new WKTReader2(gf);
+        Point p = (Point) reader.read((String) geom);
+        ap.setLocation(p);
+
+        return ap;
+    }
+    
+    private String createLabel(Map<String, Object> activation,int signalgroup ){
         String label = "";
+        String karcommandtype = (String) activation.get("karcommandtype");
+        String karusagetype = (String) activation.get("karusagetype");
         if (karcommandtype.equalsIgnoreCase("IN")) {
             label += "I";
         } else if (karcommandtype.equalsIgnoreCase("PRE")) {
@@ -342,21 +376,22 @@ public class LegacyImport {
             label += "U";
         } else {
         }
-        label += signalgroup;
-        ap.setLabel(label);
-
-        ap.setNummer(number);
-        Object geom = activation.get("location");
-
-        if (geom != null) {
-            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
-            WKTReader reader = new WKTReader2(gf);
-            Point p = (Point) reader.read((String) geom);
-            ap.setLocation(p);
+        
+        if (karusagetype.equalsIgnoreCase("PT")) {
+            // geen extra toevoeging label
+        }else if(karusagetype.equalsIgnoreCase("ES")) {
+            label += "H";
+        }else {
+            label += "A";
         }
-
-        return ap;
+        // Prepend 0 with values smaller than 10
+        if(signalgroup < 10){
+            label += "0";
+        }
+        label += signalgroup;
+        return label;
     }
+    
 
     private void initDaoCodes(Connection c) throws Exception {
         out.println("Initializing Dao codes:");
@@ -400,16 +435,23 @@ public class LegacyImport {
         JSONArray otBitmask = new JSONArray();
         Integer[] disabledDefaults = {0, 3, 4, 7, 8, 9, 11, 15, 16, 17, 19, 20, 21, 22, 23};
         List<Integer> disabled = Arrays.asList(disabledDefaults);
+        List<Integer> disabledESOV = Arrays.asList(new Integer []{2,10});
 
         for (int i = 0; i < 24; i++) {
             if (disabled.contains(i)) {
-                ptBitmask.put(false);
+                if(i == 11){
+                    ptBitmask.put(true);// PT moet punctuality geven in kar bericht
+                }else{
+                    ptBitmask.put(false);
+                }
                 esBitmask.put(false);
                 otBitmask.put(false);
             } else {
+                if(disabledESOV.contains(i)){
+                    esBitmask.put(true);
+                    otBitmask.put(true);
+                }
                 ptBitmask.put(true);
-                esBitmask.put(true);
-                otBitmask.put(true);
             }
 
         }
@@ -482,18 +524,18 @@ public class LegacyImport {
     private List<VehicleType> getVehicleTypes(String karusagetype) {
         List<VehicleType> types = new ArrayList();
 
-            if (karusagetype.equalsIgnoreCase("PT")) {
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
-            }else if(karusagetype.equalsIgnoreCase("ES")) {
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
-            }else if(karusagetype.equalsIgnoreCase("ESPT")){
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
-            }else if(karusagetype.equalsIgnoreCase("ALL")){
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
-                types.addAll(vehicleTypes.get(KarAttributes.SERVICE_OT));
-            }
+        if (karusagetype.equalsIgnoreCase("PT")) {
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+        }else if(karusagetype.equalsIgnoreCase("ES")) {
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+        }else if(karusagetype.equalsIgnoreCase("ESPT")){
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+        }else if(karusagetype.equalsIgnoreCase("ALL")){
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_PT));
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_ES));
+            types.addAll(vehicleTypes.get(KarAttributes.SERVICE_OT));
+        }
 
         return types;
     }
