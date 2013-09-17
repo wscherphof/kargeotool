@@ -50,6 +50,8 @@ Ext.define("Editor", {
     actionToCancel:null,
     
     changeManager:null,
+    
+    endpointCreator:null,
     // === Initialisatie ===
     
     /**
@@ -145,6 +147,7 @@ Ext.define("Editor", {
         this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform',editor:this});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
         this.changeManager = Ext.create(ChangeManager,this);
+        this.endpointCreator = Ext.create(EndPointCreator,this);
     },
     
     /**
@@ -1132,6 +1135,88 @@ Ext.define("Editor", {
     }
 });
 
+Ext.define("EndPointCreator",{
+    editor:null,
+    clickcontrol:null,
+    eDown:null,
+    selectedUitmeldpunt:null,
+    constructor:function(editor){
+        this.editor = editor;
+        this.eDown = false;
+        this.editor.on("selectedObjectChanged", this.selectionChanged, this);
+        var me = this;
+        this.clickcontrol = new OpenLayers.Control.Click({
+            click: function(evt){
+                console.log("Click: " + me.eDown);
+                if(me.eDown){
+                    me.clickplaced(evt);
+                }
+            },
+            scope:me,
+            includeXY:true,
+            handlerOptions:{
+                priority:true
+            }
+        });
+        this.editor.olc.map.addControl(this.clickcontrol);
+    },
+    selectionChanged:function(obj){
+        if(obj && obj.$className === "Point" && obj.type === "ACTIVATION_2"){
+            this.toggleKeyListening(true);
+        }else{
+            this.toggleKeyListening(false);
+        }
+    },
+    toggleKeyListening:function(on){
+        if(!on){
+            Ext.fly(document).un("keydown",this.keydown, this);
+        }else{
+            Ext.fly(document).on("keydown",this.keydown, this);
+        }
+    },
+    keydown:function(event){
+        if(event.keyCode === 69){    // E
+           this.toggleClick();
+        }
+    },
+    toggleClick: function() {
+        if (this.eDown) {
+            this.eDown = false;
+            this.clickcontrol.deactivate();
+            this.selectedUitmeldpunt = null;
+            this.editor.changeCurrentEditAction(null);
+            this.editor.olc.selectCtrl.activate();
+        } else {
+            this.clickcontrol.activate();
+            this.eDown = true;
+            this.selectedUitmeldpunt = this.editor.selectedObject;
+            this.editor.changeCurrentEditAction("QUICK_NEW_EINDPUNT");
+            this.editor.olc.selectCtrl.deactivate();
+        }
+    },
+    clickplaced:function(evt){
+        var uitmeldpunt = this.selectedUitmeldpunt;
+        var xy = evt.xy;
+        var lonlat = this.editor.olc.map.getLonLatFromPixel(xy);
+        var location = {
+            type: "Point",
+            coordinates: [lonlat.lon,lonlat.lat]
+        };
+        
+        var eindpunt = Ext.create(Point, {
+            type: "END",
+            geometry: location
+        });
+        if(uitmeldpunt){
+            this.editor.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false);
+            this.editor.fireEvent("activeRseqUpdated", this.editor.activeRseq);
+            this.toggleClick();
+            this.toggleKeyListening(false);
+        }
+    }
+    
+});
+
 Ext.define("HelpPanel", {
     domId: null,
     editor: null,
@@ -1202,8 +1287,14 @@ Ext.define("HelpPanel", {
             case "SELECT_EXISTING_UITMELDPUNT":
                 txt = "Selecteer een bestaand uitmeldpunt";
                 break;
+            case "QUICK_NEW_EINDPUNT":
+                txt = "Klik op de kaart om een eindpunt toe te voegen voor het huidig geselecteerde uitmeldpunt. Druk op \"e\" om deze modus uit te zetten.";
+                break;
+            case "QUICK_EXISTING_EINDPUNT":
+                txt = "Klik op een bestaand eindpunt om dat einpunt toe te voegen voor het huidig geselecteerde uitmeldpunt. Druk op \"s\" om deze modus af te sluiten.";
+                break;
             default:
-                if(editor.activeRseq == null) {
+                if(editor.activeRseq === null) {
                     txt = "Klik op een icoon van een verkeerssysteem om deze te selecteren" +
                 "of klik rechts om een verkeerssysteem toe te voegen.";
                 } else {
