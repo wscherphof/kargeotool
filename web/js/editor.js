@@ -1135,19 +1135,31 @@ Ext.define("Editor", {
     }
 });
 
+/**
+ * Control for easy adding and selecting of endpoints. Especially usefull for the imported VRI's which by definition have no endpoint.
+ * Usage:
+ * 1. select the uitmeldpunt for which the endpoint must be created/selected
+ * 2a. Press e for creating a new endpoint
+ * 2b. Press s for selecting an existing endpoint
+ * 3a. Click once on the map at the location for the endpoint. The endpoint is created and the movement is completed.
+ * 3b. Select the existing endpoint. The selected endpoint is linked.
+ * 4a. Press e again for stopping this modus
+ * 4b. Press s again for stopping this modus.
+ */
 Ext.define("EndPointCreator",{
     editor:null,
     clickcontrol:null,
     eDown:null,
+    sDown:null,
     selectedUitmeldpunt:null,
     constructor:function(editor){
         this.editor = editor;
         this.eDown = false;
+        this.sDown = false;
         this.editor.on("selectedObjectChanged", this.selectionChanged, this);
         var me = this;
         this.clickcontrol = new OpenLayers.Control.Click({
             click: function(evt){
-                console.log("Click: " + me.eDown);
                 if(me.eDown){
                     me.clickplaced(evt);
                 }
@@ -1177,6 +1189,14 @@ Ext.define("EndPointCreator",{
     keydown:function(event){
         if(event.keyCode === 69){    // E
            this.toggleClick();
+        } else if(event.keyCode === 83){    // s
+            if(this.sDown){
+                this.sDown = false;
+                this.editor.cancelSelection();
+            }else{
+                this.editor.selectEindpunt();
+                this.sDown = true;
+            }
         }
     },
     toggleClick: function() {
