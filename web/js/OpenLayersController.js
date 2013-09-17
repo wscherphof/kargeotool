@@ -341,7 +341,7 @@ Ext.define("ol", {
         this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer],{
             clickout: true,
             onSelect : function (feature){
-                if(feature && feature.cluster && feature.layer.name == "RseqSelect"){
+                if(feature && feature.cluster && feature.layer.name === "RseqSelect"){
                     var cluster = feature.cluster;
                     var bounds = new OpenLayers.Bounds();
                     for(var i = 0 ; i< cluster.length; i++){
@@ -349,7 +349,7 @@ Ext.define("ol", {
                         bounds.extend(point.geometry);
                     }
                     editor.olc.map.zoomToExtent(bounds);
-                }else if(feature && feature.layer.name == "RseqSelect"){
+                }else if(feature && feature.layer.name === "RseqSelect"){
                     editor.loadRseqInfo({
                         rseq: feature.data.id
                     });
@@ -358,7 +358,7 @@ Ext.define("ol", {
                 }
             },
             onUnselect : function(feature){
-                if(feature && feature.layer.name == "Points"){
+                if(feature && feature.layer.name === "Points"){
                     editor.setSelectedObject(null);
                 }
             }
