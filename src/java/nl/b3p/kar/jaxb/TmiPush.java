@@ -49,7 +49,7 @@ public class TmiPush extends TmiMessage {
         
         for(RoadsideEquipment rseq: rseqs) {
             if(rseq.getValidUntil() == null) {
-                def.rseqs.add(rseq);
+                def.rseqs.add(new RseqDefs(rseq));
             } else {
                 end.rseqs.add(new RseqEnd(rseq));
             }

@@ -18,14 +18,11 @@
  */
 package nl.b3p.kar.stripes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
@@ -33,6 +30,7 @@ import nl.b3p.incaa.IncaaImport;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.jaxb.Kv9Def;
+import nl.b3p.kar.jaxb.RseqDefs;
 import nl.b3p.kar.jaxb.TmiPush;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -87,8 +85,9 @@ public class ImportActionBean implements ActionBean {
             int num = 0;
             List<Kv9Def> defs = push.getRseqs();
             for (Kv9Def kv9Def : defs) {
-                List<RoadsideEquipment> rseqs = kv9Def.getRoadsideEquipments();
-                for (RoadsideEquipment roadsideEquipment : rseqs) {
+                List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
+                for (RseqDefs rseqDef: rseqs) {
+                    RoadsideEquipment roadsideEquipment = rseqDef.getRseq();
                     if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())|| g.canEditVRI(roadsideEquipment)){
                         em.persist(roadsideEquipment);
                         num ++;

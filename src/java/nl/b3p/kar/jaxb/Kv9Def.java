@@ -3,7 +3,6 @@ package nl.b3p.kar.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.*;
-import nl.b3p.kar.hibernate.RoadsideEquipment;
 
 /**
  *
@@ -11,11 +10,10 @@ import nl.b3p.kar.hibernate.RoadsideEquipment;
  */
 public class Kv9Def {
 
-    @XmlElementWrapper(name="RSEQDEFS")
-    @XmlElement(name="RSEQDEF")
-    List<RoadsideEquipment> rseqs = new ArrayList();
+    @XmlElement(name="RSEQDEFS")
+    List<RseqDefs> rseqs = new ArrayList();
 
-    public List<RoadsideEquipment> getRoadsideEquipments() {
+    public List<RseqDefs> getRoadsideEquipments() {
         return rseqs;
     }
 }
