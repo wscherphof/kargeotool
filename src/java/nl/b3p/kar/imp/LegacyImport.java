@@ -46,7 +46,10 @@ public class LegacyImport {
     private List<KarAttributes> karAttributes = new ArrayList();
     private String where = "";
     private Map<String, List<VehicleType>> vehicleTypes = new HashMap();
+    
+    private Map<Integer,ActivationPoint> leaveAnnouncementActivationpoints = new HashMap();
 
+    private int leaveAnnouncementCounter = -1;
     public LegacyImport(PrintWriter out) {
         this.out = out;
     }
@@ -124,7 +127,7 @@ public class LegacyImport {
                     }
                     newRseq.setPoints(activationPoints);
                     em.flush();
-                    SortedSet<Movement> mvmnts = getMovements(rseqId, newRseq, aps);
+                    SortedSet<Movement> mvmnts = getMovements(rseqId, newRseq, aps,c);
 
                     for (Movement movement : mvmnts) {
                         em.persist(movement);
@@ -159,16 +162,14 @@ public class LegacyImport {
     }
 
     // <editor-fold defaultstate="collapsed" desc="Creating of correct datastructures (MAPs, Movements, etc.)">
-    private SortedSet<Movement> getMovements(Integer rseqId, RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps) {
+    private SortedSet<Movement> getMovements(Integer rseqId, RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps, Connection c) {
         SortedSet<Movement> mvmnts = new TreeSet();
 
-        Connection c = null;
         try {
-            c = getConnection();
             List<Map<String, Object>> actgroups = new QueryRunner().query(c, "select * from ovitech_activationgroup where rseqid = ?", new MapListHandler(), rseqId);
             for (int i = 0; i < actgroups.size(); i++) {
                 Map<String, Object> actGroup = actgroups.get(i);
-                Movement m = createMovement(actGroup, rseq, aps);
+                Movement m = createMovement(actGroup, rseq, aps,c);
                 mvmnts.add(m);
             }
         } catch (Exception e) {
@@ -178,25 +179,25 @@ public class LegacyImport {
         return mvmnts;
     }
 
-    private Movement createMovement(Map<String, Object> activationGroup, RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps) {
+    private Movement createMovement(Map<String, Object> activationGroup, RoadsideEquipment rseq, Map<Integer, ActivationPoint> aps, Connection c) {
         Movement m = new Movement();
         Integer signalgroup = (Integer) activationGroup.get("karsignalgroup");
         m.setNummer(signalgroup);
         m.setRoadsideEquipment(rseq);
-        List<MovementActivationPoint> maps = getMovementActivationPoints(activationGroup, aps, m);
+        List<MovementActivationPoint> maps = getMovementActivationPoints(activationGroup, aps, m,c);
         m.setPoints(maps);
 
         return m;
     }
 
-    private List<MovementActivationPoint> getMovementActivationPoints(Map<String, Object> activationGroup, Map<Integer, ActivationPoint> aps, Movement m) {
+    private List<MovementActivationPoint> getMovementActivationPoints(Map<String, Object> activationGroup, Map<Integer, ActivationPoint> aps, Movement m, Connection c) {
 
         List<MovementActivationPoint> maps = new ArrayList();
 
-        Connection c = null;
+        boolean leaveannouncement = (Boolean) activationGroup.get("leaveannouncement");
+        Map<String, Object> activationInfoForLeaveAnnouncement  = null;
         try {
             Integer groupId = (Integer) activationGroup.get("id");
-            c = getConnection();
             List<Map<String, Object>> oviAps = new QueryRunner().query(c, "select * from ovitech_activation where groupId = ?", new MapListHandler(), groupId);
             for (int i = 0; i < oviAps.size(); i++) {
                 Map<String, Object> activation = oviAps.get(i);
@@ -206,7 +207,27 @@ public class LegacyImport {
                 }
                 map.setMovement(m);
                 maps.add(map);
+                if(leaveannouncement){
+                    activationInfoForLeaveAnnouncement = activation;
+                }
+                
             }
+            
+            if(leaveannouncement && activationInfoForLeaveAnnouncement != null){
+                Map<String, Object> activation = new HashMap();
+                activation.put("id",groupId );
+                activation.put("karcommandtype","OUT" );
+                activation.put("karsignalgroup",activationInfoForLeaveAnnouncement.get("karsignalgroup") );
+                activation.put("triggertype",activationInfoForLeaveAnnouncement.get( "triggertype") );
+                activation.put("kardistancetillstopline",0.0 );
+                activation.put("karusagetype", activationInfoForLeaveAnnouncement.get("karusagetype"));
+                MovementActivationPoint map = createMap(activation, activationGroup, leaveAnnouncementActivationpoints);
+                if (map != null) {
+                    map.setMovement(m);
+                    maps.add(map);
+                }
+            }
+            
         } catch (Exception e) {
             e.printStackTrace(out);
         }
@@ -285,7 +306,7 @@ public class LegacyImport {
         out.println("Begin pre-processing.");
         out.println("***********");
         initDaoCodes(c);
-        initActivations();
+        initActivations(c);
         initVehicleTypes();
         initKarattributes();
         out.println("***********");
@@ -293,12 +314,10 @@ public class LegacyImport {
         out.println("***********");
     }
 
-    private void initActivations() {
+    private void initActivations(Connection c) {
         out.println("Initializing activations:");
 
-        Connection c = null;
         try {
-            c = getConnection();
             List<Map<String, Object>> rseqs = new QueryRunner().query(c, "select * from ovitech_rseq" + where, new MapListHandler());
             for (Map<String, Object> rseq : rseqs) {
 
@@ -315,7 +334,10 @@ public class LegacyImport {
                 for (Map<String, Object> activationGroup : actGroups) {
                     Integer groupId = (Integer) activationGroup.get("id");
                     Integer signalgroup = (Integer) activationGroup.get("karsignalgroup");
-
+                    boolean isLeaveAnnouncement = (Boolean) activationGroup.get("leaveannouncement");
+                    Object geom = activationGroup.get("stoplinelocation");
+                    
+                    String karusagetype = "";
                     List<Map<String, Object>> acts = new QueryRunner().query(c, "select * from ovitech_activation where groupid = ?", new MapListHandler(), groupId);
                     for (Map<String, Object> ovActivation : acts) {
                         ActivationPoint ap = createActivationPoint(ovActivation, counter, signalgroup,activationGroup);
@@ -323,7 +345,23 @@ public class LegacyImport {
                             rseqAps.put((Integer) ovActivation.get("id"), ap);
                             counter++;
                         }
+                        if(isLeaveAnnouncement){
+                            karusagetype =(String)ovActivation.get("karusagetype");
+                        }
                     }
+                    
+                    if(isLeaveAnnouncement && geom != null){ 
+                        // Maak een uitmeldpunt obv geometrie van activationgroup
+                        Map<String,Object> activation = new HashMap();
+                        activation.put("karcommandtype", "OUT");
+                        activation.put("location", geom);
+                        activation.put("karusagetype", karusagetype);
+                        ActivationPoint ap = createActivationPoint(activation, counter, (Integer)activationGroup.get("karsignalgroup"), activationGroup);
+                        leaveAnnouncementActivationpoints.put(groupId, ap);
+                        rseqAps.put(getLeaveAnnouncementId(), ap);
+                        counter++;
+                    }
+                    
                 }
             }
 
@@ -538,5 +576,9 @@ public class LegacyImport {
         }
 
         return types;
+    }
+    
+    private int getLeaveAnnouncementId(){
+        return --leaveAnnouncementCounter;
     }
 }
