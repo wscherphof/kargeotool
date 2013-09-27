@@ -1223,11 +1223,18 @@ Ext.define("EndPointCreator",{
             coordinates: [lonlat.lon,lonlat.lat]
         };
         
-        var eindpunt = Ext.create(Point, {
-            type: "END",
-            geometry: location
-        });
+        
         if(uitmeldpunt){
+            var movements = this.editor.activeRseq.findMovementsForPoint(uitmeldpunt);
+            var signalGroupNumber = "";
+            if(movements.length> 0){
+                signalGroupNumber = movements[0].map.signalGroupNumber;
+            }
+            var eindpunt = Ext.create(Point, {
+                type: "END",
+                label: "E"+ signalGroupNumber,
+                geometry: location
+            });
             this.editor.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false);
             this.editor.fireEvent("activeRseqUpdated", this.editor.activeRseq);
             this.toggleClick();
