@@ -325,13 +325,16 @@ Ext.define('Ext.ux.TreeCombo',{
     },
     getSubmitValue : function (){
         var me = this;
+        var returnValue = [];
+        if(me.value === ""){
+            return returnValue;
+        }
         var ids = me.value.split(",");
         for (var i = ids.length;i >= 0;i--){
             if (ids[i] == 'NaN' || ids[i] % 1 !== 0){
                 ids.splice(i,1);
             }
         }
-        var returnValue = [];
         for (var j = 0;j < ids.length;j++){
             returnValue.push(parseInt(ids[j]));
         }

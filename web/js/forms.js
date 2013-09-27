@@ -377,6 +377,61 @@ Ext.define("EditForms", {
             map = movements[0].map;
         }
         
+        var ov = [];
+        var hulpdienst = [];
+        var vehicles = {root:{
+            text: 'Alle',
+            id: 'root',
+            iconCls: "noTreeIcon",
+            expanded: true,
+            checked: false,
+            children :[ 
+                {
+                    id: 'ov-node', 
+                    text: 'OV', 
+                    checked: false, 
+                    iconCls: "noTreeIcon",
+                    expanded:false,
+                    leaf: false,
+                    children: ov
+                }, 
+                {
+                    id: 'hulpdienst-node', 
+                    text: 'Hulpdiensten', 
+                    checked: false, 
+                    iconCls: "noTreeIcon",
+                    expanded:false,
+                    leaf: false,
+                    children: hulpdienst
+                }
+            ]
+        }};
+        var selectedVehicleTypes = [];
+        if(!map.vehicleTypes){
+            map.vehicleTypes = new Array();
+        }
+        Ext.Array.each(vehicleTypes, function(vt) {
+            var selected = map.vehicleTypes.indexOf(vt.nummer) != -1;
+            if(selected) {
+                selectedVehicleTypes.push(vt.nummer);
+            }
+            if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
+                var leaf = {
+                        id: vt.nummer,
+                        text: vt.omschrijving,
+                        checked: false, 
+                        iconCls: "noTreeIcon",
+                        leaf: true};
+                if(vt.groep == "OV"){
+                    ov.push(leaf);
+                }else{
+                    hulpdienst.push(leaf);
+                }
+            }
+        });
+        
+        var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
+            
         var editingUitmeldpunt = map.commandType === 2;
         var edittingInmeldpunt = map.commandType === 1;
         var signalItems = [{
@@ -384,7 +439,31 @@ Ext.define("EditForms", {
             fieldLabel: 'Afstand tot stopstreep',
             name: 'distanceTillStopLine',
             value: map.distanceTillStopLine
+        },
+        {
+            xtype: 'numberfield',
+            minValue: 0,
+            listeners: {
+                change: function(field, value) {
+                    value = parseInt(value, 10);
+                    field.setValue(value);
+                }
+            },                
+            fieldLabel: 'Virtual local loop number',
+            name: 'virtualLocalLoopNumber',
+            value: map.virtualLocalLoopNumber
         },{
+            xtype: 'treecombo',
+            valueField: 'id',
+            editable:false,
+            value:  selectedVehicleTypes.join(","),
+            fieldLabel: 'Voertuigtypes',
+            treeWidth:290,
+            treeHeight: 300,
+            name: 'vehicleTypes',   
+            store: vehicleTypesStore
+        },
+        {
             xtype: 'combo',
             fieldLabel: 'Triggertype',
             name: 'triggerType',
@@ -437,57 +516,6 @@ Ext.define("EditForms", {
             }};
             
             var directionStore = Ext.create('Ext.data.TreeStore', dirs);
-            
-            var ov = [];
-            var hulpdienst = [];
-            var vehicles = {root:{
-                text: 'Alle',
-                id: 'root',
-                iconCls: "noTreeIcon",
-                expanded: true,
-                checked: false,
-                children :[ 
-                    {
-                        id: 'ov-node', 
-                        text: 'OV', 
-                        checked: false, 
-                        iconCls: "noTreeIcon",
-                        expanded:false,
-                        leaf: false,
-                        children: ov
-                    }, 
-                    {
-                        id: 'hulpdienst-node', 
-                        text: 'Hulpdiensten', 
-                        checked: false, 
-                        iconCls: "noTreeIcon",
-                        expanded:false,
-                        leaf: false,
-                        children: hulpdienst
-                    }
-                ]
-            }};
-            var selectedVehicleTypes = [];
-            Ext.Array.each(vehicleTypes, function(vt) {
-                var selected = map.vehicleTypes.indexOf(vt.nummer) != -1;
-                if(selected) {
-                    selectedVehicleTypes.push(vt.nummer);
-                }
-                if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
-                    var leaf = {
-                            id: vt.nummer,
-                            text: vt.omschrijving,
-                            checked: false, 
-                            iconCls: "noTreeIcon",
-                            leaf: true};
-                    if(vt.groep == "OV"){
-                        ov.push(leaf);
-                    }else{
-                        hulpdienst.push(leaf);
-                    }
-                }
-            });
-            var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
             var direction = map.direction ? map.direction : "";
             var dir = direction.join ? direction.join(",") : direction;
             signalItems = Ext.Array.merge(signalItems, [{
@@ -503,27 +531,6 @@ Ext.define("EditForms", {
                 allowBlank: false,
                 name: 'signalGroupNumber',
                 value: map.signalGroupNumber
-            },{
-                xtype: 'numberfield',
-                minValue: 0,
-                listeners: {
-                    change: function(field, value) {
-                        value = parseInt(value, 10);
-                        field.setValue(value);
-                    }
-                },                
-                fieldLabel: 'Virtual local loop number',
-                name: 'virtualLocalLoopNumber'
-            },{
-                xtype: 'treecombo',
-                valueField: 'id',
-                editable:false,
-                value:  selectedVehicleTypes.join(","),
-                fieldLabel: 'Voertuigtypes',
-                treeWidth:290,
-                treeHeight: 300,
-                name: 'vehicleTypes',   
-                store: vehicleTypesStore
             },
             {
                 xtype: 'treecombo',
@@ -552,13 +559,13 @@ Ext.define("EditForms", {
 
             // deze waardes naar alle maps van movements die dit
             // pointId gebruiken
-            var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "triggerType"]);
+            var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "virtualLocalLoopNumber", "vehicleTypes", "triggerType"]);
 
             // Alleen bij uitmeldpunt kunnen deze worden ingesteld
             // maar moeten voor alle movements worden toegepast op
             // alle signals
             if(editingUitmeldpunt) {
-                allSignalValues = objectSubset(formValues, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes","direction"]);
+                allSignalValues = objectSubset(formValues, ["signalGroupNumber","direction"]);
             }
 
             // nieuw punt, alleen naar map mergen
@@ -603,7 +610,7 @@ Ext.define("EditForms", {
                 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.commandType == 2 ? 310 : 213,
+            height: map.commandType == 2 ? 310 : 247,
             width: 490,
             modal: true,
             icon: karTheme[apName],

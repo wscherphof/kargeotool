@@ -326,7 +326,7 @@ Ext.define('RSEQ', {
             Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine", "triggerType"]));
             
             // De signal waardes komen van de MovementActivationPoint van het uitmeldpunt
-            Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber", "virtualLocalLoopNumber", "vehicleTypes"]));
+            Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber"]));
 
             mvmtAndMap.movement.maps.splice(0, 0, newMap);
         });
@@ -461,7 +461,7 @@ Ext.define('RSEQ', {
             var signalGroupNumber = null;
             for(var j = 0 ; j < mvmnt.maps.length ;j++){
                 var map = mvmnt.maps[j];
-                if(map.getSignalGroupNumber () != null){
+                if(map.getSignalGroupNumber () !== null){
                     signalGroupNumber = map.getSignalGroupNumber();
                     if(!signalGroups.hasOwnProperty(signalGroupNumber)){
                         signalGroups[signalGroupNumber] = new Object();
@@ -477,10 +477,12 @@ Ext.define('RSEQ', {
                         
                 }
             }
-            if(signalGroupNumber != null){
+            if(signalGroupNumber !== null){
                 for(var k = 0 ; k < mvmnt.maps.length;k++){
                     var point = this.getPointById(mvmnt.maps[k].pointId);
-                    signalGroups[signalGroupNumber][ mvmnt.id]["points"].push(point);
+                    if(point){
+                        signalGroups[signalGroupNumber][ mvmnt.id]["points"].push(point);
+                    }
                 }
             }
         }
