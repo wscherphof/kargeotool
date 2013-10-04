@@ -1,6 +1,8 @@
 rseq.txt -> enters vervangen door \n
 
 set session authorization geo_ov;
+set datestyle = 'ISO,DMY';
+
 set client_encoding = 'LATIN1';
 create table ovitech_rseq(
     id integer primary key, 
@@ -9,6 +11,7 @@ create table ovitech_rseq(
     type varchar, 
     radioaddress integer, 
     ipaddress integer,
+    town varchar,
     description varchar,
     validfrom date,
     supplier varchar,
