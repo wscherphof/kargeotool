@@ -67,10 +67,9 @@ public class IncaaExport {
     }
 
     private void writeRseq(RoadsideEquipment rseq, PrintWriter pw) {
-        
-        
         for (Movement movement : rseq.getMovements()) {
             for (MovementActivationPoint map : movement.getPoints()) {
+                
                 String line = "";
                 line += rseq.getDataOwner().getCode();  // 1
                 line += TAB;

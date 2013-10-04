@@ -92,6 +92,7 @@ public class LegacyImport {
                     Point p = (Point) reader.read((String) rseq.get("location"));
                     newRseq.setLocation(p);
 
+                    newRseq.setTown((String)rseq.get("town"));
                     newRseq.setKarAddress((Integer) rseq.get("radioaddress"));
                     Date validFrom = (Date) rseq.get("validfrom");
                     if (validFrom == null) {
@@ -326,6 +327,7 @@ public class LegacyImport {
                 if (rseqId == null) {
                     continue;
                 }
+                String updater = (String) rseq.get("update");
                 Map<Integer, ActivationPoint> rseqAps = new HashMap();
                 activations.put(rseqId, rseqAps);
 
@@ -350,16 +352,18 @@ public class LegacyImport {
                         }
                     }
                     
-                    if(isLeaveAnnouncement && geom != null){ 
+                    if(isLeaveAnnouncement && geom != null && updater != null && !updater.equalsIgnoreCase("Import INCAA")){ 
                         // Maak een uitmeldpunt obv geometrie van activationgroup
                         Map<String,Object> activation = new HashMap();
                         activation.put("karcommandtype", "OUT");
                         activation.put("location", geom);
                         activation.put("karusagetype", karusagetype);
                         ActivationPoint ap = createActivationPoint(activation, counter, (Integer)activationGroup.get("karsignalgroup"), activationGroup);
-                        leaveAnnouncementActivationpoints.put(groupId, ap);
-                        rseqAps.put(getLeaveAnnouncementId(), ap);
-                        counter++;
+                        if(ap != null){
+                            leaveAnnouncementActivationpoints.put(groupId, ap);
+                            rseqAps.put(getLeaveAnnouncementId(), ap);
+                            counter++;
+                        }
                     }
                     
                 }
@@ -383,17 +387,9 @@ public class LegacyImport {
         Object geom = activation.get("location");
 
         if (geom == null) {
-            if (karcommandtype.equalsIgnoreCase("OUT")){
-                String stoplinelocation = (String)activationGroup.get("stoplinelocation");
-                if(stoplinelocation == null){
-                    return null;
-                }
-                geom = stoplinelocation;
-            }else{
-                return null;
-            }
+            return null;
         }
-        
+
         GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
         WKTReader reader = new WKTReader2(gf);
         Point p = (Point) reader.read((String) geom);
