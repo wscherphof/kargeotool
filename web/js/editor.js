@@ -931,7 +931,8 @@ Ext.define("Editor", {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 1, 
                 distanceTillStopLine:distance,
-                pointId: inmeldpunt.getId()
+                pointId: inmeldpunt.getId(),
+                vehicleTypes: [1,2,6,7,71]
             });
             
             me.editForms.editActivationPoint(inmeldpunt, map, function() {
@@ -1036,7 +1037,8 @@ Ext.define("Editor", {
                 beginEndOrActivation: "ACTIVATION",
                 commandType: 3, 
                 pointId: voorinmeldpunt.getId(),
-                distanceTillStopLine: distance
+                distanceTillStopLine: distance,
+                vehicleTypes: [1,2,6,7,71]
             });
             
             me.editForms.editActivationPoint(voorinmeldpunt, map, function() {

@@ -323,7 +323,7 @@ Ext.define('RSEQ', {
                 pointId: inmeldpunt.getId()
             });     
             // De voor dit inmeldpunt ingestelde inmeldpuntwaardes
-            Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine", "triggerType"]));
+            Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine","vehicleTypes","virtualLocalLoopNumber", "triggerType"]));
             
             // De signal waardes komen van de MovementActivationPoint van het uitmeldpunt
             Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber"]));
