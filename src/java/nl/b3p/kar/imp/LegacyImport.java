@@ -61,7 +61,7 @@ public class LegacyImport {
         return DriverManager.getConnection("jdbc:postgresql://x17/geo_ov_imported", props);
     }
 
-    public void doImport() {
+    public void doImport(boolean checkBeforeImport) {
         out.println("Opening connection...");
 
         Connection c = null;
@@ -135,9 +135,14 @@ public class LegacyImport {
                         newRseq.getMovements().add(movement);
                     }
                     newRseq.setKarAttributes(karAttributes);
-                    em.persist(newRseq);
-                    em.getTransaction().commit();
-                    savedRseqs.add(newRseq);
+         
+                    if(checkBeforeImport && existsInDb(newRseq)){
+                        em.getTransaction().rollback();
+                    }else{
+                        em.persist(newRseq);
+                        em.getTransaction().commit();
+                        savedRseqs.add(newRseq);
+                    }
                     //out.println("JSON format: " + newRseq.getJSON().toString(4));
                 } catch (Exception e) {
                     e.printStackTrace(out);
@@ -572,6 +577,19 @@ public class LegacyImport {
         }
 
         return types;
+    }
+    
+    
+    private boolean existsInDb(RoadsideEquipment rseq){
+        EntityManager em = Stripersist.getEntityManager();
+        List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao", RoadsideEquipment.class).setParameter("karaddress", rseq.getKarAddress()).setParameter("dao", rseq.getDataOwner()).getResultList();
+        for (RoadsideEquipment roadsideEquipment : rseqs) {
+            double distance = roadsideEquipment.getLocation().distance(rseq.getLocation());
+            if(distance > 500){
+                return true;
+            }
+        }
+        return false;
     }
     
     private int getLeaveAnnouncementId(){

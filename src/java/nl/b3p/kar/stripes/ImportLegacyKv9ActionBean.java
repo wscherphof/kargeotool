@@ -8,6 +8,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.Role;
 import nl.b3p.kar.imp.LegacyImport;
 
@@ -20,6 +21,8 @@ import nl.b3p.kar.imp.LegacyImport;
 public class ImportLegacyKv9ActionBean implements ActionBean {
 
     private ActionBeanContext context;
+    @Validate
+    private boolean checkBeforeImport = false;
 
     public ActionBeanContext getContext() {
         return context;
@@ -27,6 +30,14 @@ public class ImportLegacyKv9ActionBean implements ActionBean {
 
     public void setContext(ActionBeanContext context) {
         this.context = context;
+    }
+
+    public boolean isCheckBeforeImport() {
+        return checkBeforeImport;
+    }
+
+    public void setCheckBeforeImport(boolean checkBeforeImport) {
+        this.checkBeforeImport = checkBeforeImport;
     }
    
     public Resolution doImport() {
@@ -39,7 +50,7 @@ public class ImportLegacyKv9ActionBean implements ActionBean {
             @Override
             public void stream(HttpServletResponse response) throws Exception {
                 PrintWriter out = new PrintWriter(response.getWriter());
-                new LegacyImport(out).doImport();
+                new LegacyImport(out).doImport(checkBeforeImport);
                 out.flush();
             }            
         };
