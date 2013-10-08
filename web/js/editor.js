@@ -874,7 +874,7 @@ Ext.define("Editor", {
     eindpuntSelected: function(eindpunt) {
         if(eindpunt){
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
-            if(eindpunt instanceof Point && eindpunt.getType() == "END"){
+            if(eindpunt instanceof Point && eindpunt.getType() === "END"){
                 
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
                 
@@ -883,7 +883,8 @@ Ext.define("Editor", {
                     title:'Eindpunt selecteren', 
                     msg:'Wilt u eindpunt ' + eindpunt.getLabel() + " selecteren voor een beweging vanaf uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
-                        if(buttonId == "yes") {
+                        if(buttonId === "yes") {
+                            me.changeCurrentEditAction(null);
                             me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, true);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
