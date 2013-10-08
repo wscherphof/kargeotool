@@ -234,7 +234,21 @@ Ext.define("Editor", {
             return true;
         }
     },
-    
+    setLoading: function(on, msg){
+        if(on){
+            if(!msg){
+                msg = "Bezig...";
+            }
+            Ext.fly("map").mask();
+            Ext.fly("kaart").mask(msg);
+            Ext.getBody().mask();
+        }else{
+            Ext.fly("map").unmask();
+            Ext.fly("kaart").unmask();
+            Ext.getBody().unmask();
+             
+        }
+    },
     // === Ajax calls ===
     
     /**
@@ -322,6 +336,7 @@ Ext.define("Editor", {
     saveOrUpdate: function(onSaved) {
         var rseq = this.activeRseq;
         if(rseq != null) {
+            this.setLoading(true, "Bezig met opslaan...");
             Ext.Ajax.request({
                 url: editorActionBeanUrl,
                 method: 'POST',
@@ -331,6 +346,7 @@ Ext.define("Editor", {
                     'json': Ext.JSON.encode(editor.activeRseq.toJSON())
                 },
                 success: function (response){
+                    this.setLoading(false);
                     var msg = Ext.JSON.decode(response.responseText);
                     if(msg.success) {
                         this.changeManager.rseqSaved();
@@ -352,6 +368,7 @@ Ext.define("Editor", {
                     }
                 },
                 failure: function (response){
+                    this.setLoading(false);
                     Ext.Msg.alert('Fout','Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' );
                 }
             });
