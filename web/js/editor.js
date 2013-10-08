@@ -1176,7 +1176,7 @@ Ext.define("EndPointCreator",{
         this.editor.olc.map.addControl(this.clickcontrol);
     },
     selectionChanged:function(obj){
-        if(obj && obj.$className === "Point" && obj.type === "ACTIVATION_2"){
+        if(obj && obj.$className === "Point" && obj.type === "ACTIVATION_2" ){
             this.toggleKeyListening(true);
         }else{
             this.toggleKeyListening(false);
@@ -1190,9 +1190,9 @@ Ext.define("EndPointCreator",{
         }
     },
     keydown:function(event){
-        if(event.keyCode === 69){    // E
+        if(event.keyCode === 69 && !this.editor.editForms.hasOpenWindows()){    // E
            this.toggleClick();
-        } else if(event.keyCode === 83){    // s
+        } else if(event.keyCode === 83 && !this.editor.editForms.hasOpenWindows()){    // s
             if(this.sDown){
                 this.sDown = false;
                 this.editor.cancelSelection();

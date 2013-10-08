@@ -806,6 +806,24 @@ Ext.define("EditForms", {
                 }]
             }
         }).show();
+    },
+    hasOpenWindows : function(){
+        var windows = new Array();
+        windows.push(this.rseqEditWindow);
+        windows.push(this.karAttributesEditWindow);
+        windows.push(this.pointEditWindow);
+        windows.push(this.activationPointEditWindow);
+        windows.push(this.editCoords);
+        windows.push(this.editDirectionWindow);
+        
+        for( var i = 0 ; i < windows.length; i++){
+            var window = windows[i];
+            if(window && !window.isHidden() ){
+                return true;
+            }
+        }
+        
+        return false;
     }
     
 });
