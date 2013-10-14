@@ -93,7 +93,7 @@ public class Movement implements Comparable {
     
     @Transient 
     @XmlElement(name="ACTIVATION")
-    private List<XmlActivation> activations;
+    private List<XmlActivation> activations = new ArrayList();
     
     @Transient
     @XmlElement(name="END")
