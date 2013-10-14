@@ -107,4 +107,65 @@ function createForms (){
 }
 Ext.onReady(function (){
     createForms();
+    loadGrid();
 });
+
+
+var store = null;
+var grid = null;
+
+function loadGrid (){
+    if(imported.length == 0) {
+        return;
+    }
+    store = Ext.create('Ext.data.Store',{
+        storeId : 'rseqStore',
+        fields : ['id','description','karAddress','town','type','validFrom','pointCount','movementCount'],
+        data : {
+            'items' : imported
+        },
+        proxy : {
+            type : 'memory',
+            reader : {
+                type : 'json',
+                root : 'items'
+            }
+        }
+    });
+    grid = Ext.create(Ext.grid.Panel,{
+        title : 'Geimporteerde verkeerssystemen',
+        xtype : "grid",
+        id : "grid",
+        store : store,
+        columns : [
+            {
+                text : 'KAR Adres',
+                dataIndex : 'karAddress'
+            },
+            {
+                text : 'Omschrijving',
+                dataIndex : 'description',
+                flex: 1
+            },
+            {
+                text : 'Plaats',
+                dataIndex : 'town'
+            },
+            {
+                text : 'Punten / Bewegingen',
+                xtype: 'templatecolumn',
+                tpl: '{pointCount} / {movementCount}'
+            }            
+        ],
+        height : 300,
+        width : 700,
+        renderTo : 'importedDiv',
+        listeners : {
+            select : {
+                scope : this,
+                fn : rowSelected
+            }
+
+        }
+    });
+}

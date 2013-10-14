@@ -32,11 +32,16 @@
         <script type="text/javascript" src="${contextPath}/js/import.js"></script>
         <script type="text/javascript">
             var importActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean" />";
+            
+            var imported = ${actionBean.imported};
         </script>
         <h1>Importeer verkeerssystemen</h1>
 
         <stripes:messages/>
         <stripes:errors/>
+        <div id="importedDiv">
+            
+        </div>
         <div id="body" class="exportBody">
 
         </div>
