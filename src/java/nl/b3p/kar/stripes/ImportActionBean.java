@@ -103,20 +103,22 @@ public class ImportActionBean implements ActionBean {
             for (Kv9Def kv9Def : defs) {
                 List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
                 for (RseqDefs rseqDef: rseqs) {
-                    RoadsideEquipment roadsideEquipment = rseqDef.getRseq();
-                    if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())|| g.canEditVRI(roadsideEquipment)){
-                        roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
-                                bestand.getFileName(),
-                                date,
-                                g.getFullname()
-                        ));
-                        em.persist(roadsideEquipment);
-                        addImportedRseq(roadsideEquipment);
-                        num++;
+                    for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                    
+                        if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())|| g.canEditVRI(roadsideEquipment)){
+                            roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
+                                    bestand.getFileName(),
+                                    date,
+                                    g.getFullname()
+                            ));
+                            em.persist(roadsideEquipment);
+                            addImportedRseq(roadsideEquipment);
+                            num++;
+                        }
                     }
                 }
             }
-            //em.getTransaction().commit();
+            em.getTransaction().commit();
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch(Exception e) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));

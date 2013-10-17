@@ -153,7 +153,12 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
 
     @Override
     public DataOwner unmarshal(String code) throws Exception {
-        return (DataOwner)Stripersist.getEntityManager().find(DataOwner.class, code);
+        DataOwner d = (DataOwner)Stripersist.getEntityManager().find(DataOwner.class, code);
+        if(d == null) {
+            d = new DataOwner();
+            d.setCode(code);
+        }
+        return d;
     }
 
     @Override
