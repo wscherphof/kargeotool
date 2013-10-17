@@ -159,13 +159,6 @@ function loadGrid (){
         ],
         height : 300,
         width : 700,
-        renderTo : 'importedDiv',
-        listeners : {
-            select : {
-                scope : this,
-                fn : rowSelected
-            }
-
-        }
+        renderTo : 'importedDiv'
     });
 }

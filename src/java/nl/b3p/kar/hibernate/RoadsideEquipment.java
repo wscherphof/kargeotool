@@ -40,12 +40,14 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
+import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.XmlB3pRseq;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Klasse voor het beschrijven van RoadsideEquipment zoals VRI's
@@ -597,5 +599,89 @@ public class RoadsideEquipment {
         GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
         GeometryCollection gc = new GeometryCollection(ps.toArray(new Point[ps.size()]), gf);
         this.location = gc.getCentroid();
+    }
+    
+    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance) {
+        EntityManager em = Stripersist.getEntityManager();
+        List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao", RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner).getResultList();
+        for (RoadsideEquipment roadsideEquipment: rseqs) {
+            double distance = roadsideEquipment.getLocation().distance(location);
+            if(distance <= maxDistance){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void validateKV9(List<KV9ValidationError> errors) {
+        
+        boolean fatal = false;
+        
+        String xmlContext = String.format("RSEQDEF[karaddress='%s']", karAddress == null ? "<leeg>" : karAddress.toString());
+        String context = String.format("Verkeerssysteem (KAR adres %s)", karAddress == null ? "<leeg>" : karAddress.toString());
+        
+        String eXmlContext = xmlContext + "/dataownercode";
+        String eContext = context + ", beheerder";
+        if(dataOwner == null) {
+            errors.add(new KV9ValidationError(true, "F104", eXmlContext, eContext, null, "Niet ingevuld"));
+        } else if(!Stripersist.getEntityManager().contains(dataOwner)) {
+            // Tijdens DataOwner.afterUnmarshal() niet in database gevonden
+            errors.add(new KV9ValidationError(true, "F105", eXmlContext, eContext, dataOwner.getCode(), "Beheerder niet gevonden voor code"));
+        }
+        
+        eXmlContext = xmlContext + "/karaddress";
+        eContext = context + ", KAR adres";
+        if(karAddress == null) {
+            errors.add(new KV9ValidationError(true, "F106", eXmlContext, eContext, null, "Niet ingevuld"));
+        } else {
+            if(karAddress < 0 || karAddress > 65535) {
+                errors.add(new KV9ValidationError(false, "F107", eXmlContext, eContext, karAddress + "", "Niet in bereik van 0 t/m 65535"));
+            }
+            if(hasDuplicateKARAddressWithinDistance(500)) {
+                errors.add(new KV9ValidationError(true, "F108", eXmlContext, eContext, karAddress + "", "Dubbel binnen straal van 500 meter"));
+            }
+        }
+        
+        eXmlContext = xmlContext + "/rseqtype";
+        eContext = context + ", Soort verkeerssysteem";        
+        if(type == null) {
+            errors.add(new KV9ValidationError(false, "F109", eXmlContext, eContext, null, "Niet ingevuld"));
+            type = TYPE_CROSSING;
+        } else if(!TYPE_CROSSING.equals(type) && !TYPE_BAR.equals(type) && !TYPE_GUARD.equals(type)) {
+            errors.add(new KV9ValidationError(false, "F110", eXmlContext, eContext, type,
+                    String.format("Ongeldig (niet '%s', '%s' of '%s')", TYPE_CROSSING, TYPE_GUARD, TYPE_BAR)));
+            type = TYPE_CROSSING;
+        }
+          
+        eXmlContext = xmlContext + "/validfrom";
+        eContext = context + ", Geldig vanaf";           
+        if(validFrom == null) {
+            errors.add(new KV9ValidationError(true, "F111", eXmlContext, eContext, null, "Niet ingevuld of ongeldig"));
+        }
+        
+        eXmlContext = xmlContext + "/crossingcode";
+        eContext = context + ", Beheerdersaanduiding";             
+        if(crossingCode == null) {
+            errors.add(new KV9ValidationError(false, "F112", eXmlContext, eContext, null, "Niet ingevuld"));
+        } else if(crossingCode.length() > 10) {
+            errors.add(new KV9ValidationError(false, "F113", eXmlContext, eContext, crossingCode, "Langer dan 10 tekens"));
+            crossingCode = crossingCode.substring(0, Math.min(crossingCode.length(), 255));
+        }
+
+        eXmlContext = xmlContext + "/town";
+        eContext = context + ", Plaats";             
+        if(town == null) {
+            errors.add(new KV9ValidationError(false, "F114", eXmlContext, eContext, null, "Niet ingevuld"));
+        } else if(town.length() > 50) {
+            errors.add(new KV9ValidationError(false, "F115", eXmlContext, eContext, town, "Langer dan 50 tekens"));
+            town = town.substring(0, Math.min(town.length(), 50));
+        }
+
+        eXmlContext = xmlContext + "/description";
+        eContext = context + ", Locatie";             
+        if(description != null && description.length() > 255) {
+            errors.add(new KV9ValidationError(false, "F115", eXmlContext, eContext, description, "Langer dan 255 tekens"));
+            description = description.substring(0, Math.min(description.length(), 255));
+        }
     }
 }

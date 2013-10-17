@@ -34,11 +34,14 @@
             var importActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean" />";
             
             var imported = ${actionBean.imported};
+            var globalErrors = ${actionBean.globalErrors};
+            var allRseqErrors = ${actionBean.allRseqErrors};
         </script>
         <h1>Importeer verkeerssystemen</h1>
-
+        <pre>
         <stripes:messages/>
         <stripes:errors/>
+        </pre>
         <div id="importedDiv">
             
         </div>

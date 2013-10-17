@@ -581,15 +581,7 @@ public class LegacyImport {
     
     
     private boolean existsInDb(RoadsideEquipment rseq){
-        EntityManager em = Stripersist.getEntityManager();
-        List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao", RoadsideEquipment.class).setParameter("karaddress", rseq.getKarAddress()).setParameter("dao", rseq.getDataOwner()).getResultList();
-        for (RoadsideEquipment roadsideEquipment : rseqs) {
-            double distance = roadsideEquipment.getLocation().distance(rseq.getLocation());
-            if(distance > 500){
-                return true;
-            }
-        }
-        return false;
+        return rseq.hasDuplicateKARAddressWithinDistance(500);
     }
     
     private int getLeaveAnnouncementId(){

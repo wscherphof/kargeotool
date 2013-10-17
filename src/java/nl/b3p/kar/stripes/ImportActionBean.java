@@ -31,6 +31,7 @@ import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
 import nl.b3p.kar.jaxb.RseqDefs;
 import nl.b3p.kar.jaxb.TmiPush;
@@ -57,6 +58,8 @@ public class ImportActionBean implements ActionBean {
     private FileBean bestand;
 
     private JSONArray imported = new JSONArray();
+    private JSONArray globalErrors = new JSONArray();
+    private JSONArray allRseqErrors = new JSONArray();
     
     // <editor-fold desc="getters and setters">
     public ActionBeanContext getContext() {
@@ -82,6 +85,22 @@ public class ImportActionBean implements ActionBean {
     public void setImported(JSONArray imported) {
         this.imported = imported;
     }
+
+    public JSONArray getGlobalErrors() {
+        return globalErrors;
+    }
+
+    public void setGlobalErrors(JSONArray globalErrors) {
+        this.globalErrors = globalErrors;
+    }
+
+    public JSONArray getAllRseqErrors() {
+        return allRseqErrors;
+    }
+
+    public void setAllRseqErrors(JSONArray allRseqErrors) {
+        this.allRseqErrors = allRseqErrors;
+    }
     // </editor-fold>
 
     @DefaultHandler
@@ -91,6 +110,7 @@ public class ImportActionBean implements ActionBean {
     }
 
     public Resolution importXml() {
+        
         try {
             JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
             Unmarshaller u = ctx.createUnmarshaller();
@@ -100,30 +120,77 @@ public class ImportActionBean implements ActionBean {
             int num = 0;
             List<Kv9Def> defs = push.getRseqs();
             String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
+            
+            int rseqDefsPosition = 0, rseqDefPosition = 0;;
+            
+            // Algemene errors
+            
+            // TODO check F100, F101, F102
+            
             for (Kv9Def kv9Def : defs) {
                 List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
                 for (RseqDefs rseqDef: rseqs) {
-                    for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                    rseqDefsPosition++;
+                    // Multiple RSEQDEF per RSEQDEFS are supported although not allowed in schema
+                    if(rseqDef.getRseqs().size() > 1) {
+                        globalErrors.put(new KV9ValidationError(false, "F103", "RSEQDEFS #" + rseqDefsPosition, null, null, "Per RSEQDEFS is slechts één RSEQDEF toegestaan").toJSONObject());
+                    }
                     
-                        if(g.isBeheerder() || g.canEditDataOwner(roadsideEquipment.getDataOwner())|| g.canEditVRI(roadsideEquipment)){
-                            roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
-                                    bestand.getFileName(),
-                                    date,
-                                    g.getFullname()
-                            ));
-                            em.persist(roadsideEquipment);
-                            addImportedRseq(roadsideEquipment);
-                            num++;
+                    for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                        rseqDefPosition++;
+                        
+                        JSONObject rseqErrors = new JSONObject();
+                        rseqErrors.put("position", rseqDefPosition);
+                        rseqErrors.put("karAddress", roadsideEquipment.getKarAddress());
+                        JSONArray e = new JSONArray();
+                        rseqErrors.put("errors", e);
+                        allRseqErrors.put(rseqErrors);
+                        
+                        List<KV9ValidationError> kvErrors = new ArrayList();
+                        boolean fatal = false;
+                        roadsideEquipment.validateKV9(kvErrors);
+                        for(KV9ValidationError kvError: kvErrors) {
+                            e.put(kvError.toJSONObject());
+                            if(kvError.isFatal()) {
+                                fatal = true;
+                            }
                         }
+                        
+                        rseqErrors.put("fatal", fatal);
+                        if(fatal) {
+                            continue;
+                        }
+                        
+                        // g.canEditVRI(roadsideEquipment) niet van toepassing:
+                        // nieuw ingelezen KV9 RSEQ kan nog geen rechten hebben
+                        // (id is null)
+                        if(!g.isBeheerder() && !g.canEditDataOwner(roadsideEquipment.getDataOwner())) {
+                            e.put(new KV9ValidationError(true, null, "dataownercode", "Beheerder", roadsideEquipment.getDataOwner().getCode(), "U heeft geen rechten om verkeerssystemen voor deze beheerder te importeren"));
+                            rseqErrors.put("fatal", Boolean.TRUE);
+                            continue;
+                        }
+                        
+                        roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
+                                bestand.getFileName(),
+                                date,
+                                g.getFullname()
+                        ));
+                        em.persist(roadsideEquipment);
+                        addImportedRseq(roadsideEquipment);
+                        num++;
                     }
                 }
             }
             em.getTransaction().commit();
+            
+            this.context.getMessages().add(new SimpleMessage(("globalErrors: " + globalErrors.toString(4))));
+            this.context.getMessages().add(new SimpleMessage(("allRseqErrors: " + allRseqErrors.toString(4))));
+
+            
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch(Exception e) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
             log.error("Import exception", e);
-            
         }
         return new ForwardResolution(OVERVIEW);
     }
