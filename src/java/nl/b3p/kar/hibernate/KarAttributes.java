@@ -21,9 +21,12 @@ package nl.b3p.kar.hibernate;
 
 import java.util.Date;
 import javax.persistence.*;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -41,7 +44,7 @@ import org.json.JSONException;
 @XmlType(name="KARATTRIBUTESType", propOrder={
     "serviceType",
     "commandType",
-    "usedAttributesMask"
+    "usedAttributesString"
 })
 public class KarAttributes {
 
@@ -75,8 +78,8 @@ public class KarAttributes {
      */
     @Basic(optional=false)
     @XmlElement(name="karcommandtype")
-    private int commandType;
-
+    private Integer commandType;
+    
     public static class KarAttributesTypeAdapter extends XmlAdapter<String, Integer> {
         @Override
         public Integer unmarshal(String s) throws Exception {
@@ -97,15 +100,28 @@ public class KarAttributes {
             return new String(bitstring);
         }
     }
+
+    @XmlElement(name="karusedattributes")
+    @Transient
+    //@XmlJavaTypeAdapter(KarAttributesTypeAdapter.class)
+    private String usedAttributesString;
+    
     /**
      * Bitmask voor de te vullen attributen in het KAR bericht. LSB duidt 
      * attribuut 1 aan en de MSB (van een 24-bit waarde) attribuut 24. Verplicht
      * in Kv9.
-     */
+     */    
     @Basic(optional=false)
-    @XmlElement(name="karusedattributes")
-    @XmlJavaTypeAdapter(KarAttributesTypeAdapter.class)
+    @XmlTransient
     private Integer usedAttributesMask;
+    
+    public void beforeMarshal(Marshaller marshaller) throws Exception {
+        usedAttributesString = new KarAttributesTypeAdapter().marshal(usedAttributesMask);
+    }
+    
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) throws Exception {
+        usedAttributesMask = new KarAttributesTypeAdapter().unmarshal(usedAttributesString);
+    }
     
     public KarAttributes() {
     }
@@ -140,7 +156,7 @@ public class KarAttributes {
      *
      * @return commandType
      */
-    public int getCommandType() {
+    public Integer getCommandType() {
         return commandType;
     }
     
@@ -148,23 +164,23 @@ public class KarAttributes {
      *
      * @param commandType
      */
-    public void setCommandType(int commandType) {
+    public void setCommandType(Integer commandType) {
         this.commandType = commandType;
     }
     
-    /**
-     *
-     * @return usedAttributesMask
-     */
-    public int getUsedAttributesMask() {
+    public String getUsedAttributesString() {
+        return usedAttributesString;
+    }
+
+    public void setUsedAttributesString(String usedAttributesString) {
+        this.usedAttributesString = usedAttributesString;
+    }
+
+    public Integer getUsedAttributesMask() {
         return usedAttributesMask;
     }
-    
-    /**
-     *
-     * @param usedAttributesMask
-     */
-    public void setUsedAttributesMask(int usedAttributesMask) {
+
+    public void setUsedAttributesMask(Integer usedAttributesMask) {
         this.usedAttributesMask = usedAttributesMask;
     }
     //</editor-fold>

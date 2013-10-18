@@ -185,6 +185,7 @@ public class ImportActionBean implements ActionBean {
             
             this.context.getMessages().add(new SimpleMessage(("globalErrors: " + globalErrors.toString(4))));
             this.context.getMessages().add(new SimpleMessage(("allRseqErrors: " + allRseqErrors.toString(4))));
+            this.context.getMessages().add(new SimpleMessage(("imported: " + imported.toString(4))));
 
             
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));

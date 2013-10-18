@@ -469,42 +469,7 @@ public class LegacyImport {
 
     private void initKarattributes() throws JSONException {
         out.println("Initializing KAR-attributes:");
-        JSONArray ptBitmask = new JSONArray();
-        JSONArray esBitmask = new JSONArray();
-        JSONArray otBitmask = new JSONArray();
-        Integer[] disabledDefaults = {0, 3, 4, 7, 8, 9, 11, 15, 16, 17, 19, 20, 21, 22, 23};
-        List<Integer> disabled = Arrays.asList(disabledDefaults);
-        List<Integer> disabledESOV = Arrays.asList(new Integer []{2,10});
-
-        for (int i = 0; i < 24; i++) {
-            if (disabled.contains(i)) {
-                if(i == 11){
-                    ptBitmask.put(true);// PT moet punctuality geven in kar bericht
-                }else{
-                    ptBitmask.put(false);
-                }
-                esBitmask.put(false);
-                otBitmask.put(false);
-            } else {
-                if(disabledESOV.contains(i)){
-                    esBitmask.put(true);
-                    otBitmask.put(true);
-                }
-                ptBitmask.put(true);
-            }
-
-        }
-
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
-        karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
-
+        karAttributes = RoadsideEquipment.getDefaultKarAttributes();
         out.println("KAR-attributes initialized.");
     }
 

@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -426,7 +427,7 @@ public class RoadsideEquipment {
     
     public ActivationPoint getPointByNumber(int number) {
         for(ActivationPoint p: points) {
-            if(p.getNummer() == number) {
+            if(p.getNummer() != null && p.getNummer() == number) {
                 return p;
             }
         }
@@ -613,11 +614,54 @@ public class RoadsideEquipment {
         return false;
     }
     
+    public static List<KarAttributes> getDefaultKarAttributes() {
+        JSONArray ptBitmask = new JSONArray();
+        JSONArray esBitmask = new JSONArray();
+        JSONArray otBitmask = new JSONArray();
+        Integer[] disabledDefaults = {0, 3, 4, 7, 8, 9, 11, 15, 16, 17, 19, 20, 21, 22, 23};
+        List<Integer> disabled = Arrays.asList(disabledDefaults);
+        List<Integer> disabledESOV = Arrays.asList(new Integer []{2,10});
+
+        for (int i = 0; i < 24; i++) {
+            if (disabled.contains(i)) {
+                if(i == 11){
+                    ptBitmask.put(true);// PT moet punctuality geven in kar bericht
+                }else{
+                    ptBitmask.put(false);
+                }
+                esBitmask.put(false);
+                otBitmask.put(false);
+            } else {
+                if(disabledESOV.contains(i)){
+                    esBitmask.put(true);
+                    otBitmask.put(true);
+                }
+                ptBitmask.put(true);
+            }
+
+        }
+
+        List<KarAttributes> karAttributes = new ArrayList();        
+        try {
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_UITMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+            karAttributes.add(new KarAttributes(KarAttributes.SERVICE_ES, ActivationPointSignal.COMMAND_VOORINMELDPUNT, ptBitmask));
+        } catch(JSONException e) {
+        }
+        return karAttributes;
+    }
+    
     public void validateKV9(List<KV9ValidationError> errors) {
         
         boolean fatal = false;
         
-        String xmlContext = String.format("RSEQDEF[karaddress='%s']", karAddress == null ? "<leeg>" : karAddress.toString());
+        String xmlContext = String.format("RSEQDEF[karaddress=%s]", karAddress == null ? "<leeg>" : karAddress.toString());
         String context = String.format("Verkeerssysteem (KAR adres %s)", karAddress == null ? "<leeg>" : karAddress.toString());
         
         String eXmlContext = xmlContext + "/dataownercode";
@@ -680,8 +724,79 @@ public class RoadsideEquipment {
         eXmlContext = xmlContext + "/description";
         eContext = context + ", Locatie";             
         if(description != null && description.length() > 255) {
-            errors.add(new KV9ValidationError(false, "F115", eXmlContext, eContext, description, "Langer dan 255 tekens"));
+            errors.add(new KV9ValidationError(false, "F116", eXmlContext, eContext, description, "Langer dan 255 tekens"));
             description = description.substring(0, Math.min(description.length(), 255));
         }
+        
+        eXmlContext = xmlContext + "/KARATTRIBUTES";
+        eContext = context + ", KAR attributen";             
+        if(karAttributes.isEmpty()) {
+            errors.add(new KV9ValidationError(false, "F117", eXmlContext, eContext, null, "Afwezig"));
+            setKarAttributes(getDefaultKarAttributes());
+        } else {
+            int pos = 0;
+            for(KarAttributes ka: karAttributes) {
+                pos++;
+                String kaXmlContext = eXmlContext + "[" + pos + "]";
+                String kaContext = eContext + " (#" + pos + ")";
+                String st = ka.getServiceType();
+                
+                String ka2XmlContext = kaXmlContext + "/karservicetype";
+                String ka2Context = kaContext + ", KAR service type";     
+                if(st == null) {
+                    errors.add(new KV9ValidationError(true, "F118", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
+                } else if(!KarAttributes.SERVICE_ES.equals(st) && !KarAttributes.SERVICE_OT.contains(st) && !KarAttributes.SERVICE_PT.equals(st)) {
+                    errors.add(new KV9ValidationError(true, "F119", ka2XmlContext, ka2Context, st, "Ongeldig (niet 'ES', 'PT' of 'OS')"));
+                }
+                
+                Integer ct = ka.getCommandType();
+                ka2XmlContext = kaXmlContext + "/karcommandtype";
+                ka2Context = kaContext + ", KAR command type";     
+                if(ct == null) {
+                    errors.add(new KV9ValidationError(true, "F120", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
+                } else if(!KarAttributes.SERVICE_ES.equals(st) && !KarAttributes.SERVICE_OT.contains(st) && !KarAttributes.SERVICE_PT.equals(st)) {
+                    errors.add(new KV9ValidationError(true, "F121", ka2XmlContext, ka2Context, ct + "", "Ongeldig (niet 1, 2 of 3)"));
+                }
+                
+                
+                String ua = ka.getUsedAttributesString();
+                ka2XmlContext = kaXmlContext + "/karusedattributes";
+                ka2Context = kaContext + ", KAR gebruikte attributen";     
+                if(ua == null) {
+                    errors.add(new KV9ValidationError(true, "F122", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
+                } else if(!ua.matches("[01]{24}")) {
+                    errors.add(new KV9ValidationError(true, "F123", ka2XmlContext, ka2Context, ua, "Niet 24 tekens lang 1 of 0"));
+                }    
+                
+                // TODO: indien attributen niet compleet zijn voor alle command types / service types,
+                // deze uit defaults halen
+            }            
+        }
+        
+        eXmlContext = xmlContext + "/ACTIVATIONPOINT";
+        eContext = context + ", punten";             
+        if(points.isEmpty()) {
+            errors.add(new KV9ValidationError(false, "F124", eXmlContext, eContext, null, "Afwezig"));
+            setKarAttributes(getDefaultKarAttributes());
+        } else {    
+            // positie in XML niet beschikbaar, SortedSet op basis van nummer
+            ActivationPoint[] pts = points.toArray(new ActivationPoint[] {});
+            for(int i = 0; i < pts.length; i++) {
+                ActivationPoint ap = pts[i];
+                String pXmlContext = eXmlContext + "[activationpointnumber=" + ap.getNummer() + "]";
+                String pContext = eContext + " (nummer " + ap.getNummer() + ")";                
+                
+                if(ap.getNummer() == null) {
+                    errors.add(new KV9ValidationError(true, "F125", pXmlContext, pContext, null, "Niet ingevuld"));
+                } else {
+                    if(ap.getNummer() < 0 || ap.getNummer() > 9999) {
+                        errors.add(new KV9ValidationError(false, "F126", pXmlContext, pContext, ap.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
+                    }
+                    
+                    // XXX F127 kan niet gecontroleerd worden vanwege SortedSet
+                }
+            }
+        }
+        
     }
 }

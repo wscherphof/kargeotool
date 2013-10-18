@@ -231,7 +231,14 @@ public class ActivationPoint implements Comparable {
     //</editor-fold>
 
     public int compareTo(Object t) {
-        return nummer.compareTo(((ActivationPoint) t).nummer);
+        ActivationPoint rhs = (ActivationPoint)t;
+        if(nummer == null) {
+            return rhs.nummer == null ? 0 : -1;
+        }
+        if(rhs.nummer == null) {
+            return 1;
+        }
+        return nummer.compareTo(rhs.nummer);
     } 
     
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
