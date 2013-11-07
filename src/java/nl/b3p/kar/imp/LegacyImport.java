@@ -204,7 +204,7 @@ public class LegacyImport {
         Map<String, Object> activationInfoForLeaveAnnouncement  = null;
         try {
             Integer groupId = (Integer) activationGroup.get("id");
-            List<Map<String, Object>> oviAps = new QueryRunner().query(c, "select * from ovitech_activation where groupId = ?", new MapListHandler(), groupId);
+            List<Map<String, Object>> oviAps = new QueryRunner().query(c, "select * from ovitech_activation where groupId = ? order by index", new MapListHandler(), groupId);
             for (int i = 0; i < oviAps.size(); i++) {
                 Map<String, Object> activation = oviAps.get(i);
                 MovementActivationPoint map = createMap(activation, activationGroup, aps);
