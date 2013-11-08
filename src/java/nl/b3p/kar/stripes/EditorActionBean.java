@@ -471,6 +471,12 @@ public class EditorActionBean implements ActionBean {
      * meegegeven op te slaan.
      */
     public Resolution saveOrUpdateRseq() throws Exception {
+         if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_saveorupdate"))) {
+            log.info("saveOrUpdateRseq() start, setting root log level to DEBUG");
+            LogManager.getRootLogger().setLevel(Level.DEBUG);
+        }
+        log.debug("saveOrUpdateRseq: original json: " + json);
+        
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();

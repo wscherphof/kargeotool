@@ -19,6 +19,10 @@
         <param-name>debug_editoractionbean_view</param-name>
         <param-value>false</param-value>
     </context-param>
+    <context-param>
+        <param-name>debug_editoractionbean_saveorupdate</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <filter>
         <filter-name>Security Filter</filter-name>
         <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
