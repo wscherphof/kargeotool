@@ -195,6 +195,7 @@ Ext.define("EditForms", {
                 },{
                     fieldLabel: 'Plaats',
                     name: 'town',
+                    allowBlank: false,
                     value: rseq.town
                 },{
                     fieldLabel: 'Locatie',
