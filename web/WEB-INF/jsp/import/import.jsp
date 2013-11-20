@@ -39,7 +39,7 @@
         </script>
         <h1>Importeer verkeerssystemen</h1>
         <pre>
-        <stripes:messages/>
+        <%--stripes:messages/--%>
         <stripes:errors/>
         </pre>
         <div id="importedDiv">
