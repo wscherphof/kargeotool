@@ -1,5 +1,6 @@
 package nl.b3p.kar.imp;
 
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
@@ -83,14 +84,16 @@ public class LegacyImport {
                     }
                     Integer rseqId = (Integer) rseq.get("id");
                     out.printf("Importing rseq #%d \"%s\"...\n", rseqId, rseq.get("description"));
-
+                    
                     RoadsideEquipment newRseq = new RoadsideEquipment();
                     newRseq.setDataOwner(em.find(DataOwner.class, daoCodes.get((Integer) rseq.get("dataownerid"))));
 
-                    GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
-                    WKTReader reader = new WKTReader2(gf);
-                    Point p = (Point) reader.read((String) rseq.get("location"));
-                    newRseq.setLocation(p);
+                    if(rseq.get("location") != null) {
+                        GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
+                        WKTReader reader = new WKTReader2(gf);
+                        Point p = (Point) reader.read((String) rseq.get("location"));
+                        newRseq.setLocation(p);
+                    }
 
                     newRseq.setTown((String)rseq.get("town"));
                     newRseq.setKarAddress((Integer) rseq.get("radioaddress"));
@@ -127,6 +130,16 @@ public class LegacyImport {
                         activationPoints.add(ap);
                     }
                     newRseq.setPoints(activationPoints);
+                    
+                    if(newRseq.getLocation() == null) {
+                        GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 28992);
+                        List points = new ArrayList();
+                        for(ActivationPoint ap: activationPoints) {
+                            points.add(ap.getLocation());
+                        }
+                        GeometryCollection gc = new GeometryCollection((Point[])points.toArray(new Point[] {}), gf);
+                        newRseq.setLocation(gc.getCentroid());
+                    }
                     em.flush();
                     SortedSet<Movement> mvmnts = getMovements(rseqId, newRseq, aps,c);
 
@@ -164,8 +177,6 @@ public class LegacyImport {
                 out.println("***********");
             }
         }
-
-        postProcess(savedRseqs);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Creating of correct datastructures (MAPs, Movements, etc.)">
@@ -511,18 +522,6 @@ public class LegacyImport {
         vehicleTypes.put(KarAttributes.SERVICE_OT, ot);
         
         
-    }
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="PostProcessing methods">
-    private void postProcess(List<RoadsideEquipment> rseqs) {
-        out.println("***********");
-        out.println("Begin post-processing.");
-        out.println("***********");
-
-        out.println("***********");
-        out.println("Post-processing finished.");
-        out.println("***********");
     }
     // </editor-fold>
 
