@@ -606,9 +606,9 @@ public class RoadsideEquipment {
         return hasDuplicateKARAddressWithinDistance(maxDistance,false);
     }
     
-    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){
+    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){        
         EntityManager em = Stripersist.getEntityManager();
-        String query = "FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao";
+        String query = "FROM RoadsideEquipment where karAddress = :karaddress and dataOwner = :dao";
         TypedQuery<RoadsideEquipment> q = null;
         if(mustCheckForSameId){
             query += " and id <> :id";
