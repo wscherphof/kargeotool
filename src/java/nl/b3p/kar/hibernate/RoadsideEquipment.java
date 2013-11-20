@@ -603,8 +603,21 @@ public class RoadsideEquipment {
     }
     
     public boolean hasDuplicateKARAddressWithinDistance(int maxDistance) {
+        return hasDuplicateKARAddressWithinDistance(maxDistance,false);
+    }
+    
+    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){
         EntityManager em = Stripersist.getEntityManager();
-        List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao", RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner).getResultList();
+        String query = "FROM RoadsideEquipment where kar_address = :karaddress and dataOwner = :dao";
+        TypedQuery<RoadsideEquipment> q = null;
+        if(mustCheckForSameId){
+            query += " and id <> :id";
+            q = em.createQuery(query, RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner).setParameter("id", this.getId());
+        }else{
+            q = em.createQuery(query, RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner); 
+        }
+        
+        List<RoadsideEquipment> rseqs = q.getResultList();
         for (RoadsideEquipment roadsideEquipment: rseqs) {
             double distance = roadsideEquipment.getLocation().distance(location);
             if(distance <= maxDistance){

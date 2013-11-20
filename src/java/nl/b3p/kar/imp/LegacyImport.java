@@ -138,6 +138,7 @@ public class LegacyImport {
          
                     if(checkBeforeImport && existsInDb(newRseq)){
                         em.getTransaction().rollback();
+                        out.printf("Will not import rseq with address: %s and description: %s",newRseq.getKarAddress() , newRseq.getDescription());
                     }else{
                         em.persist(newRseq);
                         em.getTransaction().commit();
@@ -546,7 +547,7 @@ public class LegacyImport {
     
     
     private boolean existsInDb(RoadsideEquipment rseq){
-        return rseq.hasDuplicateKARAddressWithinDistance(500);
+        return rseq.hasDuplicateKARAddressWithinDistance(500,true);
     }
     
     private int getLeaveAnnouncementId(){
