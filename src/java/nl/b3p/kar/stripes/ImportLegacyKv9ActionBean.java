@@ -22,7 +22,7 @@ public class ImportLegacyKv9ActionBean implements ActionBean {
 
     private ActionBeanContext context;
     @Validate
-    private boolean checkBeforeImport = false;
+    private boolean checkBeforeImport = true;
 
     public ActionBeanContext getContext() {
         return context;
