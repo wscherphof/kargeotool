@@ -54,6 +54,7 @@
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
         <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/rtree.min.js"></script>
 
         <div id="leftbar">
             

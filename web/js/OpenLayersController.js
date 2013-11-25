@@ -54,6 +54,8 @@ Ext.define("ol", {
     standaloneMeasure:null,
     
     markerLayer:null,
+    
+    cacheControl:null,
     constructor : function(editor){
         this.mixins.observable.constructor.call(this);  
         this.editor = editor;
@@ -376,6 +378,10 @@ Ext.define("ol", {
             greedy: true
         });
         this.map.addControl(this.snap);
+        
+        this.cacheControl = Ext.create("nl.b3p.kar.Cache",{
+            olc:this
+        });
     },
     /**
      * Update de vector layer met de roadside equipment in de editor
@@ -658,6 +664,10 @@ Ext.define("ol", {
      * @param rseqs rseqs die toegevoegd moeten worden in GeoJSON formaat.
      */
     addRseqs : function(rseqs){
+        this.cacheControl.initTree(rseqs);
+    },
+    
+    addRseqGeoJson : function(rseqs){
         this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
     },
     /**
@@ -786,7 +796,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * {Integer} Pixel distance between features that should be considered a
      *     single cluster.  Default is 20 pixels.
      */
-    distance: 20,
+    distance: 80,
     
     /**
      * APIProperty: threshold
@@ -925,7 +935,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
                 var feature, clustered, cluster;
                 for(var i=0; i<this.features.length; ++i) {
                     feature = this.features[i];
-                    if(feature.geometry) {
+                    if(feature && feature.geometry) {
                         clustered = false;
                         for(var j=clusters.length-1; j>=0; --j) {
                             cluster = clusters[j];
@@ -1023,8 +1033,8 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * cluster - {<OpenLayers.Feature.Vector>} A cluster.
      * feature - {<OpenLayers.Feature.Vector>} A feature.
      */
-    addToCluster: function(cluster, feature) {
-        cluster.cluster.push(feature);
+    addToCluster: function(cluster, feature) { 
+       cluster.cluster.push(feature);
         cluster.attributes.count += 1;
     },
     
@@ -1049,4 +1059,50 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
     },
 
     CLASS_NAME: "OpenLayers.Strategy.ResolutionCluster" 
+});
+
+Ext.define("nl.b3p.kar.Cache", {
+    rt:null,
+    pause:false,
+    config:{
+        olc:null
+    },
+    constructor: function(config) {
+        this.initConfig(config);
+        this.rt = RTree();
+        this.olc.map.events.register ("moveend",this, this.move);
+    },
+    initTree:function(features){
+        this.rt.geoJSON(features);
+        var bbox = this.olc.map.getExtent().toArray();
+        this.move(this,bbox);
+    },
+    move: function(object,bbox) {
+        if(!bbox){
+            bbox = this.olc.map.getExtent().toArray();
+        }
+        var left = [bbox[0],bbox[1]];
+        var right = [bbox[2],bbox[3]];
+        var features =  this.rt.bbox(left,right);
+        if(!this.pause){
+            this.insert(features);
+        }
+    },
+    insert:function(features){
+        var featureCollection = {
+            type: "FeatureCollection",
+            features: features
+        };
+        this.olc.removeAllRseqs();
+        this.olc.addRseqGeoJson(featureCollection);
+    }
+});
+
+
+/**
+ * Polyfill for the Array.isArray function
+ * todo: Test on IE7 and IE8
+ */
+Array.isArray || (Array.isArray = function ( a ) {
+    return'' + a !== a && {}.toString.call( a ) == '[object Array]'
 });
