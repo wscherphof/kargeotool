@@ -647,7 +647,7 @@ Ext.define("ol", {
         this.activeFeature = feature;
     },
     /**
-     * Voeg 1 of meer features toe.
+     * Voeg 1 of meer features toe. Dit is een GeoJSON representatie van een RSEQ, bestaande dus uit een VRI, en 0 of meerdere activationpoints.
      * @param features een object met feature(s) in GeoJSON formaat
      */
     addFeatures : function(features){
