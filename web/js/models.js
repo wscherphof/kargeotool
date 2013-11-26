@@ -402,16 +402,13 @@ Ext.define('RSEQ', {
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
      */
-    toGeoJSON : function (){
-        var points = new Array();
-        if(this.points){
-            for (var i = 0 ; i < this.points.length; i++){
-                var point = this.points[i].toGeoJSON();
-                points.push(point);
-            }
+    toGeoJSON : function (onlyRSEQ){
+        if(onlyRSEQ === null || onlyRSEQ === undefined){
+            onlyRSEQ = false;
         }
-        points.push({
+        var rseq ={
             type: "Feature",
+            editable: this.editable,
             geometry: this.location,
             properties:{
                 id: this.id,
@@ -425,7 +422,21 @@ Ext.define('RSEQ', {
                 className: this.$className,
                 memo: this.memo
             }
-        });
+        };
+        if(onlyRSEQ){
+            return rseq;
+        }
+        var points = new Array();
+        if(!onlyRSEQ){
+            if(this.points){
+                for (var i = 0 ; i < this.points.length; i++){
+                    var point = this.points[i].toGeoJSON();
+                    points.push(point);
+                }
+            }
+        }
+       
+        points.push(rseq);
         var json = {
             "type" : "FeatureCollection",
             "features" :points
