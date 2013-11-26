@@ -266,56 +266,33 @@ public class EditorActionBean implements ActionBean {
             List<RoadsideEquipment> rseq2;
 
             if(getGebruiker().isBeheerder()) {
-                if (rseq != null) {
-                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where id <> :id").setParameter("id", rseq.getId()).getResultList();
-                } else {
-                    rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
-                }
+                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
             } else {
                 Set<DataOwner> dos = getGebruiker().getAvailableDataOwners();
-                if(dos.isEmpty()) {
+                if (dos.isEmpty()) {
                     rseq2 = Collections.EMPTY_LIST;
                 } else {
-                    if (rseq != null) {
-                        List<RoadsideEquipment> allowedRseqs = em.createQuery(
-                                "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
-                              + "where gebruiker = :geb and gv.roadsideEquipment <> :rseq")
-                                .setParameter("geb", getGebruiker())
-                                .setParameter("rseq", rseq)
-                                .getResultList();
-                        rseq2 = (List<RoadsideEquipment>) em.createQuery(
-                                "from RoadsideEquipment "
-                              + "where id <> :id "
-                              + "and dataOwner in (:dos)")
-                                .setParameter("id", rseq.getId())
-                                .setParameter("dos", dos)
-                                .getResultList();
-                        rseq2.addAll(allowedRseqs);
-                    } else {
-                        
-                        List<RoadsideEquipment> allowedRseqs = em.createQuery(
-                                "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
-                              + "where gebruiker = :geb")
-                                .setParameter("geb", getGebruiker())
-                                .getResultList();
-                        
-                        
-                        rseq2 = (List<RoadsideEquipment>) em.createQuery(
-                                "from RoadsideEquipment "
-                              + "where dataOwner in (:dos)")
-                                .setParameter("dos", dos)
-                                .getResultList();
-                        rseq2.addAll(allowedRseqs);
-                    }
+
+                    List<RoadsideEquipment> allowedRseqs = em.createQuery(
+                            "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
+                            + "where gebruiker = :geb")
+                            .setParameter("geb", getGebruiker())
+                            .getResultList();
+
+
+                    rseq2 = (List<RoadsideEquipment>) em.createQuery(
+                            "from RoadsideEquipment "
+                            + "where dataOwner in (:dos)")
+                            .setParameter("dos", dos)
+                            .getResultList();
+                    rseq2.addAll(allowedRseqs);
                 }
-                
-                
             }
             Gebruiker g =getGebruiker();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment r : rseq2) {
                 JSONObject rseqJson = r.getRseqGeoJSON();
-                boolean editable = g.canEditDataOwner(r.getDataOwner()) || g.canEditVRI(r);
+                boolean editable = g.canEditDataOwner(r.getDataOwner()) || g.canEditVRI(r) || getGebruiker().isBeheerder() ;
                 rseqJson.put("editable", editable);
                 rseqs.put(rseqJson);
                 
