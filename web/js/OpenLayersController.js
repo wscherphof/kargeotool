@@ -380,7 +380,8 @@ Ext.define("ol", {
         this.map.addControl(this.snap);
         
         this.cacheControl = Ext.create("nl.b3p.kar.Cache",{
-            olc:this
+            olc:this,
+            maxResolution: 50
         });
     },
     /**
@@ -796,7 +797,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * {Integer} Pixel distance between features that should be considered a
      *     single cluster.  Default is 20 pixels.
      */
-    distance: 80,
+    distance: 50,
     
     /**
      * APIProperty: threshold
@@ -1065,7 +1066,8 @@ Ext.define("nl.b3p.kar.Cache", {
     rt:null,
     pause:false,
     config:{
-        olc:null
+        olc:null,
+        maxResolution:null
     },
     constructor: function(config) {
         this.initConfig(config);
@@ -1086,19 +1088,11 @@ Ext.define("nl.b3p.kar.Cache", {
     },
     removeFromTree : function (feature){
         var geoJSON = feature.toGeoJSON(true);
-        var tree = this.rt.getTree();
-        /*var rect = {
-            x: tree.x,
-            y: tree.y,
-            w: tree.w,
-            h: tree.h,
-            leaf: geoJSON
-        };*/
         var rect = {
-          x: geoJSON.geometry.coordinates[0],
-          y: geoJSON.geometry.coordinates[1],
-          w:0,
-          h:0
+            x: geoJSON.geometry.coordinates[0],
+            y: geoJSON.geometry.coordinates[1],
+            w: 0,
+            h: 0
         };
         var b = this.rt.remove(rect);
         var a = 0;
@@ -1110,7 +1104,9 @@ Ext.define("nl.b3p.kar.Cache", {
         var left = [bbox[0],bbox[1]];
         var right = [bbox[2],bbox[3]];
         var features =  this.rt.bbox(left,right);
-        if(!this.pause){
+        var currentResolution = this.olc.map.getResolution();
+        this.olc.removeAllRseqs();
+        if(!this.pause && this.maxResolution > currentResolution){
             this.insertIntoVectorlayer(features);
         }
     },
@@ -1119,7 +1115,6 @@ Ext.define("nl.b3p.kar.Cache", {
             type: "FeatureCollection",
             features: features
         };
-        this.olc.removeAllRseqs();
         this.olc.addRseqGeoJson(featureCollection);
     }
 });
