@@ -52,25 +52,15 @@ Ext.define("Editor", {
     changeManager:null,
     
     endpointCreator:null,
+    
+    unedittedRseq :null,
     // === Initialisatie ===
     
     /**
      * @constructor
      */
     constructor: function(domId, mapfilePath, ovInfo) {
-
-        this.mixins.observable.constructor.call(this, {
-            listeners:{
-                activeRseqChanged : function(rseq){
-                    if(rseq){
-                        this.loadAllRseqs(rseq.id);
-                    }
-                }
-            //TODO wanneer het rseqopslaan klaar is, this.loadAllRseqs aanroepen voor de rseqlaag
-            }
-        });
-        
-        
+        this.mixins.observable.constructor.call(this);  
         this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
@@ -297,37 +287,31 @@ Ext.define("Editor", {
      * Laad alle road side equipment.
      * @param id (optioneel) het id dat niet opgehaald moet worden
      */
-    loadAllRseqs: function(id) {
-        if(id == null || id == undefined || typeof id == "number"){
-            Ext.Ajax.request({
-                url:editorActionBeanUrl,
-                method: 'GET',
-                scope: this,
-                params:  {
-                    'allRseqJSON' : true,
-                    rseq: id
-                },
-                success: function (response){
-                    var msg = Ext.JSON.decode(response.responseText);
-                    if(msg.success){
-                        var rseqs = msg.rseqs;
-                        var featureCollection = {
-                            type: "FeatureCollection",
-                            features: rseqs
-                        };
-
-                        // Dit misschien in listener
-                        editor.olc.removeAllRseqs();
-                        editor.olc.addRseqs(featureCollection);
-                    }else{
-                        Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
-                    }
-                },
-                failure: function (response){
-                    Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+    loadAllRseqs: function() {
+        Ext.Ajax.request({
+            url:editorActionBeanUrl,
+            method: 'GET',
+            scope: this,
+            params:  {
+                'allRseqJSON' : true
+            },
+            success: function (response){
+                var msg = Ext.JSON.decode(response.responseText);
+                if(msg.success){
+                    var rseqs = msg.rseqs;
+                    var featureCollection = {
+                        type: "FeatureCollection",
+                        features: rseqs
+                    };
+                    editor.olc.addRseqs(featureCollection);
+                }else{
+                    Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
-            });
-        }
+            },
+            failure: function (response){
+                Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+            }
+        });
     },
     
     /**
@@ -613,13 +597,23 @@ Ext.define("Editor", {
      * @param rseq de nieuwe actieve Rseq
      */
     setActiveRseq: function (rseq){
+        if(rseq != null) {
+            this.unedittedRseq = cloneObject(rseq.toJSON());
+            if(this.activeRseq != null ){
+                this.olc.cacheControl.insertIntoTree(this.activeRseq);
+            }
+            this.olc.cacheControl.removeFromTree(rseq);
+        }
+        this.olc.cacheControl.update();
         this.activeRseq = rseq;
         if(rseq){        
             this.olc.selectFeature(rseq.getId(),"RSEQ");
         }
         this.fireEvent('activeRseqChanged', this.activeRseq);
     },
-    
+    restorePreviousRseq :function(){
+        this.activeRseq = makeRseq(this.unedittedRseq);
+    },
     /**
      * Verander het geselecteerde object binnen de active Rseq
      * @param olFeature de OpenLayers feature;

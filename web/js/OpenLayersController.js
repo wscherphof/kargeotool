@@ -1070,14 +1070,40 @@ Ext.define("nl.b3p.kar.Cache", {
     constructor: function(config) {
         this.initConfig(config);
         this.rt = RTree();
-        this.olc.map.events.register ("moveend",this, this.move);
+        this.olc.map.events.register ("moveend",this, this.update);
     },
-    initTree:function(features){
+    initTree: function(features) {
+        if (this.rt.getTree().nodes.length > 0) {
+            // Purge old data from RTree, prevents double points in vectorlayers
+            this.rt = RTree()
+        }
         this.rt.geoJSON(features);
-        var bbox = this.olc.map.getExtent().toArray();
-        this.move(this,bbox);
+        this.update();
     },
-    move: function(object,bbox) {
+    insertIntoTree : function (feature){
+        var geojson = feature.toGeoJSON(true);
+        this.rt.geoJSON(geojson);
+    },
+    removeFromTree : function (feature){
+        var geoJSON = feature.toGeoJSON(true);
+        var tree = this.rt.getTree();
+        /*var rect = {
+            x: tree.x,
+            y: tree.y,
+            w: tree.w,
+            h: tree.h,
+            leaf: geoJSON
+        };*/
+        var rect = {
+          x: geoJSON.geometry.coordinates[0],
+          y: geoJSON.geometry.coordinates[1],
+          w:0,
+          h:0
+        };
+        var b = this.rt.remove(rect);
+        var a = 0;
+    },
+    update: function(object,bbox) {
         if(!bbox){
             bbox = this.olc.map.getExtent().toArray();
         }
@@ -1085,10 +1111,10 @@ Ext.define("nl.b3p.kar.Cache", {
         var right = [bbox[2],bbox[3]];
         var features =  this.rt.bbox(left,right);
         if(!this.pause){
-            this.insert(features);
+            this.insertIntoVectorlayer(features);
         }
     },
-    insert:function(features){
+    insertIntoVectorlayer:function(features){
         var featureCollection = {
             type: "FeatureCollection",
             features: features

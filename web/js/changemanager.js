@@ -44,8 +44,8 @@ Ext.define("ChangeManager",{
         this.changeDetected = false;
         this.editTitle();
     },
-    rseqChanging : function (newId,continueFunction){
-        if (this.editor.activeRseq == null || this.editor.activeRseq.id == newId){
+    rseqChanging : function (oldId,continueFunction){
+        if (this.editor.activeRseq == null || this.editor.activeRseq.id == oldId){
             continueFunction();
         } else if (this.changeDetected){
             Ext.Msg.show({
@@ -54,10 +54,11 @@ Ext.define("ChangeManager",{
                 fn: function (button){
                     if (button === 'yes'){
                         this.changeDetected = false;
+                        this.editor.restorePreviousRseq();
                         this.editTitle();
                         continueFunction();
                     } else{
-                        this.editor.olc.selectFeature(newId,"RSEQ");
+                        this.editor.olc.selectFeature(oldId,"RSEQ");
                     }
                 },
                 scope:this,
