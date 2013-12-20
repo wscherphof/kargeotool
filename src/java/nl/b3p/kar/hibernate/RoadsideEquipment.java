@@ -842,11 +842,11 @@ public class RoadsideEquipment {
                 
                 for(int i = 0; i < m.getPoints().size(); i++) {
                     MovementActivationPoint map = m.getPoints().get(i);
-                    String mapXmlContext = mXmlContext = "/" + map.getBeginEndOrActivation();
+                    String mapXmlContext = mXmlContext + "/" + map.getBeginEndOrActivation();
                     String mapContext = mContext + ", punt op index " + i;
                     
                     if(map.getPoint() == null) {
-                        errors.add(new KV9ValidationError(true, "F134", mapXmlContext + "/activationpointnumber", mContext + ", nummer", m.getNummer() + "", "Ongeldig"));
+                        errors.add(new KV9ValidationError(true, "F134", mapXmlContext + "/activationpointnumber", mContext + ", nummer activationpoint", m.getNummer() + "", "Ongeldig"));
                     } else {
                         mapXmlContext = mapXmlContext + "[activationpointnumber=" + map.getPoint().getNummer() + "]";
                     }
@@ -856,7 +856,13 @@ public class RoadsideEquipment {
                         apNummerType.put(map.getPoint(), map.getBeginEndOrActivation());
                     } else {
                         if(!map.getBeginEndOrActivation().equals(mapType)) {
-                            errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext + ", nummer", m.getNummer() + "", "Punt al gebruikt voor ander soort punt"));
+                            errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext, m.getNummer() + "", "Punt al gebruikt voor ander soort punt"));
+                        }
+                    }
+                    
+                    if(MovementActivationPoint.ACTIVATION.equals(mapType)) {
+                        if(map.getSignal() == null) {
+                            errors.add(new KV9ValidationError(true, "F136", mapXmlContext + "/ACTIVATIONPOINTSIGNAL", mapContext + ", signaalgegevens", m.getNummer() + "", "Afwezig"));
                         }
                     }
                 }
