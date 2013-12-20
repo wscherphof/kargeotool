@@ -242,7 +242,14 @@ public class Movement implements Comparable {
     //</editor-fold>
 
     public int compareTo(Object t) {
-        return nummer.compareTo(((Movement) t).nummer);
+        Movement rhs = (Movement)t;
+        if(nummer == null) {
+            return rhs.nummer == null ? 0 : -1;
+        }
+        if(rhs.nummer == null) {
+            return 1;
+        }
+        return nummer.compareTo(rhs.nummer);
     }
 
     public JSONObject getJSON() throws JSONException {

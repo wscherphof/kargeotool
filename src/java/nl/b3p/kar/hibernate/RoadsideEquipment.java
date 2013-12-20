@@ -595,7 +595,9 @@ public class RoadsideEquipment {
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         List<Point> ps = new ArrayList();
         for (ActivationPoint activationPoint : points) {
-            ps.add(activationPoint.getLocation());
+            if(activationPoint.getLocation() != null) {
+                ps.add(activationPoint.getLocation());
+            }
         }
         GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
         GeometryCollection gc = new GeometryCollection(ps.toArray(new Point[ps.size()]), gf);
@@ -787,26 +789,76 @@ public class RoadsideEquipment {
         }
         
         eXmlContext = xmlContext + "/ACTIVATIONPOINT";
-        eContext = context + ", punten";             
         if(points.isEmpty()) {
-            errors.add(new KV9ValidationError(false, "F124", eXmlContext, eContext, null, "Afwezig"));
+            errors.add(new KV9ValidationError(false, "F124", eXmlContext, context + ", punten", null, "Afwezig"));
             setKarAttributes(getDefaultKarAttributes());
         } else {    
             // positie in XML niet beschikbaar, SortedSet op basis van nummer
-            ActivationPoint[] pts = points.toArray(new ActivationPoint[] {});
-            for(int i = 0; i < pts.length; i++) {
-                ActivationPoint ap = pts[i];
+            for(ActivationPoint ap: points) {
                 String pXmlContext = eXmlContext + "[activationpointnumber=" + ap.getNummer() + "]";
-                String pContext = eContext + " (nummer " + ap.getNummer() + ")";                
+                String pContext = context + ", punt nummer " + ap.getNummer();                
                 
                 if(ap.getNummer() == null) {
-                    errors.add(new KV9ValidationError(true, "F125", pXmlContext, pContext, null, "Niet ingevuld"));
+                    errors.add(new KV9ValidationError(true, "F125", pXmlContext + "/activationpointnumber", pContext + ", nummer", null, "Niet ingevuld"));
                 } else {
                     if(ap.getNummer() < 0 || ap.getNummer() > 9999) {
-                        errors.add(new KV9ValidationError(false, "F126", pXmlContext, pContext, ap.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
+                        errors.add(new KV9ValidationError(false, "F126", pXmlContext + "/activationpointnumber", pContext + ", nummer", ap.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
                     }
                     
-                    // XXX F127 kan niet gecontroleerd worden vanwege SortedSet
+                    // F127 kan niet gecontroleerd worden vanwege SortedSet
+                }
+                
+                if(ap.getLocation() == null || ap.getLocation().getX() == 0.0 || ap.getLocation().getY() == 0.0) {
+                    errors.add(new KV9ValidationError(true, "F128", pXmlContext + ", rdx-coordinate, rdy-coordinate", pContext + ", coordinaten", null, "Afwezig/ongeldig"));
+                }
+                
+                if(ap.getLabel() != null && ap.getLabel().length() > 4) {
+                    errors.add(new KV9ValidationError(false, "F129", pXmlContext + ", rdx-coordinate, rdy-coordinate", pContext + ", label", ap.getLabel(), "Langer dan 4 tekens"));
+                    ap.setLabel(ap.getLabel().substring(0, 4));
+                }
+            }
+        }
+        
+        Map<ActivationPoint,String> apNummerType = new HashMap();
+                        
+        eXmlContext = xmlContext + "/MOVEMENT";
+        if(movements.isEmpty()) {
+            errors.add(new KV9ValidationError(false, "F130", eXmlContext, context + ", bewegingen", null, "Afwezig"));
+        } else {
+            // positie in XML niet beschikbaar, SortedSet op basis van nummer
+            for(Movement m: movements) {
+                String mXmlContext = eXmlContext + "[movementnumber=" + m.getNummer() + "]";
+                String mContext = context + ", beweging nummer " + m.getNummer();
+                
+                if(m.getNummer() == null) {
+                    errors.add(new KV9ValidationError(true, "F131", mXmlContext + "/movementnumber", mContext + ", nummer", null, "Niet ingevuld"));
+                } else {
+                    if(m.getNummer() < 0 || m.getNummer() > 9999) {
+                        errors.add(new KV9ValidationError(false, "F132", mXmlContext + "/movementnumber", mContext + ", nummer", m.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
+                    }
+                    
+                    // F133 kan niet gecontroleerd worden vanwege SortedSet
+                } 
+                
+                for(int i = 0; i < m.getPoints().size(); i++) {
+                    MovementActivationPoint map = m.getPoints().get(i);
+                    String mapXmlContext = mXmlContext = "/" + map.getBeginEndOrActivation();
+                    String mapContext = mContext + ", punt op index " + i;
+                    
+                    if(map.getPoint() == null) {
+                        errors.add(new KV9ValidationError(true, "F134", mapXmlContext + "/activationpointnumber", mContext + ", nummer", m.getNummer() + "", "Ongeldig"));
+                    } else {
+                        mapXmlContext = mapXmlContext + "[activationpointnumber=" + map.getPoint().getNummer() + "]";
+                    }
+
+                    String mapType = apNummerType.get(map.getPoint());
+                    if(mapType == null) {
+                        apNummerType.put(map.getPoint(), map.getBeginEndOrActivation());
+                    } else {
+                        if(!map.getBeginEndOrActivation().equals(mapType)) {
+                            errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext + ", nummer", m.getNummer() + "", "Punt al gebruikt voor ander soort punt"));
+                        }
+                    }
                 }
             }
         }
