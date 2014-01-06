@@ -147,8 +147,7 @@ exports.geoJSON = function(prelim) {
 		features = prelim.features.slice();
 	}
 	else if (prelim instanceof Object) {
-            var clone =cloneObject(prelim);
-            features = [clone];
+            features = [prelim];
         }
         else {
 		throw ('this isn\'t what we\'re looking for');
@@ -890,13 +889,3 @@ module.exports = RTree;
 (2)
 });
 ;
-function cloneObject(obj) {
-    if (obj === null || typeof obj !== 'object') {
-        return obj;
-    }
-    var temp = obj.constructor(); // give temp the original obj's constructor
-    for (var key in obj) {
-        temp[key] = cloneObject(obj[key]);
-    }
-    return temp;
-}
