@@ -882,13 +882,34 @@ public class RoadsideEquipment {
                             }
                             
                             if(s.getTriggerType() == null) {
-                                errors.add(new KV9ValidationError(true, "F139", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", null, "Afwezig"));
+                                errors.add(new KV9ValidationError(false, "F139", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", null, "Afwezig"));
+                                s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
                             } else {
                                 if(!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType()) 
                                 && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
                                 && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
-                                    errors.add(new KV9ValidationError(true, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
+                                    errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
+                                    s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
                                 }
+                            }
+                            
+                            if(s.getDistanceTillStopLine() != null) {
+                                if(s.getDistanceTillStopLine() < -99 || s.getDistanceTillStopLine() > 9999) {
+                                    errors.add(new KV9ValidationError(false, "F141", sXmlContext + "/distancetillstopline", sContext + ", afstand tot stopstreep", s.getDistanceTillStopLine() + "", "Ongeldig (niet van -99 t/m 9999)"));
+                                    s.setDistanceTillStopLine(null);
+                                }
+                            }
+                            
+                            if(s.getVirtualLocalLoopNumber() == null && s.getSignalGroupNumber() == null) {
+                                errors.add(new KV9ValidationError(false, "F142", sXmlContext + "/virtuallocalloopnumber, signalgroupnumber", sContext + ", virtuele lusnummer en signaalgroepnummer", null, "Beide afwezig (één van beide is verplicht)"));
+                            }
+                            
+                            if(s.getVirtualLocalLoopNumber() != null && s.getVirtualLocalLoopNumber() < 0 || s.getVirtualLocalLoopNumber() > 127) {
+                                errors.add(new KV9ValidationError(false, "F143", sXmlContext + "/virtuallocalloopnumber", sContext + ", virtual local loop number", null, "Ongeldig (niet 0 t/m 127)"));
+                            }
+                            
+                            if(s.getSignalGroupNumber() != null && s.getSignalGroupNumber() < 1 || s.getSignalGroupNumber() > 255) {
+                                errors.add(new KV9ValidationError(false, "F144", sXmlContext + "/signalgroupnumber", sContext + ", signalgroepnummer", s.getSignalGroupNumber() + "", "Ongeldig (niet 1 t/m 255)"));
                             }
                         }
                     }
