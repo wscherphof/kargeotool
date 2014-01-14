@@ -861,6 +861,10 @@ public class RoadsideEquipment {
                         }
                     }
                     
+                    if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType)) {
+                        errors.add(new KV9ValidationError(false, "F145", mXmlContext + "/END", mContext + ", eindpunt van beweging", null, "Afwezig"));
+                    }
+                    
                     if(MovementActivationPoint.ACTIVATION.equals(mapType)) {
                         ActivationPointSignal s = map.getSignal();
                         String sXmlContext = mapXmlContext + "/ACTIVATIONPOINTSIGNAL";
@@ -904,11 +908,11 @@ public class RoadsideEquipment {
                                 errors.add(new KV9ValidationError(false, "F142", sXmlContext + "/virtuallocalloopnumber, signalgroupnumber", sContext + ", virtuele lusnummer en signaalgroepnummer", null, "Beide afwezig (één van beide is verplicht)"));
                             }
                             
-                            if(s.getVirtualLocalLoopNumber() != null && s.getVirtualLocalLoopNumber() < 0 || s.getVirtualLocalLoopNumber() > 127) {
+                            if(s.getVirtualLocalLoopNumber() != null && (s.getVirtualLocalLoopNumber() < 0 || s.getVirtualLocalLoopNumber() > 127)) {
                                 errors.add(new KV9ValidationError(false, "F143", sXmlContext + "/virtuallocalloopnumber", sContext + ", virtual local loop number", null, "Ongeldig (niet 0 t/m 127)"));
                             }
                             
-                            if(s.getSignalGroupNumber() != null && s.getSignalGroupNumber() < 1 || s.getSignalGroupNumber() > 255) {
+                            if(s.getSignalGroupNumber() != null && (s.getSignalGroupNumber() < 1 || s.getSignalGroupNumber() > 255)) {
                                 errors.add(new KV9ValidationError(false, "F144", sXmlContext + "/signalgroupnumber", sContext + ", signalgroepnummer", s.getSignalGroupNumber() + "", "Ongeldig (niet 1 t/m 255)"));
                             }
                         }
