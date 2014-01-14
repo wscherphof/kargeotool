@@ -877,7 +877,17 @@ public class RoadsideEquipment {
                                 errors.add(new KV9ValidationError(true, "F137", sXmlContext + "/karcommandtype", sContext + ", soort melding", null, "Afwezig"));
                             } else {
                                 if(s.getKarCommandType() < 1 || s.getKarCommandType() > 3) {
-                                    errors.add(new KV9ValidationError(true, "F137", sXmlContext + "/karcommandtype", sContext + ", soort melding", s.getKarCommandType() + "", "Ongeldig (niet 1, 2 of 3)"));
+                                    errors.add(new KV9ValidationError(true, "F138", sXmlContext + "/karcommandtype", sContext + ", soort melding", s.getKarCommandType() + "", "Ongeldig (niet 1, 2 of 3)"));
+                                }
+                            }
+                            
+                            if(s.getTriggerType() == null) {
+                                errors.add(new KV9ValidationError(true, "F139", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", null, "Afwezig"));
+                            } else {
+                                if(!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType()) 
+                                && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
+                                && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
+                                    errors.add(new KV9ValidationError(true, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
                                 }
                             }
                         }
