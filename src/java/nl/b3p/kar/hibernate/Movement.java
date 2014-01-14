@@ -127,14 +127,14 @@ public class Movement implements Comparable {
         for(XmlActivation xmlActivation: activations) {
             for(XmlActivationPointSignal xmlSignal: xmlActivation.getSignals()) {
 
-                VehicleType vt = (VehicleType)Stripersist.getEntityManager().find(VehicleType.class, xmlSignal.getKarvehicletype());
+                VehicleType vt = xmlSignal.getKarvehicletype() == null ? null : Stripersist.getEntityManager().find(VehicleType.class, xmlSignal.getKarvehicletype());
                 
                 // Indien zelfde punt nummer als eerdere activation, voeg 
                 // vehicleType toe (negeer overige velden)
                 MovementActivationPoint same = null;
                 for(MovementActivationPoint map: points) {
                     if(map.getPoint() != null && map.getSignal() != null && map.getPoint().getNummer() == xmlSignal.getActivationpointnumber()) {
-                        if(!map.getSignal().getVehicleTypes().contains(vt)) {
+                        if(vt != null && !map.getSignal().getVehicleTypes().contains(vt)) {
                             map.getSignal().getVehicleTypes().add(vt);
                         }
                         same = map;
@@ -152,7 +152,9 @@ public class Movement implements Comparable {
                     map.setPoint(rseq.getPointByNumber(xmlSignal.getActivationpointnumber()));
                     ActivationPointSignal signal = new ActivationPointSignal();
 
-                    signal.getVehicleTypes().add(vt);
+                    if(vt != null) {
+                        signal.getVehicleTypes().add(vt);
+                    }
                     signal.setKarCommandType(xmlSignal.getKarcommandtype());
                     signal.setTriggerType(xmlSignal.getTriggertype());
                     signal.setDistanceTillStopLine(xmlSignal.getDistancetillstopline());

@@ -77,7 +77,7 @@ public class ActivationPointSignal {
     /**
      * Soort melding, zie ActivationPointSignal.COMMAND_ constantes.
      */
-    private int karCommandType;
+    private Integer karCommandType;
     
     /**
      * Voor welke voertuigtypes dit activation point signal geldt; in Kv9 XML
@@ -136,7 +136,7 @@ public class ActivationPointSignal {
      *
      * @return karCommandType
      */
-    public int getKarCommandType() {
+    public Integer getKarCommandType() {
         return karCommandType;
     }
     
@@ -144,7 +144,7 @@ public class ActivationPointSignal {
      *
      * @param karCommandType
      */
-    public void setKarCommandType(int karCommandType) {
+    public void setKarCommandType(Integer karCommandType) {
         this.karCommandType = karCommandType;
     }
     

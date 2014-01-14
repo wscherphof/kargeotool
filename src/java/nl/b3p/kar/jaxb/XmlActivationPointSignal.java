@@ -42,7 +42,7 @@ import nl.b3p.kar.hibernate.VehicleType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XmlActivationPointSignal {
     
-    private int activationpointnumber, karvehicletype, karcommandtype;
+    private Integer activationpointnumber, karvehicletype, karcommandtype;
     private Integer distancetillstopline, signalgroupnumber, virtuallocalloopnumber;
     private String triggertype;
 
@@ -60,27 +60,27 @@ public class XmlActivationPointSignal {
         virtuallocalloopnumber = s.getVirtualLocalLoopNumber();
     }
 
-    public int getActivationpointnumber() {
+    public Integer getActivationpointnumber() {
         return activationpointnumber;
     }
 
-    public void setActivationpointnumber(int activationpointnumber) {
+    public void setActivationpointnumber(Integer activationpointnumber) {
         this.activationpointnumber = activationpointnumber;
     }
 
-    public int getKarvehicletype() {
+    public Integer getKarvehicletype() {
         return karvehicletype;
     }
 
-    public void setKarvehicletype(int karvehicletype) {
+    public void setKarvehicletype(Integer karvehicletype) {
         this.karvehicletype = karvehicletype;
     }
 
-    public int getKarcommandtype() {
+    public Integer getKarcommandtype() {
         return karcommandtype;
     }
 
-    public void setKarcommandtype(int karcommandtype) {
+    public void setKarcommandtype(Integer karcommandtype) {
         this.karcommandtype = karcommandtype;
     }
 

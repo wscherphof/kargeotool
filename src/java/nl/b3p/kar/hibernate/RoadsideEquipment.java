@@ -813,7 +813,7 @@ public class RoadsideEquipment {
                 }
                 
                 if(ap.getLabel() != null && ap.getLabel().length() > 4) {
-                    errors.add(new KV9ValidationError(false, "F129", pXmlContext + ", rdx-coordinate, rdy-coordinate", pContext + ", label", ap.getLabel(), "Langer dan 4 tekens"));
+                    errors.add(new KV9ValidationError(false, "F129", pXmlContext + ", label", pContext + ", label", ap.getLabel(), "Langer dan 4 tekens"));
                     ap.setLabel(ap.getLabel().substring(0, 4));
                 }
             }
@@ -853,16 +853,33 @@ public class RoadsideEquipment {
 
                     String mapType = apNummerType.get(map.getPoint());
                     if(mapType == null) {
-                        apNummerType.put(map.getPoint(), map.getBeginEndOrActivation());
+                        mapType = map.getBeginEndOrActivation();
+                        apNummerType.put(map.getPoint(), mapType);
                     } else {
                         if(!map.getBeginEndOrActivation().equals(mapType)) {
-                            errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext, m.getNummer() + "", "Punt al gebruikt voor ander soort punt"));
+                            errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext, map.getBeginEndOrActivation() + ", eerder " + mapType, "Punt al gebruikt voor ander soort punt (niet ondersteund)"));
                         }
                     }
                     
                     if(MovementActivationPoint.ACTIVATION.equals(mapType)) {
-                        if(map.getSignal() == null) {
-                            errors.add(new KV9ValidationError(true, "F136", mapXmlContext + "/ACTIVATIONPOINTSIGNAL", mapContext + ", signaalgegevens", m.getNummer() + "", "Afwezig"));
+                        ActivationPointSignal s = map.getSignal();
+                        String sXmlContext = mapXmlContext + "/ACTIVATIONPOINTSIGNAL";
+                        String sContext = mapContext + ", signaalgegevens";
+                        if(s == null) { 
+                            // Kan niet voorkomen, wordt overgeslagen in Movement.afterUnmarshal()
+                            throw new IllegalStateException();
+                        } else {
+                            if(s.getVehicleTypes().isEmpty()) {
+                                errors.add(new KV9ValidationError(true, "F136", sXmlContext + "/karvehicletype", sContext + ", voertuigtype", null, "Afwezig"));
+                            }
+                            
+                            if(s.getKarCommandType() == null) {
+                                errors.add(new KV9ValidationError(true, "F137", sXmlContext + "/karcommandtype", sContext + ", soort melding", null, "Afwezig"));
+                            } else {
+                                if(s.getKarCommandType() < 1 || s.getKarCommandType() > 3) {
+                                    errors.add(new KV9ValidationError(true, "F137", sXmlContext + "/karcommandtype", sContext + ", soort melding", s.getKarCommandType() + "", "Ongeldig (niet 1, 2 of 3)"));
+                                }
+                            }
                         }
                     }
                 }
