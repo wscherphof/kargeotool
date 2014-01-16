@@ -336,6 +336,7 @@ Ext.define("Editor", {
                         this.changeManager.rseqSaved();
                         
                         var rseq = makeRseq(msg.roadsideEquipment);
+                        rseq.setEditable (editable);
 
                         // Dit misschien in listener
                         editor.olc.removeAllFeatures();
@@ -1349,3 +1350,13 @@ Ext.define("HelpPanel", {
     }
         
 });
+ function cloneObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    var temp = obj.constructor(); // give temp the original obj's constructor
+    for (var key in obj) {
+        temp[key] = cloneObject(obj[key]);
+    }
+    return temp;
+}
