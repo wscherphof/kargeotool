@@ -635,8 +635,13 @@ public class EditorActionBean implements ActionBean {
 
             em.persist(rseq);
             em.getTransaction().commit();
-
-            info.put("roadsideEquipment", rseq.getJSON());
+            boolean editable = getGebruiker().canEditDataOwner(rseq.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq);
+            if (!editable && !getGebruiker().canReadDataOwner(rseq.getDataOwner()) && !getGebruiker().canReadVRI(rseq)) {
+                info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
+            } else {
+                info.put("editable", editable);
+                info.put("roadsideEquipment", rseq.getJSON());
+            }
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {
             log.error("saveOrUpdateRseq exception", e);
