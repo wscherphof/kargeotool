@@ -36,15 +36,25 @@
             var imported = ${actionBean.imported};
             var globalErrors = ${actionBean.globalErrors};
             var allRseqErrors = ${actionBean.allRseqErrors};
+            
+            Ext.onReady(function (){
+
+                var event = "${actionBean.context.eventName}";
+                
+                switch(event) {
+                    case "validateImportXml":
+                        createValidationResultsGrid();
+                        break;
+                    default:
+                        createForms();
+                        loadGrid();
+                }
+            });
+            
         </script>
         <h1>Importeer verkeerssystemen</h1>
-        <pre>
-        <%--stripes:messages/--%>
+        <stripes:messages/>
         <stripes:errors/>
-        </pre>
-        <div id="importedDiv">
-            
-        </div>
         <div id="body" class="exportBody">
 
         </div>

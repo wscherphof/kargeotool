@@ -197,10 +197,10 @@ body.editor {
 } 
 
 .exportBody{
-    width: 500px;
+    width: 750px;
    
-    margin-top: 50px;
-    margin-left: 50px;
+    margin-top: 5px;
+    margin-left: 5px;
 }
 
 .errors {
@@ -226,4 +226,28 @@ body.editor {
 .rseqRights{
     float: left;
     margin-left: 500px;
+}
+
+.kv9error {
+    margin: 3px 0px 3px 0px;
+    padding: 3px;
+    border: 1px solid #99BCE8;
+}
+
+.kv9error table tr td {
+    font-size: 10pt;
+}
+
+.kv9error table tr td.code {
+    font-family: monospace;
+    font-size: 9pt;
+}
+
+.kv9error table tr td.message {
+    font-weight: bold;
+}
+
+.kv9error table tr td.wnb {
+    white-space: nowrap;
+    vertical-align: top;
 }

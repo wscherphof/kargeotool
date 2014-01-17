@@ -18,14 +18,17 @@
  */
 package nl.b3p.kar.stripes;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
@@ -35,6 +38,7 @@ import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
 import nl.b3p.kar.jaxb.RseqDefs;
 import nl.b3p.kar.jaxb.TmiPush;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -50,12 +55,21 @@ import org.stripesstuff.stripersist.Stripersist;
 @StrictBinding
 @UrlBinding("/action/import")
 public class ImportActionBean implements ActionBean {
-
+    /**
+     * Session key of the temporary file the uploaded file is saved to, so it
+     * only has to be uploaded once (after uploading only selected rseqs can be
+     * imported)
+     */
+    private static final String KV9_IMPORT_TEMP_FILE = "kv9_import_temp_file";
+            
     private final Log log = LogFactory.getLog(this.getClass());
     private final static String OVERVIEW = "/WEB-INF/jsp/import/import.jsp";
     private ActionBeanContext context;
     @Validate(required = true, on = {"importPtx", "importXml"})
     private FileBean bestand;
+    
+    @Validate(required = true, on = {"importXmlSelectedRseqs"})
+    private Integer[] selectedRseqAddresses;
 
     private JSONArray imported = new JSONArray();
     private JSONArray globalErrors = new JSONArray();
@@ -109,14 +123,39 @@ public class ImportActionBean implements ActionBean {
         return new ForwardResolution(OVERVIEW);
     }
 
-    public Resolution importXml() {
+    public Resolution validateImportXml() {
         
         try {
-            JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
-            Unmarshaller u = ctx.createUnmarshaller();
-            Gebruiker g = getGebruiker();
-            EntityManager em = Stripersist.getEntityManager();
-            TmiPush push = (TmiPush) u.unmarshal(bestand.getInputStream());
+            
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            
+            Document d;
+            
+            File temp = File.createTempFile("geo-ov_kv9_import", ".xml");
+            context.getRequest().getSession().setAttribute(KV9_IMPORT_TEMP_FILE, temp.getAbsolutePath());
+            bestand.save(temp);
+            
+            try {
+                d = db.parse(temp);
+            } catch(Exception e) {
+                this.context.getValidationErrors().addGlobalError(new SimpleError("Fout bij het parsen van het XML bestand: " + ExceptionUtils.getMessage(e)));
+                return new ForwardResolution(OVERVIEW);                
+            } finally {
+                
+            }
+            
+            TmiPush push;
+            try {
+                JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
+                Unmarshaller u = ctx.createUnmarshaller();
+                push = (TmiPush) u.unmarshal(d);
+            } catch(Exception e) {
+                this.context.getValidationErrors().addGlobalError(new SimpleError("Fout opgetreden bij het unmarshallen van het XML bestand: \n" + ExceptionUtils.getMessage(e)));
+                return new ForwardResolution(OVERVIEW);                  
+            }
+            
             int num = 0;
             List<Kv9Def> defs = push.getRseqs();
             String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
@@ -142,6 +181,7 @@ public class ImportActionBean implements ActionBean {
                         JSONObject rseqErrors = new JSONObject();
                         rseqErrors.put("position", rseqDefPosition);
                         rseqErrors.put("karAddress", roadsideEquipment.getKarAddress());
+                        rseqErrors.put("description", roadsideEquipment.getDescription());
                         JSONArray e = new JSONArray();
                         rseqErrors.put("errors", e);
                         allRseqErrors.put(rseqErrors);
@@ -155,8 +195,10 @@ public class ImportActionBean implements ActionBean {
                                 fatal = true;
                             }
                         }
+                        rseqErrors.put("errorCount", e.length());
                         
                         rseqErrors.put("fatal", fatal);
+                        rseqErrors.put("checked", Boolean.FALSE);
                         if(fatal) {
                             continue;
                         }
@@ -164,7 +206,7 @@ public class ImportActionBean implements ActionBean {
                         // g.canEditVRI(roadsideEquipment) niet van toepassing:
                         // nieuw ingelezen KV9 RSEQ kan nog geen rechten hebben
                         // (id is null)
-                        if(!g.isBeheerder() && !g.canEditDataOwner(roadsideEquipment.getDataOwner())) {
+                        if(!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())) {
                             e.put(new KV9ValidationError(true, null, "dataownercode", "Beheerder", roadsideEquipment.getDataOwner().getCode(), "U heeft geen rechten om verkeerssystemen voor deze beheerder te importeren"));
                             rseqErrors.put("fatal", Boolean.TRUE);
                             continue;
@@ -173,22 +215,22 @@ public class ImportActionBean implements ActionBean {
                         roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
                                 bestand.getFileName(),
                                 date,
-                                g.getFullname()
+                                getGebruiker().getFullname()
                         ));
-                        em.persist(roadsideEquipment);
+                        Stripersist.getEntityManager().persist(roadsideEquipment);
                         addImportedRseq(roadsideEquipment);
                         num++;
+                        rseqErrors.put("checked", Boolean.TRUE);
                     }
                 }
             }
-            em.getTransaction().commit();
+            //Stripersist.getEntityManager().getTransaction().commit();
             
-            this.context.getMessages().add(new SimpleMessage(("globalErrors: " + globalErrors.toString(4))));
-            this.context.getMessages().add(new SimpleMessage(("allRseqErrors: " + allRseqErrors.toString(4))));
-            this.context.getMessages().add(new SimpleMessage(("imported: " + imported.toString(4))));
+            //this.context.getMessages().add(new SimpleMessage(("allRseqErrors: " + allRseqErrors.toString(4))));
+            //this.context.getMessages().add(new SimpleMessage(("imported: " + imported.toString(4))));
 
             
-            this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
+            //this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch(Exception e) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
             log.error("Import exception", e);
