@@ -86,7 +86,11 @@ public class IncaaExport {
                     }
                     line += signalGroupNumber;// 5
                     line += TAB;
-                    line += map.getSignal().getDistanceTillStopLine();// 6
+                    Integer distance = 0;
+                    if(map.getSignal().getDistanceTillStopLine() != null){
+                        distance = map.getSignal().getDistanceTillStopLine();
+                    }
+                    line += distance;// 6
                     line += TAB;
 
                     Integer time = 0;
