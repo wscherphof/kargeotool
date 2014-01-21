@@ -18,11 +18,10 @@
  */
 package nl.b3p.kar.stripes;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -32,13 +31,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
+import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
 import nl.b3p.kar.jaxb.RseqDefs;
 import nl.b3p.kar.jaxb.TmiPush;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,12 +54,6 @@ import org.w3c.dom.Document;
 @StrictBinding
 @UrlBinding("/action/import")
 public class ImportActionBean implements ActionBean {
-    /**
-     * Session key of the temporary file the uploaded file is saved to, so it
-     * only has to be uploaded once (after uploading only selected rseqs can be
-     * imported)
-     */
-    private static final String KV9_IMPORT_TEMP_FILE = "kv9_import_temp_file";
             
     private final Log log = LogFactory.getLog(this.getClass());
     private final static String OVERVIEW = "/WEB-INF/jsp/import/import.jsp";
@@ -69,7 +62,7 @@ public class ImportActionBean implements ActionBean {
     private FileBean bestand;
     
     @Validate(required = true, on = {"importXmlSelectedRseqs"})
-    private Integer[] selectedRseqAddresses;
+    private String selectedRseqPositions;
 
     private JSONArray imported = new JSONArray();
     private JSONArray globalErrors = new JSONArray();
@@ -115,6 +108,14 @@ public class ImportActionBean implements ActionBean {
     public void setAllRseqErrors(JSONArray allRseqErrors) {
         this.allRseqErrors = allRseqErrors;
     }
+
+    public String getSelectedRseqPositions() {
+        return selectedRseqPositions;
+    }
+
+    public void setSelectedRseqPositions(String selectedRseqPositions) {
+        this.selectedRseqPositions = selectedRseqPositions;
+    }
     // </editor-fold>
 
     @DefaultHandler
@@ -133,12 +134,8 @@ public class ImportActionBean implements ActionBean {
             
             Document d;
             
-            File temp = File.createTempFile("geo-ov_kv9_import", ".xml");
-            context.getRequest().getSession().setAttribute(KV9_IMPORT_TEMP_FILE, temp.getAbsolutePath());
-            bestand.save(temp);
-            
             try {
-                d = db.parse(temp);
+                d = db.parse(bestand.getInputStream());
             } catch(Exception e) {
                 this.context.getValidationErrors().addGlobalError(new SimpleError("Fout bij het parsen van het XML bestand: " + ExceptionUtils.getMessage(e)));
                 return new ForwardResolution(OVERVIEW);                
@@ -158,7 +155,6 @@ public class ImportActionBean implements ActionBean {
             
             int num = 0;
             List<Kv9Def> defs = push.getRseqs();
-            String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
             
             int rseqDefsPosition = 0, rseqDefPosition = 0;;
             
@@ -166,7 +162,7 @@ public class ImportActionBean implements ActionBean {
             
             // TODO check F100, F101, F102
             
-            for (Kv9Def kv9Def : defs) {
+            for (Kv9Def kv9Def: defs) {
                 List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
                 for (RseqDefs rseqDef: rseqs) {
                     rseqDefsPosition++;
@@ -211,31 +207,95 @@ public class ImportActionBean implements ActionBean {
                             rseqErrors.put("fatal", Boolean.TRUE);
                             continue;
                         }
-                        
-                        roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
-                                bestand.getFileName(),
-                                date,
-                                getGebruiker().getFullname()
-                        ));
-                        Stripersist.getEntityManager().persist(roadsideEquipment);
+
                         addImportedRseq(roadsideEquipment);
                         num++;
                         rseqErrors.put("checked", Boolean.TRUE);
+                        getContext().getRequest().getSession().setAttribute("kv9import", push);
+                        getContext().getRequest().getSession().setAttribute("kv9file", bestand.getFileName());
                     }
                 }
             }
-            //Stripersist.getEntityManager().getTransaction().commit();
-            
-            //this.context.getMessages().add(new SimpleMessage(("allRseqErrors: " + allRseqErrors.toString(4))));
-            //this.context.getMessages().add(new SimpleMessage(("imported: " + imported.toString(4))));
 
-            
-            //this.context.getMessages().add(new SimpleMessage(("Er zijn " + num + " verkeerssystemen succesvol geïmporteerd.")));
         } catch(Exception e) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
             log.error("Import exception", e);
+        } finally {
+            if(bestand != null) {
+                try {
+                    bestand.delete();
+                } catch(IOException ioe) {
+                }
+            }
         }
         return new ForwardResolution(OVERVIEW);
+    }
+    
+    public Resolution importXmlSelectedRseqs() {
+        
+
+        TmiPush push = (TmiPush)getContext().getRequest().getSession().getAttribute("kv9import");
+        
+        if(push == null) {
+            this.context.getValidationErrors().addGlobalError(new SimpleError("Kan de geuploade KV9 XML gegevens niet vinden, probeer opnieuw"));
+            return new ForwardResolution(OVERVIEW);
+        }
+
+        String[] psplit = selectedRseqPositions.split(",");
+        int[] selectedIndexes = new int[psplit.length];
+        for(int i = 0; i < psplit.length; i++) {
+            selectedIndexes[i] = Integer.parseInt(psplit[i]);
+        }
+        
+        String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
+            
+        int rseqDefsPosition = 0, rseqDefPosition = 0;;
+
+        for (Kv9Def kv9Def: push.getRseqs()) {
+            List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
+            for (RseqDefs rseqDef: rseqs) {
+                rseqDefsPosition++;        
+
+                for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                    rseqDefPosition++;
+                    
+                    if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) < 0) {
+                        continue;
+                    }
+                    
+                    // Entities zijn in vorige, gesloten sessie geladen, laad deze opnieuw
+                    roadsideEquipment.setDataOwner(DataOwner.findByCode(roadsideEquipment.getDataOwner().getCode()));
+                    
+                    List<KV9ValidationError> kvErrors = new ArrayList();
+                    boolean fatal = false;
+                    roadsideEquipment.validateKV9(kvErrors);
+                    for(KV9ValidationError kvError: kvErrors) {
+                        if(kvError.isFatal()) {
+                            fatal = true;
+                            break;
+                        }
+                    }                    
+                    if(fatal || (!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))) {
+                        this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
+                        continue;
+                    }
+                    roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
+                            (String)getContext().getRequest().getSession().getAttribute("kv9file"),
+                            date,
+                            getGebruiker().getFullname()
+                    ));                    
+                    Stripersist.getEntityManager().persist(roadsideEquipment);                
+                    
+                    if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
+                        this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + roadsideEquipment.getKarAddress() + ", " + roadsideEquipment.getDescription()));
+                    }
+                }
+            }
+        }
+        
+        Stripersist.getEntityManager().getTransaction().commit();        
+
+        return new ForwardResolution(OVERVIEW);        
     }
 
     private void addImportedRseq(RoadsideEquipment rseq) throws JSONException {
