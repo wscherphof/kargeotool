@@ -164,7 +164,8 @@ function rseqCheckboxClick(event, row, column) {
     if(!event) {
         event = window.event;
     }
-    console.log("rseqCheckboxClick", event, row, column);
+    
+    allRseqErrors[row].checked = event.target.checked;
 }
 
 function createValidationResultsGrid() {
@@ -172,6 +173,7 @@ function createValidationResultsGrid() {
     var panel = Ext.create('Ext.panel.Panel', {
         width: '100%',
         height: '90%',
+        resizable: true,
         border: false,
         padding: 2,
         layout: {type: 'vbox', align: 'left'},
@@ -187,7 +189,15 @@ function createValidationResultsGrid() {
             margin: '5 0 10 0',
             text: 'Geselecteerde verkeerssystemen importeren',
             handler: function() {
-                alert('okidoki');
+                var selectedPositions = "";
+                Ext.Array.each(allRseqErrors, function(r) {
+                    if(r.checked) {
+                        selectedPositions += (selectedPositions == "" ? "" : ",") + r.position;
+                    }
+                });
+                document.forms[0].selectedRseqPositions.value = selectedPositions;
+                document.forms[0].importXmlSelectedRseqs = "1";
+                document.forms[0].submit();
             }
         }],
         renderTo: 'body'

@@ -55,6 +55,11 @@
         <h1>Importeer verkeerssystemen</h1>
         <stripes:messages/>
         <stripes:errors/>
+        
+        <stripes:form beanclass="nl.b3p.kar.stripes.ImportActionBean">
+            <input type="hidden" name="selectedRseqPositions"/>
+            <input type="hidden" name="importXmlSelectedRseqs"/>
+        </stripes:form>
         <div id="body" class="exportBody">
 
         </div>
