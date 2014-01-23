@@ -336,6 +336,7 @@ Ext.define("Editor", {
                         this.changeManager.rseqSaved();
                         
                         var rseq = makeRseq(msg.roadsideEquipment);
+                        var editable = msg.editable;
                         rseq.setEditable (editable);
 
                         // Dit misschien in listener
