@@ -1148,6 +1148,64 @@ Ext.define("Editor", {
     cancelSelection:function(){
         this.un('selectedObjectChanged',this.actionToCancel,this);
         this.changeCurrentEditAction(null);
+    },
+    
+    // ==== KV9 Validation results ====
+    showValidationResults: function() {
+        if(this.activeRseq == null) {
+            return;
+        }
+        
+        var me = this;
+        var validationResultsWindow;
+
+        Ext.Ajax.request({
+            url: editorActionBeanUrl + "?rseq=" + me.activeRseq.id + "&getValidationErrors=1",
+            method: 'GET',
+            scope: this,
+            success: function (response){
+                var r = Ext.JSON.decode(response.responseText);
+                
+                validationResultsWindow = Ext.create('Ext.window.Window', {
+                    title: 'KV9 validatieresultaten',
+                    width: 575,
+                    height: 625,
+                    modal: true,
+                    icon: contextPath + '/images/silk/information.png',
+                    layout: 'fit',
+                    items: [{  
+                        xtype: 'panel',
+                        autoScroll: true,
+                        html: '<div id="validationMessages"></div>'
+                    }],
+                    buttons: [{
+                        text: 'Sluiten',
+                        handler: function() {
+
+                            validationResultsWindow.destroy();
+                            validationResultsWindow = null;
+                        }
+                    }]
+                }).show();
+                
+                var t = new Ext.Template([
+                    "<div class=\"kv9error\"><table>",
+                        "<tr><td class=\"wnb\">Code:</td><td class=\"code\">{code}</td></tr>",
+                        "<tr><td class=\"wnb\">Fatale controlefout:</td><td class=\"fatal\">{fatal}</td></tr>",
+                        "<tr><td class=\"wnb\">Context:</td><td class=\"context\">{context}</td></tr>",
+                        "<tr><td class=\"wnb\">Waarde:</td><td class=\"value\">{value}</td></tr>",
+                        "<tr><td class=\"wnb\">Melding:</td><td class=\"message\">{message}</td></tr>",
+                        "<tr><td class=\"wnb\">Context in XML:</td><td class=\"xmlcontext\">{xmlContext}</td></tr>",
+                    "</table></div>"]).compile();
+
+                Ext.Array.each(r.errors, function(error) {
+                    t.append(Ext.getDom("validationMessages"), error);                        
+                });      
+                
+            }
+        });
+        
+        
     }
 });
 

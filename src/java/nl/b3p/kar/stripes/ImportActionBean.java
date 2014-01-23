@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
@@ -54,6 +56,7 @@ import org.w3c.dom.Document;
 @StrictBinding
 @UrlBinding("/action/import")
 public class ImportActionBean implements ActionBean {
+    private static final String SESSION_KEY_KV9_UNMARSHALLED_OBJ = "kv9import";
             
     private final Log log = LogFactory.getLog(this.getClass());
     private final static String OVERVIEW = "/WEB-INF/jsp/import/import.jsp";
@@ -183,16 +186,13 @@ public class ImportActionBean implements ActionBean {
                         allRseqErrors.put(rseqErrors);
                         
                         List<KV9ValidationError> kvErrors = new ArrayList();
-                        boolean fatal = false;
-                        roadsideEquipment.validateKV9(kvErrors);
+                        JSONObject validationResults = roadsideEquipment.validateKV9(kvErrors);
                         for(KV9ValidationError kvError: kvErrors) {
                             e.put(kvError.toJSONObject());
-                            if(kvError.isFatal()) {
-                                fatal = true;
-                            }
                         }
-                        rseqErrors.put("errorCount", e.length());
-                        
+                        rseqErrors.put("errorCount", validationResults.getInt("errors"));
+
+                        boolean fatal = !validationResults.getBoolean("passed");
                         rseqErrors.put("fatal", fatal);
                         rseqErrors.put("checked", Boolean.FALSE);
                         if(fatal) {
@@ -211,8 +211,7 @@ public class ImportActionBean implements ActionBean {
                         addImportedRseq(roadsideEquipment);
                         num++;
                         rseqErrors.put("checked", Boolean.TRUE);
-                        getContext().getRequest().getSession().setAttribute("kv9import", push);
-                        getContext().getRequest().getSession().setAttribute("kv9file", bestand.getFileName());
+                        getContext().getRequest().getSession().setAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ, push);
                     }
                 }
             }
@@ -234,7 +233,7 @@ public class ImportActionBean implements ActionBean {
     public Resolution importXmlSelectedRseqs() {
         
 
-        TmiPush push = (TmiPush)getContext().getRequest().getSession().getAttribute("kv9import");
+        TmiPush push = (TmiPush)getContext().getRequest().getSession().getAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
         
         if(push == null) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Kan de geuploade KV9 XML gegevens niet vinden, probeer opnieuw"));
@@ -267,17 +266,13 @@ public class ImportActionBean implements ActionBean {
                     roadsideEquipment.setDataOwner(DataOwner.findByCode(roadsideEquipment.getDataOwner().getCode()));
                     
                     List<KV9ValidationError> kvErrors = new ArrayList();
-                    boolean fatal = false;
-                    roadsideEquipment.validateKV9(kvErrors);
-                    for(KV9ValidationError kvError: kvErrors) {
-                        if(kvError.isFatal()) {
-                            fatal = true;
-                            break;
+                    JSONObject validationResults = roadsideEquipment.validateKV9(kvErrors);                 
+                    try {
+                        if(!validationResults.getBoolean("passed") || (!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))) {
+                            this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
+                            continue;
                         }
-                    }                    
-                    if(fatal || (!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))) {
-                        this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
-                        continue;
+                    } catch (JSONException ex) {
                     }
                     roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
                             (String)getContext().getRequest().getSession().getAttribute("kv9file"),
@@ -293,7 +288,9 @@ public class ImportActionBean implements ActionBean {
             }
         }
         
-        Stripersist.getEntityManager().getTransaction().commit();        
+        Stripersist.getEntityManager().getTransaction().commit();  
+        
+        getContext().getRequest().getSession().removeAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
 
         return new ForwardResolution(OVERVIEW);        
     }

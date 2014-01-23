@@ -26,6 +26,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
+import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
@@ -632,15 +634,28 @@ public class EditorActionBean implements ActionBean {
                     rseq.getMovements().add(m);
                 }
             }
-
+            
             em.persist(rseq);
             em.getTransaction().commit();
+            
+            // Detach omdat bij afkappen rseq gewijzigd wordt
+            em.detach(rseq);
+            JSONObject validationResults = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
+            
+            em.createQuery("update RoadsideEquipment set validationResult = :res where id = :id")
+                    .setParameter("res", validationResults.toString())
+                    .setParameter("id", rseq.getId())
+                    .executeUpdate();
+            
+            em.getTransaction().commit();
+            
             boolean editable = getGebruiker().canEditDataOwner(rseq.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq);
             if (!editable && !getGebruiker().canReadDataOwner(rseq.getDataOwner()) && !getGebruiker().canReadVRI(rseq)) {
                 info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
                 info.put("editable", editable);
                 info.put("roadsideEquipment", rseq.getJSON());
+                info.getJSONObject("roadsideEquipment").put("validationResults", validationResults);
             }
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {
@@ -648,6 +663,18 @@ public class EditorActionBean implements ActionBean {
             info.put("error", ExceptionUtils.getMessage(e));
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+    
+    public Resolution getValidationErrors() throws JSONException {
+        JSONObject j = new JSONObject();
+        JSONArray e = new JSONArray();
+        j.put("errors", e);        
+        List<KV9ValidationError> kvErrors = new ArrayList();
+        rseq.validateKV9(kvErrors);
+        for(KV9ValidationError kvError: kvErrors) {
+            e.put(kvError.toJSONObject());
+        }
+        return new StreamingResolution("application/json", new StringReader(j.toString(4)));
     }
 
     // <editor-fold desc="Getters and Setters">

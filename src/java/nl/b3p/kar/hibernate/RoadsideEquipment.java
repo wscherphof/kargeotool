@@ -190,6 +190,9 @@ public class RoadsideEquipment {
     @Column(length=4096)
     @XmlTransient
     private String memo;
+    
+    @XmlTransient
+    private String validationResult;
 
     @XmlElement(name="b3pextra")
     public XmlB3pRseq getExtraXml() {
@@ -423,6 +426,14 @@ public class RoadsideEquipment {
     public void setPoints(SortedSet<ActivationPoint> points) {
         this.points = points;
     }
+
+    public String getValidationResult() {
+        return validationResult;
+    }
+
+    public void setValidationResult(String validationResult) {
+        this.validationResult = validationResult;
+    }
     //</editor-fold>
     
     public ActivationPoint getPointByNumber(int number) {
@@ -516,6 +527,9 @@ public class RoadsideEquipment {
         j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
+        if(validationResult != null) {
+            j.put("validationResult", new JSONObject(validationResult));
+        }
         
         JSONObject jattrs = new JSONObject();
         j.put("attributes", jattrs);
@@ -672,9 +686,12 @@ public class RoadsideEquipment {
         return karAttributes;
     }
     
-    public void validateKV9(List<KV9ValidationError> errors) {
+    /**
+     * Let op: kapt te lange waardes af / vervangt ongeldige waardes door defaults.
+     */
+    public JSONObject validateKV9(List<KV9ValidationError> errors) {
         
-        boolean fatal = false;
+        int errorsStartIndex = errors.size();
         
         String xmlContext = String.format("RSEQDEF[karaddress=%s]", karAddress == null ? "<leeg>" : karAddress.toString());
         String context = String.format("Verkeerssysteem (KAR adres %s)", karAddress == null ? "<leeg>" : karAddress.toString());
@@ -921,5 +938,20 @@ public class RoadsideEquipment {
             }
         }
         
+        JSONObject validationResults = new JSONObject();
+        int errorCount = 0, fatal = 0;
+        for(int i = errorsStartIndex; i < errors.size(); i++) {
+            if(errors.get(i).isFatal()) {
+                fatal++;
+            }
+            errorCount++;
+        }
+        try {
+            validationResults.put("warnings", errorCount - fatal);
+            validationResults.put("fatal", fatal);
+            validationResults.put("passed", fatal == 0);
+        } catch(JSONException e) {
+        }
+        return validationResults;
     }
 }

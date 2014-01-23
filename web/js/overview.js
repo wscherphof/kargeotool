@@ -183,7 +183,18 @@ Ext.define("nl.b3p.kar.Overview",{
         } else{
             memoIcon.setVisible(false);
         }
-
+        
+        if(rseq == null || rseq.validationResult == null) {
+            Ext.get("validationResults").setHTML("");
+        } else {
+            var vr = rseq.validationResult;
+            if(vr.passed) {
+                Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>"
+                    + (vr.warnings > 0 ? ", <a href=\"#\" onclick=\"editor.showValidationResults()\">Toon " + vr.warnings + " meldingen</a>" : ""));
+            } else {
+                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + vr.fatal + " fouten</a>");
+            }
+        }
 
         var overzicht = Ext.get("overzicht");
         var tree = Ext.get("tree");

@@ -67,6 +67,7 @@
                 <div id="overzicht" style="margin-top: 5px; font-size: 10pt"></div>
                 <div id="rseqOptions" style="visibility: hidden">
                     <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate();">
+                    <span id="validationResults"></span>
                 </div>
             </div>
             

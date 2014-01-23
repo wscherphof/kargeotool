@@ -48,7 +48,8 @@ Ext.define('RSEQ', {
         type:null, // ACTIVATION_1: Inmeldpunt, ACTIVATION_2: uitmeldpunt, ACTIVATION_3: voorinmeldpunt
         memo:null,
         attributes: null,
-        editable:null
+        editable:null,
+        validationResult: null
     },
     /**
      *@constructor
@@ -285,7 +286,7 @@ Ext.define('RSEQ', {
                     newMovement.maps.push(newMap);
                 }
             });
-        };
+        }
         
         newMap = Ext.create(MovementActivationPoint, {
             id: Ext.id(),
