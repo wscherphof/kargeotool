@@ -32,8 +32,8 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor = editor;
         this.domId = domId;
         this.heightOffset = 75;
-        this.editor.on("activeRseqUpdated",this.updateOverview,this);
-        this.editor.on("activeRseqChanged",this.updateOverview,this);
+        this.editor.on("activeRseqUpdated", function(rseq) { this.updateOverview(rseq, true) },this);
+        this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false) },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
         
         var panel = Ext.getCmp("rseqInfoPanel");
@@ -173,7 +173,9 @@ Ext.define("nl.b3p.kar.Overview",{
         });
       
     },
-    updateOverview : function (rseq){
+    updateOverview : function (rseq, changed){
+        console.log("updateOverview", changed);
+        
         Ext.get("context_vri").setHTML(rseq == null ? "" :
                 (rseq.description + " (" + rseq.karAddress + ")"));
         Ext.get("rseqOptions").setVisible(rseq != null);
@@ -184,15 +186,15 @@ Ext.define("nl.b3p.kar.Overview",{
             memoIcon.setVisible(false);
         }
         
-        if(rseq == null || rseq.validationResult == null) {
+        if(changed || rseq == null || rseq.validationResult == null) {
             Ext.get("validationResults").setHTML("");
         } else {
             var vr = rseq.validationResult;
             if(vr.passed) {
                 Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>"
-                    + (vr.warnings > 0 ? ", <a href=\"#\" onclick=\"editor.showValidationResults()\">Toon " + vr.warnings + " meldingen</a>" : ""));
+                    + (vr.warnings > 0 ? ", <a href=\"#\" onclick=\"editor.showValidationResults()\">Toon " + vr.warnings + " melding" + (vr.warnings == 1 ? "" : "en") + "</a>" : ""));
             } else {
-                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + vr.fatal + " fouten</a>");
+                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + vr.fatal + " fout" + (vr.fatal == 1 ? "" : "en") + "</a>");
             }
         }
 

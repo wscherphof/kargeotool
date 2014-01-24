@@ -190,7 +190,7 @@ public class ImportActionBean implements ActionBean {
                         for(KV9ValidationError kvError: kvErrors) {
                             e.put(kvError.toJSONObject());
                         }
-                        rseqErrors.put("errorCount", validationResults.getInt("errors"));
+                        rseqErrors.put("errorCount", validationResults.getInt("warnings") + validationResults.getInt("fatal"));
 
                         boolean fatal = !validationResults.getBoolean("passed");
                         rseqErrors.put("fatal", fatal);

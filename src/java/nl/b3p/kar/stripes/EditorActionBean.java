@@ -655,7 +655,7 @@ public class EditorActionBean implements ActionBean {
             } else {
                 info.put("editable", editable);
                 info.put("roadsideEquipment", rseq.getJSON());
-                info.getJSONObject("roadsideEquipment").put("validationResults", validationResults);
+                info.getJSONObject("roadsideEquipment").put("validationResult", validationResults);
             }
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {

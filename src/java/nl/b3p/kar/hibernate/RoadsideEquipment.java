@@ -713,7 +713,9 @@ public class RoadsideEquipment {
             if(karAddress < 0 || karAddress > 65535) {
                 errors.add(new KV9ValidationError(false, "F107", eXmlContext, eContext, karAddress + "", "Niet in bereik van 0 t/m 65535"));
             }
-            if(hasDuplicateKARAddressWithinDistance(500)) {
+            if(getId() == null && hasDuplicateKARAddressWithinDistance(500)) {
+                errors.add(new KV9ValidationError(true, "F108", eXmlContext, eContext, karAddress + "", "Dubbel binnen straal van 500 meter"));
+            } else if(getId() != null && hasDuplicateKARAddressWithinDistance(500, true)) {
                 errors.add(new KV9ValidationError(true, "F108", eXmlContext, eContext, karAddress + "", "Dubbel binnen straal van 500 meter"));
             }
         }
@@ -790,8 +792,14 @@ public class RoadsideEquipment {
                     errors.add(new KV9ValidationError(true, "F121", ka2XmlContext, ka2Context, ct + "", "Ongeldig (niet 1, 2 of 3)"));
                 }
                 
-                
                 String ua = ka.getUsedAttributesString();
+                if(ua == null && ka.getUsedAttributesMask() != null) {
+                    try {
+                        ka.beforeMarshal(null);
+                    } catch (Exception ex) {
+                    }
+                    ua = ka.getUsedAttributesString();
+                }
                 ka2XmlContext = kaXmlContext + "/karusedattributes";
                 ka2Context = kaContext + ", KAR gebruikte attributen";     
                 if(ua == null) {
