@@ -174,8 +174,6 @@ Ext.define("nl.b3p.kar.Overview",{
       
     },
     updateOverview : function (rseq, changed){
-        console.log("updateOverview", changed);
-        
         Ext.get("context_vri").setHTML(rseq == null ? "" :
                 (rseq.description + " (" + rseq.karAddress + ")"));
         Ext.get("rseqOptions").setVisible(rseq != null);
