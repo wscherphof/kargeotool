@@ -25,12 +25,10 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.*;
 import nl.b3p.kar.hibernate.Gebruiker;
-import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 @StrictBinding
@@ -82,11 +80,11 @@ public class ValidateAllRseqsActionBean implements ActionBean {
                 for(RoadsideEquipment rseq: rseqs) {
                     out.format("Valideren rseq #%d: %s: ", rseq.getId(), rseq.getDescription());
                     
-                    JSONObject validationResults = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
+                    int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
                     
-                    results.add(new Object[] {rseq.getId(), validationResults.toString()});
+                    results.add(new Object[] {rseq.getId(), validationErrors});
 
-                    out.println(validationResults.toString());
+                    out.println(validationErrors);
                 }
                 // Rollback omdat bij afkappen rseq gewijzigd wordt
                 em.getTransaction().rollback();
@@ -95,7 +93,7 @@ public class ValidateAllRseqsActionBean implements ActionBean {
                 out.print("Updating database...");
                 out.flush();
                 for(Object[] r: results) {
-                    em.createQuery("update RoadsideEquipment set validationResult = :res where id = :id")
+                    em.createQuery("update RoadsideEquipment set validationErrors = :res where id = :id")
                             .setParameter("res", r[1])
                             .setParameter("id", r[0])
                             .executeUpdate();

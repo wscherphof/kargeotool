@@ -640,10 +640,10 @@ public class EditorActionBean implements ActionBean {
             
             // Detach omdat bij afkappen rseq gewijzigd wordt
             em.detach(rseq);
-            JSONObject validationResults = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
+            int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
             
-            em.createQuery("update RoadsideEquipment set validationResult = :res where id = :id")
-                    .setParameter("res", validationResults.toString())
+            em.createQuery("update RoadsideEquipment set validationErrors = :res where id = :id")
+                    .setParameter("res", validationErrors)
                     .setParameter("id", rseq.getId())
                     .executeUpdate();
             
@@ -655,7 +655,7 @@ public class EditorActionBean implements ActionBean {
             } else {
                 info.put("editable", editable);
                 info.put("roadsideEquipment", rseq.getJSON());
-                info.getJSONObject("roadsideEquipment").put("validationResult", validationResults);
+                info.getJSONObject("roadsideEquipment").put("validationErrors", validationErrors);
             }
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {

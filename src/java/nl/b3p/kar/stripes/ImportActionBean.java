@@ -186,16 +186,19 @@ public class ImportActionBean implements ActionBean {
                         allRseqErrors.put(rseqErrors);
                         
                         List<KV9ValidationError> kvErrors = new ArrayList();
-                        JSONObject validationResults = roadsideEquipment.validateKV9(kvErrors);
+                        int validationErrors = roadsideEquipment.validateKV9(kvErrors);
+                        boolean importFatal = false;
                         for(KV9ValidationError kvError: kvErrors) {
                             e.put(kvError.toJSONObject());
+                            if(kvError.isFatal()) {
+                                importFatal = true;
+                            }
                         }
-                        rseqErrors.put("errorCount", validationResults.getInt("warnings") + validationResults.getInt("fatal"));
+                        rseqErrors.put("errorCount", validationErrors);
 
-                        boolean fatal = !validationResults.getBoolean("passed");
-                        rseqErrors.put("fatal", fatal);
+                        rseqErrors.put("fatal", importFatal);
                         rseqErrors.put("checked", Boolean.FALSE);
-                        if(fatal) {
+                        if(importFatal) {
                             continue;
                         }
                         
@@ -266,13 +269,18 @@ public class ImportActionBean implements ActionBean {
                     roadsideEquipment.setDataOwner(DataOwner.findByCode(roadsideEquipment.getDataOwner().getCode()));
                     
                     List<KV9ValidationError> kvErrors = new ArrayList();
-                    JSONObject validationResults = roadsideEquipment.validateKV9(kvErrors);                 
-                    try {
-                        if(!validationResults.getBoolean("passed") || (!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))) {
-                            this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
-                            continue;
+                    int validationErrors = roadsideEquipment.validateKV9(kvErrors);                 
+                    boolean importFatal = false;
+                    for(KV9ValidationError kvError: kvErrors) {
+                        if(kvError.isFatal()) {
+                            importFatal = true;
+                            break;
                         }
-                    } catch (JSONException ex) {
+                    }
+                    
+                    if(importFatal || (!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))) {
+                        this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
+                        continue;
                     }
                     roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
                             (String)getContext().getRequest().getSession().getAttribute("kv9file"),

@@ -184,15 +184,13 @@ Ext.define("nl.b3p.kar.Overview",{
             memoIcon.setVisible(false);
         }
         
-        if(changed || rseq == null || rseq.validationResult == null) {
+        if(changed || rseq == null || rseq.validationErrors == null) {
             Ext.get("validationResults").setHTML("");
         } else {
-            var vr = rseq.validationResult;
-            if(vr.passed) {
-                Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>"
-                    + (vr.warnings > 0 ? ", <a href=\"#\" onclick=\"editor.showValidationResults()\">Toon " + vr.warnings + " melding" + (vr.warnings == 1 ? "" : "en") + "</a>" : ""));
+            if(rseq.validationErrors == 0) {
+                Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
-                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + vr.fatal + " fout" + (vr.fatal == 1 ? "" : "en") + "</a>");
+                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
             }
         }
 

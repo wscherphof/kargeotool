@@ -49,7 +49,7 @@ Ext.define('RSEQ', {
         memo:null,
         attributes: null,
         editable:null,
-        validationResult: null
+        validationErrors: null
     },
     /**
      *@constructor

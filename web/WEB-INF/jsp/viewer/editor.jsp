@@ -93,6 +93,8 @@
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/cluster.png" alt="Meerdere verkeersystemen" class="legendimg" /> Meerdere verkeersystemen<br />
+                    <label><input type="checkbox" name="kv9valid"/>KV9 validatie OK</label><br>
+                    <label><input type="checkbox" name="kv9invalid"/>KV9 validatie niet OK</label>
                 </div>
                 <div id="triggerpunten" class="legendseparator">
                     <b>Punten</b><br/>

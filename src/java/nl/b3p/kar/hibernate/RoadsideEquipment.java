@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.XmlB3pRseq;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.json.JSONArray;
@@ -192,7 +193,7 @@ public class RoadsideEquipment {
     private String memo;
     
     @XmlTransient
-    private String validationResult;
+    private Integer validationErrors;
 
     @XmlElement(name="b3pextra")
     public XmlB3pRseq getExtraXml() {
@@ -427,12 +428,12 @@ public class RoadsideEquipment {
         this.points = points;
     }
 
-    public String getValidationResult() {
-        return validationResult;
+    public Integer getValidationErrors() {
+        return validationErrors;
     }
 
-    public void setValidationResult(String validationResult) {
-        this.validationResult = validationResult;
+    public void setValidationErrors(Integer validationErrors) {
+        this.validationErrors = validationErrors;
     }
     //</editor-fold>
     
@@ -499,6 +500,7 @@ public class RoadsideEquipment {
         p.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         p.put("memo", memo);
         p.put("id",id);
+        p.put("validationErrors", validationErrors);
         
         // geen kar attributes
         
@@ -527,9 +529,7 @@ public class RoadsideEquipment {
         j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
-        if(validationResult != null) {
-            j.put("validationResult", new JSONObject(validationResult));
-        }
+        j.put("validationErrors", validationErrors);
         
         JSONObject jattrs = new JSONObject();
         j.put("attributes", jattrs);
@@ -688,8 +688,10 @@ public class RoadsideEquipment {
     
     /**
      * Let op: kapt te lange waardes af / vervangt ongeldige waardes door defaults.
+     * 
+     * @return Aantal KV9 validatie meldingen.
      */
-    public JSONObject validateKV9(List<KV9ValidationError> errors) {
+    public int validateKV9(List<KV9ValidationError> errors) {
         
         int errorsStartIndex = errors.size();
         
@@ -722,7 +724,7 @@ public class RoadsideEquipment {
         
         eXmlContext = xmlContext + "/rseqtype";
         eContext = context + ", Soort verkeerssysteem";        
-        if(type == null) {
+        if(StringUtils.isBlank(type)) {
             errors.add(new KV9ValidationError(false, "F109", eXmlContext, eContext, null, "Niet ingevuld"));
             type = TYPE_CROSSING;
         } else if(!TYPE_CROSSING.equals(type) && !TYPE_BAR.equals(type) && !TYPE_GUARD.equals(type)) {
@@ -739,7 +741,7 @@ public class RoadsideEquipment {
         
         eXmlContext = xmlContext + "/crossingcode";
         eContext = context + ", Beheerdersaanduiding";             
-        if(crossingCode == null) {
+        if(StringUtils.isBlank(crossingCode)) {
             errors.add(new KV9ValidationError(false, "F112", eXmlContext, eContext, null, "Niet ingevuld"));
         } else if(crossingCode.length() > 10) {
             errors.add(new KV9ValidationError(false, "F113", eXmlContext, eContext, crossingCode, "Langer dan 10 tekens"));
@@ -748,7 +750,7 @@ public class RoadsideEquipment {
 
         eXmlContext = xmlContext + "/town";
         eContext = context + ", Plaats";             
-        if(town == null) {
+        if(StringUtils.isBlank(town)) {
             errors.add(new KV9ValidationError(false, "F114", eXmlContext, eContext, null, "Niet ingevuld"));
         } else if(town.length() > 50) {
             errors.add(new KV9ValidationError(false, "F115", eXmlContext, eContext, town, "Langer dan 50 tekens"));
@@ -946,20 +948,6 @@ public class RoadsideEquipment {
             }
         }
         
-        JSONObject validationResults = new JSONObject();
-        int errorCount = 0, fatal = 0;
-        for(int i = errorsStartIndex; i < errors.size(); i++) {
-            if(errors.get(i).isFatal()) {
-                fatal++;
-            }
-            errorCount++;
-        }
-        try {
-            validationResults.put("warnings", errorCount - fatal);
-            validationResults.put("fatal", fatal);
-            validationResults.put("passed", fatal == 0);
-        } catch(JSONException e) {
-        }
-        return validationResults;
+        return errors.size() - errorsStartIndex;
     }
 }
