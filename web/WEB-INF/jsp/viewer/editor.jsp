@@ -93,8 +93,8 @@
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/cluster.png" alt="Meerdere verkeersystemen" class="legendimg" /> Meerdere verkeersystemen<br />
-                    <label><input type="checkbox" name="kv9valid"/>KV9 validatie OK</label><br>
-                    <label><input type="checkbox" name="kv9invalid"/>KV9 validatie niet OK</label>
+                    <label><input type="checkbox" id="kv9valid" onclick="toggleKv9('valid');"/>KV9 validatie OK</label><br>
+                    <label><input type="checkbox" id="kv9invalid" onclick="toggleKv9('invalid');"/>KV9 validatie niet OK</label>
                 </div>
                 <div id="triggerpunten" class="legendseparator">
                     <b>Punten</b><br/>
@@ -144,6 +144,9 @@
                     Ext.Array.each(checkboxes, function(checkbox) {
                         Ext.get(checkbox + "_visible").dom.checked = getLayerVisibility(checkbox);
                     });
+                    
+                    Ext.get("kv9valid").dom.checked = profile.state["kv9valid"] != undefined ? profile.state["kv9valid"] : true;
+                    Ext.get("kv9invalid").dom.checked = profile.state["kv9invalid"] != undefined ? profile.state["kv9invalid"] : true;
 
                     createLegendSliders();
                     
@@ -198,6 +201,10 @@
                     } else {
                         return state;
                     }
+                }
+                
+                function getKv9FilterStatus(type) {
+                    return Ext.get("kv9" + type).dom.checked;
                 }
                 
                 function createLegendSliders() {
@@ -272,6 +279,14 @@
                     
                     editor.olc.setLayerVisible(layer, visible);
                     profile.state[layer + "_visible"] = visible;
+                    saveProfile();
+                }
+                
+                function toggleKv9(type) {
+                    var checked = Ext.get("kv9" + type).dom.checked;
+                    
+                    editor.updateFilteredRseqs();
+                    profile.state["kv9" + type] = checked;
                     saveProfile();
                 }
                 

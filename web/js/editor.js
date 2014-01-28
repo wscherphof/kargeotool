@@ -34,6 +34,7 @@ Ext.define("Editor", {
     
     startLocationHash: null,
     
+    allRseqs: null,
     activeRseq: null,
     helpPanel: null,
     overview: null,
@@ -299,11 +300,10 @@ Ext.define("Editor", {
                 var msg = Ext.JSON.decode(response.responseText);
                 if(msg.success){
                     var rseqs = msg.rseqs;
-                    var featureCollection = {
-                        type: "FeatureCollection",
-                        features: rseqs
-                    };
-                    editor.olc.addRseqs(featureCollection);
+                    
+                    editor.allRseqs = rseqs;
+                    editor.updateFilteredRseqs();
+
                 }else{
                     Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
                 }
@@ -312,6 +312,51 @@ Ext.define("Editor", {
                 Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
             }
         });
+    },
+    
+    getFilteredRseqs: function() {
+        var filtered = [];
+        
+        var kv9valid = getKv9FilterStatus("valid");
+        var kv9invalid = getKv9FilterStatus("invalid");
+        
+        Ext.Array.each(this.allRseqs, function(rseq) {
+            if((kv9valid && rseq.properties.validationErrors == 0)
+            || (kv9invalid && rseq.properties.validationErrors > 0)) {
+                filtered.push(rseq);
+            }
+        });
+        return filtered;
+    },
+    
+    updateFilteredRseqs: function() {
+        
+        var filteredRseqs = this.getFilteredRseqs();
+        var me = this;
+        if(this.activeRseq != null) {
+            var activeRseqIndex = -1;
+            Ext.Array.each(filteredRseqs, function(rseq, index) {
+                if(rseq.properties.id == me.activeRseq.id) {
+                    activeRseqIndex = index;
+                    return false;
+                }
+                return true;
+            });
+            if(activeRseqIndex != -1) {
+                // active rseq is moved from rseq to vector layer, do not add 
+                // it to rseq layer
+                Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
+            } else {
+                // active rseq now filtered out, keep it on the map
+            }
+        }
+        
+        this.olc.removeAllRseqs();
+        var featureCollection = {
+            type: "FeatureCollection",
+            features: filteredRseqs
+        };
+        this.olc.addRseqs(featureCollection);        
     },
     
     /**
@@ -1191,7 +1236,6 @@ Ext.define("Editor", {
                 var t = new Ext.Template([
                     "<div class=\"kv9error\"><table>",
                         "<tr><td class=\"wnb\">Code:</td><td class=\"code\">{code}</td></tr>",
-                        "<tr><td class=\"wnb\">Fatale controlefout:</td><td class=\"fatal\">{fatal}</td></tr>",
                         "<tr><td class=\"wnb\">Context:</td><td class=\"context\">{context}</td></tr>",
                         "<tr><td class=\"wnb\">Waarde:</td><td class=\"value\">{value}</td></tr>",
                         "<tr><td class=\"wnb\">Melding:</td><td class=\"message\">{message}</td></tr>",
