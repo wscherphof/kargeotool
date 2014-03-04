@@ -369,7 +369,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         
         getContext().getMessages().add(new SimpleMessage("Gebruikersgegevens opgeslagen"));
                
-        return new RedirectResolution(this.getClass(), "edit").addParameter("gebruiker", gebruiker.getId()).flash(this);
+        gebruiker = null;
+        return new ForwardResolution(JSP);
     }
     
     /**
