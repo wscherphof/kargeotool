@@ -379,6 +379,9 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
      */
     public Resolution delete() {
         EntityManager em = Stripersist.getEntityManager();
+        em.createQuery("delete from GebruikerVRIRights where gebruiker = :g")
+                .setParameter("g", gebruiker)
+                .executeUpdate();
         em.remove(gebruiker);
         em.getTransaction().commit();
         getContext().getMessages().add(new SimpleMessage("Gebruiker is verwijderd"));
