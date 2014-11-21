@@ -86,7 +86,7 @@ public class EditorActionBean implements ActionBean {
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
     private JSONArray ovInfoJSON;
-    
+
     @Validate
     private String extent;
 
@@ -101,7 +101,7 @@ public class EditorActionBean implements ActionBean {
         getContext().getRequest().setAttribute(attribute, g);
         return g;
     }
-    
+
     /**
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
      *
@@ -110,7 +110,7 @@ public class EditorActionBean implements ActionBean {
      */
     @DefaultHandler
     public Resolution view() throws Exception {
-        
+
         if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_view"))) {
             log.info("view() start, setting root log level to DEBUG");
             LogManager.getRootLogger().setLevel(Level.DEBUG);
@@ -118,7 +118,7 @@ public class EditorActionBean implements ActionBean {
 
         EntityManager em = Stripersist.getEntityManager();
         log.debug("view(): getGebruiker()");
-        
+
         boolean isBeheerder = getGebruiker().isBeheerder();
 
         log.debug("view(): getGebruiker().getEditableDataOwners()");
@@ -154,31 +154,31 @@ public class EditorActionBean implements ActionBean {
             jdao.put("companyNumber", dao.getCompanyNumber());
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
-        }        
-        
+        }
+
         log.debug("view(): ovInfoJSON");
         ovInfoJSON = makeOvInfoJSON();
-        
+
         log.debug("view forwarding to JSP, setting root log level to INFO");
         LogManager.getRootLogger().setLevel(Level.INFO);
-        
+
         return new ForwardResolution(JSP);
     }
-    
+
     private JSONArray makeOvInfoJSON() {
         JSONArray ovInfo = new JSONArray();
-        
+
         Connection conn = null;
         try {
             log.debug("  makeOvInfoJSON(): lookup transmodel datasource");
             Context initCtx = new InitialContext();
-            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");            
+            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");
             log.debug("  makeOvInfoJSON(): open connection");
             conn = ds.getConnection();
-            
+
             log.debug("  makeOvInfoJSON(): get schemas");
             List<String> schemas = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
-            
+
             SortedMap<String,JSONObject> ovInfoMap = new TreeMap();
             for(String schema: schemas) {
                 JSONObject ovSchema = new JSONObject();
@@ -187,11 +187,11 @@ public class EditorActionBean implements ActionBean {
                 try {
                     log.debug("  makeOvInfoJSON(): get metainfo for " + schema);
                     Map<String,Object> meta = new QueryRunner().query(conn, "select * from " + schema + ".geo_ov_metainfo", new MapHandler());
-                    
+
                     for(Map.Entry<String,Object> entry: meta.entrySet()) {
                         ovSchema.put(entry.getKey(), entry.getValue());
                     }
-                    
+
                     log.debug("  makeOvInfoJSON(): get extent for " + schema);
                     Object[] extent = new QueryRunner().query(conn, "select st_xmin(ext),st_xmax(ext),st_ymin(ext),st_ymax(ext) from (select st_extent(the_geom) as ext from " + schema + ".jopa) e", new ArrayHandler());
                     JSONObject jExtent = new JSONObject();
@@ -200,7 +200,7 @@ public class EditorActionBean implements ActionBean {
                     jExtent.put("ymin", (Double)extent[2]);
                     jExtent.put("ymax", (Double)extent[3]);
                     ovSchema.put("extent", jExtent);
-                    
+
                     ovInfoMap.put(ovSchema.getString("title"), ovSchema);
                 } catch(Exception e) {
                     log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
@@ -297,7 +297,7 @@ public class EditorActionBean implements ActionBean {
                 boolean editable = g.canEditDataOwner(r.getDataOwner()) || g.canEditVRI(r) || getGebruiker().isBeheerder() ;
                 rseqJson.put("editable", editable);
                 rseqs.put(rseqJson);
-                
+
             }
             info.put("rseqs", rseqs);
 
@@ -326,7 +326,7 @@ public class EditorActionBean implements ActionBean {
             Type geometryType = GeometryUserType.TYPE;
             q.setParameter(0, buffer, geometryType);
             List<Road> roads = (List<Road>)q.list();
-          
+
             JSONArray rs = new JSONArray();
             for (Road r : roads) {
                 rs.put(r.getGeoJSON());
@@ -341,14 +341,14 @@ public class EditorActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
-    
+
     public Resolution surroundingPoints() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            
+
             GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
             WKTReader reader= new WKTReader(gf);
             Polygon p = (Polygon)reader.read(extent);
@@ -377,10 +377,10 @@ public class EditorActionBean implements ActionBean {
                         .setParameter("this", rseq)
                         .list();
             }
-          
+
             JSONArray rs = new JSONArray();
             for (ActivationPoint r : points) {
-                
+
                 rs.put(r.getGeoJSON());
             }
             info.put("points", rs);
@@ -392,7 +392,7 @@ public class EditorActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
     /**
      * Bepaalt of een JSON object nieuw gemaakt client-side. De door JavaScript
      * client-side gestuurde JSON om een RoadsideEquipment op te slaan kan nieuw
@@ -406,10 +406,10 @@ public class EditorActionBean implements ActionBean {
         String id = j.optString("id");
         return id != null && id.startsWith("ext-gen");
     }
-    
+
     /**
      * Ajax handler om een RSEQ te verwijderen.
-     * 
+     *
      */
     public Resolution removeRseq () throws JSONException{
         EntityManager em = Stripersist.getEntityManager();
@@ -458,7 +458,7 @@ public class EditorActionBean implements ActionBean {
             LogManager.getRootLogger().setLevel(Level.DEBUG);
         }
         log.debug("saveOrUpdateRseq: original json: " + json);
-        
+
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
@@ -467,12 +467,12 @@ public class EditorActionBean implements ActionBean {
             JSONObject jrseq = new JSONObject(json);
 
             Gebruiker g = getGebruiker();
-            
+
             if (isNew(jrseq)) {
                 rseq = new RoadsideEquipment();
             } else {
                 rseq = em.find(RoadsideEquipment.class, jrseq.getLong("id"));
-                
+
                 if(rseq == null) {
                     throw new IllegalStateException("Kan verkeerssysteem niet vinden, verwijderd door andere gebruiker?");
                 }
@@ -497,35 +497,35 @@ public class EditorActionBean implements ActionBean {
                             rseq.getDescription()));
                 }
             }
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
             rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
             rseq.setMemo(jrseq.has("memo") ? jrseq.getString("memo") : null);
-            
+
             rseq.getKarAttributes().clear();
             JSONObject attributes = jrseq.getJSONObject("attributes");
             for(Iterator it = attributes.keys(); it.hasNext();) {
                 String serviceType = (String)it.next();
                 JSONArray perCommandType = attributes.getJSONArray(serviceType);
-                
+
                 KarAttributes ka = new KarAttributes(
-                        serviceType, 
-                        ActivationPointSignal.COMMAND_INMELDPUNT, 
+                        serviceType,
+                        ActivationPointSignal.COMMAND_INMELDPUNT,
                         perCommandType.getJSONArray(0));
                 if(ka.getUsedAttributesMask() != 0) {
                     rseq.getKarAttributes().add(ka);
                 }
                 ka = new KarAttributes(
-                        serviceType, 
-                        ActivationPointSignal.COMMAND_UITMELDPUNT, 
+                        serviceType,
+                        ActivationPointSignal.COMMAND_UITMELDPUNT,
                         perCommandType.getJSONArray(1));
                 if(ka.getUsedAttributesMask() != 0) {
                     rseq.getKarAttributes().add(ka);
                 }
                 ka = new KarAttributes(
-                        serviceType, 
-                        ActivationPointSignal.COMMAND_VOORINMELDPUNT, 
+                        serviceType,
+                        ActivationPointSignal.COMMAND_VOORINMELDPUNT,
                         perCommandType.getJSONArray(2));
                 if(ka.getUsedAttributesMask() != 0) {
                     rseq.getKarAttributes().add(ka);
@@ -554,7 +554,7 @@ public class EditorActionBean implements ActionBean {
                         }
                     }
                 }
-                pointsByJSONId.put(jpt.getString("id"), p);
+                pointsByJSONId.put(jpt.get("id").toString(), p);
                 p.setNummer(jpt.has("nummer") ? jpt.getInt("nummer") : null);
                 p.setLabel(jpt.optString("label"));
                 p.setLocation(GeoJSON.toPoint(jpt.getJSONObject("geometry")));
@@ -604,7 +604,7 @@ public class EditorActionBean implements ActionBean {
                     MovementActivationPoint map = new MovementActivationPoint();
                     map.setMovement(m);
                     map.setBeginEndOrActivation(jmap.getString("beginEndOrActivation"));
-                    map.setPoint(pointsByJSONId.get(jmap.getString("pointId")));
+                    map.setPoint(pointsByJSONId.get(jmap.get("pointId").toString()));
 
                     if (MovementActivationPoint.ACTIVATION.equals(map.getBeginEndOrActivation())) {
                         ActivationPointSignal signal = new ActivationPointSignal();
@@ -637,21 +637,21 @@ public class EditorActionBean implements ActionBean {
                     rseq.getMovements().add(m);
                 }
             }
-            
+
             em.persist(rseq);
             em.getTransaction().commit();
-            
+
             // Detach omdat bij afkappen rseq gewijzigd wordt
             em.detach(rseq);
-            int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());      
-            
+            int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());
+
             em.createQuery("update RoadsideEquipment set validationErrors = :res where id = :id")
                     .setParameter("res", validationErrors)
                     .setParameter("id", rseq.getId())
                     .executeUpdate();
-            
+
             em.getTransaction().commit();
-            
+
             boolean editable = getGebruiker().canEditDataOwner(rseq.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq);
             if (!editable && !getGebruiker().canReadDataOwner(rseq.getDataOwner()) && !getGebruiker().canReadVRI(rseq)) {
                 info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
@@ -667,11 +667,11 @@ public class EditorActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
     public Resolution getValidationErrors() throws JSONException {
         JSONObject j = new JSONObject();
         JSONArray e = new JSONArray();
-        j.put("errors", e);        
+        j.put("errors", e);
         List<KV9ValidationError> kvErrors = new ArrayList();
         rseq.validateKV9(kvErrors);
         for(KV9ValidationError kvError: kvErrors) {
@@ -768,7 +768,7 @@ public class EditorActionBean implements ActionBean {
     public void setJson(String json) {
         this.json = json;
     }
-    
+
     public String getExtent() {
         return extent;
     }
@@ -776,7 +776,7 @@ public class EditorActionBean implements ActionBean {
     public void setExtent(String extent) {
         this.extent = extent;
     }
-    
+
     public JSONArray getOvInfoJSON() {
         return ovInfoJSON;
     }
