@@ -591,6 +591,7 @@ public class EditorActionBean implements ActionBean {
             rseq.getMovements().clear();
             em.flush();
 
+            boolean incorrectJSON = false;
             JSONArray jmvmts = jrseq.getJSONArray("movements");
             for (int i = 0; i < jmvmts.length(); i++) {
                 JSONObject jmvmt = jmvmts.getJSONObject(i);
@@ -605,6 +606,7 @@ public class EditorActionBean implements ActionBean {
                     map.setMovement(m);
                     map.setBeginEndOrActivation(jmap.getString("beginEndOrActivation"));
                     if(!pointsByJSONId.containsKey(jmap.get("pointId").toString())){
+                        incorrectJSON = true;
                         log.error("Foutief kruispunt geprobeerd op te slaan. Getracht werd om pointID " + jmap.get("pointId").toString() + " op te halen bij movement.  JSON: " +json);
                         continue;
                     }
@@ -665,6 +667,9 @@ public class EditorActionBean implements ActionBean {
                 info.getJSONObject("roadsideEquipment").put("validationErrors", validationErrors);
             }
             info.put("success", Boolean.TRUE);
+            if (incorrectJSON) {
+                info.put("extraMessage", "Bij het opslaan is iets mis gegaan: mogelijk zijn niet alle punten opgeslagen. Controleer het kruispunt en informeer de beheerder.");
+            }
         } catch (Exception e) {
             log.error("saveOrUpdateRseq exception", e);
             info.put("error", ExceptionUtils.getMessage(e));

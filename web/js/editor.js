@@ -396,10 +396,16 @@ Ext.define("Editor", {
                         editor.olc.addFeatures(rseq.toGeoJSON());
                         this.setActiveRseq(rseq);
 
-                        if(onSaved) {
-                            onSaved();
+
+
+                        if (msg.extraMessage) {
+                            Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);
                         } else {
-                            Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                            if (onSaved) {
+                                onSaved();
+                            } else {
+                                Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                            }
                         }
                     }else{
                         Ext.Msg.alert('Fout', 'Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
