@@ -604,6 +604,10 @@ public class EditorActionBean implements ActionBean {
                     MovementActivationPoint map = new MovementActivationPoint();
                     map.setMovement(m);
                     map.setBeginEndOrActivation(jmap.getString("beginEndOrActivation"));
+                    if(!pointsByJSONId.containsKey(jmap.get("pointId").toString())){
+                        log.error("Foutief kruispunt geprobeerd op te slaan. Getracht werd om pointID " + jmap.get("pointId").toString() + " op te halen bij movement.  JSON: " +json);
+                        continue;
+                    }
                     map.setPoint(pointsByJSONId.get(jmap.get("pointId").toString()));
 
                     if (MovementActivationPoint.ACTIVATION.equals(map.getBeginEndOrActivation())) {
