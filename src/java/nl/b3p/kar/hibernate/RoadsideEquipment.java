@@ -521,6 +521,9 @@ public class RoadsideEquipment {
                 }
             }
         }
+        if(typeRseq == null){
+            typeRseq = "Gemixt";
+        }
         p.put("vehicleType", typeRseq);
 
         gj.put("properties", p);
