@@ -21,47 +21,47 @@
  * Editor class is een alghele controller van de edit interface en delegeert
  * grote functionaliteiten naar andere classes, zoals de controle over OpenLayers,
  * ContextMenu, SearchManager, EditForms, Overview en ActiveRseqInfoPanel.
- * 
+ *
  */
 Ext.define("Editor", {
     mixins: {
         observable: 'Ext.util.Observable'
     },
-    
+
     domId: null,
     olc: null,
     contextMenu: null,
-    
+
     startLocationHash: null,
-    
+
     allRseqs: null,
     activeRseq: null,
     helpPanel: null,
     overview: null,
-    
+
     editForms: null,
-    
+
     selectedObject:null,
     previousSelectedObject:null,
-    
+
     currentEditAction: null,
-    
+
     search:null,
-    
+
     actionToCancel:null,
-    
+
     changeManager:null,
-    
+
     endpointCreator:null,
-    
+
     unedittedRseq :null,
     // === Initialisatie ===
-    
+
     /**
      * @constructor
      */
     constructor: function(domId, mapfilePath, ovInfo) {
-        this.mixins.observable.constructor.call(this);  
+        this.mixins.observable.constructor.call(this);
         this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
@@ -71,22 +71,22 @@ Ext.define("Editor", {
             'movementUpdated',
             'currentEditActionChanged'
         );
-        
+
         this.domId = domId;
-        
+
         this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
         this.editForms = Ext.create(EditForms, this);
-        
+
         this.startLocationHash = this.parseLocationHash();
-        
-        this.createOpenLayersController(mapfilePath);   
+
+        this.createOpenLayersController(mapfilePath);
         this.createOvInfoLayers(mapfilePath, ovInfo);
-        
+
         this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         var haveCenterInHash = this.setCenterFromLocationHash();
-        
+
         this.createContextMenu();
-        
+
         if(this.startLocationHash.rseq) {
             this.loadRseqInfo({
                 rseq: parseInt(this.startLocationHash.rseq)
@@ -97,14 +97,14 @@ Ext.define("Editor", {
                 if(!haveCenterInHash) {
                     this.olc.map.setCenter(new OpenLayers.LonLat(
                         this.rseq.location.x,
-                        this.rseq.location.y), 
+                        this.rseq.location.y),
                     14 /* bepaal zoomniveau op basis van extent rseq location en alle point locations) */
                     );
                 }
             };
         }
         this.loadAllRseqs();
-        
+
         /* Indien de panelen die door layout.js zijn gemaakt worden geresized of
          * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
          */
@@ -116,7 +116,7 @@ Ext.define("Editor", {
         west.on('collapse', this.olc.resizeMap, this.olc);
         east.on('expand', this.olc.resizeMap, this.olc);
         west.on('expand', this.olc.resizeMap, this.olc);
-        
+
         this.on('activeRseqChanged', function(){
             var snapRoads = Ext.get("snapRoads");
             if(snapRoads.dom.checked){
@@ -124,7 +124,7 @@ Ext.define("Editor", {
             }
             this.handleSurroundingPoints();
         }, this);
-      
+
         this.olc.map.events.register('moveend',this, function(){
             this.handleSurroundingPoints();
         });
@@ -134,53 +134,53 @@ Ext.define("Editor", {
                 measureIntField.setHTML(length + " " + unit);
             }
         },this);
-        
+
         this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform',editor:this});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
         this.changeManager = Ext.create(ChangeManager,this);
         this.endpointCreator = Ext.create(EndPointCreator,this);
     },
-    
+
     /**
      * Initialiseer de openlayers viewer.
      */
     createOpenLayersController: function() {
         this.olc = new ol(this);
         this.olc.createMap(this.domId);
-        
+
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', getLayerVisibility("Luchtfoto"),'png?LAYERS=IPOlufo', getLayerOpacity("Luchtfoto"));
         this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
-        
+
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
-    
+
     createOvInfoLayers: function(mapfilePath, ovInfos) {
-        
+
         Ext.Array.each(ovInfos, function(ovInfo) {
             var bounds = new OpenLayers.Bounds(ovInfo.extent.xmin, ovInfo.extent.ymin, ovInfo.extent.xmax, ovInfo.extent.ymax);
             this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', getLayerVisibility('buslijnen'),null, 1, 13, bounds);
             this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', getLayerVisibility('bushaltes'),null, 1, 13, bounds);
         }, this);
     },
-    
+
     setLayerOpacity: function(layer, opacity) {
         this.olc.map.getLayersByName(layer)[0].setOpacity(opacity);
     },
-    
+
     /**
      * Maak het context menu
      */
     createContextMenu: function() {
         this.contextMenu = new ContextMenu(this);
-        this.contextMenu.createMenus(this.domId);        
-        
+        this.contextMenu.createMenus(this.domId);
+
         this.olc.map.events.register("moveend", this, function() {
             this.contextMenu.deactivateContextMenu();
         });
     },
-            
+
     // === Opstarten viewer ===
-    
+
     /**
      * Parset de window.location.hash naar een object.
      * @return de location hash als object
@@ -190,7 +190,7 @@ Ext.define("Editor", {
         hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
         return Ext.Object.fromQueryString(hash);
     },
-    
+
     /**
      * Update de location hash met nieuwe waardes.
      * @param objToMerge het object dat moet worden gemerged met de waarden die reeds in de hash staan.
@@ -199,7 +199,7 @@ Ext.define("Editor", {
         var hash = this.parseLocationHash();
         window.location.hash = Ext.Object.toQueryString(Ext.Object.merge(hash, objToMerge));
     },
-    
+
     /**
      * Plaats het huidige middelpunt van de map in de hash, inclusief het zoom niveau
      */
@@ -209,10 +209,10 @@ Ext.define("Editor", {
             y: this.olc.map.getCenter().lat,
             zoom: this.olc.map.getZoom()
         });
-    },          
+    },
 
     /**
-     * Aanroepen na het toevoegen van layers. De window.location.hash is 
+     * Aanroepen na het toevoegen van layers. De window.location.hash is
      * opgeslagen voordat deze na zoomend en moveend events is aangepast.
      */
     setCenterFromLocationHash: function() {
@@ -237,11 +237,11 @@ Ext.define("Editor", {
             Ext.fly("map").unmask();
             Ext.fly("kaart").unmask();
             Ext.getBody().unmask();
-             
+
         }
     },
     // === Ajax calls ===
-    
+
     /**
      * Laad de road side equipment. Wordt aangeroepen van uit de GUI.
      * @param query de query die gedaan moet worden.
@@ -273,17 +273,17 @@ Ext.define("Editor", {
                             successFunction(rseq);
                         }
                     }else{
-                        Ext.MessageBox.show({title: "Fout",  msg: "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                        Ext.MessageBox.show({title: "Fout",  msg: "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                     }
                 },
                 failure: function (response){
-                    Ext.MessageBox.show({title: "Ajax fout", msg:  "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Ajax fout", msg:  "Kan de VRI niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                 }
             });
         };
         this.changeManager.rseqChanging(query.rseq, doRequest);
     },
-    
+
     /**
      * Laad alle road side equipment.
      * @param id (optioneel) het id dat niet opgehaald moet worden
@@ -300,37 +300,43 @@ Ext.define("Editor", {
                 var msg = Ext.JSON.decode(response.responseText);
                 if(msg.success){
                     var rseqs = msg.rseqs;
-                    
+
                     editor.allRseqs = rseqs;
                     editor.updateFilteredRseqs();
 
                 }else{
-                    Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                 }
             },
             failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
             }
         });
     },
-    
+
     getFilteredRseqs: function() {
         var filtered = [];
-        
-        var kv9valid = getKv9FilterStatus("valid");
-        var kv9invalid = getKv9FilterStatus("invalid");
-        
+
+        var kv9valid = getFilterStatus('kv9',"valid");
+        var kv9invalid = getFilterStatus('kv9',"invalid");
+
+        var layersOV = getFilterStatus('layer',"OV");
+        var layersHulpdiensten = getFilterStatus('layer',"Hulpdiensten");
+
         Ext.Array.each(this.allRseqs, function(rseq) {
-            if((kv9valid && rseq.properties.validationErrors == 0)
-            || (kv9invalid && rseq.properties.validationErrors > 0)) {
+            var vehicleType = rseq.properties.vehicleType;
+            if(((kv9valid && rseq.properties.validationErrors === 0)
+            || (kv9invalid && rseq.properties.validationErrors > 0))
+            && ((layersOV && vehicleType === "OV" || vehicleType === "Gemixt" )
+            || (layersHulpdiensten && vehicleType === "Hulpdiensten" || vehicleType === "Gemixt" ))) {
                 filtered.push(rseq);
             }
         });
         return filtered;
     },
-    
+
     updateFilteredRseqs: function() {
-        
+
         var filteredRseqs = this.getFilteredRseqs();
         var me = this;
         if(this.activeRseq != null) {
@@ -343,22 +349,22 @@ Ext.define("Editor", {
                 return true;
             });
             if(activeRseqIndex != -1) {
-                // active rseq is moved from rseq to vector layer, do not add 
+                // active rseq is moved from rseq to vector layer, do not add
                 // it to rseq layer
                 Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
             } else {
                 // active rseq now filtered out, keep it on the map
             }
         }
-        
+
         this.olc.removeAllRseqs();
         var featureCollection = {
             type: "FeatureCollection",
             features: filteredRseqs
         };
-        this.olc.addRseqs(featureCollection);        
+        this.olc.addRseqs(featureCollection);
     },
-    
+
     /**
      * Voert de Ajax call uit om de huidige Rseq op te slaan in de database.
      */
@@ -379,7 +385,7 @@ Ext.define("Editor", {
                     var msg = Ext.JSON.decode(response.responseText);
                     if(msg.success) {
                         this.changeManager.rseqSaved();
-                        
+
                         var rseq = makeRseq(msg.roadsideEquipment);
                         var editable = msg.editable;
                         rseq.setEditable (editable);
@@ -388,7 +394,7 @@ Ext.define("Editor", {
                         editor.olc.removeAllFeatures();
                         editor.olc.addFeatures(rseq.toGeoJSON());
                         this.setActiveRseq(rseq);
-                        
+
                         if(onSaved) {
                             onSaved();
                         } else {
@@ -405,10 +411,10 @@ Ext.define("Editor", {
             });
         }
     },
-    
+
     exportXml: function() {
         var me = this;
-        
+
         var exportIt = function() {
             window.open(exportActionBeanUrl + "?exportXml=&rseq=" + me.activeRseq.id, "exportwindow");
         };
@@ -429,7 +435,7 @@ Ext.define("Editor", {
                     yes: "Ja"
                 },
                 icon: Ext.Msg.WARNING
-                
+
             });
         } else {
             exportIt();
@@ -437,7 +443,7 @@ Ext.define("Editor", {
     },
     exportPtx: function() {
         var me = this;
-        
+
         var exportIt = function() {
             window.open(exportActionBeanUrl + "?exportPtx=&rseq=" + me.activeRseq.id, "exportwindow");
         };
@@ -458,17 +464,17 @@ Ext.define("Editor", {
                     yes: "Ja"
                 },
                 icon: Ext.Msg.WARNING
-                
+
             });
         } else {
             exportIt();
         }
     },
-    
+
     removeRseq : function(){
         var rseq = this.activeRseq;
         var isNewRseq = typeof this.activeRseq.getId() != "number";
-       
+
         if(rseq != null && !isNewRseq) {
              Ext.Msg.show({
                 title:"Weet u het zeker?",
@@ -514,22 +520,22 @@ Ext.define("Editor", {
                     yes: "Ja"
                 },
                 icon: Ext.Msg.WARNING
-                
+
             });
-            
+
         }
     },
-    
+
     removeCheckoutPoint: function(){
         this.activeRseq.removeCheckoutPoint(this.selectedObject);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
-            
+
     removeOtherPoint : function(){
         this.activeRseq.removePoint(this.selectedObject);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
-    
+
     /**
      * Laad de wegen rondom de actieve rseq. Wordt gebruikt om de lijn bij het toevoegen van punten aan te snappen.
      */
@@ -558,23 +564,23 @@ Ext.define("Editor", {
                         this.olc.snapLayer.addFeatures(features);
                         this.olc.snap.activate();
                     }else{
-                        Ext.MessageBox.show({title: "Fout: kan wegen niet laden", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                        Ext.MessageBox.show({title: "Fout: kan wegen niet laden", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                     }
                 },
                 failure: function (response){
-                    Ext.MessageBox.show({title: "Fout", msg:  'Kan wegen niet laden.  Probeer het opnieuw of neem contact op met de applicatie beheerder.'+response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                    Ext.MessageBox.show({title: "Fout", msg:  'Kan wegen niet laden.  Probeer het opnieuw of neem contact op met de applicatie beheerder.'+response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                 }
             });
         }
     },
-    
+
     /**
      * Verwijder de snaplijnen
      */
     removeRoads : function(){
         this.olc.snapLayer.removeAllFeatures();
     },
-    
+
     /**
      * Haal de punten binnen de extent (+buffer) op, minus de huidig geselecteerde RSEQ-punten. Ter referentie waar punten moeten komen.
      */
@@ -612,11 +618,11 @@ Ext.define("Editor", {
                            var features = this.olc.geojson_format.read(featureCollection);
                            this.olc.surroundingPointsLayer.addFeatures(features);
                        }else{
-                            Ext.MessageBox.show({title: "Fout: kan omliggende punten niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder.", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                            Ext.MessageBox.show({title: "Fout: kan omliggende punten niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder.", msg: msg.error, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                        }
-                   }, 
+                   },
                    failure: function (response){
-                       Ext.MessageBox.show({title: "Fout", msg: 'Probeer het opnieuw of neem contact op met de applicatie beheerder.' +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                       Ext.MessageBox.show({title: "Fout", msg: 'Probeer het opnieuw of neem contact op met de applicatie beheerder.' +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
                    }
                });
              }else{
@@ -625,7 +631,7 @@ Ext.define("Editor", {
         }
     },
     // === Edit functies ===
-    
+
     /**
      * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
@@ -633,12 +639,12 @@ Ext.define("Editor", {
         if(this.activeRseq != null) {
             this.olc.map.setCenter(new OpenLayers.LonLat(
                 this.activeRseq.location.coordinates[0],
-                this.activeRseq.location.coordinates[1]), 
+                this.activeRseq.location.coordinates[1]),
             14 /* TODO bepaal zoomniveau op basis van extent rseq location en alle point locations) */
-            );            
+            );
         }
     },
-     
+
     /**
      * Verander de actieve Rseq
      * @param rseq de nieuwe actieve Rseq
@@ -653,7 +659,7 @@ Ext.define("Editor", {
         }
         this.olc.cacheControl.update();
         this.activeRseq = rseq;
-        if(rseq){        
+        if(rseq){
             this.olc.selectFeature(rseq.getId(),"RSEQ");
         }
         this.fireEvent('activeRseqChanged', this.activeRseq);
@@ -700,7 +706,7 @@ Ext.define("Editor", {
         }
         this.fireEvent('selectedObjectChanged', this.selectedObject);
     },
-    
+
     /**
      * Wijzig het geselecteerde object. Opent een popup waarmee het actieve punt
      * kan worden gewijzigd
@@ -709,17 +715,17 @@ Ext.define("Editor", {
         if(this.selectedObject instanceof RSEQ) {
             this.editForms.editRseq();
         } else if(this.selectedObject instanceof Point) {
-            
+
             var type = this.selectedObject.getType();
-            
+
             if(type == null || type == "END" || type == "BEGIN") {
                 this.editForms.editNonActivationPoint();
             } else {
                 this.editForms.editActivationPoint();
             }
-        } 
+        }
     },
-    
+
     /**
      * Verander de geometry van het active Rseq of Point
      * @param className de className
@@ -738,7 +744,7 @@ Ext.define("Editor", {
         }
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
-            
+
     /**
      * Reset het meten. Meet vanaf vorige punt
      */
@@ -748,26 +754,26 @@ Ext.define("Editor", {
         this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
         this.olc.addMarker(lastPoint.x,lastPoint.y);
     },
-    
+
     /**
      * Maak GeoJSON punt van x en y
      * @param x x coordinaat
      * @param y y coordinaat.
-     */    
+     */
     createGeoJSONPoint: function(x, y) {
         return {
             type: "Point",
             coordinates: [x, y]
         };
     },
-    
+
     /**
      * Voeg een Rseq toe
      * @param x x coordinaat
      * @param y y coordinaat
      */
     addRseq: function(x, y) {
-        
+
         var me = this;
         function makeNewRseq(){
             var newRseq = Ext.create("RSEQ", {
@@ -784,12 +790,12 @@ Ext.define("Editor", {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
             });
         }
-        
+
         this.changeManager.rseqChanging (Ext.id(), function(){
             makeNewRseq();
         });
     },
-    
+
     addMemo : function(){
         var memo = this.activeRseq.memo;
         var animId = this.olc.vectorLayer.getFeaturesByAttribute("className", "RSEQ")[0].geometry.id;
@@ -819,20 +825,20 @@ Ext.define("Editor", {
             icon: Ext.window.MessageBox.INFO
         });
     },
-    
+
     changeCurrentEditAction: function(action) {
         this.currentEditAction = action;
         this.fireEvent("currentEditActionChanged", action);
     },
-    
+
     /**
-     * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de 
+     * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de
      * huidige rseq.
      * @param movementId (optioneel) Wanneer een movementId is opgegeven
      */
     addUitmeldpunt: function(movementId) {
         this.changeCurrentEditAction("ACTIVATION_2");
-        
+
         var me = this;
         this.pointFinishedHandler = function(location) {
 
@@ -847,14 +853,14 @@ Ext.define("Editor", {
             }
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
-                commandType: 2, 
+                commandType: 2,
                 pointId: uitmeldpunt.getId(),
                 distanceTillStopLine: distance[0].toFixed(0),
                 vehicleTypes: [1,2,6,7,71]
             });
-            
+
             me.editForms.editActivationPoint(uitmeldpunt, map, function() {
-                
+
                 if(movementId){
                     var currentUitmeldpunt = me.selectedObject.getId();
                     me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
@@ -862,24 +868,24 @@ Ext.define("Editor", {
                     me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
                 }
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
+
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
             });
         };
-        
+
         this.addPoint(true);
     },
-    
+
     selectExistingUitmeldpunt : function (movementId){
         this.changeCurrentEditAction("SELECT_EXISTING_UITMELDPUNT");
         this.contextMenu.showCancelSelecting(this.uitmeldpuntSelected);
         this.on('selectedObjectChanged',this.uitmeldpuntSelected,this,movementId);
     },
-            
+
     uitmeldpuntSelected : function(uitmeldpunt,movementId){
         if(uitmeldpunt){
-            
+
             var baseUitmeldpunt = this.selectedObject = this.previousSelectedObject;
             if(uitmeldpunt instanceof Point && uitmeldpunt.getType() == "ACTIVATION_2"){
                 var destMovement = this.activeRseq.getMovementById(movementId);
@@ -887,36 +893,36 @@ Ext.define("Editor", {
                 var srcMovement = mvmnts[0].movement;
                 var map =  srcMovement.getMapForPoint(uitmeldpunt);
                 destMovement.addMapAfter(map, baseUitmeldpunt.id);
-                
+
                 this.un('selectedObjectChanged',this.uitmeldpuntSelected,this);
                 this.fireEvent("activeRseqUpdated", this.activeRseq);
             }
         }
     },
-            
+
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
         var me = this;
         var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
-            
+
             var eindpunt = Ext.create(Point, {
                 type: "END",
-                geometry: location                
+                geometry: location
             });
-            
+
             me.editForms.editNonActivationPoint(eindpunt, function() {
-                
+
                 me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
+
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-            });            
+            });
         };
-        this.addPoint(true);        
+        this.addPoint(true);
     },
-    
+
     /**
      * Selecteren bestaand eindpunt
      */
@@ -925,20 +931,20 @@ Ext.define("Editor", {
         this.contextMenu.showCancelSelecting(this.eindpuntSelected);
         this.on('selectedObjectChanged',this.eindpuntSelected,this);
     },
-    
+
     /**
      * Handler voor als een bestaand eindpunt is geselecteerd.
-     */    
+     */
     eindpuntSelected: function(eindpunt) {
         if(eindpunt){
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
             if(eindpunt instanceof Point && eindpunt.getType() === "END"){
-                
+
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
-                
+
                 var me = this;
                 Ext.Msg.show({
-                    title:'Eindpunt selecteren', 
+                    title:'Eindpunt selecteren',
                     msg:'Wilt u eindpunt ' + eindpunt.getLabel() + " selecteren voor een beweging vanaf uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
                         if(buttonId === "yes") {
@@ -964,16 +970,16 @@ Ext.define("Editor", {
             this.olc.selectFeature(this.selectedObject.getId(), "Point");
         }
     },
-    
+
     /**
      * Ga naar de modus dat een gebruiker een inmeldpunt kan toevoegen aan de
      * movements voor het geselecteerde uitmeldpunt.
-     */    
+     */
     addInmeldpunt: function() {
         this.changeCurrentEditAction("ACTIVATION_1");
-        
+
         var me = this;
-        var uitmeldpunt = this.selectedObject;        
+        var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
 
             var inmeldpunt = Ext.create(Point, {
@@ -988,25 +994,25 @@ Ext.define("Editor", {
             }
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
-                commandType: 1, 
+                commandType: 1,
                 distanceTillStopLine:distance,
                 pointId: inmeldpunt.getId(),
                 vehicleTypes: [1,2,6,7,71]
             });
-            
+
             me.editForms.editActivationPoint(inmeldpunt, map, function() {
-                
+
                 me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
+
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
             });
         };
-        
-        this.addPoint(true);        
+
+        this.addPoint(true);
     },
-    
+
     /**
      * Selecteren bestaand inmeldpunt
      */
@@ -1015,27 +1021,27 @@ Ext.define("Editor", {
         this.contextMenu.showCancelSelecting(this.inmeldpuntSelected);
         this.on('selectedObjectChanged',this.inmeldpuntSelected,this);
     },
-    
+
     /**
      * Handler voor als een bestaand inmeldpunt is geselecteerd.
-     */    
+     */
     inmeldpuntSelected: function(inmeldpunt) {
         if(inmeldpunt){
-            
+
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
             if(inmeldpunt instanceof Point && inmeldpunt.getType() == "ACTIVATION_1"){
-                
+
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
-                
+
                 var me = this;
                  Ext.Msg.show({
-                    title:'Inmeldpunt selecteren', 
+                    title:'Inmeldpunt selecteren',
                     msg:'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
                         if(buttonId == "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
-                                commandType: 1, 
+                                commandType: 1,
                                 pointId: inmeldpunt.getId()
                             });
                             me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true);
@@ -1059,18 +1065,18 @@ Ext.define("Editor", {
             this.olc.selectFeature(this.selectedObject.getId(), "Point");
         }
     },
-    
+
     /**
      * Ga naar de modus dat een gebruiker een voorinmeldpunt kan toevoegen aan de
      * movements voor het geselecteerde uitmeldpunt.
-     */    
+     */
     addVoorinmeldpunt: function() {
         this.changeCurrentEditAction("ACTIVATION_3");
-        
+
         var me = this;
 
         var inmeldpunt = this.selectedObject; // kan ook voorinmeldpunt zijn
-        
+
         this.pointFinishedHandler = function(location) {
 
             var voorinmeldpunt = Ext.create(Point, {
@@ -1094,56 +1100,56 @@ Ext.define("Editor", {
             distance += distanceMap;
             var map = Ext.create(MovementActivationPoint, {
                 beginEndOrActivation: "ACTIVATION",
-                commandType: 3, 
+                commandType: 3,
                 pointId: voorinmeldpunt.getId(),
                 distanceTillStopLine: distance,
                 vehicleTypes: [1,2,6,7,71]
             });
-            
+
             me.editForms.editActivationPoint(voorinmeldpunt, map, function() {
-                
+
                 me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt, map, false, true);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
+
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
             });
         };
-        
-        this.addPoint(true);        
-    },    
-    
+
+        this.addPoint(true);
+    },
+
     /**
      * Ga naar de modus dat een gebruiker een beginpunt kan toevoegen aan de
      * movements voor het geselecteerde uitmeldpunt.
-     */    
+     */
     addBeginpunt: function() {
         this.changeCurrentEditAction("BEGIN");
-        
+
         var me = this;
 
         var uitmeldpunt = this.selectedObject;
-        
+
         this.pointFinishedHandler = function(location) {
 
             var beginpunt = Ext.create(Point, {
                 type: "BEGIN",
                 geometry: location
             });
-            
+
             me.editForms.editNonActivationPoint(beginpunt, function() {
-                
+
                 me.activeRseq.addBeginpunt(uitmeldpunt, beginpunt, false);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-                
+
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
             });
         };
-        
-        this.addPoint(true);        
-    }, 
-    
+
+        this.addPoint(true);
+    },
+
     /**
       * Ga naar punttoevoegen modus, optioneel met een lijn vanaf het gegeven punt.
       * @param withLine of vanaf het gegeven punt een lijn (met tussenpunten) moet worden getekend
@@ -1159,7 +1165,7 @@ Ext.define("Editor", {
             this.pointFinished(point);
         }
     },
-    
+
     /**
      * Wordt aangeroepen door OpenLayersController indien de gebruiker een punt
      * heeft geplaatst door te dubbelklikken.
@@ -1171,13 +1177,13 @@ Ext.define("Editor", {
         };
 
         this.changeCurrentEditAction(null);
-        
+
         if(this.pointFinishedHandler) {
             this.pointFinishedHandler(geom);
         }
         this.olc.clearMarkers();
     },
-    
+
     // ==== Search ==== ///
     searchResultClicked : function(searchResult){
         if(searchResult.getBounds() != null){
@@ -1189,18 +1195,18 @@ Ext.define("Editor", {
         if(searchResult.getAddMarker()){
             this.olc.addMarker(searchResult.getLocation());
         }
-    },  
+    },
     cancelSelection:function(){
         this.un('selectedObjectChanged',this.actionToCancel,this);
         this.changeCurrentEditAction(null);
     },
-    
+
     // ==== KV9 Validation results ====
     showValidationResults: function() {
         if(this.activeRseq == null) {
             return;
         }
-        
+
         var me = this;
         var validationResultsWindow;
 
@@ -1210,7 +1216,7 @@ Ext.define("Editor", {
             scope: this,
             success: function (response){
                 var r = Ext.JSON.decode(response.responseText);
-                
+
                 validationResultsWindow = Ext.create('Ext.window.Window', {
                     title: 'KV9 validatieresultaten',
                     width: 575,
@@ -1218,7 +1224,7 @@ Ext.define("Editor", {
                     modal: true,
                     icon: contextPath + '/images/silk/information.png',
                     layout: 'fit',
-                    items: [{  
+                    items: [{
                         xtype: 'panel',
                         autoScroll: true,
                         html: '<div id="validationMessages"></div>'
@@ -1232,7 +1238,7 @@ Ext.define("Editor", {
                         }
                     }]
                 }).show();
-                
+
                 var t = new Ext.Template([
                     "<div class=\"kv9error\"><table>",
                         "<tr><td class=\"wnb\">Code:</td><td class=\"code\">{code}</td></tr>",
@@ -1243,13 +1249,13 @@ Ext.define("Editor", {
                     "</table></div>"]).compile();
 
                 Ext.Array.each(r.errors, function(error) {
-                    t.append(Ext.getDom("validationMessages"), error);                        
-                });      
-                
+                    t.append(Ext.getDom("validationMessages"), error);
+                });
+
             }
         });
-        
-        
+
+
     }
 });
 
@@ -1340,8 +1346,8 @@ Ext.define("EndPointCreator",{
             type: "Point",
             coordinates: [lonlat.lon,lonlat.lat]
         };
-        
-        
+
+
         if(uitmeldpunt){
             var movements = this.editor.activeRseq.findMovementsForPoint(uitmeldpunt);
             var signalGroupNumber = "";
@@ -1359,20 +1365,20 @@ Ext.define("EndPointCreator",{
             this.toggleKeyListening(false);
         }
     }
-    
+
 });
 
 Ext.define("HelpPanel", {
     domId: null,
     editor: null,
-    
+
     constructor: function(domId, editor) {
         this.domId = domId;
         this.editor = editor;
         editor.on("currentEditActionChanged", this.updateHelpPanel, this);
     },
     updateHelpPanel: function() {
-        
+
         var action = this.editor.currentEditAction;
         var txt;
         var signalGroupNumbers = null;
@@ -1394,12 +1400,12 @@ Ext.define("HelpPanel", {
                 }
             }
         }
-        
+
         switch(action) {
             case "ACTIVATION_1":
                 txt = "Dubbelklik om het inmeldpunt te plaatsen voor signaalgroep(en) " + signalGroupNumbers + "." +
                 "<p>Met een enkele klik volgt u de buigpunten van de weg totaan de positie "+
-                "van het inmeldpunt om de afstand te bepalen. " + 
+                "van het inmeldpunt om de afstand te bepalen. " +
                 "<p>De afstand kan gemeten worden vanaf de stopstreep, door de stopstreep aan te klikken en dan rechtermuisknop <i>Meten vanaf vorig punt</i> te klikken. De afstand wordt dan berekend vanaf de stopstreep en ingevuld in het formulier."+
                 "<p>Lengte <b><span id='measureInt'>0 m</span></b>";
                 break;
@@ -1448,10 +1454,10 @@ Ext.define("HelpPanel", {
                 "te bewerken.";
                 }
         }
-        
+
         Ext.get("help").dom.innerHTML = txt;
     }
-        
+
 });
  function cloneObject(obj) {
     if (obj === null || typeof obj !== 'object') {

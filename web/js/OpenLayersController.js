@@ -16,14 +16,14 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * Class dat als 'wrapper' functioneert om eenvoudig OpenLayers aan te sturen.
  **/
 Ext.define("ol", {
     mixins: {
         observable: 'Ext.util.Observable'
     },
-    
+
     editor : null,
     map : null,
     panel : null,
@@ -32,19 +32,19 @@ Ext.define("ol", {
     snapLayer:null,
     surroundingPointsLayer:null,
     snap:null,
-    
+
     geojson_format : null,
     gfi : null,
     dragFeature : null,
     point : null,
     line : null,
-    
+
     /**
      * Het OpenLayers.Control dat geactiveerd wordt om een locatie aan te klikken
      * waar Street View geopend moet worden.
      */
     streetViewClickControl: null,
-    
+
     identifyButton : null,
     overview : null,
     activeFeature : null,
@@ -52,14 +52,14 @@ Ext.define("ol", {
     highlight:null,
     measureTool:null,
     standaloneMeasure:null,
-    
+
     markerLayer:null,
-    
+
     cacheControl:null,
     constructor : function(editor){
-        this.mixins.observable.constructor.call(this);  
+        this.mixins.observable.constructor.call(this);
         this.editor = editor;
-        
+
         this.addEvents('measureChanged');
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
@@ -72,11 +72,11 @@ Ext.define("ol", {
         this.panel = new OpenLayers.Control.Panel({
             allowDepress:true
         });
-        //opties voor openlayers map.        
+        //opties voor openlayers map.
         var opt = {
             projection: new OpenLayers.Projection("EPSG:28992"),
             maxExtent: maxBounds,
-            srs: 'epsg:28992', 
+            srs: 'epsg:28992',
             allOverlays: true,
             resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21,0.105,0.0525],
             theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
@@ -120,17 +120,17 @@ Ext.define("ol", {
                 "default": surroundStyle
             })
         });
-            
+
         this.markerLayer = new OpenLayers.Layer.Markers( "Markers" );
         this.map.addLayer(this.markerLayer);
-            
+
         this.geojson_format = new OpenLayers.Format.GeoJSON();
         this.map.addLayer(this.vectorLayer);
         this.map.addLayer(this.rseqVectorLayer);
         this.map.addLayer(this.snapLayer);
         this.map.addLayer(this.surroundingPointsLayer);
         this.createControls(domId);
-        
+
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
     },
     /**
@@ -139,10 +139,10 @@ Ext.define("ol", {
     createControls : function (domId){
         var nav = new OpenLayers.Control.Navigation();
         this.map.addControl(nav);
-        
+
         this.map.addControl( new OpenLayers.Control.MousePosition({
             numDigits: 2
-        }));        
+        }));
         this.map.addControl(new OpenLayers.Control.PanZoomBar());
         var me = this;
         var options = new Object();
@@ -165,10 +165,10 @@ Ext.define("ol", {
         options["displaySystemUnits"].metric=["m"];
         //voeg meet tool toe
         this.measureTool= new OpenLayers.Control.Measure( OpenLayers.Handler.Path, options);
-      
+
         this.measureTool.events.register('measure',this.measureTool,function(){
             var measureValueDiv=document.getElementById("olControlMeasureValue");
-            if (measureValueDiv){                
+            if (measureValueDiv){
                 measureValueDiv.style.display="none";
             }
             this.cancel();
@@ -179,9 +179,9 @@ Ext.define("ol", {
                 measureValueDiv.style.display="none";
             }
         });
-        
+
         this.map.addControl(this.measureTool);
-        
+
         this.standaloneMeasure = Ext.create(Measure,{
             map: this.map,
             panel: this.panel
@@ -189,8 +189,8 @@ Ext.define("ol", {
         this.standaloneMeasure.on('measurechanged',function(){
             this.editor.changeCurrentEditAction("MEASURE_STANDALONE");
         }, this);
-        
-        
+
+
         //voeg 'teken punt' tool toe.
         this.point =  new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point, {
             displayClass: 'olControlDrawFeaturePoint',
@@ -214,16 +214,16 @@ Ext.define("ol", {
                 }
             }
         });
-        
+
         this.dragFeature.handlers['drag'].stopDown = false;
         this.dragFeature.handlers['drag'].stopUp = false;
         this.dragFeature.handlers['drag'].stopClick = false;
         this.dragFeature.handlers['feature'].stopDown = false;
         this.dragFeature.handlers['feature'].stopUp = false;
         this.dragFeature.handlers['feature'].stopClick = false;
-                
+
         // streetViewClickControl
-        
+
         var StreetViewClick = OpenLayers.Class(OpenLayers.Control, {
             button: null,
             defaultHandlerOptions: {
@@ -233,7 +233,7 @@ Ext.define("ol", {
                 'stopSingle': false,
                 'stopDouble': false
             },
-            
+
             initialize: function(options) {
                 this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);
                 OpenLayers.Control.prototype.initialize.apply(this, arguments);
@@ -253,18 +253,18 @@ Ext.define("ol", {
                 this.button.events.register("deactivate",this,function(){
                     this.deactivate();
                 });
-                options.panel.addControls(this.button);                
+                options.panel.addControls(this.button);
             },
             clicked: function(e) {
                 var lonlat = this.map.getLonLatFromPixel(e.xy);
-                
+
                 this.deactivate();
                 this.button.deactivate();
 
                 var dest = new Proj4js.Proj("EPSG:4236");
                 var source = new Proj4js.Proj("EPSG:28992");
                 var point = new Proj4js.Point(lonlat.lon, lonlat.lat);
-                Proj4js.transform(source, dest, point);            
+                Proj4js.transform(source, dest, point);
 
                 window.open("http://maps.google.nl/maps?q=" + point.y + "," + point.x + "&z=16&layer=c&cbll=" + point.y + "," + point.x + "&cbp=12,0,,0,0", "_blank");
             }
@@ -280,7 +280,7 @@ Ext.define("ol", {
         this.map.addControl(this.dragFeature);
         //maak en voeg achtergrond kaartlaag toe.
         var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/',{
-            layername:'brtachtergrondkaart', 
+            layername:'brtachtergrondkaart',
             type: 'png8',
             isBaseLayer:true,
             serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76],
@@ -293,7 +293,7 @@ Ext.define("ol", {
             mapOptions: {
                 projection: new OpenLayers.Projection("EPSG:28992"),
                 maxExtent: maxBounds,
-                srs: 'epsg:28992', 
+                srs: 'epsg:28992',
                 resolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88],
                 theme: OpenLayers._getScriptLocation()+'theme/b3p/style.css',
                 units : 'm'
@@ -307,7 +307,7 @@ Ext.define("ol", {
                 var x = evt.clientX;
                 var y = evt.clientY;
                 if(f && f.cluster ){
-                    
+
                 }else if(f && f.layer.name == "RseqSelect"){
                     editor.loadRseqInfo({
                         rseq: f.data.id
@@ -328,16 +328,16 @@ Ext.define("ol", {
             },
             includeXY:true
         });
-        
+
         this.map.addControl(oClick);
         oClick.activate();
-        
+
         this.highlight = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer], {
             highlightOnly: true,
             renderIntent: "temporary",
             hover:true
         });
-        
+
         this.map.addControl(this.highlight);
         this.highlight.activate();
         this.selectCtrl = new OpenLayers.Control.SelectFeature([this.vectorLayer, this.rseqVectorLayer],{
@@ -365,10 +365,10 @@ Ext.define("ol", {
                 }
             }
         });
-        
+
         this.map.addControl(this.selectCtrl);
         this.selectCtrl.activate();
-        
+
         this.snap = new OpenLayers.Control.Snapping({
             layer: this.vectorLayer,
             targets: [{
@@ -378,7 +378,7 @@ Ext.define("ol", {
             greedy: true
         });
         this.map.addControl(this.snap);
-        
+
         this.cacheControl = Ext.create("nl.b3p.kar.Cache",{
             olc:this,
             maxResolution: 50
@@ -393,7 +393,7 @@ Ext.define("ol", {
         this.addFeatures(geoJson);
         var selected = this.editor.selectedObject;
         this.selectFeature(selected.getId(), selected.$className);
-        
+
     },
     /**
      * Selecteert een feature.
@@ -416,7 +416,7 @@ Ext.define("ol", {
                 }
             }
         }
-        
+
         if(olFeature && (this.vectorLayer.selectedFeatures.length==0||this.vectorLayer.selectedFeatures[0].data.id != id)){
             this.selectCtrl.unselectAll();
             this.selectCtrl.select(olFeature);
@@ -437,12 +437,12 @@ Ext.define("ol", {
      * @param evt het event eigenschappen
      */
     raiseOnDataEvent : function(evt){
-        var stub = new Object();          
+        var stub = new Object();
         var walapparatuur = new Array();
         walapparatuur[0] = {
             id: "424"
         };
-        
+
         stub.walapparatuur = walapparatuur;
         onIdentifyData("map_kar_layer",stub);
         this.identifyButton.deactivate();
@@ -476,7 +476,7 @@ Ext.define("ol", {
                 extension = 'png';
             }
             layer = new OpenLayers.Layer.TMS(name, url,{
-                layername:layers, 
+                layername:layers,
                 type: extension,
                 isBaseLayer:false,
                 serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],
@@ -557,12 +557,12 @@ Ext.define("ol", {
      */
     removeFilterFromKargis : function (layer){
         var buslijnen = this.map.getLayersByName(layer)[0];
-        
+
         buslijnen.maxResolution =13;
         buslijnen.mergeNewParams({
             filtering:null
         });
-        
+
     },
     //All the vectorlayer functions
     /**
@@ -584,7 +584,7 @@ Ext.define("ol", {
      * Teken de meegegeven lijn
      * @param wkt de lijn als WKT (Well Known Text). Als deze parameter niet wordt
      * meegegeven dan wordt het tekenen gestart en kan de gebruiker zelf tekenen
-     */    
+     */
     drawLine : function(wkt){
         if(wkt){
             var olFeature = new OpenLayers.Geometry.fromWKT(wkt);
@@ -598,7 +598,7 @@ Ext.define("ol", {
      * Teken een lijn vanaf een bepaald punt
      * @param x de x coordinaat waar begonnen moet worden
      * @param y de y coordinaat waar begonnen moet worden
-     */    
+     */
     drawLineFromPoint : function (x,y){
         var lonlat = new OpenLayers.LonLat (x,y);
         var pixel = this.map.getPixelFromLonLat(lonlat);
@@ -610,7 +610,7 @@ Ext.define("ol", {
         this.measureTool.handler.insertXY(x,y);
     },
     /**
-     * Verwijder alle features die getekend zijn op de vectorlayer     * 
+     * Verwijder alle features die getekend zijn op de vectorlayer     *
      */
     removeAllFeatures : function(){
         this.vectorLayer.removeAllFeatures();
@@ -623,7 +623,7 @@ Ext.define("ol", {
         this.rseqVectorLayer.removeAllFeatures();
     },
     /**
-     * Event dat aangeroepen wordt als de gebruiker klaar is met het verslepen 
+     * Event dat aangeroepen wordt als de gebruiker klaar is met het verslepen
      * van een feature
      * @param feature de feature die verplaatst is.
      */
@@ -634,7 +634,7 @@ Ext.define("ol", {
     },
     /**
      * Teken een feature
-     * @param object.feature de feature die getekend moet worden     
+     * @param object.feature de feature die getekend moet worden
      */
     drawFeature : function (object){
         var feature =object.feature;
@@ -667,7 +667,7 @@ Ext.define("ol", {
     addRseqs : function(rseqs){
         this.cacheControl.initTree(rseqs);
     },
-    
+
     addRseqGeoJson : function(rseqs){
         this.rseqVectorLayer.addFeatures(this.geojson_format.read(rseqs));
     },
@@ -692,7 +692,7 @@ Ext.define("ol", {
     resizeMap : function(){
         this.map.updateSize();
     },
-    
+
     addMarker : function(x,y){
         var lonlat = null;
         if(y){
@@ -728,7 +728,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
     handleRightClicks:true,
     /**
      * @constructor
-     */    
+     */
     initialize: function(options) {
         this.handlerOptions = OpenLayers.Util.extend(
         {}, this.defaultHandlerOptions
@@ -758,23 +758,23 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
      * functie dat wordt aangeroepen zodra er wordt geklikt. Functie moet overschreven worden
      * in object dat deze classe implementeerd.
      */
-    onClick: function(evt) {        
+    onClick: function(evt) {
     },
     /**
      * functie dat wordt aangeroepen zodra er dubbel wordt geklikt. Functie moet overschreven worden
      * in object dat deze classe implementeerd.
      */
-    onDblclick: function(evt) {          
+    onDblclick: function(evt) {
     },
     /**
-     * functie dat wordt aangeroepen zodra er met de rechter muis wordt geklikt. 
+     * functie dat wordt aangeroepen zodra er met de rechter muis wordt geklikt.
      * Functie moet overschreven worden in object dat deze classe implementeerd.
      */
     onRightclick : function (evt){
     }
 });
 
-/* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for 
+/* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for
  * full list of contributors). Published under the 2-clause BSD license.
  * See license.txt in the OpenLayers distribution or repository for the
  * full text of the license. */
@@ -791,14 +791,14 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
  *  - <OpenLayers.Strategy>
  */
 OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
-    
+
     /**
      * APIProperty: distance
      * {Integer} Pixel distance between features that should be considered a
      *     single cluster.  Default is 20 pixels.
      */
     distance: 50,
-    
+
     /**
      * APIProperty: threshold
      * {Integer} Optional threshold below which original features will be
@@ -809,31 +809,31 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      *     equivalent to 1 - meaning that clusters may contain just one feature).
      */
     threshold: null,
-    
+
     /**
      * Property: features
      * {Array(<OpenLayers.Feature.Vector>)} Cached features.
      */
     features: null,
-    
+
     /**
      * Property: clusters
      * {Array(<OpenLayers.Feature.Vector>)} Calculated clusters.
      */
     clusters: null,
-    
+
     /**
      * Property: clustering
      * {Boolean} The strategy is currently clustering features.
      */
     clustering: false,
-    
+
     /**
      * Property: resolution
      * {Float} The resolution (map units per pixel) of the current cluster set.
      */
     resolution: null,
-    
+
      /**
      * Property: maxResolution
      * {Float} The resolution (map units per pixel) when clustering should be turned off
@@ -848,11 +848,11 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * options - {Object} Optional object whose properties will be set on the
      *     instance.
      */
-    
+
     /**
      * APIMethod: activate
      * Activate the strategy.  Register any listeners, do appropriate setup.
-     * 
+     *
      * Returns:
      * {Boolean} The strategy was successfully activated.
      */
@@ -867,12 +867,12 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         }
         return activated;
     },
-    
+
     /**
      * APIMethod: deactivate
      * Deactivate the strategy.  Unregister any listeners, do appropriate
      *     tear-down.
-     * 
+     *
      * Returns:
      * {Boolean} The strategy was successfully deactivated.
      */
@@ -888,7 +888,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         }
         return deactivated;
     },
-    
+
     /**
      * Method: cacheFeatures
      * Cache features before they are added to the layer.
@@ -896,7 +896,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * Parameters:
      * event - {Object} The event that this was listening for.  This will come
      *     with a batch of features to be clustered.
-     *     
+     *
      * Returns:
      * {Boolean} False to stop features from being added to the layer.
      */
@@ -910,7 +910,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         }
         return propagate;
     },
-    
+
     /**
      * Method: clearCache
      * Clear out the cached features.
@@ -918,7 +918,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
     clearCache: function() {
         this.features = null;
     },
-    
+
     /**
      * Method: cluster
      * Cluster features based on some threshold distance.
@@ -977,7 +977,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
             }
         }
     },
-    
+
     /**
      * Method: clustersExist
      * Determine whether calculated clusters are already on the layer.
@@ -999,7 +999,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         }
         return exist;
     },
-    
+
     /**
      * Method: shouldCluster
      * Determine whether to include a feature in a given cluster.
@@ -1025,7 +1025,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         );
         return (distance <= this.distance);
     },
-    
+
     /**
      * Method: addToCluster
      * Add a feature to a cluster.
@@ -1034,11 +1034,11 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * cluster - {<OpenLayers.Feature.Vector>} A cluster.
      * feature - {<OpenLayers.Feature.Vector>} A feature.
      */
-    addToCluster: function(cluster, feature) { 
+    addToCluster: function(cluster, feature) {
        cluster.cluster.push(feature);
         cluster.attributes.count += 1;
     },
-    
+
     /**
      * Method: createCluster
      * Given a feature, create a cluster.
@@ -1059,7 +1059,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
         return cluster;
     },
 
-    CLASS_NAME: "OpenLayers.Strategy.ResolutionCluster" 
+    CLASS_NAME: "OpenLayers.Strategy.ResolutionCluster"
 });
 
 Ext.define("nl.b3p.kar.Cache", {
@@ -1077,7 +1077,7 @@ Ext.define("nl.b3p.kar.Cache", {
     initTree: function(features) {
         if (this.rt.getTree().nodes.length > 0) {
             // Purge old data from RTree, prevents double points in vectorlayers
-            this.rt = RTree()
+            this.rt = RTree();
         }
         this.rt.geoJSON(features);
         this.update();

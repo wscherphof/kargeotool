@@ -1,20 +1,20 @@
 /**
- * Geo-OV - applicatie voor het registreren van KAR meldpunten               
- *                                                                           
- * Copyright (C) 2009-2013 B3Partners B.V.                                   
- *                                                                           
- * This program is free software: you can redistribute it and/or modify      
- * it under the terms of the GNU Affero General Public License as            
- * published by the Free Software Foundation, either version 3 of the        
- * License, or (at your option) any later version.                           
- *                                                                           
- * This program is distributed in the hope that it will be useful,           
- * but WITHOUT ANY WARRANTY; without even the implied warranty of            
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
- * GNU Affero General Public License for more details.                       
- *                                                                           
- * You should have received a copy of the GNU Affero General Public License  
- * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package nl.b3p.kar.hibernate;
@@ -53,12 +53,12 @@ import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Klasse voor het beschrijven van RoadsideEquipment zoals VRI's
- * 
+ *
  * @author Matthijs Laan
  */
 @Entity
 @XmlRootElement(name="RSEQDEF")
-@XmlType(name="RSEQDEFType", 
+@XmlType(name="RSEQDEFType",
         propOrder={
             "dataOwner",
             "karAddress",
@@ -77,91 +77,91 @@ import org.stripesstuff.stripersist.Stripersist;
 )
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RoadsideEquipment {
-    
+
     private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     /**
      * Waarde voor de functie van het verkeerssysteem welke een verkeersregel-
      * installatie (VRI) aanduidt.
      */
     public static final String TYPE_CROSSING = "CROSSING";
-    
+
     /**
      * Waarde voor de functie van het verkeerssysteem, duidt een bewaking aan
      * die een alarmsignaal geeft bij het naderen van een OV of hulpdienst
      * voertuig.
      */
     public static final String TYPE_GUARD = "GUARD";
-    
+
     /**
-     * Waarde voor de functie van het verkeerssysteem om een afsluiting aan te 
-     * duiden, een wegafsluitend object dat bij het naderen van een OV of 
+     * Waarde voor de functie van het verkeerssysteem om een afsluiting aan te
+     * duiden, een wegafsluitend object dat bij het naderen van een OV of
      * hulpdienst voertuig tijdelijk verdwijnt (in de weg verzinkt), en na
-     * passage van het voertuig weer verschijnt. 
+     * passage van het voertuig weer verschijnt.
      */
     public static final String TYPE_BAR = "BAR";
-    
+
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet zichtbaar
      * in Kv9 XML export.
-     */    
+     */
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @XmlTransient
     private Long id;
-    
+
     @ManyToOne(optional=false)
     @XmlElement(name="dataownercode")
     @XmlJavaTypeAdapter(DataOwner.class)
     private DataOwner dataOwner;
-        
+
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
     @XmlTransient
     private Point location;
-    
+
     /**
      * Het KAR adres (SID) van het verkeerssysteem. Verplicht voor Kv9.
      */
     @XmlElement(name="karaddress")
     private Integer karAddress;
-    
+
     /**
-     * Datum vanaf wanneer het verkeerssysteem actief is (inclusief). Verplicht 
+     * Datum vanaf wanneer het verkeerssysteem actief is (inclusief). Verplicht
      * voor Kv9.
      */
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validfrom")
     @XmlJavaTypeAdapter(TmiDateAdapter.class)
     private Date validFrom;
-    
+
     /**
-     * Datum tot aan wanneer het verkeersysteem actief is (exclusief).     
+     * Datum tot aan wanneer het verkeersysteem actief is (exclusief).
      */
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validuntil")
     @XmlJavaTypeAdapter(TmiDateAdapter.class)
     private Date validUntil;
-    
+
     /**
-     * De functie van het verkeerssysteem, zie de TYPE_ constanten in 
+     * De functie van het verkeerssysteem, zie de TYPE_ constanten in
      * RoadsideEquipment.
      */
     @XmlElement(name="rseqtype")
     private String type;
-    
+
     /**
-     * Identificeert het kruispunt volgens codering domein DataOwner 
+     * Identificeert het kruispunt volgens codering domein DataOwner
      * (wegbeheerder). Verplicht voor Kv9.
      */
     @XmlElement(name="crossingcode")
     private String crossingCode;
-    
+
     /**
      * De plaats waar het verkeerssysteem staat. Verplicht voor Kv9.
      */
     @Column(length=50)
     @XmlElement(name="town")
     private String town;
-    
+
     /**
      * Omschrijving van het verkeerssysteem.
      */
@@ -177,40 +177,40 @@ public class RoadsideEquipment {
     @OrderColumn(name="list_index")
     @XmlElement(name="KARATTRIBUTES")
     private List<KarAttributes> karAttributes = new ArrayList<KarAttributes>();
-    
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true)
     @Sort(type=SortType.NATURAL)
     @XmlElement(name="MOVEMENT")
     private SortedSet<Movement> movements = new TreeSet<Movement>();
-    
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true) 
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true)
     @XmlElement(name="ACTIVATIONPOINT")
     @Sort(type=SortType.NATURAL)
     private SortedSet<ActivationPoint> points = new TreeSet<ActivationPoint>();
-    
+
     @Column(length=4096)
     @XmlTransient
     private String memo;
-    
+
     @XmlTransient
     private Integer validationErrors;
 
     @XmlElement(name="b3pextra")
     public XmlB3pRseq getExtraXml() {
-        
+
         XmlB3pRseq extra = new XmlB3pRseq(this);
-        
+
         if(extra.isEmpty()) {
             return null;
         } else {
             return extra;
         }
     }
-    
+
     @Transient
     @XmlElement(namespace=Namespace.NS_BISON_TMI8_KV9_CORE)
     private String delimiter = "";
-    
+
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
@@ -219,7 +219,7 @@ public class RoadsideEquipment {
     public Long getId() {
         return id;
     }
-    
+
     /**
      *
      * @param id
@@ -227,7 +227,7 @@ public class RoadsideEquipment {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      *
      * @return dataOwner
@@ -235,7 +235,7 @@ public class RoadsideEquipment {
     public DataOwner getDataOwner() {
         return dataOwner;
     }
-    
+
     /**
      *
      * @param dataOwner
@@ -243,7 +243,7 @@ public class RoadsideEquipment {
     public void setDataOwner(DataOwner dataOwner) {
         this.dataOwner = dataOwner;
     }
-    
+
     /**
      *
      * @return karAddress
@@ -251,7 +251,7 @@ public class RoadsideEquipment {
     public Integer getKarAddress() {
         return karAddress;
     }
-    
+
     /**
      *
      * @param karAddress
@@ -259,7 +259,7 @@ public class RoadsideEquipment {
     public void setKarAddress(Integer karAddress) {
         this.karAddress = karAddress;
     }
-    
+
     /**
      *
      * @return validFrom
@@ -267,7 +267,7 @@ public class RoadsideEquipment {
     public Date getValidFrom() {
         return validFrom;
     }
-    
+
     /**
      *
      * @param validFrom
@@ -275,7 +275,7 @@ public class RoadsideEquipment {
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
     }
-    
+
     /**
      *
      * @return validUntil
@@ -283,7 +283,7 @@ public class RoadsideEquipment {
     public Date getValidUntil() {
         return validUntil;
     }
-    
+
     /**
      *
      * @param validUntil
@@ -299,7 +299,7 @@ public class RoadsideEquipment {
     public void setMemo(String memo) {
         this.memo = memo;
     }
-    
+
     /**
      *
      * @return type
@@ -307,7 +307,7 @@ public class RoadsideEquipment {
     public String getType() {
         return type;
     }
-    
+
     /**
      *
      * @param type
@@ -315,7 +315,7 @@ public class RoadsideEquipment {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     /**
      *
      * @return crossingCode
@@ -323,7 +323,7 @@ public class RoadsideEquipment {
     public String getCrossingCode() {
         return crossingCode;
     }
-    
+
     /**
      *
      * @param crossingCode
@@ -331,7 +331,7 @@ public class RoadsideEquipment {
     public void setCrossingCode(String crossingCode) {
         this.crossingCode = crossingCode;
     }
-    
+
     /**
      *
      * @return town
@@ -339,7 +339,7 @@ public class RoadsideEquipment {
     public String getTown() {
         return town;
     }
-    
+
     /**
      *
      * @param town
@@ -347,7 +347,7 @@ public class RoadsideEquipment {
     public void setTown(String town) {
         this.town = town;
     }
-    
+
     /**
      *
      * @return description
@@ -355,7 +355,7 @@ public class RoadsideEquipment {
     public String getDescription() {
         return description;
     }
-    
+
     /**
      *
      * @param description
@@ -363,7 +363,7 @@ public class RoadsideEquipment {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      *
      * @return location
@@ -436,7 +436,7 @@ public class RoadsideEquipment {
         this.validationErrors = validationErrors;
     }
     //</editor-fold>
-    
+
     public ActivationPoint getPointByNumber(int number) {
         for(ActivationPoint p: points) {
             if(p.getNummer() != null && p.getNummer() == number) {
@@ -445,8 +445,8 @@ public class RoadsideEquipment {
         }
         return null;
     }
-    
-    
+
+
     public boolean isValid(){
         Date now = new Date();
         if(validFrom.compareTo(now) <= 0 && (validUntil == null || validUntil.after(now))){
@@ -455,11 +455,11 @@ public class RoadsideEquipment {
             return false;
         }
     }
-    
+
     /**
-     * Checkt of dit rseq signaalgroepen voor het opgegeven @param vehicleType heeft. 
+     * Checkt of dit rseq signaalgroepen voor het opgegeven @param vehicleType heeft.
      * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Beide/<null> (geeft altijd true)
-     * @return 
+     * @return
      */
     public boolean hasSignalForVehicleType(String vehicleType){
         if(vehicleType == null || vehicleType.equalsIgnoreCase("beide")){
@@ -480,7 +480,7 @@ public class RoadsideEquipment {
     }
     /**
      * Methode converteert dit RoadsideEquipment object in een JSON object
-     * 
+     *
      * @return JSON object
      * @throws JSONException
      */
@@ -501,17 +501,36 @@ public class RoadsideEquipment {
         p.put("memo", memo);
         p.put("id",id);
         p.put("validationErrors", validationErrors);
-        
+
         // geen kar attributes
-        
+
+        //Hier type van kruispunt: OV/Hulpdienst/Gemixt
+        String typeRseq = null;
+        for (Movement movement : movements) {
+            for (MovementActivationPoint map : movement.getPoints()) {
+                if(map.getSignal() == null ){
+                    continue;
+                }
+                List<VehicleType> types = map.getSignal().getVehicleTypes();
+                for (VehicleType vehicleType : types) {
+                    if(typeRseq == null){
+                        typeRseq = vehicleType.getGroep();
+                    }else if(!typeRseq.equals(vehicleType.getGroep())){
+                        typeRseq = "Gemixt";
+                    }
+                }
+            }
+        }
+        p.put("vehicleType", typeRseq);
+
         gj.put("properties", p);
         return gj;
     }
-    
+
     /**
-     * Methode bouwt het volledige JSON object op voor dit RoadsideEquipment 
+     * Methode bouwt het volledige JSON object op voor dit RoadsideEquipment
      * object.
-     * 
+     *
      * @return JSON Object
      * @throws JSONException
      */
@@ -530,16 +549,16 @@ public class RoadsideEquipment {
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
         j.put("validationErrors", validationErrors);
-        
+
         JSONObject jattrs = new JSONObject();
         j.put("attributes", jattrs);
         jattrs.put(KarAttributes.SERVICE_PT, new JSONArray("[ [], [], [] ]"));
         jattrs.put(KarAttributes.SERVICE_ES, new JSONArray("[ [], [], [] ]"));
         jattrs.put(KarAttributes.SERVICE_OT, new JSONArray("[ [], [], [] ]"));
-        
+
         for(KarAttributes attribute: karAttributes) {
             JSONArray attributes = jattrs.getJSONArray(attribute.getServiceType()).getJSONArray(attribute.getCommandType()-1);
-            
+
             if(attributes.length() != 0) {
                 attributes = new JSONArray();
                 jattrs.getJSONArray(attribute.getServiceType()).put(attribute.getCommandType()-1, attributes);
@@ -550,15 +569,15 @@ public class RoadsideEquipment {
                 attributes.put(set);
             }
         }
-             
-        
+
+
         JSONArray jmvmts = new JSONArray();
         j.put("movements", jmvmts);
         for(Movement m: movements) {
             JSONObject jm = m.getJSON();
             jmvmts.put(jm);
         }
-        
+
         Map<ActivationPoint,List<MovementActivationPoint>> mapsByAp2 = new HashMap();
         for(Movement m: movements) {
             for(MovementActivationPoint map: m.getPoints()) {
@@ -567,22 +586,22 @@ public class RoadsideEquipment {
                     maps = new ArrayList();
                     mapsByAp2.put(map.getPoint(), maps);
                 }
-                maps.add(map);                
+                maps.add(map);
             }
         }
 
         List<JSONObject> jpoints = new ArrayList();
-        
+
         for(ActivationPoint ap2: points) {
             JSONObject pj = ap2.getGeoJSON();
-            
-            
+
+
             SortedSet<Integer> movementNumbers = new TreeSet();
-            
+
             JSONArray mns = new JSONArray();
             for(Integer i: movementNumbers) { mns.put(i); };
             pj.put("movementNumbers", mns);
-            
+
             jpoints.add(pj);
             Collections.sort(jpoints, new Comparator<JSONObject>() {
                 public int compare(JSONObject lhs, JSONObject rhs) {
@@ -593,19 +612,19 @@ public class RoadsideEquipment {
                     }
                 }
             });
-            
+
             JSONArray jp = new JSONArray();
             for(JSONObject jo: jpoints) {
                 jp.put(jo);
             }
             j.put("points", jp);
-            
-        }       
-        
+
+        }
+
         return j;
     }
-    
-    
+
+
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         List<Point> ps = new ArrayList();
         for (ActivationPoint activationPoint : points) {
@@ -617,12 +636,12 @@ public class RoadsideEquipment {
         GeometryCollection gc = new GeometryCollection(ps.toArray(new Point[ps.size()]), gf);
         this.location = gc.getCentroid();
     }
-    
+
     public boolean hasDuplicateKARAddressWithinDistance(int maxDistance) {
         return hasDuplicateKARAddressWithinDistance(maxDistance,false);
     }
-    
-    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){        
+
+    public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){
         EntityManager em = Stripersist.getEntityManager();
         String query = "FROM RoadsideEquipment where karAddress = :karaddress and dataOwner = :dao";
         TypedQuery<RoadsideEquipment> q = null;
@@ -630,9 +649,9 @@ public class RoadsideEquipment {
             query += " and id <> :id";
             q = em.createQuery(query, RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner).setParameter("id", this.getId());
         }else{
-            q = em.createQuery(query, RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner); 
+            q = em.createQuery(query, RoadsideEquipment.class).setParameter("karaddress", karAddress).setParameter("dao", dataOwner);
         }
-        
+
         List<RoadsideEquipment> rseqs = q.getResultList();
         for (RoadsideEquipment roadsideEquipment: rseqs) {
             double distance = roadsideEquipment.getLocation().distance(location);
@@ -642,7 +661,7 @@ public class RoadsideEquipment {
         }
         return false;
     }
-    
+
     public static List<KarAttributes> getDefaultKarAttributes() {
         JSONArray ptBitmask = new JSONArray();
         JSONArray esBitmask = new JSONArray();
@@ -670,7 +689,7 @@ public class RoadsideEquipment {
 
         }
 
-        List<KarAttributes> karAttributes = new ArrayList();        
+        List<KarAttributes> karAttributes = new ArrayList();
         try {
             karAttributes.add(new KarAttributes(KarAttributes.SERVICE_PT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
             karAttributes.add(new KarAttributes(KarAttributes.SERVICE_OT, ActivationPointSignal.COMMAND_INMELDPUNT, ptBitmask));
@@ -685,19 +704,19 @@ public class RoadsideEquipment {
         }
         return karAttributes;
     }
-    
+
     /**
      * Let op: kapt te lange waardes af / vervangt ongeldige waardes door defaults.
-     * 
+     *
      * @return Aantal KV9 validatie meldingen.
      */
     public int validateKV9(List<KV9ValidationError> errors) {
-        
+
         int errorsStartIndex = errors.size();
-        
+
         String xmlContext = String.format("RSEQDEF[karaddress=%s]", karAddress == null ? "<leeg>" : karAddress.toString());
         String context = String.format("Verkeerssysteem (KAR adres %s)", karAddress == null ? "<leeg>" : karAddress.toString());
-        
+
         String eXmlContext = xmlContext + "/dataownercode";
         String eContext = context + ", beheerder";
         if(dataOwner == null) {
@@ -706,7 +725,7 @@ public class RoadsideEquipment {
             // Tijdens DataOwner.afterUnmarshal() niet in database gevonden
             errors.add(new KV9ValidationError(true, "F105", eXmlContext, eContext, dataOwner.getCode(), "Beheerder niet gevonden voor code"));
         }
-        
+
         eXmlContext = xmlContext + "/karaddress";
         eContext = context + ", KAR adres";
         if(karAddress == null) {
@@ -721,9 +740,9 @@ public class RoadsideEquipment {
                 errors.add(new KV9ValidationError(true, "F108", eXmlContext, eContext, karAddress + "", "Dubbel binnen straal van 500 meter"));
             }
         }
-        
+
         eXmlContext = xmlContext + "/rseqtype";
-        eContext = context + ", Soort verkeerssysteem";        
+        eContext = context + ", Soort verkeerssysteem";
         if(StringUtils.isBlank(type)) {
             errors.add(new KV9ValidationError(false, "F109", eXmlContext, eContext, null, "Niet ingevuld"));
             type = TYPE_CROSSING;
@@ -732,15 +751,15 @@ public class RoadsideEquipment {
                     String.format("Ongeldig (niet '%s', '%s' of '%s')", TYPE_CROSSING, TYPE_GUARD, TYPE_BAR)));
             type = TYPE_CROSSING;
         }
-          
+
         eXmlContext = xmlContext + "/validfrom";
-        eContext = context + ", Geldig vanaf";           
+        eContext = context + ", Geldig vanaf";
         if(validFrom == null) {
             errors.add(new KV9ValidationError(true, "F111", eXmlContext, eContext, null, "Niet ingevuld of ongeldig"));
         }
-        
+
         eXmlContext = xmlContext + "/crossingcode";
-        eContext = context + ", Beheerdersaanduiding";             
+        eContext = context + ", Beheerdersaanduiding";
         if(StringUtils.isBlank(crossingCode)) {
             errors.add(new KV9ValidationError(false, "F112", eXmlContext, eContext, null, "Niet ingevuld"));
         } else if(crossingCode.length() > 10) {
@@ -749,7 +768,7 @@ public class RoadsideEquipment {
         }
 
         eXmlContext = xmlContext + "/town";
-        eContext = context + ", Plaats";             
+        eContext = context + ", Plaats";
         if(StringUtils.isBlank(town)) {
             errors.add(new KV9ValidationError(false, "F114", eXmlContext, eContext, null, "Niet ingevuld"));
         } else if(town.length() > 50) {
@@ -758,14 +777,14 @@ public class RoadsideEquipment {
         }
 
         eXmlContext = xmlContext + "/description";
-        eContext = context + ", Locatie";             
+        eContext = context + ", Locatie";
         if(description != null && description.length() > 255) {
             errors.add(new KV9ValidationError(false, "F116", eXmlContext, eContext, description, "Langer dan 255 tekens"));
             description = description.substring(0, Math.min(description.length(), 255));
         }
-        
+
         eXmlContext = xmlContext + "/KARATTRIBUTES";
-        eContext = context + ", KAR attributen";             
+        eContext = context + ", KAR attributen";
         if(karAttributes.isEmpty()) {
             errors.add(new KV9ValidationError(false, "F117", eXmlContext, eContext, null, "Afwezig"));
             setKarAttributes(getDefaultKarAttributes());
@@ -776,24 +795,24 @@ public class RoadsideEquipment {
                 String kaXmlContext = eXmlContext + "[" + pos + "]";
                 String kaContext = eContext + " (#" + pos + ")";
                 String st = ka.getServiceType();
-                
+
                 String ka2XmlContext = kaXmlContext + "/karservicetype";
-                String ka2Context = kaContext + ", KAR service type";     
+                String ka2Context = kaContext + ", KAR service type";
                 if(st == null) {
                     errors.add(new KV9ValidationError(true, "F118", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
                 } else if(!KarAttributes.SERVICE_ES.equals(st) && !KarAttributes.SERVICE_OT.contains(st) && !KarAttributes.SERVICE_PT.equals(st)) {
                     errors.add(new KV9ValidationError(true, "F119", ka2XmlContext, ka2Context, st, "Ongeldig (niet 'ES', 'PT' of 'OS')"));
                 }
-                
+
                 Integer ct = ka.getCommandType();
                 ka2XmlContext = kaXmlContext + "/karcommandtype";
-                ka2Context = kaContext + ", KAR command type";     
+                ka2Context = kaContext + ", KAR command type";
                 if(ct == null) {
                     errors.add(new KV9ValidationError(true, "F120", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
                 } else if(!KarAttributes.SERVICE_ES.equals(st) && !KarAttributes.SERVICE_OT.contains(st) && !KarAttributes.SERVICE_PT.equals(st)) {
                     errors.add(new KV9ValidationError(true, "F121", ka2XmlContext, ka2Context, ct + "", "Ongeldig (niet 1, 2 of 3)"));
                 }
-                
+
                 String ua = ka.getUsedAttributesString();
                 if(ua == null && ka.getUsedAttributesMask() != null) {
                     try {
@@ -803,51 +822,51 @@ public class RoadsideEquipment {
                     ua = ka.getUsedAttributesString();
                 }
                 ka2XmlContext = kaXmlContext + "/karusedattributes";
-                ka2Context = kaContext + ", KAR gebruikte attributen";     
+                ka2Context = kaContext + ", KAR gebruikte attributen";
                 if(ua == null) {
                     errors.add(new KV9ValidationError(true, "F122", ka2XmlContext, ka2Context, null, "Niet ingevuld"));
                 } else if(!ua.matches("[01]{24}")) {
                     errors.add(new KV9ValidationError(true, "F123", ka2XmlContext, ka2Context, ua, "Niet 24 tekens lang 1 of 0"));
-                }    
-                
+                }
+
                 // TODO: indien attributen niet compleet zijn voor alle command types / service types,
                 // deze uit defaults halen
-            }            
+            }
         }
-        
+
         eXmlContext = xmlContext + "/ACTIVATIONPOINT";
         if(points.isEmpty()) {
             errors.add(new KV9ValidationError(false, "F124", eXmlContext, context + ", punten", null, "Afwezig"));
             setKarAttributes(getDefaultKarAttributes());
-        } else {    
+        } else {
             // positie in XML niet beschikbaar, SortedSet op basis van nummer
             for(ActivationPoint ap: points) {
                 String pXmlContext = eXmlContext + "[activationpointnumber=" + ap.getNummer() + "]";
-                String pContext = context + ", punt nummer " + ap.getNummer();                
-                
+                String pContext = context + ", punt nummer " + ap.getNummer();
+
                 if(ap.getNummer() == null) {
                     errors.add(new KV9ValidationError(true, "F125", pXmlContext + "/activationpointnumber", pContext + ", nummer", null, "Niet ingevuld"));
                 } else {
                     if(ap.getNummer() < 0 || ap.getNummer() > 9999) {
                         errors.add(new KV9ValidationError(false, "F126", pXmlContext + "/activationpointnumber", pContext + ", nummer", ap.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
                     }
-                    
+
                     // F127 kan niet gecontroleerd worden vanwege SortedSet
                 }
-                
+
                 if(ap.getLocation() == null || ap.getLocation().getX() == 0.0 || ap.getLocation().getY() == 0.0) {
                     errors.add(new KV9ValidationError(true, "F128", pXmlContext + ", rdx-coordinate, rdy-coordinate", pContext + ", coordinaten", null, "Afwezig/ongeldig"));
                 }
-                
+
                 if(ap.getLabel() != null && ap.getLabel().length() > 4) {
                     errors.add(new KV9ValidationError(false, "F129", pXmlContext + ", label", pContext + ", label", ap.getLabel(), "Langer dan 4 tekens"));
                     ap.setLabel(ap.getLabel().substring(0, 4));
                 }
             }
         }
-        
+
         Map<ActivationPoint,String> apNummerType = new HashMap();
-                        
+
         eXmlContext = xmlContext + "/MOVEMENT";
         if(movements.isEmpty()) {
             errors.add(new KV9ValidationError(false, "F130", eXmlContext, context + ", bewegingen", null, "Afwezig"));
@@ -856,22 +875,22 @@ public class RoadsideEquipment {
             for(Movement m: movements) {
                 String mXmlContext = eXmlContext + "[movementnumber=" + m.getNummer() + "]";
                 String mContext = context + ", beweging nummer " + m.getNummer();
-                
+
                 if(m.getNummer() == null) {
                     errors.add(new KV9ValidationError(true, "F131", mXmlContext + "/movementnumber", mContext + ", nummer", null, "Niet ingevuld"));
                 } else {
                     if(m.getNummer() < 0 || m.getNummer() > 9999) {
                         errors.add(new KV9ValidationError(false, "F132", mXmlContext + "/movementnumber", mContext + ", nummer", m.getNummer() + "", "Ongeldig (niet 0 t/m 9999)"));
                     }
-                    
+
                     // F133 kan niet gecontroleerd worden vanwege SortedSet
-                } 
-                
+                }
+
                 for(int i = 0; i < m.getPoints().size(); i++) {
                     MovementActivationPoint map = m.getPoints().get(i);
                     String mapXmlContext = mXmlContext + "/" + map.getBeginEndOrActivation();
                     String mapContext = mContext + ", punt op index " + i;
-                    
+
                     if(map.getPoint() == null) {
                         errors.add(new KV9ValidationError(true, "F134", mapXmlContext + "/activationpointnumber", mContext + ", nummer activationpoint", m.getNummer() + "", "Ongeldig"));
                     } else {
@@ -887,23 +906,23 @@ public class RoadsideEquipment {
                             errors.add(new KV9ValidationError(true, "F135", mapXmlContext, mapContext, map.getBeginEndOrActivation() + ", eerder " + mapType, "Punt al gebruikt voor ander soort punt (niet ondersteund)"));
                         }
                     }
-                    
+
                     if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType)) {
                         errors.add(new KV9ValidationError(false, "F145", mXmlContext + "/END", mContext + ", eindpunt van beweging", null, "Afwezig"));
                     }
-                    
+
                     if(MovementActivationPoint.ACTIVATION.equals(mapType)) {
                         ActivationPointSignal s = map.getSignal();
                         String sXmlContext = mapXmlContext + "/ACTIVATIONPOINTSIGNAL";
                         String sContext = mapContext + ", signaalgegevens";
-                        if(s == null) { 
+                        if(s == null) {
                             // Kan niet voorkomen, wordt overgeslagen in Movement.afterUnmarshal()
                             throw new IllegalStateException();
                         } else {
                             if(s.getVehicleTypes().isEmpty()) {
                                 errors.add(new KV9ValidationError(true, "F136", sXmlContext + "/karvehicletype", sContext + ", voertuigtype", null, "Afwezig"));
                             }
-                            
+
                             if(s.getKarCommandType() == null) {
                                 errors.add(new KV9ValidationError(true, "F137", sXmlContext + "/karcommandtype", sContext + ", soort melding", null, "Afwezig"));
                             } else {
@@ -911,34 +930,34 @@ public class RoadsideEquipment {
                                     errors.add(new KV9ValidationError(true, "F138", sXmlContext + "/karcommandtype", sContext + ", soort melding", s.getKarCommandType() + "", "Ongeldig (niet 1, 2 of 3)"));
                                 }
                             }
-                            
+
                             if(s.getTriggerType() == null) {
                                 errors.add(new KV9ValidationError(false, "F139", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", null, "Afwezig"));
                                 s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
                             } else {
-                                if(!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType()) 
+                                if(!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType())
                                 && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
                                 && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
                                     errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
                                     s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
                                 }
                             }
-                            
+
                             if(s.getDistanceTillStopLine() != null) {
                                 if(s.getDistanceTillStopLine() < -99 || s.getDistanceTillStopLine() > 9999) {
                                     errors.add(new KV9ValidationError(false, "F141", sXmlContext + "/distancetillstopline", sContext + ", afstand tot stopstreep", s.getDistanceTillStopLine() + "", "Ongeldig (niet van -99 t/m 9999)"));
                                     s.setDistanceTillStopLine(null);
                                 }
                             }
-                            
+
                             if(s.getVirtualLocalLoopNumber() == null && s.getSignalGroupNumber() == null) {
                                 errors.add(new KV9ValidationError(false, "F142", sXmlContext + "/virtuallocalloopnumber, signalgroupnumber", sContext + ", virtuele lusnummer en signaalgroepnummer", null, "Beide afwezig (één van beide is verplicht)"));
                             }
-                            
+
                             if(s.getVirtualLocalLoopNumber() != null && (s.getVirtualLocalLoopNumber() < 0 || s.getVirtualLocalLoopNumber() > 127)) {
                                 errors.add(new KV9ValidationError(false, "F143", sXmlContext + "/virtuallocalloopnumber", sContext + ", virtual local loop number", null, "Ongeldig (niet 0 t/m 127)"));
                             }
-                            
+
                             if(s.getSignalGroupNumber() != null && (s.getSignalGroupNumber() < 1 || s.getSignalGroupNumber() > 255)) {
                                 errors.add(new KV9ValidationError(false, "F144", sXmlContext + "/signalgroupnumber", sContext + ", signalgroepnummer", s.getSignalGroupNumber() + "", "Ongeldig (niet 1 t/m 255)"));
                             }
@@ -947,7 +966,7 @@ public class RoadsideEquipment {
                 }
             }
         }
-        
+
         return errors.size() - errorsStartIndex;
     }
 }
