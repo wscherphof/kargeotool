@@ -102,7 +102,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private String exportType;
     @Validate
     private String filterType;
-    
+
     @Validate ( on={"rseqByDeelgebied", "allRseqs"})
     private boolean onlyValid;
     @Validate ( on={"rseqByDeelgebied", "allRseqs"})
@@ -282,7 +282,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         boolean isBeheerder = g.isBeheerder();
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
-            if (isBeheerder || rights.contains(rseqObj.getDataOwner()) || g.canReadVRI(rseqObj) || g.canEditVRI(rseqObj)) {
+            if (isBeheerder || rights.contains(rseqObj.getDataOwner()) || g.canReadVRI(rseqObj) || g.canEditVRI(rseqObj) || g.isVervoerder()) {
                 if(onlyValid && !rseqObj.isValid()){
                     continue;
                 }

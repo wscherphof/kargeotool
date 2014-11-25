@@ -1,20 +1,20 @@
 /**
- * Geo-OV - applicatie voor het registreren van KAR meldpunten               
- *                                                                           
- * Copyright (C) 2009-2013 B3Partners B.V.                                   
- *                                                                           
- * This program is free software: you can redistribute it and/or modify      
- * it under the terms of the GNU Affero General Public License as            
- * published by the Free Software Foundation, either version 3 of the        
- * License, or (at your option) any later version.                           
- *                                                                           
- * This program is distributed in the hope that it will be useful,           
- * but WITHOUT ANY WARRANTY; without even the implied warranty of            
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
- * GNU Affero General Public License for more details.                       
- *                                                                           
- * You should have received a copy of the GNU Affero General Public License  
- * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package nl.b3p.kar.hibernate;
@@ -41,7 +41,7 @@ import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Klasse voor definitie van een gebruiker
- * 
+ *
  * @author Chris
  */
 @Entity
@@ -49,7 +49,7 @@ public class Gebruiker implements Principal {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Column(unique=true, nullable=false)
     private String username;
     private String passwordsalt;
@@ -58,28 +58,28 @@ public class Gebruiker implements Principal {
     private String email;
     private String phone;
     private String position;
-    
+
     /**
      * JSON string met profielinstellingen.
      */
     @Column(columnDefinition="text")
     private String profile;
-    
+
     @ManyToMany
     @JoinTable(joinColumns=@JoinColumn(name="gebruiker"), inverseJoinColumns=@JoinColumn(name="role"))
     private Set<Role> roles = new HashSet();
-    
+
     @OneToMany(mappedBy="gebruiker")
     @MapKeyJoinColumn(name="data_owner")
     @Sort(type=SortType.NATURAL)
     private SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights = new TreeMap<DataOwner, GebruikerDataOwnerRights>();
-    
+
     @OneToMany(mappedBy="gebruiker")
     private List<GebruikerVRIRights>  vriRights = new ArrayList();
 
     /**
      * Verandert het wachtwoord
-     * 
+     *
      * @param request nodig voor bepaling random salt
      * @param pw het wachtwoord
      * @throws NoSuchAlgorithmException
@@ -94,7 +94,7 @@ public class Gebruiker implements Principal {
 
     /**
      * Zoekt de huidige gebruiker
-     * 
+     *
      * @param request waarin gebruiker is te vinden
      * @return de gebruiker
      * @throws Exception
@@ -109,7 +109,7 @@ public class Gebruiker implements Principal {
 
     /**
      * Haalt id van gebruiker op
-     * 
+     *
      * @return id
      */
     public Integer getId() {
@@ -126,7 +126,7 @@ public class Gebruiker implements Principal {
 
     /**
      * Haalt gebruikersnaam op
-     * 
+     *
      * @return username
      */
     public String getUsername() {
@@ -174,7 +174,7 @@ public class Gebruiker implements Principal {
     }
 
     /**
-     * Principal implementatie 
+     * Principal implementatie
      */
     public String getName() {
         return getUsername();
@@ -242,7 +242,7 @@ public class Gebruiker implements Principal {
      */
     public void setPosition(String position) {
         this.position = position;
-    }   
+    }
 
     /**
      *
@@ -275,7 +275,11 @@ public class Gebruiker implements Principal {
     public boolean isBeheerder() {
         return isInRole(Role.BEHEERDER);
     }
-    
+
+    public boolean isVervoerder(){
+        return isInRole(Role.VERVOERDER);
+    }
+
     /**
      *
      * @param roleName
@@ -348,7 +352,7 @@ public class Gebruiker implements Principal {
     public void setVriRights(List<GebruikerVRIRights> vriRights) {
         this.vriRights = vriRights;
     }
-    
+
     public boolean canEditVRI(RoadsideEquipment rseq){
         for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
             if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isEditable()){
@@ -357,7 +361,7 @@ public class Gebruiker implements Principal {
         }
         return false;
     }
-    
+
     public boolean canReadVRI(RoadsideEquipment rseq){
          for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
             if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isReadable()){
@@ -366,7 +370,7 @@ public class Gebruiker implements Principal {
         }
         return false;
     }
-    
+
     public boolean hasVRIRight(RoadsideEquipment rseq ){
         for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
             if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() ){
@@ -375,7 +379,7 @@ public class Gebruiker implements Principal {
         }
         return false;
     }
-    
+
     public Set<DataOwner> getAvailableDataOwners(){
         return dataOwnerRights.keySet();
     }

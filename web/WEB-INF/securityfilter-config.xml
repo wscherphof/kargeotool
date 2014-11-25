@@ -22,6 +22,7 @@
         </web-resource-collection>
         <auth-constraint>
             <role-name>gebruiker</role-name>
+            <role-name>vervoerder</role-name>
             <role-name>beheerder</role-name>
         </auth-constraint>
     </security-constraint>

@@ -1,20 +1,20 @@
 /**
- * Geo-OV - applicatie voor het registreren van KAR meldpunten               
- *                                                                           
- * Copyright (C) 2009-2013 B3Partners B.V.                                   
- *                                                                           
- * This program is free software: you can redistribute it and/or modify      
- * it under the terms of the GNU Affero General Public License as            
- * published by the Free Software Foundation, either version 3 of the        
- * License, or (at your option) any later version.                           
- *                                                                           
- * This program is distributed in the hope that it will be useful,           
- * but WITHOUT ANY WARRANTY; without even the implied warranty of            
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
- * GNU Affero General Public License for more details.                       
- *                                                                           
- * You should have received a copy of the GNU Affero General Public License  
- * along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ * Geo-OV - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2009-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package nl.b3p.kar.stripes;
@@ -44,42 +44,42 @@ import org.stripesstuff.stripersist.Stripersist;
 
 /**
  * Stripes klasse waarmee gebruikers kunnen worden getoond en bewerkt.
- * 
+ *
  * @author Matthijs Laan
  */
 @StrictBinding
 @UrlBinding("/action/beheer/gebruikers")
 public class GebruikersActionBean implements ActionBean, ValidationErrorHandler {
     private static final String JSP = "/WEB-INF/jsp/beheer/gebruikers.jsp";
-    
+
     private ActionBeanContext context;
-    
+
     private List<Gebruiker> gebruikers;
-    
+
     private List<Role> allRoles;
-    
+
     private List<DataOwner> dataOwners;
-    
+
     private String dataOwnersJson;
-    
+
     @Validate(required=true, on="save")
     private Integer role;
-    
+
     @Validate(maxlength=50)
     private String password;
-    
+
     @Validate(converter = EntityTypeConverter.class)
     @ValidateNestedProperties({
         @Validate(field="username", required=true, maxlength=30, on="save"),
         @Validate(field="fullname", maxlength=50),
         @Validate(field="email", converter=EmailTypeConverter.class, maxlength=50),
         @Validate(field="phone", maxlength=15)
-    })          
+    })
     private Gebruiker gebruiker;
-    
+
     @Validate
     private List<String> dataOwnersEditable = new ArrayList();
-    
+
     @Validate
     private List<String> dataOwnersReadable = new ArrayList();
 
@@ -87,11 +87,11 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public ActionBeanContext getContext() {
         return context;
     }
-    
+
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
-    
+
     /**
      *
      * @return
@@ -99,7 +99,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public List<Gebruiker> getGebruikers() {
         return gebruikers;
     }
-    
+
     /**
      *
      * @param gebruikers
@@ -107,7 +107,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setGebruikers(List<Gebruiker> gebruikers) {
         this.gebruikers = gebruikers;
     }
-    
+
     /**
      *
      * @return
@@ -115,7 +115,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public Gebruiker getGebruiker() {
         return gebruiker;
     }
-    
+
     /**
      *
      * @param gebruiker
@@ -123,7 +123,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setGebruiker(Gebruiker gebruiker) {
         this.gebruiker = gebruiker;
     }
-    
+
     /**
      *
      * @return
@@ -131,7 +131,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public String getPassword() {
         return password;
     }
-    
+
     /**
      *
      * @param password
@@ -139,7 +139,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     /**
      *
      * @return
@@ -147,7 +147,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public List<Role> getAllRoles() {
         return allRoles;
     }
-    
+
     /**
      *
      * @param allRoles
@@ -155,7 +155,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setAllRoles(List<Role> allRoles) {
         this.allRoles = allRoles;
     }
-    
+
     /**
      *
      * @return
@@ -163,7 +163,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public List<DataOwner> getDataOwners() {
         return dataOwners;
     }
-    
+
     /**
      *
      * @param dataOwners
@@ -171,7 +171,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setDataOwners(List<DataOwner> dataOwners) {
         this.dataOwners = dataOwners;
     }
-    
+
     /**
      *
      * @return
@@ -179,7 +179,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public String getDataOwnersJson() {
         return dataOwnersJson;
     }
-    
+
     /**
      *
      * @param dataOwnersJson
@@ -187,7 +187,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setDataOwnersJson(String dataOwnersJson) {
         this.dataOwnersJson = dataOwnersJson;
     }
-    
+
     /**
      *
      * @return
@@ -195,7 +195,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public List<String> getDataOwnersEditable() {
         return dataOwnersEditable;
     }
-    
+
     /**
      *
      * @param dataOwnersEditable
@@ -211,7 +211,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setDataOwnersReadable(List<String> dataOwnersReadable) {
         this.dataOwnersReadable = dataOwnersReadable;
     }
-    
+
     /**
      *
      * @return
@@ -219,7 +219,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public Integer getRole() {
         return role;
     }
-    
+
     /**
      *
      * @param role
@@ -228,7 +228,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         this.role = role;
     }
     //</editor-fold>
-    
+
     /**
      * Methode bouwt lijsten op voor gebruikers en dataowners en rechten voor
      * gebruik in edit pagina.
@@ -238,7 +238,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
         allRoles = Stripersist.getEntityManager().createQuery("from Role order by role").getResultList();
         dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
-        
+
         JSONArray ja = new JSONArray();
         for(DataOwner dao: dataOwners) {
             JSONObject jo = new JSONObject();
@@ -249,15 +249,15 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
                 ja.put(jo);
             } catch(JSONException je) {
             }
-        }        
+        }
         dataOwnersJson = ja.toString();
     }
 
     public Resolution handleValidationErrors(ValidationErrors errors) throws Exception {
         loadGebruikerLists();
         return context.getSourcePageResolution();
-    }    
-    
+    }
+
     /**
      * Methode bouwt per gebruiker alle onderliggende informatie op.
      */
@@ -277,10 +277,10 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
             }
         }
     }
-    
+
     /**
      * Default resolution voor het alleen tonen van de lijst met gebruikers.
-     * 
+     *
      */
     @DefaultHandler
     @DontBind
@@ -290,42 +290,45 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      * Resolution voor het bewerken van een gebruiker.
-     * 
+     *
      */
     @DontValidate
     public Resolution edit() {
-        
+
         if(gebruiker != null) {
-            String rolename = Role.GEBRUIKER;
-            for(Role r: (Set<Role>)gebruiker.getRoles()) {
-                if(r.getRole().equals(Role.BEHEERDER)) {
-                    rolename = Role.BEHEERDER;
+            String rolename = null;
+            if(gebruiker.isBeheerder()){
+                rolename = Role.BEHEERDER;
+            }else{
+                for (Role r : (Set<Role>) gebruiker.getRoles()) {
+                    rolename = r.getRole();
                 }
             }
+
             role = ((Role)Stripersist.getEntityManager().createQuery("from Role where role = :r").setParameter("r", rolename).getSingleResult()).getId();
         }
-        
+
         return new ForwardResolution(JSP);
     }
-    
+
     /**
      * Resolution voor het toevoegen van een gebruiker.
-     * 
+     *
      */
     @DontValidate
     public Resolution add() {
         gebruiker = new Gebruiker();
         return new ForwardResolution(JSP);
     }
-    
+
     /**
      * Resolution die een gebruiker opslaat.
      *
      */
     public Resolution save() throws Exception {
-    
+
         EntityManager em = Stripersist.getEntityManager();
-        
+
         /* check of username al bestaat */
         Gebruiker bestaandeUsername = null;
         try {
@@ -340,13 +343,13 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
             getContext().getValidationErrors().addGlobalError(new SimpleError("Gebruikersnaam is al in gebruik"));
             return context.getSourcePageResolution();
         }
-        
+
         if(password != null) {
             gebruiker.changePassword(context.getRequest(), password);
             password = null;
         }
-        
-        gebruiker.getRoles().clear();        
+
+        gebruiker.getRoles().clear();
         gebruiker.getRoles().add(em.find(Role.class, role));
         gebruiker.getDataOwnerRights().clear(); // XXX werkt niet
         if(gebruiker.getId() != null) {
@@ -361,21 +364,21 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         }
         for(String daoId: dataOwnersReadable) {
             gebruiker.setDataOwnerRight(DataOwner.findByCode(daoId), null, Boolean.TRUE);
-        } 
-        
+        }
+
         em.getTransaction().commit();
-        
+
         loadLists();
-        
+
         getContext().getMessages().add(new SimpleMessage("Gebruikersgegevens opgeslagen"));
-               
+
         gebruiker = null;
         return new ForwardResolution(JSP);
     }
-    
+
     /**
      * Resolution die een gebruiker verwijdert.
-     * 
+     *
      */
     public Resolution delete() {
         EntityManager em = Stripersist.getEntityManager();

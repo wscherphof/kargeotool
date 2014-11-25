@@ -82,7 +82,7 @@ public class SearchActionBean implements ActionBean {
     @Validate(required = false) // niet noodzakelijk: extra filter voor buslijnen, maar hoeft niet ingevuld te zijn
     private String dataOwner;
     private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
-    
+
     @Validate
     private String vehicleType;
 
@@ -112,7 +112,7 @@ public class SearchActionBean implements ActionBean {
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
             for (RoadsideEquipment roadsideEquipment : l) {
-                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner()) || getGebruiker().hasVRIRight(roadsideEquipment)) {
+                if (getGebruiker().isBeheerder() || getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())|| getGebruiker().canReadDataOwner(roadsideEquipment.getDataOwner()) || getGebruiker().hasVRIRight(roadsideEquipment) || getGebruiker().isVervoerder()) {
                     if(vehicleType == null || roadsideEquipment.hasSignalForVehicleType(vehicleType) ){
                         rseqs.put(roadsideEquipment.getRseqGeoJSON());
                     }
@@ -185,7 +185,7 @@ public class SearchActionBean implements ActionBean {
     public Resolution busline() throws Exception {
 
         Map<String, List<String>> schemaMap = getSchemas();
-        
+
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
 
@@ -195,7 +195,7 @@ public class SearchActionBean implements ActionBean {
             JSONArray lines = new JSONArray();
             for (String company : schemaMap.keySet()) {
                 List<String> schemas = schemaMap.get(company);
-            
+
                 for (String schema : schemas) {
                     String sql = "select distinct(l.linepublicnumber,l.linename),l.linename,l.linepublicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), "
                             + "max(ymax(j.the_geom)), j.dataowner "
@@ -254,23 +254,23 @@ public class SearchActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
      private Map<String, List<String>> getSchemas() {
         Map<String, List<String>> schemas = new HashMap<String,List<String>>();
-        
+
         Connection conn = null;
         try {
             Context initCtx = new InitialContext();
-            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");            
+            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");
             conn = ds.getConnection();
-            
+
             List<String> schemaList = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
-            
+
             for(String schema: schemaList) {
 
                 try {
                     Map<String,Object> meta = new QueryRunner().query(conn, "select data_owner_code from " + schema + ".geo_ov_metainfo", new MapHandler());
-                    
+
                     for(Map.Entry<String,Object> entry: meta.entrySet()) {
                         String val = (String)entry.getValue();
                         if(!schemas.containsKey(val)){
@@ -282,9 +282,9 @@ public class SearchActionBean implements ActionBean {
                 } catch(Exception e) {
                     log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
                 }
-                
+
             }
-            
+
         } catch(Exception e) {
             log.error("Kan geen ov info ophalen: ", e);
         } finally {
