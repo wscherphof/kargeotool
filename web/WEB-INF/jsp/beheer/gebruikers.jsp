@@ -1,20 +1,20 @@
 <%--
- Geo-OV - applicatie voor het registreren van KAR meldpunten               
-                                                                           
- Copyright (C) 2009-2013 B3Partners B.V.                                   
-                                                                           
- This program is free software: you can redistribute it and/or modify      
- it under the terms of the GNU Affero General Public License as            
- published by the Free Software Foundation, either version 3 of the        
- License, or (at your option) any later version.                           
-                                                                           
- This program is distributed in the hope that it will be useful,           
- but WITHOUT ANY WARRANTY; without even the implied warranty of            
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              
- GNU Affero General Public License for more details.                       
-                                                                           
- You should have received a copy of the GNU Affero General Public License  
- along with this program. If not, see <http://www.gnu.org/licenses/>.      
+ Geo-OV - applicatie voor het registreren van KAR meldpunten
+
+ Copyright (C) 2009-2013 B3Partners B.V.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 --%>
 
 <%@include file="/WEB-INF/jsp/taglibs.jsp" %>
@@ -24,7 +24,7 @@
 
     <stripes:layout-component name="headerlinks" >
         <%@include file="/WEB-INF/jsp/commons/headerlinks.jsp" %>
-        
+
         <script type="text/javascript" src="<c:url value="/js/utils.js"/>"></script>
     </stripes:layout-component>
     <stripes:layout-component name="content">
@@ -33,7 +33,7 @@
 
 <stripes:form beanclass="nl.b3p.kar.stripes.GebruikersActionBean">
     <stripes:hidden name="gebruiker"/>
-    
+
     <c:if test="${!empty actionBean.gebruikers}">
         <script type="text/javascript">
             function loadScroll() {
@@ -63,7 +63,7 @@
                     document.attachEvent("onmouseup", saveScroll);
                     window.attachEvent("onload", loadScroll);
             }
-        </script>        
+        </script>
         <div class="description">
         Aantal gebruikers: <b>${fn:length(actionBean.gebruikers)}</b>
         </div>
@@ -72,7 +72,7 @@
                 <th style="width: 150px">Gebruikersnaam</th>
                 <th style="width: 200px">Naam</th>
                 <th style="width: 200px">E-mail</th>
-                <th style="width: 100px">Telefoonnummer</th>                
+                <th style="width: 100px">Telefoonnummer</th>
                 <th></th>
             </tr>
         </table>
@@ -116,9 +116,9 @@
 
     <div class="formedit">
         <stripes:errors/>
-        <stripes:messages/>        
+        <stripes:messages/>
         <c:if test="${empty actionBean.gebruiker}">
-            <stripes:submit name="add" onclick="scrollToBottom();">Nieuw account toevoegen</stripes:submit>         
+            <stripes:submit name="add" onclick="scrollToBottom();">Nieuw account toevoegen</stripes:submit>
         </c:if>
 
         <c:if test="${!empty actionBean.gebruiker}">
@@ -163,16 +163,13 @@
                                 <tr>
                                     <td><fmt:message key="gebruiker.phone"/></td>
                                     <td><stripes-dynattr:text name="gebruiker.phone" size="15" type="tel"/></td>
-                                </tr>            
+                                </tr>
                                 <tr>
                                     <td style="vertical-align: top"><fmt:message key="gebruiker.role"/></td>
                                     <td>
                                         <script type="text/javascript">
-                                            function checkRole(e) {
-                                                if(!e) { e = window.event };
-                                                var target = e.target ? e.target : e.srcElement;
-
-                                                var beheerder = document.getElementById("role_beheerder").checked;
+                                            function checkRole() {
+                                                var beheerder = document.getElementById("role_beheerder").checked || document.getElementById("role_vervoerder").checked  ;
                                                 document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
                                                 document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
                                                 document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
@@ -190,7 +187,7 @@
                             <c:set var="isBeheerder" value="${actionBean.gebruiker.beheerder}"/>
                             <div id="roListHeader">
                                 <div id="beheerder" style="display: ${isBeheerder ? 'block' : 'none'} ">
-                                    Een beheerder kan van alle wegbeheerders gegevens lezen en bewerken.
+                                    Een beheerder kan van alle wegbeheerders gegevens lezen en bewerken. Een vervoerder kan van alle wegbeheerder gegevens lezen.
                                 </div>
                                 <div id="nietBeheerder" style="display: ${isBeheerder ? 'none' : 'block'}">
                                     Gebruiker kan gegevens van de onderstaande wegbeheerders lezen of bewerken:
@@ -227,6 +224,7 @@
             </div>
             <script type="text/javascript">
                 setOnload(initAvailableDataOwners);
+                setOnload(checkRole);
 
                 var dataOwners = ${actionBean.dataOwnersJson};
                 var usedDataOwners = {};
@@ -372,12 +370,12 @@
                     availableDO.add(option, insertBefore);
                 }
 
-            </script>    
+            </script>
         </c:if>
     </div>
 
 </stripes:form>
-        
+
 </stripes:layout-component>
-        
+
 </stripes:layout-render>
