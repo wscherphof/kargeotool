@@ -644,6 +644,8 @@ public class EditorActionBean implements ActionBean {
                 }
             }
 
+            rseq.setVehicleType(rseq.determineType());
+
             em.persist(rseq);
             em.getTransaction().commit();
 

@@ -211,6 +211,9 @@ public class RoadsideEquipment {
     @XmlElement(namespace=Namespace.NS_BISON_TMI8_KV9_CORE)
     private String delimiter = "";
 
+    @XmlTransient
+    private String vehicleType;
+
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
@@ -435,6 +438,14 @@ public class RoadsideEquipment {
     public void setValidationErrors(Integer validationErrors) {
         this.validationErrors = validationErrors;
     }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
     //</editor-fold>
 
     public ActivationPoint getPointByNumber(int number) {
@@ -501,31 +512,9 @@ public class RoadsideEquipment {
         p.put("memo", memo);
         p.put("id",id);
         p.put("validationErrors", validationErrors);
+        p.put("vehicleType", vehicleType);
 
         // geen kar attributes
-
-        //Hier type van kruispunt: OV/Hulpdienst/Gemixt
-        String typeRseq = null;
-        for (Movement movement : movements) {
-            for (MovementActivationPoint map : movement.getPoints()) {
-                if(map.getSignal() == null ){
-                    continue;
-                }
-                List<VehicleType> types = map.getSignal().getVehicleTypes();
-                for (VehicleType vehicleType : types) {
-                    if(typeRseq == null){
-                        typeRseq = vehicleType.getGroep();
-                    }else if(!typeRseq.equals(vehicleType.getGroep())){
-                        typeRseq = "Gemixt";
-                    }
-                }
-            }
-        }
-        if(typeRseq == null){
-            typeRseq = "Gemixt";
-        }
-        p.put("vehicleType", typeRseq);
-
         gj.put("properties", p);
         return gj;
     }
@@ -971,5 +960,28 @@ public class RoadsideEquipment {
         }
 
         return errors.size() - errorsStartIndex;
+    }
+
+    public String determineType() {
+        String typeRseq = null;
+        for (Movement movement : movements) {
+            for (MovementActivationPoint map : movement.getPoints()) {
+                if (map.getSignal() == null) {
+                    continue;
+                }
+                List<VehicleType> types = map.getSignal().getVehicleTypes();
+                for (VehicleType vt : types) {
+                    if (typeRseq == null) {
+                        typeRseq = vt.getGroep();
+                    } else if (!typeRseq.equals(vt.getGroep())) {
+                        typeRseq = "Gemixt";
+                    }
+                }
+            }
+        }
+        if (typeRseq == null) {
+            typeRseq = "Gemixt";
+        }
+        return typeRseq;
     }
 }
