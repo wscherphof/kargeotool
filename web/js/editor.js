@@ -418,7 +418,6 @@ Ext.define("Editor", {
                                             yes: "Ja"
                                         },
                                         icon: Ext.Msg.QUESTION
-
                                     });
                                 } else {
                                     Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');

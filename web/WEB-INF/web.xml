@@ -10,7 +10,7 @@
         <param-name>javax.servlet.jsp.jstl.fmt.locale</param-name>
         <param-value>nl</param-value>
     </context-param>
-    
+
     <context-param>
         <param-name>mapserver-url</param-name>
         <param-value>http://geo-ov-acc.b3p.nl/cgi-bin/mapserv?map=/srv/maps/transmodel_acc.map</param-value>
@@ -23,6 +23,18 @@
         <param-name>debug_editoractionbean_saveorupdate</param-name>
         <param-value>false</param-value>
     </context-param>
+     <context-param>
+        <description>
+            Configure at which interval in minutes the carriers informer job should be run.
+            Comment out this parameter or set to -1 to disable.
+        </description>
+        <param-name>inform.carriers.schedule</param-name>
+        <param-value>0 42 10 * * ?</param-value>
+    </context-param>
+    <listener>
+        <description>The class which initializes (and if configured sets up) the solr instance.</description>
+        <listener-class>nl.b3p.kar.inform.CarrierInformerListener</listener-class>
+    </listener>
     <filter>
         <filter-name>Security Filter</filter-name>
         <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
@@ -54,7 +66,7 @@
     <filter>
         <filter-name>No URL rewriting filter</filter-name>
         <filter-class>nl.b3p.commons.services.NoUrlRewritingFilter</filter-class>
-    </filter>    
+    </filter>
 	<filter>
 		<display-name>Stripes Filter</display-name>
 		<filter-name>StripesFilter</filter-name>
@@ -99,8 +111,7 @@
             <param-name>SecurityManager.Class</param-name>
             <param-value>org.stripesstuff.plugin.security.J2EESecurityManager</param-value>
         </init-param>
- 	</filter>    
-
+ 	</filter>
     <filter-mapping>
         <filter-name>No URL rewriting filter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -133,8 +144,8 @@
 		<servlet-name>StripesDispatcher</servlet-name>
 		<servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
-	</servlet>    
-    
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>StripesDispatcher</servlet-name>
 		<url-pattern>*.action</url-pattern>
@@ -147,7 +158,7 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>*.wait</url-pattern>
     </servlet-mapping>
-            
+
     <session-config>
         <session-timeout>
             480
