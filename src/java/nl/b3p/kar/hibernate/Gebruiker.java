@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import nl.b3p.kar.SecurityRealm;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
@@ -407,5 +409,14 @@ public class Gebruiker implements Principal {
         if(readable != null) {
             dor.setReadable(readable);
         }
+    }
+
+    public JSONObject toJSON() throws JSONException{
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("username", username);
+        obj.put("fullname", fullname);
+        obj.put("mail", email);
+        return obj;
     }
 }

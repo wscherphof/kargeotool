@@ -371,7 +371,7 @@ Ext.define("Editor", {
      */
     saveOrUpdate: function(onSaved) {
         var rseq = this.activeRseq;
-        if(rseq != null) {
+        if(rseq !== null) {
             this.setLoading(true, "Bezig met opslaan...");
             Ext.Ajax.request({
                 url: editorActionBeanUrl,
@@ -396,15 +396,33 @@ Ext.define("Editor", {
                         editor.olc.addFeatures(rseq.toGeoJSON());
                         this.setActiveRseq(rseq);
 
-
-
                         if (msg.extraMessage) {
                             Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);
                         } else {
                             if (onSaved) {
                                 onSaved();
                             } else {
-                                Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                                if (rseq.validationErrors === 0) {
+                                    Ext.Msg.show({
+                                        title: "Informeren vervoerders",
+                                        msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
+                                        fn: function (button) {
+                                            if (button === 'yes') {
+                                                this.informCarriers();
+                                            }
+                                        },
+                                        scope: this,
+                                        buttons: Ext.Msg.YESNO,
+                                        buttonText: {
+                                            no: "Nee",
+                                            yes: "Ja"
+                                        },
+                                        icon: Ext.Msg.QUESTION
+
+                                    });
+                                } else {
+                                    Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                                }
                             }
                         }
                     }else{
@@ -417,6 +435,61 @@ Ext.define("Editor", {
                 }
             });
         }
+    },
+
+    showCarriers : function(){
+        this.setLoading(true, "Bezig met ophalen vervoerders...");
+        Ext.Ajax.request({
+            url: usersActionBeanUrl,
+            method: 'POST',
+            scope: this,
+            params: {
+                'listCarriers': true
+            },
+            success: function (response) {
+                this.setLoading(false);
+                var msg = Ext.JSON.decode(response.responseText);
+                if (msg.success) {
+                    var me = this;
+                    this.editForms.showCarriers(msg.carriers, function (ids) {
+                        me.informCarriers(ids);
+                    });
+                } else {
+                    Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
+                }
+            },
+            failure: function (response) {
+                this.setLoading(false);
+                Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.');
+            }
+        });
+    },
+
+    informCarriers: function (carriers) {
+        this.setLoading(true, "Bezig met opslaan...");
+        Ext.Ajax.request({
+            url: editorActionBeanUrl,
+
+            scope: this,
+            params: {
+                'informCarriers': true,
+                'usersToInform': carriers.join(", "),
+                rseq: this.activeRseq.id
+            },
+            success: function (response) {
+                this.setLoading(false);
+                var msg = Ext.JSON.decode(response.responseText);
+                if (msg.success) {
+
+                } else {
+                    Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
+                }
+            },
+            failure: function (response) {
+                this.setLoading(false);
+                Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.');
+            }
+        });
     },
 
     exportXml: function() {

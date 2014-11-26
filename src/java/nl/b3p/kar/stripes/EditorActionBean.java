@@ -42,6 +42,7 @@ import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.validation.OneToManyTypeConverter;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.hibernate.*;
@@ -89,6 +90,9 @@ public class EditorActionBean implements ActionBean {
 
     @Validate
     private String extent;
+
+    @Validate(converter = OneToManyTypeConverter.class)
+    private List<Gebruiker> usersToInform;
 
     public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
@@ -447,6 +451,28 @@ public class EditorActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
+
+    /**
+     * Ajax handler welke verwerkt welke vervoerders geïnformeerd moeten worden over het opgegeven RoadsideEquipment
+     */
+
+    public Resolution informCarriers() throws JSONException{
+        EntityManager em = Stripersist.getEntityManager();
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        for (Gebruiker vervoerder : usersToInform) {
+            InformMessage msg = new InformMessage();
+            msg.setAfzender(getGebruiker());
+            msg.setVervoerder(vervoerder);
+            msg.setRseq(rseq);
+            em.persist(msg);
+        }
+
+        em.getTransaction().commit();
+        info.put("success", Boolean.TRUE);
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
     /**
      * Ajax handler om een RoadsideEquipment die in de json parameter is
      * meegegeven op te slaan.
@@ -794,5 +820,14 @@ public class EditorActionBean implements ActionBean {
     public void setOvInfoJSON(JSONArray ovInfoJSON) {
         this.ovInfoJSON = ovInfoJSON;
     }
+
+    public List<Gebruiker> getUsersToInform() {
+        return usersToInform;
+    }
+
+    public void setUsersToInform(List<Gebruiker> usersToInform) {
+        this.usersToInform = usersToInform;
+    }
     // </editor-fold>
+
 }

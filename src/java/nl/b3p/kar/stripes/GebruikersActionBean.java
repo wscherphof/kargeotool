@@ -19,6 +19,7 @@
 
 package nl.b3p.kar.stripes;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -390,5 +391,20 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         getContext().getMessages().add(new SimpleMessage("Gebruiker is verwijderd"));
         gebruiker = null;
         return new RedirectResolution(this.getClass(), "list").flash(this);
+    }
+
+    public Resolution listCarriers() throws JSONException{
+        JSONObject info = new JSONObject();
+        info.put( "success", Boolean.FALSE );
+        JSONArray users = new JSONArray();
+        for (Gebruiker geb : gebruikers) {
+            if(geb.isVervoerder()){
+                users.put(geb.toJSON());
+            }
+        }
+
+        info.put("carriers", users);
+        info.put( "success", Boolean.TRUE );
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 }

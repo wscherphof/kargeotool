@@ -22,45 +22,46 @@
  */
 
 Ext.define("EditForms", {
-    
+
     editor: null,
-    
+
     rseqEditWindow: null,
     karAttributesEditWindow: null,
     pointEditWindow: null,
     activationPointEditWindow: null,
     editCoords:null,
     editDirectionWindow:null,
-    
+    carriersWindow:null,
+
     rseqType: {
         "": "nieuw verkeerssysteem",
         "CROSSING": "VRI",
         "GUARD": "bewakingssysteem nadering voertuig",
         "BAR": "afsluittingssysteem"
     },
-    
+
     constructor: function(editor) {
         this.editor = editor;
     },
-    
+
     /**
      * Opent een popup waarmee de gebruiker een rseq kan wijzigen
      * @param newRseq (optioneel) de rseq die de init waardes invult in het formulier
-     * als de newRseq niet wordt meegegeven wordt het geselecteerde object gebruikt 
+     * als de newRseq niet wordt meegegeven wordt het geselecteerde object gebruikt
      * @param okHanlder de functie die wordt aangeroepen nadat er op 'ok' is geklikt
      * De functie krijg als parameter de gewijzigde rseq mee.
      */
     editRseq: function(newRseq, okHandler) {
         var rseq = newRseq || editor.selectedObject;
-        
+
         if(this.rseqEditWindow != null) {
             this.rseqEditWindow.destroy();
             this.rseqEditWindow = null;
-        }   
-        
+        }
+
         var okFunction = function (form) {
             var form = Ext.getCmp ("rseqForm").getForm();
-            
+
             if(!form.isValid()) {
                 Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
                 return;
@@ -95,7 +96,7 @@ Ext.define("EditForms", {
                     });
                 }
             },
-            items: {  
+            items: {
                 id: 'rseqForm',
                 disabled: !rseq.editable,
                 xtype: 'form',
@@ -112,7 +113,7 @@ Ext.define("EditForms", {
                     xtype: 'fieldcontainer',
                     fieldLabel: 'Soort verkeerssysteem',
                     defaultType: 'radiofield',
-                    layout: 'vbox',               
+                    layout: 'vbox',
                     items: [{
                         name: 'type',
                         inputValue: 'CROSSING',
@@ -191,7 +192,7 @@ Ext.define("EditForms", {
                             value = parseInt(value, 10);
                             field.setValue(value);
                         }
-                    }                    
+                    }
                 },{
                     fieldLabel: 'Plaats',
                     name: 'town',
@@ -239,7 +240,7 @@ Ext.define("EditForms", {
             }
         }).show();
     },
-    
+
     /**
      * KAR attributen edit form voor een rseq.
      */
@@ -247,11 +248,11 @@ Ext.define("EditForms", {
         if(this.karAttributesEditWindow != null) {
             this.karAttributesEditWindow.destroy();
             this.karAttributesEditWindow = null;
-        }   
-        
-        this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow, 
-            "Bewerken KAR attributen voor " + this.rseqType[rseq.type] + 
-                (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),        
+        }
+
+        this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow,
+            "Bewerken KAR attributen voor " + this.rseqType[rseq.type] +
+                (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             "In dit scherm kan worden aangegeven welke KAR attributen in KAR " +
                 "berichten die aan dit verkeerssysteem worden verzonden moeten " +
                 "worden gevuld. Dit geldt voor alle soorten berichten " +
@@ -261,21 +262,21 @@ Ext.define("EditForms", {
                 rseq.attributes = atts;
             }
         );
-        
+
         this.karAttributesEditWindow.show();
     },
-    
+
     /**
      * Opent een popup waarmee een non activation punt kan worden bewerkt.
      */
     editNonActivationPoint: function(newPoint, okHandler, cancelHandler) {
         var rseq = this.editor.activeRseq;
         var point = newPoint || this.editor.selectedObject;
-        
+
         if(this.pointEditWindow != null) {
             this.pointEditWindow.destroy();
             this.pointEditWindow = null;
-        }   
+        }
         var okFunction =function() {
             var form = Ext.getCmp("nonActivationForm").getForm();
             if(!form.isValid()) {
@@ -292,7 +293,7 @@ Ext.define("EditForms", {
 
             if(okHandler) {
                 okHandler(point);
-            }                        
+            }
         };
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
@@ -311,7 +312,7 @@ Ext.define("EditForms", {
                     });
                 }
             },
-            items: {  
+            items: {
                 xtype: 'form',
                 id:'nonActivationForm',
                 bodyStyle: 'padding: 5px 5px 0',
@@ -337,10 +338,10 @@ Ext.define("EditForms", {
                     handler: function() {
                         me.pointEditWindow.destroy();
                         me.pointEditWindow = null;
-                        
+
                         if(cancelHandler) {
                             cancelHandler();
-                        }                        
+                        }
                     }
                 }]
             }
@@ -348,24 +349,24 @@ Ext.define("EditForms", {
         Ext.getCmp("labelEdit").selectText(0);
         Ext.getCmp("labelEdit").focus(false, 100);
     },
-    
+
     /**
      * Opent een window waarmee een activation punt kan worden gewijzgd.
      */
     editActivationPoint: function(newUitmeldpunt, newMap, okHandler, cancelHandler) {
         var rseq = this.editor.activeRseq;
         var point = newUitmeldpunt || this.editor.selectedObject;
-        
+
         if(this.activationPointEditWindow != null) {
             this.activationPointEditWindow.destroy();
             this.activationPointEditWindow = null;
-        }   
-        
+        }
+
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
         var apType = point.getType().split("_")[1];
         var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
-        
+
         var map = newMap;
         var movements = null;
         if(!map) {
@@ -377,7 +378,7 @@ Ext.define("EditForms", {
             }
             map = movements[0].map;
         }
-        
+
         var ov = [];
         var hulpdienst = [];
         var vehicles = {root:{
@@ -386,20 +387,20 @@ Ext.define("EditForms", {
             iconCls: "noTreeIcon",
             expanded: true,
             checked: false,
-            children :[ 
+            children :[
                 {
-                    id: 'ov-node', 
-                    text: 'OV', 
-                    checked: false, 
+                    id: 'ov-node',
+                    text: 'OV',
+                    checked: false,
                     iconCls: "noTreeIcon",
                     expanded:false,
                     leaf: false,
                     children: ov
-                }, 
+                },
                 {
-                    id: 'hulpdienst-node', 
-                    text: 'Hulpdiensten', 
-                    checked: false, 
+                    id: 'hulpdienst-node',
+                    text: 'Hulpdiensten',
+                    checked: false,
                     iconCls: "noTreeIcon",
                     expanded:false,
                     leaf: false,
@@ -420,7 +421,7 @@ Ext.define("EditForms", {
                 var leaf = {
                         id: vt.nummer,
                         text: vt.omschrijving,
-                        checked: false, 
+                        checked: false,
                         iconCls: "noTreeIcon",
                         leaf: true};
                 if(vt.groep == "OV"){
@@ -430,9 +431,9 @@ Ext.define("EditForms", {
                 }
             }
         });
-        
+
         var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
-            
+
         var editingUitmeldpunt = map.commandType === 2;
         var edittingInmeldpunt = map.commandType === 1;
         var signalItems = [{
@@ -449,7 +450,7 @@ Ext.define("EditForms", {
                     value = parseInt(value, 10);
                     field.setValue(value);
                 }
-            },                
+            },
             fieldLabel: 'Virtual local loop number',
             name: 'virtualLocalLoopNumber',
             value: map.virtualLocalLoopNumber
@@ -461,7 +462,7 @@ Ext.define("EditForms", {
             fieldLabel: 'Voertuigtypes',
             treeWidth:290,
             treeHeight: 300,
-            name: 'vehicleTypes',   
+            name: 'vehicleTypes',
             store: vehicleTypesStore
         },
         {
@@ -482,7 +483,7 @@ Ext.define("EditForms", {
                     {value: 'FORCED', desc: 'Automatisch: altijd melding'},
                     {value: 'MANUAL', desc: 'Handmatig: handmatig door chauffeur'}
                 ]
-            })   
+            })
         }];
         if(editingUitmeldpunt) {
             var dirs = { root:{
@@ -491,7 +492,7 @@ Ext.define("EditForms", {
                 iconCls: "noTreeIcon",
                 expanded: true,
                 checked: false,
-                children :[ 
+                children :[
                     {
                         id: 1,
                         text: 'Linksaf',
@@ -515,7 +516,7 @@ Ext.define("EditForms", {
                     }
                 ]
             }};
-            
+
             var directionStore = Ext.create('Ext.data.TreeStore', dirs);
             var direction = map.direction ? map.direction : "";
             var dir = direction.join ? direction.join(",") : direction;
@@ -541,12 +542,12 @@ Ext.define("EditForms", {
                 fieldLabel: 'Richting(en)',
                 treeWidth:290,
                 treeHeight: 150,
-                name: 'direction',   
+                name: 'direction',
                 store: directionStore
             }
         ]);
         }
-        
+
         var okFunction = function() {
             var form = Ext.getCmp('activationForm').getForm();
             if(!form.isValid()) {
@@ -577,7 +578,7 @@ Ext.define("EditForms", {
                 }
             } else {
 
-                // merge naar alle movements 
+                // merge naar alle movements
 
                 Ext.Array.each(movements, function(mvmtAndMap) {
                     //console.log("movement nummer " + mvmtAndMap.movement.nummer);
@@ -608,7 +609,7 @@ Ext.define("EditForms", {
                 okHandler(point);
             }
         };
-                
+
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
             height: map.commandType == 2 ? 310 : 247,
@@ -624,7 +625,7 @@ Ext.define("EditForms", {
                     });
                 }
             },
-            items: {  
+            items: {
                 xtype: 'form',
                 id: 'activationForm',
                 bodyStyle: 'padding: 5px 5px 0',
@@ -662,7 +663,7 @@ Ext.define("EditForms", {
                     handler: function() {
                         me.activationPointEditWindow.destroy();
                         me.activationPointEditWindow = null;
-                        
+
                         if(cancelHandler) {
                             cancelHandler();
                         }
@@ -673,7 +674,7 @@ Ext.define("EditForms", {
         Ext.getCmp("labelEdit").selectText(0);
         Ext.getCmp("labelEdit").focus(false, 100);
     },
-    
+
     editCoordinates : function (pointObject,okHandler,cancelHandler){
         var me = this;
         var coords = "";
@@ -685,13 +686,13 @@ Ext.define("EditForms", {
         var rdX = coords[0];
         var rdY = coords[1];
         var point = new Proj4js.Point(rdX, rdY);
-        
+
         var wgs = new Proj4js.Proj("EPSG:4236");
         var rd = new Proj4js.Proj("EPSG:28992");
-        Proj4js.transform(rd, wgs, point);            
+        Proj4js.transform(rd, wgs, point);
         var wgsX = point.x;
         var wgsY = point.y;
-        
+
         var okFunction = function() {
             var form = Ext.getCmp('coordinatesForm').getForm();
             if(!form.isValid()) {
@@ -726,7 +727,7 @@ Ext.define("EditForms", {
 
             if(okHandler) {
                 okHandler(point);
-            }                        
+            }
         };
         this.editCoords = Ext.create('Ext.window.Window', {
             title: 'Voer coördinaten',
@@ -743,7 +744,7 @@ Ext.define("EditForms", {
                 }
             },
             layout: 'fit',
-            items: {  
+            items: {
                 xtype: 'form',
                 id: 'coordinatesForm',
                 bodyStyle: 'padding: 5px 5px 0',
@@ -799,15 +800,64 @@ Ext.define("EditForms", {
                     handler: function() {
                         me.editCoords.destroy();
                         me.editCoords = null;
-                        
+
                         if(cancelHandler) {
                             cancelHandler();
-                        }                        
+                        }
                     }
                 }]
             }
         }).show();
     },
+
+    showCarriers: function (carriers, okFunction) {
+        var carrierStore = Ext.create('Ext.data.Store', {
+            storeId: 'carriersStore',
+            fields: ['id', 'mail', 'username'],
+            data: {'items': carriers},
+            proxy: {
+                type: 'memory',
+                reader: {
+                    type: 'json',
+                    root: 'items'
+                }
+            }
+        });
+        var me = this;
+
+        this.carriersWindow = Ext.create('Ext.window.Window', {
+            title: 'Selecteer vervoerder(s)',
+           // height: 200,
+            width: 420,
+            items: [{
+                    fieldLabel: 'Kies vervoerder(s)',
+                    labelWidth: 150,
+                    width: 400,
+                    store: carrierStore,
+                    queryMode: 'local',
+                    name: "carrierIds",
+                    id: "carrierIds",
+                    multiSelect: true,
+                    displayField: 'username',
+                    valueField: 'id',
+                    xtype: "combo"
+                }],
+            bbar: [
+                {xtype: 'button', text: 'Informeren', handler: function(){
+                        var ids = Ext.getCmp("carrierIds").getValue();
+                        me.carriersWindow.destroy();
+                        me.carriersWindow = null;
+                        okFunction(ids);
+                }},
+                {xtype: 'button', text: 'Annuleren', handler: function(){
+                    me.carriersWindow.destroy();
+                    me.carriersWindow = null;
+                }}
+            ]
+        });
+        this.carriersWindow.show();
+    },
+
     hasOpenWindows : function(){
         var windows = new Array();
         windows.push(this.rseqEditWindow);
@@ -816,15 +866,15 @@ Ext.define("EditForms", {
         windows.push(this.activationPointEditWindow);
         windows.push(this.editCoords);
         windows.push(this.editDirectionWindow);
-        
+
         for( var i = 0 ; i < windows.length; i++){
             var window = windows[i];
             if(window && !window.isHidden() ){
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
 });
