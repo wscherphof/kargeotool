@@ -45,6 +45,11 @@ public class InformMessage {
     private RoadsideEquipment rseq;
 
 
+    private boolean mailSent = false;
+
+    private boolean mailProcessed = false;
+
+
     // <editor-fold defaultstate="collapsed" desc="Getters and setters">
     public Integer getId() {
         return id;
@@ -78,6 +83,23 @@ public class InformMessage {
         this.rseq = rseq;
     }
 
+    public boolean isMailSent() {
+        return mailSent;
+    }
+
+    public void setMailSent(boolean mailSent) {
+        this.mailSent = mailSent;
+    }
+
+    public boolean isMailProcessed() {
+        return mailProcessed;
+    }
+
+    public void setMailProcessed(boolean mailProcessed) {
+        this.mailProcessed = mailProcessed;
+    }
+
 
     // </editor-fold>
+
 }

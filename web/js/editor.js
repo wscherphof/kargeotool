@@ -408,7 +408,7 @@ Ext.define("Editor", {
                                         msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
                                         fn: function (button) {
                                             if (button === 'yes') {
-                                                this.informCarriers();
+                                                this.showCarriers();
                                             }
                                         },
                                         scope: this,
