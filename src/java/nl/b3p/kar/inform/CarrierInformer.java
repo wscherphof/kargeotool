@@ -96,8 +96,9 @@ public class CarrierInformer implements Job {
 
     private String getBody(InformMessage inform, String appUrl) {
         RoadsideEquipment rseq = inform.getRseq();
+        String name = inform.getVervoerder().getFullname() != null ? inform.getVervoerder().getFullname()  : "vervoeder";
         String body = "";
-        body += "Beste " + inform.getVervoerder().getFullname() + ", <br/>";
+        body += "Beste " + name + ", <br/>";
         body += "<br/>";
         body += "U heeft een bericht via de applicatie geo-ov gekregen van " + inform.getAfzender().getFullname();
         body += ". Dit betreft een update van het kruispunt met KAR-adres " + rseq.getKarAddress() + ": " + rseq.getDescription() + " | " + rseq.getCrossingCode() + ".<br/>";
@@ -105,7 +106,9 @@ public class CarrierInformer implements Job {
         body += "<a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">hier</a> ";
         body += " downloaden. <br/>";
         body += "Een overzicht vind u ";
-        body += "<a href=\"" + appUrl + "/action/overview\">hier</a>.<br/><br/>";
+        body += "<a href=\"" + appUrl + "/action/overview?carrier=true\">hier</a>.<br/><br/>";
+        body += "U wordt vriendelijk verzocht het door te geven als u de wijzingen heeft verwerkt. Dit kan via de overzichtspagina, of via ";
+        body += "<a href=\"" + appUrl + "/action/overview?readMessage=true&informMessage=" + inform.getId()  + "\">deze link</a>.<br/><br/>";
         body += "Met vriendelijke groet.";
         return body;
     }
