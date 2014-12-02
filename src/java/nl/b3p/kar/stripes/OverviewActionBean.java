@@ -63,12 +63,24 @@ public class OverviewActionBean implements ActionBean{
     private String rseqIds;
 
     @DefaultHandler
-    public Resolution overview(){
+    public Resolution overview() {
         EntityManager em = Stripersist.getEntityManager();
+        Gebruiker geb = getGebruiker();
+        if (geb.isVervoerder()) {
+            messages = em.createQuery("From InformMessage where vervoerder = :vervoerder and mailSent = true and mailProcessed = false", InformMessage.class).setParameter("vervoerder", getGebruiker()).getResultList();
+            rseqIds = "";
+            for (InformMessage msg : messages) {
+                rseqIds += ", " + msg.getRseq().getId();
+            }
+            if (!rseqIds.isEmpty()) {
+                rseqIds = rseqIds.substring(2);
+            }
+            return new ForwardResolution(OVERVIEW_CARRIER);
+        } else {
+            messages = em.createQuery("From InformMessage where afzender = :afzender", InformMessage.class).setParameter("afzender", getGebruiker()).getResultList();
+            return new ForwardResolution(OVERVIEW_DATAOWNER);
+        }
 
-        messages = em.createQuery("From InformMessage where afzender = :afzender", InformMessage.class).setParameter("afzender", getGebruiker()).getResultList();
-
-        return new ForwardResolution(OVERVIEW_DATAOWNER);
     }
 
     public Resolution readMessage(){
@@ -79,24 +91,10 @@ public class OverviewActionBean implements ActionBean{
         em.persist(message);
         em.getTransaction().commit();
         context.getMessages().add(new SimpleMessage("Bericht over kruispunt " + message.getRseq().getDescription() + " succesvol verwerkt."));
-        return carrier();
+        return overview();
     }
 
-    public Resolution carrier(){
-        EntityManager em = Stripersist.getEntityManager();
-
-        messages = em.createQuery("From InformMessage where vervoerder = :vervoerder and mailSent = true and mailProcessed = false", InformMessage.class).setParameter("vervoerder", getGebruiker()).getResultList();
-        rseqIds = "";
-        for (InformMessage msg : messages) {
-            rseqIds += ", " + msg.getRseq().getId();
-        }
-        if( !rseqIds.isEmpty()){
-            rseqIds = rseqIds.substring(2);
-        }
-        return new ForwardResolution(OVERVIEW_CARRIER);
-    }
-
-      public Resolution testInformer(){
+    public Resolution testInformer(){
 
         CarrierInformer ci = new CarrierInformer();
 
