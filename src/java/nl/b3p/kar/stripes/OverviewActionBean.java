@@ -18,7 +18,9 @@
  */
 package nl.b3p.kar.stripes;
 
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.ActionBean;
@@ -27,12 +29,13 @@ import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.SimpleMessage;
+import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.InformMessage;
-import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.inform.CarrierInformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.stripesstuff.stripersist.Stripersist;
@@ -72,6 +75,7 @@ public class OverviewActionBean implements ActionBean{
 
         EntityManager em = Stripersist.getEntityManager();
         message.setMailProcessed(true);
+        message.setProcessedAt(new Date());
         em.persist(message);
         em.getTransaction().commit();
         context.getMessages().add(new SimpleMessage("Bericht over kruispunt " + message.getRseq().getDescription() + " succesvol verwerkt."));
@@ -90,6 +94,15 @@ public class OverviewActionBean implements ActionBean{
             rseqIds = rseqIds.substring(2);
         }
         return new ForwardResolution(OVERVIEW_CARRIER);
+    }
+
+      public Resolution testInformer(){
+
+        CarrierInformer ci = new CarrierInformer();
+
+        ci.run("http://localhost:8084/geo-ov", "kmail.b3p.nl", "support@b3partners.nl");
+        String llalala = "asfasfdasfsdf";
+        return new StreamingResolution("plain/text", new StringReader(llalala));
     }
 
     // <editor-fold desc="Getters and setters" defaultstate="collapsed">

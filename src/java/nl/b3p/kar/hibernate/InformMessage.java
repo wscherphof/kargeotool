@@ -18,11 +18,14 @@
  */
 package nl.b3p.kar.hibernate;
 
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -44,10 +47,18 @@ public class InformMessage {
     @ManyToOne(optional=false)
     private RoadsideEquipment rseq;
 
-
     private boolean mailSent = false;
 
     private boolean mailProcessed = false;
+
+    @Temporal(TemporalType.DATE)
+    private Date createdAt;
+
+    @Temporal(TemporalType.DATE)
+    private Date sentAt;
+
+    @Temporal(TemporalType.DATE)
+    private Date processedAt;
 
 
     // <editor-fold defaultstate="collapsed" desc="Getters and setters">
@@ -99,6 +110,29 @@ public class InformMessage {
         this.mailProcessed = mailProcessed;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getSentAt() {
+        return sentAt;
+    }
+
+    public void setSentAt(Date sentAt) {
+        this.sentAt = sentAt;
+    }
+
+    public Date getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(Date processedAt) {
+        this.processedAt = processedAt;
+    }
 
     // </editor-fold>
 

@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -462,6 +463,7 @@ public class EditorActionBean implements ActionBean {
         info.put("success", Boolean.FALSE);
         for (Gebruiker vervoerder : usersToInform) {
             InformMessage msg = new InformMessage();
+            msg.setCreatedAt(new Date());
             msg.setAfzender(getGebruiker());
             msg.setVervoerder(vervoerder);
             msg.setRseq(rseq);

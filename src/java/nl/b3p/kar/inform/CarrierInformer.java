@@ -90,6 +90,7 @@ public class CarrierInformer implements Job {
             msg.setSentDate(new Date());
             Transport.send(msg);
             inform.setMailSent(true);
+            inform.setSentAt(new Date());
         } catch (AddressException ex) {
             log.error("Cannot send inform message:", ex);
         } catch (MessagingException ex) {

@@ -33,20 +33,19 @@
         <div id="gebruikerScroller">
             <table class="tableheader" style="width: 100%;">
                 <tr>
-                    <th>Kruispunt</th><th>Vervoerder</th><th>Verzonden</th><th>Verwerkt</th><th>Bekijk</th>
+                    <th>Kruispunt</th><th>Vervoerder</th><th>Gemaakt op</th><th>Verzonden</th><th>Verwerkt</th><th>Bekijk</th>
                 </tr>
                 <c:forEach items="${actionBean.messages}" var="message">
                     <tr>
                         <td>${message.rseq.karAddress}: ${message.rseq.description} (${message.rseq.town})</td>
                         <td>${message.vervoerder.username} (${message.vervoerder.fullname})</td>
-                        <td><c:choose><c:when test="${message.mailSent}"><img src="${contextPath}/images/silk/accept.png"/></c:when><c:otherwise><img src="${contextPath}/images/silk/cancel.png" alt="Vervoerders worden niet direct geïnformeerd. Er kan een dag tussen zitten voordat de mail verzonden is."/></c:otherwise></c:choose></td>
-                        <td><c:choose><c:when test="${message.mailProcessed}"><img src="${contextPath}/images/silk/accept.png"/></c:when><c:otherwise><img src="${contextPath}/images/silk/cancel.png"/></c:otherwise></c:choose></td>
+                        <td>${message.createdAt}</td>
+                        <td><c:choose><c:when test="${message.mailSent}"><img src="${contextPath}/images/silk/accept.png"/> (${message.sentAt})</c:when><c:otherwise><img src="${contextPath}/images/silk/cancel.png"/></c:otherwise></c:choose></td>
+                        <td><c:choose><c:when test="${message.mailProcessed}"><img src="${contextPath}/images/silk/accept.png"/> (${message.processedAt})</c:when><c:otherwise><img src="${contextPath}/images/silk/cancel.png"/></c:otherwise></c:choose></td>
                         <td><stripes:link beanclass="nl.b3p.kar.stripes.EditorActionBean" event="view" anchor="rseq=${message.rseq.id}&x=${message.rseq.location.x}&y=${message.rseq.location.y}&zoom=12"> Bekijk op kaart</stripes:link></td>
                     </tr>
                 </c:forEach>
             </table>
         </div>
-
-
     </stripes:layout-component>
 </stripes:layout-render>
