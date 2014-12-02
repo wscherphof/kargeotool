@@ -43,12 +43,16 @@ import org.quartz.impl.StdSchedulerFactory;
 public class CarrierInformerListener implements ServletContextListener {
 
     private static final String PARAM_INFORM_CARRIERS_INTERVAL = "inform.carriers.schedule";
+    public static final String PARAM_INFORM_CARRIERS_HOST = "inform.carriers.host";
+    public static final String PARAM_INFORM_CARRIERS_FROMADDRESS = "inform.carriers.fromAddress";
     public static final String PARAM_INFORM_CARRIERS_APPLICATION_URL = "application-url";
     private static final Log log = LogFactory.getLog(CarrierInformerListener.class);
     private ServletContext context;
     private Scheduler scheduler;
     private String interval;
     private String applicationUrl;
+    private String host;
+    private String fromAddress;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -78,6 +82,8 @@ public class CarrierInformerListener implements ServletContextListener {
          .build();
 
          job.getJobDataMap().put(PARAM_INFORM_CARRIERS_APPLICATION_URL, applicationUrl);
+         job.getJobDataMap().put(PARAM_INFORM_CARRIERS_HOST, host);
+         job.getJobDataMap().put(PARAM_INFORM_CARRIERS_FROMADDRESS, fromAddress);
          log.info("Scheduling indexing job for expression " + interval + " minutes");
 
          CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(interval);
@@ -109,6 +115,8 @@ public class CarrierInformerListener implements ServletContextListener {
 
         interval = context.getInitParameter(PARAM_INFORM_CARRIERS_INTERVAL);
         applicationUrl = context.getInitParameter(PARAM_INFORM_CARRIERS_APPLICATION_URL);
+        host = context.getInitParameter(PARAM_INFORM_CARRIERS_HOST);
+        fromAddress = context.getInitParameter(PARAM_INFORM_CARRIERS_FROMADDRESS);
 
     }
 }

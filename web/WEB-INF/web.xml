@@ -35,6 +35,20 @@
         <param-name>inform.carriers.schedule</param-name>
         <param-value>0 28 * * * ?</param-value>
     </context-param>
+       <context-param>
+        <description>
+            SMTP host sent mails from
+        </description>
+        <param-name>inform.carriers.host</param-name>
+        <param-value>kmail.b3p.nl</param-value>
+    </context-param>
+       <context-param>
+        <description>
+            Mail address to sent mails from
+        </description>
+        <param-name>inform.carriers.fromAddress</param-name>
+        <param-value>support@b3partners.nl</param-value>
+    </context-param>
     <listener>
         <description>The class which initializes (and if configured sets up) the informer listener.</description>
         <listener-class>nl.b3p.kar.inform.CarrierInformerListener</listener-class>

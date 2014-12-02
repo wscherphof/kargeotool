@@ -47,16 +47,18 @@ public class CarrierInformer implements Job {
     public void execute(JobExecutionContext jec) throws JobExecutionException {
 
         String url = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_APPLICATION_URL);
-        run(url);
+        String host = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_HOST);
+        String fromAddress = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_FROMADDRESS);
+        run(url,host, fromAddress);
     }
 
-    public void run(String url) {
+    public void run(String url, String host, String fromAddress) {
         try {
             Stripersist.requestInit();
             EntityManager em = Stripersist.getEntityManager();
             List<InformMessage> messages = em.createQuery("From InformMessage where mailSent = false", InformMessage.class).getResultList();
             for (InformMessage message : messages) {
-                createMessage(message, url);
+                createMessage(message, url,host, fromAddress);
                 em.persist(message);
             }
             em.getTransaction().commit();
@@ -67,16 +69,17 @@ public class CarrierInformer implements Job {
         }
     }
 
-    private void createMessage(InformMessage inform, String appUrl) {
+    private void createMessage(InformMessage inform, String appUrl, String host, String fromAddress) {
         try {
             Properties props = System.getProperties();
             // -- Attaching to default Session, or we could start a new one --
-            props.put("mail.smtp.host", "kmail.b3p.nl");
+            props.put("mail.smtp.host", host);
             Session session = Session.getDefaultInstance(props, null);
             // -- Create a new message --
             MimeMessage msg = new MimeMessage(session);
             // -- Set the FROM and TO fields --
-            msg.setFrom(new InternetAddress(inform.getAfzender().getEmail()));
+            msg.setFrom(new InternetAddress(fromAddress));
+
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(inform.getVervoerder().getEmail(), false));
 
