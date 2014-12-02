@@ -30,6 +30,8 @@
     <stripes:layout-component name="content">
 
      <stripes:form beanclass="nl.b3p.kar.stripes.OverviewActionBean">
+        <stripes:errors/>
+        <stripes:messages/>
         <h1>Overzicht vervoerder</h1>
         <div id="gebruikerScroller">
         <table class="tableheader" style="width: 100%;">
@@ -40,7 +42,7 @@
             <tr>
                 <td>${message.rseq.karAddress}: ${message.rseq.description} (${message.rseq.town})</td>
                 <td>${message.afzender.username} (${message.afzender.fullname})</td>
-                <td><stripes:link beanclass="nl.b3p.kar.stripes.EditorActionBean" event="view" anchor="rseq=${message.rseq.id}&x=${message.rseq.location.x}&y=${message.rseq.location.y}&zoom=12"> Bekijk op kaart</stripes:link> </td>
+                <td><stripes:link beanclass="nl.b3p.kar.stripes.EditorActionBean" event="view" anchor="rseq=${message.rseq.id}&x=${message.rseq.location.x}&y=${message.rseq.location.y}&zoom=12"> Bekijk op kaart</stripes:link></td>
                 <td><stripes:link beanclass="nl.b3p.kar.stripes.OverviewActionBean" event="readMessage"> <stripes:param name="message" value="${message.id}"/>Verwerk</stripes:link></td>
                 <td><stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="exportXml"><stripes:param name="rseq" value="${message.rseq.id}"/>KV9</stripes:link></td>
                 <td><stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="exportPtx"><stripes:param name="rseq" value="${message.rseq.id}"/>INCAA</stripes:link></td>

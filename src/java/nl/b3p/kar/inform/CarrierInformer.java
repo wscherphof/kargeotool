@@ -53,7 +53,7 @@ public class CarrierInformer implements Job {
     public void run(String url) {
         try {
             Stripersist.requestInit();
-            EntityManager em = Stripersist.getEntityManager("karGisPU");
+            EntityManager em = Stripersist.getEntityManager();
             List<InformMessage> messages = em.createQuery("From InformMessage where mailSent = false", InformMessage.class).getResultList();
             for (InformMessage message : messages) {
                 createMessage(message, url);
@@ -108,7 +108,7 @@ public class CarrierInformer implements Job {
         body += "Een overzicht vind u ";
         body += "<a href=\"" + appUrl + "/action/overview?carrier=true\">hier</a>.<br/><br/>";
         body += "U wordt vriendelijk verzocht het door te geven als u de wijzingen heeft verwerkt. Dit kan via de overzichtspagina, of via ";
-        body += "<a href=\"" + appUrl + "/action/overview?readMessage=true&informMessage=" + inform.getId()  + "\">deze link</a>.<br/><br/>";
+        body += "<a href=\"" + appUrl + "/action/overview?readMessage=true&message=" + inform.getId()  + "\">deze link</a>.<br/><br/>";
         body += "Met vriendelijke groet.";
         return body;
     }

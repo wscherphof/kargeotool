@@ -26,6 +26,7 @@ import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.Validate;
@@ -60,6 +61,10 @@ public class OverviewActionBean implements ActionBean{
 
     @DefaultHandler
     public Resolution overview(){
+        EntityManager em = Stripersist.getEntityManager();
+
+        messages = em.createQuery("From InformMessage where afzender = :afzender", InformMessage.class).setParameter("afzender", getGebruiker()).getResultList();
+
         return new ForwardResolution(OVERVIEW_DATAOWNER);
     }
 
@@ -69,6 +74,7 @@ public class OverviewActionBean implements ActionBean{
         message.setMailProcessed(true);
         em.persist(message);
         em.getTransaction().commit();
+        context.getMessages().add(new SimpleMessage("Bericht over kruispunt " + message.getRseq().getDescription() + " succesvol verwerkt."));
         return carrier();
     }
 
@@ -80,7 +86,9 @@ public class OverviewActionBean implements ActionBean{
         for (InformMessage msg : messages) {
             rseqIds += ", " + msg.getRseq().getId();
         }
-        rseqIds = rseqIds.substring(2);
+        if( !rseqIds.isEmpty()){
+            rseqIds = rseqIds.substring(2);
+        }
         return new ForwardResolution(OVERVIEW_CARRIER);
     }
 
