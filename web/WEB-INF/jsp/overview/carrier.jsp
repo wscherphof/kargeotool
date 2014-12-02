@@ -46,8 +46,16 @@
                 <td><stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="exportPtx"><stripes:param name="rseq" value="${message.rseq.id}"/>INCAA</stripes:link></td>
             </tr>
         </c:forEach>
-        <table>
-            </div>
+        </table>
+       </div>
+            <stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="export">
+                <stripes:param name="rseqs" value="${actionBean.rseqIds}"/><stripes:param name="exportType" value="kv9"/>
+                Export allemaal naar KV9
+            </stripes:link>
+            <stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="export">
+                <stripes:param name="rseqs" value="${actionBean.rseqIds}"/><stripes:param name="exportType" value="incaa"/>
+                Export allemaal naar INCAA
+            </stripes:link>
     </stripes:form>
 
 </stripes:layout-component>

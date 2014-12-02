@@ -76,6 +76,7 @@ Ext.define("Editor", {
 
         this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
         this.editForms = Ext.create(EditForms, this);
+        this.changeManager = Ext.create(ChangeManager,this);
 
         this.startLocationHash = this.parseLocationHash();
 
@@ -137,7 +138,6 @@ Ext.define("Editor", {
 
         this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform',editor:this});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
-        this.changeManager = Ext.create(ChangeManager,this);
         this.endpointCreator = Ext.create(EndPointCreator,this);
     },
 

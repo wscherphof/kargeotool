@@ -56,6 +56,8 @@ public class OverviewActionBean implements ActionBean{
     @Validate
     private InformMessage message;
 
+    private String rseqIds;
+
     @DefaultHandler
     public Resolution overview(){
         return new ForwardResolution(OVERVIEW_DATAOWNER);
@@ -74,6 +76,11 @@ public class OverviewActionBean implements ActionBean{
         EntityManager em = Stripersist.getEntityManager();
 
         messages = em.createQuery("From InformMessage where vervoerder = :vervoerder and mailSent = true and mailProcessed = false", InformMessage.class).setParameter("vervoerder", getGebruiker()).getResultList();
+        rseqIds = "";
+        for (InformMessage msg : messages) {
+            rseqIds += ", " + msg.getRseq().getId();
+        }
+        rseqIds = rseqIds.substring(2);
         return new ForwardResolution(OVERVIEW_CARRIER);
     }
 
@@ -100,6 +107,14 @@ public class OverviewActionBean implements ActionBean{
 
     public void setMessage(InformMessage message) {
         this.message = message;
+    }
+
+    public String getRseqIds() {
+        return rseqIds;
+    }
+
+    public void setRseqIds(String rseqIds) {
+        this.rseqIds = rseqIds;
     }
 
     public Gebruiker getGebruiker() {
