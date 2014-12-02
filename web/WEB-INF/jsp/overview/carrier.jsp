@@ -38,12 +38,12 @@
             </tr>
         <c:forEach items="${actionBean.messages}" var="message">
             <tr>
-                <td>${message.rseq.karAddress} ${message.rseq.description}</td>
+                <td>${message.rseq.karAddress}: ${message.rseq.description} (${message.rseq.town})</td>
                 <td>${message.afzender.username} (${message.afzender.fullname})</td>
-                <td>Link naar viewer</td>
-                <td>
-                    <stripes:link beanclass="nl.b3p.kar.stripes.OverviewActionBean" event="readMessage"> <stripes:param name="message" value="${message.id}"/>Verwerk</stripes:link>
-                </td><td>Download KV9</td><td>Download INCAA</td>
+                <td>Bekijk</td>
+                <td><stripes:link beanclass="nl.b3p.kar.stripes.OverviewActionBean" event="readMessage"> <stripes:param name="message" value="${message.id}"/>Verwerk</stripes:link></td>
+                <td><stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="exportXml"><stripes:param name="rseq" value="${message.rseq.id}"/>KV9</stripes:link></td>
+                <td><stripes:link beanclass="nl.b3p.kar.stripes.ExportActionBean" event="exportPtx"><stripes:param name="rseq" value="${message.rseq.id}"/>INCAA</stripes:link></td>
             </tr>
         </c:forEach>
         <table>
