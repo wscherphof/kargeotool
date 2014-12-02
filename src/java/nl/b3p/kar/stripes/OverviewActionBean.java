@@ -18,6 +18,9 @@
  */
 package nl.b3p.kar.stripes;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -25,8 +28,13 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.InformMessage;
+import nl.b3p.kar.hibernate.RoadsideEquipment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.stripesstuff.stripersist.Stripersist;
 
 /**
  *
@@ -43,17 +51,29 @@ public class OverviewActionBean implements ActionBean{
 
     private ActionBeanContext context;
 
+    private List<InformMessage> messages = new ArrayList<InformMessage>();
+
+    @Validate
+    private InformMessage message;
 
     @DefaultHandler
     public Resolution overview(){
-
+        return new ForwardResolution(OVERVIEW_DATAOWNER);
     }
 
     public Resolution readMessage(){
-          return new ForwardResolution(OVERVIEW_CARRIER);
+
+        EntityManager em = Stripersist.getEntityManager();
+        message.setMailProcessed(true);
+        em.persist(message);
+        em.getTransaction().commit();
+        return carrier();
     }
 
     public Resolution carrier(){
+        EntityManager em = Stripersist.getEntityManager();
+
+        messages = em.createQuery("From InformMessage where vervoerder = :vervoerder and mailSent = true and mailProcessed = false", InformMessage.class).setParameter("vervoerder", getGebruiker()).getResultList();
         return new ForwardResolution(OVERVIEW_CARRIER);
     }
 
@@ -66,6 +86,33 @@ public class OverviewActionBean implements ActionBean{
         this.context = context;
     }
 
+    public List<InformMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<InformMessage> messages) {
+        this.messages = messages;
+    }
+
+    public InformMessage getMessage() {
+        return message;
+    }
+
+    public void setMessage(InformMessage message) {
+        this.message = message;
+    }
+
+    public Gebruiker getGebruiker() {
+        final String attribute = this.getClass().getName() + "_GEBRUIKER";
+        Gebruiker g = (Gebruiker) getContext().getRequest().getAttribute(attribute);
+        if (g != null) {
+            return g;
+        }
+        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
+        g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
+        getContext().getRequest().setAttribute(attribute, g);
+        return g;
+    }
     // </editor-fold>
 
 }
