@@ -93,6 +93,9 @@ public class IncaaImport {
                 GeometryCollection gc = new GeometryCollection(points.toArray(new Point[points.size()]), gf);
                 rseq.setLocation(gc.getCentroid());
 
+                for (ActivationPoint point : rseq.getPoints()) {
+                    em.persist(point);
+                }
                 em.persist(rseq);
                 savedRseqs.add(rseq);
             }
@@ -153,20 +156,12 @@ public class IncaaImport {
         aps.setVehicleTypes(vehicleTypes);
 
         // Haal objecten op om aan elkaar te linken
-        Movement movement = getMovement(karAddress, signalGroupNumber);
-        RoadsideEquipment rseq = movement.getRoadsideEquipment();
         DataOwner dataOwner = getDataOwner(beheercode);
+        Movement movement = getMovement(karAddress, signalGroupNumber, dataOwner);
+        RoadsideEquipment rseq = movement.getRoadsideEquipment();
 
         rseq.setDataOwner(dataOwner);
 
-        // Maak MovementActivationPoint
-        MovementActivationPoint map = new MovementActivationPoint();
-        map.setPoint(ap);
-        map.setMovement(movement);
-        map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION); // geen begin/eindpunt in INCAA
-        map.setSignal(aps);
-
-        movement.getPoints().add(map);
         rseq.getMovements().add(movement);
 
         Set<ActivationPoint> ps = rseq.getPoints();
@@ -181,6 +176,17 @@ public class IncaaImport {
         
         addPoint(karAddress, ap.getLocation());
         ap.setRoadsideEquipment(rseq);
+        
+        em.persist(ap);
+        // Maak MovementActivationPoint
+        MovementActivationPoint map = new MovementActivationPoint();
+        map.setPoint(ap);
+        map.setMovement(movement);
+        map.setBeginEndOrActivation(MovementActivationPoint.ACTIVATION); // geen begin/eindpunt in INCAA
+        map.setSignal(aps);
+        em.persist(map);
+
+        movement.getPoints().add(map);
     }
 
     /**
@@ -191,16 +197,18 @@ public class IncaaImport {
      * @param signalGroupNumber Signaalgroepnummer dat binnen de rseq van @karAddress een movement identificeert
      * @return De movement binnen een rseq met karAddress @karAddres en met signaalgroepnummer @signalGroupNumber
      */
-    private Movement getMovement(Integer karAddress, Integer signalGroupNumber) {
+    private Movement getMovement(Integer karAddress, Integer signalGroupNumber, DataOwner dataOwner) {
         Movement mvmnt = null;
-        RoadsideEquipment rseq = getRseq(karAddress);
+        RoadsideEquipment rseq = getRseq(karAddress,dataOwner);
 
+        EntityManager em = Stripersist.getEntityManager();
         if (!movements.containsKey(karAddress)) {
             Map<Integer, Movement> signalGroupMovement = new HashMap<Integer, Movement>();
 
             mvmnt = new Movement();
             mvmnt.setRoadsideEquipment(rseq);
             mvmnt.setNummer(signalGroupNumber);
+            em.persist(mvmnt);
             signalGroupMovement.put(signalGroupNumber, mvmnt);
 
             movements.put(karAddress, signalGroupMovement);
@@ -211,6 +219,7 @@ public class IncaaImport {
                 mvmnt.setRoadsideEquipment(rseq);
                 mvmnt.setNummer(signalGroupNumber);
                 signalGroupMovement.put(signalGroupNumber, mvmnt);
+                em.persist(mvmnt);
 
                 movements.put(karAddress, signalGroupMovement);
             }
@@ -225,15 +234,18 @@ public class IncaaImport {
      * @param karAddres Haal de rseq op dat aangeduid wordt met een karAddress
      * @return 
      */
-    private RoadsideEquipment getRseq(Integer karAddres) {
+    private RoadsideEquipment getRseq(Integer karAddres, DataOwner dataOwner) {
         RoadsideEquipment rseq = null;
 
         if (!rseqs.containsKey(karAddres)) {
+            EntityManager em = Stripersist.getEntityManager();
             rseq = new RoadsideEquipment();
             rseq.setKarAddress(karAddres);
+            rseq.setDataOwner(dataOwner);
             rseq.setType(RoadsideEquipment.TYPE_CROSSING);
             rseq.setValidFrom(new Date());
             rseqs.put(karAddres, rseq);
+            em.persist(rseq);
         }
         rseq = rseqs.get(karAddres);
         return rseq;

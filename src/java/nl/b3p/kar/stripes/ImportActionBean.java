@@ -329,7 +329,7 @@ public class ImportActionBean implements ActionBean {
             List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker());
             this.context.getMessages().add(new SimpleMessage(("Er zijn " + rseqs.size() + " verkeerssystemen succesvol geïmporteerd.")));
         } catch (Exception e) {
-            log.error(e);
+            log.error("Fout importeren PTX",e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
         } finally {
             try {
