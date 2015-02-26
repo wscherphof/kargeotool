@@ -160,8 +160,6 @@ public class IncaaImport {
         Movement movement = getMovement(karAddress, signalGroupNumber, dataOwner);
         RoadsideEquipment rseq = movement.getRoadsideEquipment();
 
-        rseq.setDataOwner(dataOwner);
-
         rseq.getMovements().add(movement);
 
         Set<ActivationPoint> ps = rseq.getPoints();
