@@ -385,7 +385,7 @@ Ext.define("nl.b3p.kar.Overview",{
         var movement = this.editor.activeRseq.getMovementById(movementId);
         var maps = movement.maps;
         for(var i = 0 ; i < maps.length ;i++){
-            if(maps[i].pointId === point.id){
+            if(maps[i].pointId === point.id && maps[i].distanceTillStopLine){
                 label += " (" + maps[i].distanceTillStopLine + " m)";
             }
         }
