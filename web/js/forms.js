@@ -372,15 +372,15 @@ Ext.define("EditForms", {
         if(!map) {
             if(this.editor.activeMovement){
                 var mvmnt = this.editor.activeRseq.getMovementById(this.editor.activeMovement);
-                
-                if (!mvmnt) {
+
+                map = rseq.findMapForPoint(mvmnt.id, point.id);
+                if (!mvmnt || !map) {
                     alert("Kan geen movements vinden voor activation point!");
                     return;
                 }
-                map = rseq.findMapForPoint(mvmnt.id, point.id);
                 movements = [{
-                        movement: mvmnt,
-                        map:map
+                    movement: mvmnt,
+                    map:map
                 }];
             } else {
                 movements = rseq.findMovementsForPoint(point);
