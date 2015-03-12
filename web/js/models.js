@@ -171,6 +171,17 @@ Ext.define('RSEQ', {
         });
         return movements;
     },
+
+    findMapForPoint : function(movementId,pointId){
+        var movement = this.getMovementById(movementId);
+        var m = null
+        Ext.Array.each(movement.getMaps(), function(map) {
+            if(map.pointId === pointId) {
+                m = map;
+            }
+        });
+        return m;
+    },
     
     /**
      * Controleert of er in een movement van het gegeven uitmeldpunt een
@@ -479,7 +490,7 @@ Ext.define('RSEQ', {
                         signalGroups[signalGroupNumber] = new Object();
                     }
                     
-                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.nummer)){
+                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.id)){
                         
                          signalGroups[signalGroupNumber][ mvmnt.id] = new Object();
                          signalGroups[signalGroupNumber][ mvmnt.id]["id"] = mvmnt.id;

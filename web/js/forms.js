@@ -370,13 +370,28 @@ Ext.define("EditForms", {
         var map = newMap;
         var movements = null;
         if(!map) {
-            movements = rseq.findMovementsForPoint(point);
-
-            if(movements.length == 0) {
-                alert("Kan geen movements vinden voor activation point!");
-                return;
+            if(this.editor.activeMovement){
+                var mvmnt = this.editor.activeRseq.getMovementById(this.editor.activeMovement);
+                
+                if (!mvmnt) {
+                    alert("Kan geen movements vinden voor activation point!");
+                    return;
+                }
+                map = rseq.findMapForPoint(mvmnt.id, point.id);
+                movements = [{
+                        movement: mvmnt,
+                        map:map
+                }];
+            } else {
+                movements = rseq.findMovementsForPoint(point);
+                if (movements.length === 0) {
+                    alert("Kan geen movements vinden voor activation point!");
+                    return;
+                }
+                map = movements[0].map;
             }
-            map = movements[0].map;
+
+         
         }
 
         var ov = [];

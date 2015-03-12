@@ -36,6 +36,8 @@ Ext.define("Editor", {
 
     allRseqs: null,
     activeRseq: null,
+    activeMovement:null, // For editting a specified movement
+
     helpPanel: null,
     overview: null,
 

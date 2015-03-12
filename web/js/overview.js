@@ -146,7 +146,10 @@ Ext.define("nl.b3p.kar.Overview",{
                 click: function(menu,item,e, opts) {
                     switch (item.id) {
                         case 'editUitmeldpuntOv':
+                            var raw = this.editor.overview.tree.view.getSelectionModel().getSelection()[0].raw;
+                            this.editor.activeMovement = raw.movementId;
                             this.editor.editSelectedObject();
+                            this.editor.activeMovement = null;
                             break;                        
                         case 'removeCheckoutcheckoutOv':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
@@ -346,7 +349,7 @@ Ext.define("nl.b3p.kar.Overview",{
     createMovementNode : function (json,key){
         var points = new Array();
         for (var i = 0;i < json.points.length;i++){
-            var pt = this.createPointNode(json.points[i]);
+            var pt = this.createPointNode(json.points[i],json.id);
             points.push(pt);
         }
         var label = this.getBewegingLabel(this.editor.activeRseq.getMovementById(json.id));
@@ -363,18 +366,34 @@ Ext.define("nl.b3p.kar.Overview",{
         return node;
 
     },
-    createPointNode : function (point){
+    createPointNode : function (point,movementId){
+        var label = this.getPointLabel(point, movementId);
         var node = {
-            text : point.getLabel(),
+            text : label,
             id : Ext.id(),
             leaf : true,
             pointId : point.getId(),
+            movementId: movementId,
             type : "point",
             iconCls : 'overviewTree',
             icon : this.getIconForPoint(point)
         };
         return node;
     },
+
+    getPointLabel: function(point, movementId){
+        var label = point.getLabel();
+
+        var movement = this.editor.activeRseq.getMovementById(movementId);
+        var maps = movement.maps;
+        for(var i = 0 ; i < maps.length ;i++){
+            if(maps[i].pointId === point.id){
+                label += " (" + maps[i].distanceTillStopLine + " m)";
+            }
+        }
+        return label;
+    },
+
     getIconForPoint : function (point){
         switch (point.getType()){
             case "ACTIVATION_1" :
