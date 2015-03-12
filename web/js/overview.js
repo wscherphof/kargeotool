@@ -146,10 +146,9 @@ Ext.define("nl.b3p.kar.Overview",{
                 click: function(menu,item,e, opts) {
                     switch (item.id) {
                         case 'editUitmeldpuntOv':
-                            var raw = this.editor.overview.tree.view.getSelectionModel().getSelection()[0].raw;
-                            this.editor.activeMovement = raw.movementId;
+                            this.editor.activeMovement = this.selectedMovement;
                             this.editor.editSelectedObject();
-                            this.editor.activeMovement = null;
+                            this.editor.activeMovement = this.selectedMovement;
                             break;                        
                         case 'removeCheckoutcheckoutOv':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
@@ -373,7 +372,6 @@ Ext.define("nl.b3p.kar.Overview",{
             id : Ext.id(),
             leaf : true,
             pointId : point.getId(),
-            movementId: movementId,
             type : "point",
             iconCls : 'overviewTree',
             icon : this.getIconForPoint(point)
