@@ -53,6 +53,40 @@ Ext.define("nl.b3p.kar.Overview",{
         });
         
         var me = this;
+        this.otherMenu = Ext.create("Ext.menu.Menu", {
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+                {
+                    id: 'reorderPoints',
+                    text: 'Herorden punten',
+                    xtype: "menucheckitem"
+                }
+            ],
+            listeners: {
+                click: {
+                    scope:this,
+                    fn: function (menu, item, e, opts) {
+                        switch (item.id) {
+                            case 'reorderPoints':
+                                var view = this.tree.getView();
+                                var dd = view.getPlugin('treeviewdragdrop');
+                                var enable = item.checked;
+                                
+                                if (enable) {
+                                    dd.dragZone.unlock();
+                                    editor.overview.tree.getView().getSelectionModel().selectionMode = "SINGLE";
+                                } else {
+                                    dd.dragZone.lock();
+                                    editor.overview.tree.getView().getSelectionModel().selectionMode = "MULTI";
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+
         this.uitmeldpuntMenu = Ext.create ("Ext.menu.Menu",{
             floating: true,
             renderTo: Ext.getBody(),
@@ -217,9 +251,12 @@ Ext.define("nl.b3p.kar.Overview",{
                 renderTo: overzicht,
                 viewConfig: {
                     plugins: 
-                        {
-                            ptype: 'treeviewdragdrop'
-                        }
+                        [
+                            {
+                                ptype: 'treeviewdragdrop',
+                                pluginId: "treeviewdragdrop"
+                            }
+                        ]
                     ,
                     listeners: {
                         drop:{
@@ -228,6 +265,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         },
                         beforedrop :{
                             fn: function(){
+                         //       editor.overview.tree.getView().getSelectionModel().selectionMode = "MULTI"
                                 // possible checks of nodes aren't being dropped in another movement?
                             },
                             scope:this
@@ -282,14 +320,21 @@ Ext.define("nl.b3p.kar.Overview",{
                         if (type != "signalGroup" && type != "movement" && point.type != "ACTIVATION_2"){
                             this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
                         }
-                        if(point.type == "ACTIVATION_2"){
+                        if(point && point.type == "ACTIVATION_2"){
                             this.selectedMovement = record.parentNode.raw.movementId;
 
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
                             this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
+                        }else if(type === "signalGroup" || type === "movement" ){
+                            this.otherMenu.showAt(event.xy[0],event.xy[1]);
                         }
+                    },
+                    viewready : function(tree){
+                        var view = tree.getView();
+                        var dd = view.getPlugin('treeviewdragdrop');
+                        dd.dragZone.lock();
                     }
                 }
             });
