@@ -352,6 +352,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 }
             });
         }
+        Ext.getCmp( "reorderPoints").setChecked( false);
         this.editor.helpPanel.updateHelpPanel();
     },
     updateSelection : function (point){
@@ -533,6 +534,7 @@ Ext.define("nl.b3p.kar.Overview",{
             }
         }, this);
         this.editor.activeRseq.reorderMaps(mapsPerMovements);
+        this.editor.changeManager.changeOccured();
     },
     getMapsPerMovement :function(movementNode){
         var rseq = this.editor.activeRseq;
