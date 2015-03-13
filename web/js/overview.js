@@ -279,9 +279,22 @@ Ext.define("nl.b3p.kar.Overview",{
                             var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
-                            if (features != null && features.length > 0){
-                                var feature = features[0];
-                                this.editor.setSelectedObject(feature);
+                            if (features !== null && features.length > 0){
+                                var feature = null;
+                                if( features.length === 1){
+                                    feature = features[0];
+                                }else{
+                                    // get the first feature of class point (it's possibly an rseq with the same id)
+                                    for (var i = 0 ; i < features.length ;i++){
+                                        if(features[i].data.className === "Point"){
+                                            feature = features[i];
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(feature){
+                                    this.editor.setSelectedObject(feature);
+                                }
                             }
                         }
                     },

@@ -760,7 +760,7 @@ Ext.define("Editor", {
             this.selectedObject = null;
         }else{
             if(this.activeRseq){
-                if(olFeature.data.className == "RSEQ"){
+                if(olFeature.data.className === "RSEQ"){
                     if(this.selectedObject){
                         this.previousSelectedObject = this.selectedObject;
                     }
@@ -768,7 +768,7 @@ Ext.define("Editor", {
                 }else { // Point
                     var point = this.activeRseq.getPointById(olFeature.data.id);
                     if (point){
-                        if(this.selectedObject && this.selectedObject.getId() == olFeature.data.id ){ // Check if there are changes to the selectedObject. If not, then return
+                        if(this.selectedObject && this.selectedObject.getId() === olFeature.data.id && this.selectedObject.type === olFeature.data.type ){ // Check if there are changes to the selectedObject. If not, then return
                             return;
                         }else{
                             if(this.selectedObject){
