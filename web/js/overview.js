@@ -214,7 +214,26 @@ Ext.define("nl.b3p.kar.Overview",{
                 height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
-                renderTo : overzicht,
+                renderTo: overzicht,
+                viewConfig: {
+                    plugins: 
+                        {
+                            ptype: 'treeviewdragdrop'
+                        }
+                    ,
+                    listeners: {
+                        drop:{
+                            fn:this.nodeDragged,
+                            scope:this
+                        },
+                        beforedrop :{
+                            fn: function(){
+                                // possible checks of nodes aren't being dropped in another movement?
+                            },
+                            scope:this
+                        }
+                    }
+                },
                 listeners : {
                     scope : this,
                     select : function (tree,record){
@@ -338,6 +357,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 expanded : true,
                 iconCls : "noTreeIcon",
                 type : "signalGroup",
+                allowDrag:false,
                 children : bewegingen
             };
             store.root.children.push(node);
@@ -358,6 +378,7 @@ Ext.define("nl.b3p.kar.Overview",{
             expanded : true,
             icon : karTheme.richting,
             movementId: key,
+            allowDrag:false,
             iconCls : 'overviewTree',
             type : "movement",
             children : points
@@ -444,6 +465,28 @@ Ext.define("nl.b3p.kar.Overview",{
             var ov = Ext.get("rseqInfoPanel-body");
             this.tree.setHeight(ov.getHeight()- this.heightOffset);
         }
+    },
+    nodeDragged : function(){
+        var mapsPerMovements = {};
+        this.tree.getRootNode().cascadeBy (function(node){
+            if(node.raw.type === "movement"){
+                var mapsPerMovement = this.getMapsPerMovement(node);
+                mapsPerMovements [node.raw.movementId] = mapsPerMovement;
+            }
+        }, this);
+        this.editor.activeRseq.reorderMaps(mapsPerMovements);
+    },
+    getMapsPerMovement :function(movementNode){
+        var rseq = this.editor.activeRseq;
+        var childs = movementNode.childNodes;
+        
+        var mapsPerMovement =[];
+        Ext.Array.each(childs, function(child){
+            var map = rseq.findMapForPoint(movementNode.raw.movementId,child.raw.pointId);
+            mapsPerMovement.push(map.id);
+        });
+        return mapsPerMovement;
+
     },
     findChildrenByPointId : function (record,pointId,result){
         var me = this;

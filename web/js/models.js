@@ -410,6 +410,35 @@ Ext.define('RSEQ', {
             }
         }
     },
+    reorderMaps: function(mapsPerMovement){
+        /*
+         * {
+         * movementId :{
+         * [mapId1, mapId2, mapId3]
+         * }
+         */
+        for(var key in mapsPerMovement){
+            if(mapsPerMovement.hasOwnProperty(key)){
+                this.reorderMovement(key, mapsPerMovement[key]);
+            }
+        }
+
+    },
+    reorderMovement : function(movementId,mapIds){
+        var movement = this.getMovementById(movementId);
+        var newMaps = [];
+        var oldMaps = movement.getMaps();
+        var oldIndexed = {};
+        for (var i = 0 ; i < oldMaps.length ; i++){
+            oldIndexed [oldMaps[i].id] = oldMaps[i];
+        }
+
+        Ext.Array.each(mapIds,function(id){
+            var map = oldIndexed[id];
+            newMaps.push(map);
+        });
+        movement.maps = newMaps;
+    },
     /**
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
