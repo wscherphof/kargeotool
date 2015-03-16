@@ -225,6 +225,15 @@ Ext.define("EditForms", {
                         handler: function() {
                             me.editKarAttributes(rseq);
                         }
+                    },{
+                        xtype: 'button',
+                        name: 'messagesOverview',
+                        width: 100,
+                        disabled: Ext.isString(rseq.id),
+                        text: 'Berichten ...',
+                        handler: function() {
+                            Ext.create("MessagesOverview").show(rseq.id);
+                        }
                     }]
                 }],
                 buttons: [{

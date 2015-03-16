@@ -20,6 +20,7 @@ package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -35,6 +36,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.InformMessage;
+import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.inform.CarrierInformer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +54,7 @@ public class OverviewActionBean implements ActionBean{
 
     private static final String OVERVIEW_CARRIER = "/WEB-INF/jsp/overview/carrier.jsp";
     private static final String OVERVIEW_DATAOWNER = "/WEB-INF/jsp/overview/dataowner.jsp";
+    private static final String OVERVIEW_DATAOWNER_SIMPLE = "/WEB-INF/jsp/overview/dataowner_simple.jsp";
 
     private ActionBeanContext context;
 
@@ -61,6 +64,9 @@ public class OverviewActionBean implements ActionBean{
     private InformMessage message;
 
     private String rseqIds;
+
+    @Validate
+    private RoadsideEquipment rseq;
 
     @DefaultHandler
     public Resolution overview() {
@@ -77,8 +83,14 @@ public class OverviewActionBean implements ActionBean{
             }
             return new ForwardResolution(OVERVIEW_CARRIER);
         } else {
-            messages = em.createQuery("From InformMessage where afzender = :afzender", InformMessage.class).setParameter("afzender", getGebruiker()).getResultList();
-            return new ForwardResolution(OVERVIEW_DATAOWNER);
+            if(rseq == null){
+                messages = em.createQuery("From InformMessage where afzender = :afzender", InformMessage.class).setParameter("afzender", getGebruiker()).getResultList();
+                return new ForwardResolution(OVERVIEW_DATAOWNER);
+            }else{
+                messages = em.createQuery("From InformMessage where afzender = :afzender and rseq = :rseq", InformMessage.class).setParameter("afzender", getGebruiker()).setParameter("rseq", rseq).getResultList();
+
+                return new ForwardResolution(OVERVIEW_DATAOWNER_SIMPLE);
+            }
         }
 
     }
@@ -146,6 +158,14 @@ public class OverviewActionBean implements ActionBean{
         g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
         getContext().getRequest().setAttribute(attribute, g);
         return g;
+    }
+
+    public RoadsideEquipment getRseq() {
+        return rseq;
+    }
+
+    public void setRseq(RoadsideEquipment rseq) {
+        this.rseq = rseq;
     }
     // </editor-fold>
 
