@@ -39,7 +39,7 @@ Ext.define("MessagesOverview", {
     showWithHtml: function(html) {
         var me = this;
         me.window = Ext.create('Ext.window.Window', {
-            title: 'Overzicht berichten',
+            title: 'Export informatie',
             width: 769,
             height: 500,
             modal: true,
