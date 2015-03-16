@@ -264,9 +264,14 @@ Ext.define("nl.b3p.kar.Overview",{
                             scope:this
                         },
                         beforedrop :{
-                            fn: function(){
-                         //       editor.overview.tree.getView().getSelectionModel().selectionMode = "MULTI"
-                                // possible checks of nodes aren't being dropped in another movement?
+                            fn: function(node,data,target){
+                                var source = data.records[0];
+                                var originalMovement = source.parentNode.raw.movementId;
+                                var newMovement = target.parentNode.raw.movementId;
+                                if(originalMovement !== newMovement){
+                                    Ext.Msg.alert('Fout bij verplaatsen', "Kan geen punten verplaatsen naar een andere beweging.");
+                                    return false;
+                                }
                             },
                             scope:this
                         }
