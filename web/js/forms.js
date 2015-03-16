@@ -230,7 +230,7 @@ Ext.define("EditForms", {
                         name: 'messagesOverview',
                         width: 100,
                         disabled: Ext.isString(rseq.id),
-                        text: 'Berichten ...',
+                        text: 'Export informatie',
                         handler: function() {
                             Ext.create("MessagesOverview").show(rseq.id);
                         }

@@ -176,6 +176,11 @@ Ext.define("ContextMenu", {
                 id: "addMemo",
                 text: "Memo...",
                 icon: contextPath + "/images/silk/attach.png"
+            },
+            {
+                id: "showMessages",
+                text: "Export informatie",
+                icon: contextPath + "/images/silk/email_open.png"
             },{
                 id: "uppervri",
                 xtype: 'menuseparator'
@@ -209,6 +214,9 @@ Ext.define("ContextMenu", {
                         case 'setCoordsRseq':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
                             break
+                        case 'showMessages':
+                            Ext.create("MessagesOverview").show(this.editor.selectedObject.id);
+                            break;
                     }
                 },
                 scope: me

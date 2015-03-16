@@ -54,6 +54,7 @@
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
         <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/messagesOverview.js"></script>
         <script type="text/javascript" src="${contextPath}/js/rtree.js"></script> <!-- Possibly later rtree.min.js, for now some edits/bugfixes are made in rtree.js, which are not in the minified version -->
 
         <div id="leftbar">
