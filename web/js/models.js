@@ -256,14 +256,14 @@ Ext.define('RSEQ', {
         // Indien maar een enkele movement zonder eindpunt, voeg alleen eindpunt
         // toe aan dat movement
         
-        if(pointMovements.length == 0) {
+        if(pointMovements.length === 0) {
             alert("Ongeldige state, moet altijd movement zijn!");
         }
-        if(pointMovements.length == 1) {
+        if(pointMovements.length === 1) {
             var movement = pointMovements[0].movement;
             var hasEnd = false;
             Ext.Array.each(movement.maps, function(map) {
-                if(map.beginEndOrActivation == "END") {
+                if(map.beginEndOrActivation === "END") {
                     hasEnd = true;
                 }
             });
@@ -278,23 +278,23 @@ Ext.define('RSEQ', {
             }
         }
 
-        var newMovement = Ext.create(Movement, {
-            id: Ext.id(),
-            nummer: null,
-            maps: []
-        });
+      
         
-        var newMap;
-        
-        
-        // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
-        // eindpunten
-        
-        if(pointMovements.length >0 ){
-            var mvmtAndMap = pointMovements[0]; // Neem eerste movement, want je kan niet weten welke movement bedoelt wordt.
+        for(var i = 0 ; i < pointMovements.length ;i++){
+            // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
+            // eindpunten
+             var newMovement = Ext.create(Movement, {
+                id: Ext.id(),
+                nummer: null,
+                maps: []
+            });
+
+            var newMap;
+
+            var mvmtAndMap = pointMovements[i]; // Neem eerste movement, want je kan niet weten welke movement bedoelt wordt.
             Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
                 if(map.beginEndOrActivation != "END") {
-                    
+
                     var config = {
                         id: Ext.id(),
                         beginEndOrActivation: map.beginEndOrActivation,
@@ -314,17 +314,18 @@ Ext.define('RSEQ', {
                     newMovement.maps.push(newMap);
                 }
             });
+
+
+            newMap = Ext.create(MovementActivationPoint, {
+                id: Ext.id(),
+                beginEndOrActivation: "END",
+                pointId: eindpunt.getId()
+            });
+
+            newMovement.maps.push(newMap);
+
+            this.addMovement(newMovement);
         }
-        
-        newMap = Ext.create(MovementActivationPoint, {
-            id: Ext.id(),
-            beginEndOrActivation: "END",
-            pointId: eindpunt.getId()
-        });         
-            
-        newMovement.maps.push(newMap);
-        
-        this.addMovement(newMovement);
     },
     
     /**
