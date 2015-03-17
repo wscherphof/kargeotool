@@ -236,13 +236,23 @@ Ext.define('RSEQ', {
      * Voeg een nieuw of bestaand eindpunt toe aan alle movements van het gegeven
      * uitmeldpunt van deze rseq.
      */
-    addEindpunt: function(uitmeldpunt, eindpunt, isBestaandEindpunt) {
+    addEindpunt: function(uitmeldpunt, eindpunt, isBestaandEindpunt, movement) {
         if(!isBestaandEindpunt) {
             this.addPoint(eindpunt);
         }
         
-        var pointMovements = this.findMovementsForPoint(uitmeldpunt);
+        var pointMovements = null;
+        if(movement){
+            var mvmnt = this.getMovementById(movement);
 
+            var map = this.findMapForPoint(mvmnt.id, uitmeldpunt.id);
+            pointMovements=[{
+                map: map,
+                movement: mvmnt
+            }];
+        }else{
+            pointMovements = this.findMovementsForPoint(uitmeldpunt);
+        }
         // Indien maar een enkele movement zonder eindpunt, voeg alleen eindpunt
         // toe aan dat movement
         

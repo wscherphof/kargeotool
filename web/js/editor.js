@@ -997,6 +997,7 @@ Ext.define("Editor", {
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
         var me = this;
+        
         var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
 
@@ -1007,11 +1008,12 @@ Ext.define("Editor", {
 
             me.editForms.editNonActivationPoint(eindpunt, function() {
 
-                me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false);
+                me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false, me.activeMovement);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
-
+                me.activeMovement = null;
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
+                me.activeMovement = null;
             });
         };
         this.addPoint(true);
@@ -1293,6 +1295,7 @@ Ext.define("Editor", {
     cancelSelection:function(){
         this.un('selectedObjectChanged',this.actionToCancel,this);
         this.changeCurrentEditAction(null);
+        console.log("cancelselection");
     },
 
     // ==== KV9 Validation results ====

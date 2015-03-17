@@ -415,8 +415,6 @@ Ext.define("EditForms", {
                 }
                 map = movements[0].map;
             }
-
-         
         }
 
         var ov = [];
@@ -589,6 +587,7 @@ Ext.define("EditForms", {
         }
 
         var okFunction = function() {
+            me.editor.activeMovement = null;
             var form = Ext.getCmp('activationForm').getForm();
             if(!form.isValid()) {
                 Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
@@ -703,7 +702,7 @@ Ext.define("EditForms", {
                     handler: function() {
                         me.activationPointEditWindow.destroy();
                         me.activationPointEditWindow = null;
-
+                        me.editor.activeMovement = null;
                         if(cancelHandler) {
                             cancelHandler();
                         }

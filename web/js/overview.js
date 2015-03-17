@@ -182,12 +182,12 @@ Ext.define("nl.b3p.kar.Overview",{
                         case 'editUitmeldpuntOv':
                             this.editor.activeMovement = this.selectedMovement;
                             this.editor.editSelectedObject();
-                            this.editor.activeMovement = this.selectedMovement;
                             break;                        
                         case 'removeCheckoutcheckoutOv':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;                            
                         case 'addEindpuntOv':
+                            this.editor.activeMovement = this.selectedMovement;
                             editor.addEindpunt();
                             break;
                         case 'selectEindpuntOv':
