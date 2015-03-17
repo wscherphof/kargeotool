@@ -912,7 +912,7 @@ public class RoadsideEquipment {
                         }
                     }
 
-                    if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType)) {
+                    if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType) && getVehicleType().equals("OV")) {
                         errors.add(new KV9ValidationError(false, "F145", mXmlContext + "/END", mContext + ", eindpunt van beweging", null, "Afwezig"));
                     }
 
