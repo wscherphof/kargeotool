@@ -194,6 +194,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             editor.selectEindpunt();
                             break;
                         case 'addInmeldpuntOv':
+                            this.editor.activeMovement = this.selectedMovement;
                             editor.addInmeldpunt();
                             break;
                         case 'selectInmeldpuntOv':

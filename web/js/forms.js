@@ -319,6 +319,7 @@ Ext.define("EditForms", {
             if(okHandler) {
                 okHandler(point);
             }
+            me.editor.activeMovement = null;
         };
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
@@ -367,6 +368,7 @@ Ext.define("EditForms", {
                         if(cancelHandler) {
                             cancelHandler();
                         }
+                        me.editor.activeMovement = null;
                     }
                 }]
             }
@@ -587,7 +589,6 @@ Ext.define("EditForms", {
         }
 
         var okFunction = function() {
-            me.editor.activeMovement = null;
             var form = Ext.getCmp('activationForm').getForm();
             if(!form.isValid()) {
                 Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
@@ -647,6 +648,7 @@ Ext.define("EditForms", {
             if(okHandler) {
                 okHandler(point);
             }
+            me.editor.activeMovement = null;
         };
 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
@@ -706,6 +708,7 @@ Ext.define("EditForms", {
                         if(cancelHandler) {
                             cancelHandler();
                         }
+                        me.editor.activeMovement = null;
                     }
                 }]
             }

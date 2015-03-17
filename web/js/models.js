@@ -328,12 +328,24 @@ Ext.define('RSEQ', {
      * Voeg een nieuw of bestaand (voor)inmeldpunt toe aan movements van het
      * gegeven puntVanMovement.
      */
-    addInmeldpunt: function(puntVanMovement, inmeldpunt, theMap, isBestaandInmeldpunt, isVoorinmeldpunt) {
+    addInmeldpunt: function(puntVanMovement, inmeldpunt, theMap, isBestaandInmeldpunt, isVoorinmeldpunt, movement) {
         if(!isBestaandInmeldpunt) {
             this.addPoint(inmeldpunt);
         }        
         
-        var pointMovements = this.findMovementsForPoint(puntVanMovement);
+        //var pointMovements = this.findMovementsForPoint(puntVanMovement);
+        var pointMovements = null;
+        if(movement){
+            var mvmnt = this.getMovementById(movement);
+
+            var map = this.findMapForPoint(mvmnt.id, puntVanMovement.id);
+            pointMovements=[{
+                map: map,
+                movement: mvmnt
+            }];
+        }else{
+            pointMovements = this.findMovementsForPoint(puntVanMovement);
+        }
         
         // Insert inmeldpunt op alle movements van uitmeldpunt
         

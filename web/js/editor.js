@@ -1098,11 +1098,13 @@ Ext.define("Editor", {
 
             me.editForms.editActivationPoint(inmeldpunt, map, function() {
 
-                me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false);
+                me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false,false,me.activeMovement);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
+                me.activeMovement = null;
 
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
+                me.activeMovement = null;
             });
         };
 
