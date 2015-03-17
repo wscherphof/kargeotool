@@ -34,6 +34,7 @@ function objectSubset(object, keys) {
  * Roadside Equipment model.
  */
 Ext.define('RSEQ', {
+    readyIsSet:null,
     config:{
         id: null,
         location:null,
@@ -49,7 +50,8 @@ Ext.define('RSEQ', {
         memo:null,
         attributes: null,
         editable:null,
-        validationErrors: null
+        validationErrors: null,
+        readyForExport:null
     },
     /**
      *@constructor
@@ -99,7 +101,10 @@ Ext.define('RSEQ', {
                 }
             });
         }
-        this.initConfig(config);    
+        //config.readyForExport = true;
+        
+        this.initConfig(config);
+        this.readyIsSet = null;
     },
     /**
      * Haal het punt op met behulp van het id van het punt
@@ -491,7 +496,7 @@ Ext.define('RSEQ', {
     toJSON: function() {
         var j = objectSubset(this, ["id", "description", "validFrom", 
             "karAddress", "dataOwner", "crossingCode", "town", "type", 
-            "location","memo","attributes"]);
+            "location","memo","attributes","readyForExport"]);
         
         j.points = [];
         Ext.Array.each(this.points, function(point) {

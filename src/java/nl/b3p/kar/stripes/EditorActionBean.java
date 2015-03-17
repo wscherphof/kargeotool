@@ -509,6 +509,7 @@ public class EditorActionBean implements ActionBean {
             rseq.setDescription(jrseq.optString("description"));
             rseq.setTown(jrseq.optString("town"));
             rseq.setType(jrseq.getString("type"));
+            rseq.setReadyForExport(jrseq.getBoolean("readyForExport"));
             rseq.setKarAddress(jrseq.getInt("karAddress"));
             rseq.setCrossingCode(jrseq.optString("crossingCode"));
             rseq.setDataOwner(em.find(DataOwner.class, jrseq.getString("dataOwner")));

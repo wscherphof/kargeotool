@@ -83,7 +83,7 @@ Ext.define("EditForms", {
         var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
-            height: 372,
+            height: 382,
             width: 450,
             modal: true,
             icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
@@ -214,6 +214,22 @@ Ext.define("EditForms", {
                     fieldLabel: 'Geldig tot',
                     name: 'validUntil',
                     value: rseq.validUntil
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: 'Gereed voor export',
+                    name: 'readyForExport',
+                    id: 'readyForExport',
+                    inputValue: true,
+                    value: rseq.readyForExport,
+                    checked: rseq.readyForExport,
+                    listeners:{
+                        change:{
+                            scope: this,
+                            fn: function (form, value) {
+                                rseq.readyIsSet = value;
+                            }
+                        }
+                    }
                 },{
                     xtype: 'panel',
                     border: false,

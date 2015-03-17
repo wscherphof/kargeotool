@@ -214,6 +214,9 @@ public class RoadsideEquipment {
     @XmlTransient
     private String vehicleType;
 
+    @XmlTransient
+    private boolean readyForExport;
+
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
@@ -446,6 +449,15 @@ public class RoadsideEquipment {
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
     }
+
+    public boolean isReadyForExport() {
+        return readyForExport;
+    }
+
+    public void setReadyForExport(boolean readyForExport) {
+        this.readyForExport = readyForExport;
+    }
+    
     //</editor-fold>
 
     public ActivationPoint getPointByNumber(int number) {
@@ -540,6 +552,7 @@ public class RoadsideEquipment {
         j.put("validUntil", validUntil == null ? null : sdf.format(validUntil));
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
+        j.put("readyForExport", readyForExport);
         j.put("validationErrors", validationErrors);
 
         JSONObject jattrs = new JSONObject();

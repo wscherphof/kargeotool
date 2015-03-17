@@ -39,6 +39,9 @@ Ext.define("ChangeManager",{
     changeOccured : function (){
         this.changeDetected = true;
         this.editTitle();
+        if(!this.editor.activeRseq.readyIsSet){
+            this.editor.activeRseq.readyForExport = false;
+        }
     },
     rseqSaved : function (){
         this.changeDetected = false;
