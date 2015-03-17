@@ -259,8 +259,10 @@ Ext.define('RSEQ', {
         if(pointMovements.length === 0) {
             alert("Ongeldige state, moet altijd movement zijn!");
         }
-        if(pointMovements.length === 1) {
-            var movement = pointMovements[0].movement;
+        
+        for(var i = 0 ; i < pointMovements.length ;i++){
+            var mvmtAndMap = pointMovements[i];
+            var movement = mvmtAndMap.movement;
             var hasEnd = false;
             Ext.Array.each(movement.maps, function(map) {
                 if(map.beginEndOrActivation === "END") {
@@ -272,15 +274,10 @@ Ext.define('RSEQ', {
                     id: Ext.id(),
                     beginEndOrActivation: "END",
                     pointId: eindpunt.getId()
-                });         
-                movement.maps.push(newMap);                
-                return;
+                });
+                movement.maps.push(newMap);
+                continue;
             }
-        }
-
-      
-        
-        for(var i = 0 ; i < pointMovements.length ;i++){
             // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
             // eindpunten
              var newMovement = Ext.create(Movement, {
@@ -290,8 +287,7 @@ Ext.define('RSEQ', {
             });
 
             var newMap;
-
-            var mvmtAndMap = pointMovements[i]; // Neem eerste movement, want je kan niet weten welke movement bedoelt wordt.
+            
             Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
                 if(map.beginEndOrActivation != "END") {
 
