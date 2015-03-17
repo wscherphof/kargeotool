@@ -189,6 +189,30 @@ Ext.define("ContextMenu", {
                 id: 'addUitmeldpunt',
                 text: 'Voeg uitmeldpunt toe',
                 icon: karTheme.uitmeldPunt
+            },
+            {
+                id: 'advancedRseq',
+                text: 'Geavanceerd',
+                menu: {
+                    items:[
+                    {
+                        id: 'selectUitmeldpuntAndereSignaalgroepRseq',
+                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
+                        icon: contextPath + "/images/silk/cursor.png"
+                    }
+                    ],
+                    listeners: {
+                        click:
+                        function(menu,item,e, opts) {
+                            switch (item.id) {
+                                case 'selectUitmeldpuntAndereSignaalgroepRseq':
+                                    this.editor.selectExistingUitmeldpunt(this.selectedMovement);
+                                    break;
+                            }
+                        },
+                        scope:me
+                    }
+                }
             }
             ],
             listeners: {

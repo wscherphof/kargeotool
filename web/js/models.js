@@ -216,8 +216,10 @@ Ext.define('RSEQ', {
     /**
      * Voeg een nieuw uitmeldpunt toe aan deze rseq.
      */
-    addUitmeldpunt: function(uitmeldpunt, map) {
-        this.addPoint(uitmeldpunt);
+    addUitmeldpunt: function(uitmeldpunt, map, isBestandUitmeldpunt) {
+        if(!isBestandUitmeldpunt){
+            this.addPoint(uitmeldpunt);
+        }
         this.addMovement(Ext.create(Movement, {
             id: Ext.id(),
             nummer: null,

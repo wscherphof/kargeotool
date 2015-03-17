@@ -969,11 +969,24 @@ Ext.define("Editor", {
 
             var baseUitmeldpunt = this.selectedObject = this.previousSelectedObject;
             if(uitmeldpunt instanceof Point && uitmeldpunt.getType() == "ACTIVATION_2"){
-                var destMovement = this.activeRseq.getMovementById(movementId);
                 var mvmnts = this.activeRseq.findMovementsForPoint(uitmeldpunt);
                 var srcMovement = mvmnts[0].movement;
                 var map =  srcMovement.getMapForPoint(uitmeldpunt);
-                destMovement.addMapAfter(map, baseUitmeldpunt.id);
+                if(Ext.isString(movementId)){ // movementId is a string. If no string is passed (ie. the uitmeldpunt should be used in a new movement), it's an object.
+                    var destMovement = this.activeRseq.getMovementById(movementId);
+                    destMovement.addMapAfter(map, baseUitmeldpunt.id);
+                }else{
+                    var map = Ext.create(MovementActivationPoint, {
+                        beginEndOrActivation: "ACTIVATION",
+                        commandType: 2,
+                        pointId: uitmeldpunt.getId(),
+                        distanceTillStopLine: map.distanceTillStopLine,
+                        vehicleTypes: [1,2,6,7,71]
+                    });
+
+                    this.activeRseq.addUitmeldpunt(uitmeldpunt,map,true);
+                    this.editForms.editActivationPoint(uitmeldpunt, map);
+                }
 
                 this.un('selectedObjectChanged',this.uitmeldpuntSelected,this);
                 this.fireEvent("activeRseqUpdated", this.activeRseq);
