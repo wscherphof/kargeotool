@@ -938,7 +938,7 @@ Ext.define("Editor", {
                 commandType: 2,
                 pointId: uitmeldpunt.getId(),
                 distanceTillStopLine: distance[0].toFixed(0),
-                vehicleTypes: [1,2,6,7,71]
+                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
             });
 
             me.editForms.editActivationPoint(uitmeldpunt, map, function() {
@@ -982,7 +982,7 @@ Ext.define("Editor", {
                         commandType: 2,
                         pointId: uitmeldpunt.getId(),
                         distanceTillStopLine: map.distanceTillStopLine,
-                        vehicleTypes: [1,2,6,7,71]
+                        vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
                     });
 
                     this.activeRseq.addUitmeldpunt(uitmeldpunt,map,true);
@@ -1094,7 +1094,7 @@ Ext.define("Editor", {
                 commandType: 1,
                 distanceTillStopLine:distance,
                 pointId: inmeldpunt.getId(),
-                vehicleTypes: [1,2,6,7,71]
+                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
             });
 
             me.editForms.editActivationPoint(inmeldpunt, map, function() {
@@ -1202,7 +1202,7 @@ Ext.define("Editor", {
                 commandType: 3,
                 pointId: voorinmeldpunt.getId(),
                 distanceTillStopLine: distance,
-                vehicleTypes: [1,2,6,7,71]
+                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
             });
 
             me.editForms.editActivationPoint(voorinmeldpunt, map, function() {

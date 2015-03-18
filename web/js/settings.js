@@ -191,7 +191,7 @@ Ext.define("SettingsForm", {
                     xtype: 'treecombo',
                     valueField: 'id',
                     editable:false,
-                    value:  profile.vehicleTypes.join(","),
+                    value: profile.vehicleTypes ? profile.vehicleTypes.join(",") : [1,2,6,7,71].join(","),
                     fieldLabel: 'Voertuigtypes',
                     treeWidth:290,
                     treeHeight: 300,
