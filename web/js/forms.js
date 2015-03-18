@@ -880,6 +880,7 @@ Ext.define("EditForms", {
                     name: "carrierIds",
                     id: "carrierIds",
                     multiSelect: true,
+                    value: profile.defaultCarriers,
                     displayField: 'username',
                     valueField: 'id',
                     xtype: "combo"

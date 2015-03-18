@@ -203,8 +203,8 @@ Ext.define("SettingsForm", {
                     width: 400,
                     store: carrierStore,
                     queryMode: 'local',
-                    name: "carrierIds",
-                    id: "carrierIds",
+                    name: "defaultCarriers",
+                    id: "defaultCarriers",
                     multiSelect: true,
                     displayField: 'username',
                     valueField: 'id',
@@ -245,7 +245,7 @@ Ext.define("SettingsForm", {
             }
         }).show();
 
-        var combo = Ext.getCmp("carrierIds");
+        var combo = Ext.getCmp("defaultCarriers");
         combo.setLoading(true);
         Ext.Ajax.request({
             url: usersActionBeanUrl,
@@ -255,14 +255,14 @@ Ext.define("SettingsForm", {
                 'listCarriers': true
             },
             success: function (response) {
-                var combo = Ext.getCmp("carrierIds");
+                var combo = Ext.getCmp("defaultCarriers");
                 combo.setLoading(false);
                 var msg = Ext.JSON.decode(response.responseText);
                 if (msg.success) {
                     var me = this;
                     var store = combo.getStore();
                     store.add(msg.carriers);
-                    combo.setValue(profile.carrierIds);
+                    combo.setValue(profile.defaultCarriers);
                 } else {
                     Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
                 }
