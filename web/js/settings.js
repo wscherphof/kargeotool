@@ -80,8 +80,69 @@ Ext.define("SettingsForm", {
         if(this.window != null) {
             this.window.destroy();
             this.window = null;
-        }   
-        
+        }
+        var ov = [];
+        var hulpdienst = [];
+        var vehicles = {root:{
+            text: 'Alle',
+            id: 'root',
+            iconCls: "noTreeIcon",
+            expanded: true,
+            checked: false,
+            children :[
+                {
+                    id: 'ov-node',
+                    text: 'OV',
+                    checked: false,
+                    iconCls: "noTreeIcon",
+                    expanded:false,
+                    leaf: false,
+                    children: ov
+                },
+                {
+                    id: 'hulpdienst-node',
+                    text: 'Hulpdiensten',
+                    checked: false,
+                    iconCls: "noTreeIcon",
+                    expanded:false,
+                    leaf: false,
+                    children: hulpdienst
+                }
+            ]
+        }};
+ 
+        Ext.Array.each(vehicleTypes, function(vt) {
+            if( vt.omschrijving.indexOf('Gereserveerd') == -1) {
+                var leaf = {
+                    id: vt.nummer,
+                    text: vt.omschrijving,
+                    checked: false,
+                    iconCls: "noTreeIcon",
+                    leaf: true
+                };
+                if(vt.groep == "OV"){
+                    ov.push(leaf);
+                }else{
+                    hulpdienst.push(leaf);
+                }
+            }
+        });
+
+        var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
+
+        var carrierStore = Ext.create('Ext.data.Store', {
+            storeId: 'carriersStore',
+            fields: ['id', 'mail', 'username'],
+            data: [],
+            proxy: {
+                type: 'memory',
+                reader: {
+                    type: 'json',
+                    root: 'items'
+                }
+            }
+        });
+
         var okFunction = function() {
             var form = Ext.getCmp('settingsForm').getForm();
             if (!form.isValid()) {
@@ -95,8 +156,6 @@ Ext.define("SettingsForm", {
                 profile.defaultKarAttributes = me.newDefaultKarAttributes;
             }
             saveProfile();
-
-            //me.editor.fireEvent("profileUpdated", rseq);
 
             me.window.destroy();
             me.window = null;
@@ -126,21 +185,51 @@ Ext.define("SettingsForm", {
                 },
                 defaultType: 'textfield',
                 defaults: {
-                    anchor: '100%'
+                   anchor: '100%'
                 },
                 items: [{
-                    fieldLabel: 'Test',
-                    name: 'test',
-                    value: profile.test
+                    xtype: 'treecombo',
+                    valueField: 'id',
+                    editable:false,
+                    value:  profile.vehicleTypes.join(","),
+                    fieldLabel: 'Voertuigtypes',
+                    treeWidth:290,
+                    treeHeight: 300,
+                    name: 'vehicleTypes',
+                    store: vehicleTypesStore
                 },{
-                    layout:{
-                        anchor: 300
-                    },
+                    fieldLabel: 'Kies vervoerder(s)',
+                    labelWidth: 150,
+                    width: 400,
+                    store: carrierStore,
+                    queryMode: 'local',
+                    name: "carrierIds",
+                    id: "carrierIds",
+                    multiSelect: true,
+                    displayField: 'username',
+                    valueField: 'id',
+                    xtype: "combo"
+                },
+                {
+                    id: "karAttrBtn",
+                    inputId: "karAttrBtn",
+                    name: "karAttrBtn",
                     xtype: 'button',
+                    layout:{
+                        anchor: 100
+                    },
                     text: 'Standaard KAR attributen voor nieuw verkeerssysteem',
                     handler: function() {
-                        
-                       showDefaultAttributes();
+                       //showDefaultAttributes();
+                        Ext.create(KarAttributesEditWindow,
+                            "Standaard KAR attributen voor nieuw verkeersysteem",
+                            "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
+                                "voor nieuw aangemaakte verkeerssystemen moeten worden aangevinkt.",
+                            profile.defaultKarAttributes,
+                            function(atts) {
+                                profile.defaultKarAttributes = atts;
+                            }
+                        ).show();
                     }
                 }],
                 buttons: [{
@@ -155,16 +244,37 @@ Ext.define("SettingsForm", {
                 }]
             }
         }).show();
+
+        var combo = Ext.getCmp("carrierIds");
+        combo.setLoading(true);
+        Ext.Ajax.request({
+            url: usersActionBeanUrl,
+            method: 'POST',
+            scope: this,
+            params: {
+                'listCarriers': true
+            },
+            success: function (response) {
+                var combo = Ext.getCmp("carrierIds");
+                combo.setLoading(false);
+                var msg = Ext.JSON.decode(response.responseText);
+                if (msg.success) {
+                    var me = this;
+                    var store = combo.getStore();
+                    store.add(msg.carriers);
+                    combo.setValue(profile.carrierIds);
+                } else {
+                    Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
+                }
+            },
+            failure: function (response) {
+                this.setLoading(false);
+                Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.');
+            }
+        });
+
     }
 });
 function showDefaultAttributes(){
-    Ext.create(KarAttributesEditWindow, 
-        "Standaard KAR attributen voor nieuw verkeersysteem",        
-        "In dit scherm kan worden aangegeven welke KAR attributen standaard " +
-            "voor nieuw aangemaakte verkeerssystemen moeten worden aangevinkt.",
-        profile.defaultKarAttributes,
-        function(atts) {
-            profile.defaultKarAttributes = atts;
-        }
-    ).show();
+   settingsForm.show();
 }
