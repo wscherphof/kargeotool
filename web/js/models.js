@@ -51,6 +51,7 @@ Ext.define('RSEQ', {
         attributes: null,
         editable:null,
         validationErrors: null,
+        vehicleType:null,
         readyForExport:null
     },
     /**

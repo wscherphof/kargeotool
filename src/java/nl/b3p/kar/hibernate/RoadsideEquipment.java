@@ -553,6 +553,7 @@ public class RoadsideEquipment {
         j.put("location", GeoJSON.toGeoJSON(location));
         j.put("memo", memo);
         j.put("readyForExport", readyForExport);
+        j.put("vehicleType", vehicleType);
         j.put("validationErrors", validationErrors);
 
         JSONObject jattrs = new JSONObject();

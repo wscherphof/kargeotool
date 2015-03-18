@@ -397,7 +397,7 @@ Ext.define("Editor", {
                         editor.olc.removeAllFeatures();
                         editor.olc.addFeatures(rseq.toGeoJSON());
                         this.setActiveRseq(rseq);
-
+                        var mixedMessage =  rseq.vehicleType === "Gemixt" ? "Er zijn in- en/of uitmeldpunten voor zowel hulpdiensten als openbaar vervoer. U kunt dit negeren als dit de bedoeling was.<br/>" :"";
                         if (msg.extraMessage) {
                             Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);
                         } else {
@@ -407,7 +407,7 @@ Ext.define("Editor", {
                                 if (rseq.validationErrors === 0) {
                                     Ext.Msg.show({
                                         title: "Informeren vervoerders",
-                                        msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
+                                        msg: mixedMessage + "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
                                         fn: function (button) {
                                             if (button === 'yes') {
                                                 this.showCarriers();
@@ -422,7 +422,8 @@ Ext.define("Editor", {
                                         icon: Ext.Msg.QUESTION
                                     });
                                 } else {
-                                    Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                                    Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen. <br/>' +
+                                            mixedMessage);
                                 }
                             }
                         }
