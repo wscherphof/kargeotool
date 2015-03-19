@@ -336,6 +336,9 @@ Ext.define("EditForms", {
                         enter: okFunction,
                         scope: this
                     });
+                },
+                close:function(){
+                    editor.activeMovement = null;
                 }
             },
             items: {
@@ -664,6 +667,9 @@ Ext.define("EditForms", {
                         enter: okFunction,
                         scope: this
                     });
+                },
+                close:function(){
+                    editor.activeMovement = null;
                 }
             },
             items: {
@@ -704,7 +710,6 @@ Ext.define("EditForms", {
                     handler: function() {
                         me.activationPointEditWindow.destroy();
                         me.activationPointEditWindow = null;
-                        me.editor.activeMovement = null;
                         if(cancelHandler) {
                             cancelHandler();
                         }

@@ -21,6 +21,9 @@
  * Context menu class dat alle rechtermuis clicks afhandelt.
  */
 Ext.define("ContextMenu", {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
     menuContext: null,
     editor: null,
     
@@ -39,6 +42,7 @@ Ext.define("ContextMenu", {
      *@constructor
      */
     constructor: function(editor) {
+        this.mixins.observable.constructor.call(this);
         this.editor = editor;
         this.editor.on("selectedObjectChanged", this.updateStates,this);
     },
@@ -86,6 +90,10 @@ Ext.define("ContextMenu", {
                             break;                            
                     }
                 },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
+                },
                 scope:me
             }
         });
@@ -108,6 +116,10 @@ Ext.define("ContextMenu", {
                             this.editor.resetMeasure();
                             break;
                     }
+                },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
                 },
                 scope:me
             }
@@ -243,6 +255,10 @@ Ext.define("ContextMenu", {
                             break;
                     }
                 },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
+                },
                 scope: me
             }
         });
@@ -353,6 +369,10 @@ Ext.define("ContextMenu", {
                             break              
                     }
                 },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
+                },
                 scope:me
             }
         });
@@ -414,6 +434,10 @@ Ext.define("ContextMenu", {
                             break
                     }
                 },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
+                },
                 scope:me
             }
         });
@@ -451,6 +475,10 @@ Ext.define("ContextMenu", {
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
                             break
                     }
+                },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
                 },
                 scope:me
             }
@@ -519,6 +547,9 @@ Ext.define("ContextMenu", {
         if(context){
             context.showAt(x, y);
         }
+    },
+    hideFired : function(menu, eventOptions){
+        this.fireEvent("hide",menu, eventOptions);
     },
     /**
  * Haal het nodige menu op door te kijken wat het type is van het geselecteerde object

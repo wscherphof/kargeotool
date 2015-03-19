@@ -178,23 +178,21 @@ Ext.define("nl.b3p.kar.Overview",{
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
+                    this.editor.activeMovement = this.selectedMovement;
                     switch (item.id) {
                         case 'editUitmeldpuntOv':
-                            this.editor.activeMovement = this.selectedMovement;
                             this.editor.editSelectedObject();
                             break;                        
                         case 'removeCheckoutcheckoutOv':
                             Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
                             break;                            
                         case 'addEindpuntOv':
-                            this.editor.activeMovement = this.selectedMovement;
                             editor.addEindpunt();
                             break;
                         case 'selectEindpuntOv':
                             editor.selectEindpunt();
                             break;
                         case 'addInmeldpuntOv':
-                            this.editor.activeMovement = this.selectedMovement;
                             editor.addInmeldpunt();
                             break;
                         case 'selectInmeldpuntOv':
@@ -336,12 +334,22 @@ Ext.define("nl.b3p.kar.Overview",{
                     itemcontextmenu : function (view,record,item,index,event,eOpts){
                         var type = record.raw.type;
                         var point = this.editor.activeRseq.getPointById(record.raw.pointId);
-                        if (type != "signalGroup" && type != "movement" && point.type != "ACTIVATION_2"){
+                        if (type !== "signalGroup" && type !== "movement" ){
+                            this.selectedMovement = record.parentNode.raw.movementId;
+                        }
+                        if (type !== "signalGroup" && type !== "movement" && point.type !== "ACTIVATION_2"){
+                            var resetFn = function(){
+                                var windowOpened = editor.editForms.hasOpenWindows();
+                                if(!windowOpened){
+                                    editor.activeMovement = null;
+                                }
+                                this.editor.contextMenu.un("hide", resetFn,this);
+                            };
+                            editor.activeMovement = this.selectedMovement;
+                            this.editor.contextMenu.on("hide", resetFn,this);
                             this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
                         }
                         if(point && point.type == "ACTIVATION_2"){
-                            this.selectedMovement = record.parentNode.raw.movementId;
-
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
