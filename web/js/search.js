@@ -33,23 +33,23 @@ Ext.define("SearchManager", {
     searchPanel:null,
     constructor: function(config) {
         this.initConfig(config);
-        this.mixins.observable.constructor.call(this);  
+        this.mixins.observable.constructor.call(this);
         this.searchEntities = new Array();
         this.createForm();
         var geocoder = Ext.create(nl.b3p.kar.SearchGeocoder,{editor:this.editor});
         this.addSearchEntity(geocoder);
-       
+
         var rseq = Ext.create(nl.b3p.kar.SearchRSEQ,{editor:this.editor});
         this.addSearchEntity(rseq);
-       
+
         var road = Ext.create(nl.b3p.kar.SearchRoad,{editor:this.editor});
         this.addSearchEntity(road);
-        
+
         var bus = Ext.create(nl.b3p.kar.SearchBusline,{editor:this.editor});
         this.addSearchEntity(bus);
-        
+
         this.addEvents('searchResultClicked');
-        
+
     },
     createForm : function(){
         var panel = Ext.create(Ext.panel.Panel,{
@@ -137,7 +137,7 @@ Ext.define("SearchManager", {
 });
 
 /**
- * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen. 
+ * Superclass voor zoekingangen. Elke zoekingang moet hier minimaal aan voldoen.
  */
 Ext.define("nl.b3p.kar.Search", {
     mixins: {
@@ -150,12 +150,12 @@ Ext.define("nl.b3p.kar.Search", {
     category:null,
     panel:null,
     constructor: function(config) {
-        this.mixins.observable.constructor.call(this);  
+        this.mixins.observable.constructor.call(this);
         this.initConfig(config);
-        
+
         this.resultDom = document.createElement('div');
         this.resultDom.setAttribute("id",this.category + "results" + Ext.id());
-                
+
         this.panel = Ext.create(Ext.panel.Panel,{
             id:this.category + "Container" + Ext.id(),
             title: this.category,
@@ -164,7 +164,7 @@ Ext.define("nl.b3p.kar.Search", {
             contentEl : this.resultDom,
             cls: 'search-accordion'
         });
-        
+
         this.addEvents('searchResultClicked');
     },
     search: function(term){
@@ -197,8 +197,8 @@ Ext.define("nl.b3p.kar.Search", {
 });
 
 /**
- * Het generieke antwoord dat een zoekingang teruggeeft. 
- * 
+ * Het generieke antwoord dat een zoekingang teruggeeft.
+ *
  */
 Ext.define("nl.b3p.kar.SearchResult", {
     config:{
@@ -243,7 +243,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
             success: function(response) {
                 var results = new OpenLayers.Format.XLS().read(response.responseXML);
                 var rl = results.responseLists[0];
-                
+
                 if(rl) {
                     Ext.Array.each(rl.features, function(feature) {
                         me.displayGeocodeResult( feature);
@@ -258,7 +258,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
             }
         });
     },
-    
+
     displayGeocodeResult: function( feature) {
         var address = feature.attributes.address;
 
@@ -289,7 +289,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         var me = this;
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
-                x:feature.geometry.x, 
+                x:feature.geometry.x,
                 y:feature.geometry.y,
                 addMarker:true
             });
@@ -367,7 +367,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                     }
                     this.searchFinished(rseqs.length);
                 }else{
-                    this.searchFinished(0,"Ophalen resultaten mislukt.");               
+                    this.searchFinished(0,"Ophalen resultaten mislukt.");
                 }
             },
             failure: function() {
@@ -388,7 +388,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
         var me = this;
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
-                x:rseq.geometry.coordinates[0], 
+                x:rseq.geometry.coordinates[0],
                 y:rseq.geometry.coordinates[1],
                 addMarker:false
             });
@@ -430,7 +430,7 @@ Ext.define("nl.b3p.kar.SearchRoad", {
                         }
                     }
                     this.searchFinished(roads.length);
-                    
+
                 }else{
                     this.searchFinished(0,"Ophalen resultaten mislukt.");
                 }
@@ -462,9 +462,9 @@ Ext.define("nl.b3p.kar.SearchRoad", {
                     addMarker:true
                 });
                 me.fireEvent("searchResultClicked",result );
-                
+
             });
-            
+
             this.addResult(link);
         }
     }
@@ -539,7 +539,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                             var buslines = schema.lines;
                             totalLines += schema.lines.length;
                             for ( var i = 0 ; i < buslines.length ; i++){
-                                this.createResult(schema.company,buslines[i], schema.schema);
+                                this.createResult(buslines[i].dataowner,buslines[i], schema.schema);
                             }
                         }
                         this.searchFinished(totalLines);
@@ -573,10 +573,10 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                     location: location,
                     addMarker:false
                 });
-                
-                
+
+
                 var layerName = "buslijnen_" +schema;
-                
+
                 Ext.Array.each(ovInfo, function(ov) {
                     var currentName = "buslijnen_" + ov.schema;
                     var visible = false;
@@ -585,16 +585,16 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                     }
                     editor.olc.setLayerVisible(currentName, visible);
                 });
-                    
+
                 editor.olc.addFilterToKargis(busline.publicnumber,layerName);
                 Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
                 Ext.get("buslijnen_filter").setDisplayed(true);
-                
-                
+
+
                 me.fireEvent("searchResultClicked",result );
-                
+
             });
-            
+
             this.addResult(link);
         }
     }

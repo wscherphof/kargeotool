@@ -33,10 +33,7 @@ import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,7 +46,6 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
-import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -81,7 +77,7 @@ public class SearchActionBean implements ActionBean {
     private String term;
     @Validate(required = false) // niet noodzakelijk: extra filter voor buslijnen, maar hoeft niet ingevuld te zijn
     private String dataOwner;
-    private static final String TRANSMODEL_JNDI_NAME = "java:comp/env/jdbc/transmodel";
+    private static final String KV7NETWERK_JNDI_NAME = "java:comp/env/jdbc/kv7netwerk";
 
     @Validate
     private String vehicleType;
@@ -173,8 +169,8 @@ public class SearchActionBean implements ActionBean {
     }
 
     /**
-     * Doorzoekt de KV1 database. Gebruikt de parameter term voor publicnumber
-     * en name uit de jopa tabel. Alleen resultaten met een geometrie worden
+     * Doorzoekt de KV7 database. Gebruikt de parameter term voor publicnumber
+     * en linename uit de line tabel. Alleen resultaten met een geometrie worden
      * teruggegeven.
      *
      * @return Resolution Resolution met daarin een JSONObject met de gevonden
@@ -184,64 +180,63 @@ public class SearchActionBean implements ActionBean {
      */
     public Resolution busline() throws Exception {
 
-        Map<String, List<String>> schemaMap = getSchemas();
-
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
 
         Connection c = getConnection();
         try {
 
+            List<String> schemas = new QueryRunner().query(c, "select schema from data.imports where state='active'", new ColumnListHandler<String>(1));
+
             JSONArray lines = new JSONArray();
-            for (String company : schemaMap.keySet()) {
-                List<String> schemas = schemaMap.get(company);
+            for (String schema : schemas) {
+                String sql = "select distinct(l.linepublicnumber,l.linename),l.linename,l.linepublicnumber, min(xmin(ls.the_geom)), min(ymin(ls.the_geom)), max(xmax(ls.the_geom)), "
+                        + "max(ymax(ls.the_geom)), l.dataownercode "
+                        + "from " + schema + ".lines ls left join " + schema
+                        + ".line l on (ls.lineplanningnumber = l.lineplanningnumber) "
+                        + "where ls.the_geom is not null and (l.linepublicnumber ilike ? or l.linename ilike ?)";
 
-                for (String schema : schemas) {
-                    String sql = "select distinct(l.linepublicnumber,l.linename),l.linename,l.linepublicnumber, min(xmin(j.the_geom)), min(ymin(j.the_geom)), max(xmax(j.the_geom)), "
-                            + "max(ymax(j.the_geom)), j.dataowner "
-                            + "from " + schema + ".jopa j left join " + schema
-                            + ".line l on (j.lineplanningnumber = l.lineplanningnumber) "
-                            + "where j.the_geom is not null and (l.linepublicnumber ilike ? or l.linename ilike ?)";
+                if (dataOwner != null) {
+                    sql += " and l.dataownercode = ?";
+                }
+                sql += " group by l.linepublicnumber,l.linename, l.dataownercode order by l.linename";
+                ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
+                    public JSONArray handle(ResultSet rs) throws SQLException {
+                        JSONArray lines = new JSONArray();
+                        while (rs.next()) {
+                            JSONObject line = new JSONObject();
+                            try {
+                                line.put("publicnumber", rs.getString(3));
+                                line.put("name", rs.getString(2));
+                                JSONObject jEnv = new JSONObject();
+                                jEnv.put("minx", rs.getDouble(4));
+                                jEnv.put("miny", rs.getDouble(5));
+                                jEnv.put("maxx", rs.getDouble(6));
+                                jEnv.put("maxy", rs.getDouble(7));
+                                line.put("dataowner", rs.getString(8));
+                                line.put("envelope", jEnv);
+                                lines.put(line);
 
-                    if (dataOwner != null) {
-                        sql += " and j.dataowner = ?";
-                    }
-                    sql += " group by l.linepublicnumber,l.linename, j.dataowner order by l.linename";
-                    ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
-                        public JSONArray handle(ResultSet rs) throws SQLException {
-                            JSONArray lines = new JSONArray();
-                            while (rs.next()) {
-                                JSONObject line = new JSONObject();
-                                try {
-                                    line.put("publicnumber", rs.getString(3));
-                                    line.put("name", rs.getString(2));
-                                    JSONObject jEnv = new JSONObject();
-                                    jEnv.put("minx", rs.getDouble(4));
-                                    jEnv.put("miny", rs.getDouble(5));
-                                    jEnv.put("maxx", rs.getDouble(6));
-                                    jEnv.put("maxy", rs.getDouble(7));
-                                    line.put("envelope", jEnv);
-                                    lines.put(line);
-
-                                } catch (JSONException je) {
-                                    log.error("Kan geen buslijn ophalen: ", je);
-                                }
+                            } catch (JSONException je) {
+                                log.error("Kan geen buslijn ophalen: ", je);
                             }
-                            return lines;
                         }
-                    };
-                    if (term == null) {
-                        term = "";
+                        return lines;
                     }
-                    JSONObject s = new JSONObject();
-                    s.put("company", company);
-                    s.put("schema", schema);
-                    if (dataOwner != null) {
-                        s.put("lines", new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%", dataOwner));
-                    } else {
-                        s.put("lines", new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%"));
-                    }
-
+                };
+                if (term == null) {
+                    term = "";
+                }
+                JSONObject s = new JSONObject();
+                s.put("schema", schema);
+                JSONArray matchedLines;
+                if (dataOwner != null) {
+                    matchedLines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%", dataOwner);
+                } else {
+                    matchedLines  = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%");
+                }
+                s.put("lines", matchedLines);
+                if(matchedLines.length() != 0) {
                     lines.put(s);
                 }
             }
@@ -253,44 +248,6 @@ public class SearchActionBean implements ActionBean {
             DbUtils.closeQuietly(c);
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
-    }
-
-     private Map<String, List<String>> getSchemas() {
-        Map<String, List<String>> schemas = new HashMap<String,List<String>>();
-
-        Connection conn = null;
-        try {
-            Context initCtx = new InitialContext();
-            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");
-            conn = ds.getConnection();
-
-            List<String> schemaList = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
-
-            for(String schema: schemaList) {
-
-                try {
-                    Map<String,Object> meta = new QueryRunner().query(conn, "select data_owner_code from " + schema + ".geo_ov_metainfo", new MapHandler());
-
-                    for(Map.Entry<String,Object> entry: meta.entrySet()) {
-                        String val = (String)entry.getValue();
-                        if(!schemas.containsKey(val)){
-                            List<String> s = new ArrayList();
-                            schemas.put(val, s);
-                        }
-                        schemas.get(val).add(schema);
-                    }
-                } catch(Exception e) {
-                    log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
-                }
-
-            }
-
-        } catch(Exception e) {
-            log.error("Kan geen ov info ophalen: ", e);
-        } finally {
-            DbUtils.closeQuietly(conn);
-        }
-        return schemas;
     }
 
     public Gebruiker getGebruiker() {
@@ -354,7 +311,7 @@ public class SearchActionBean implements ActionBean {
 
     private Connection getConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
-        DataSource ds = (DataSource) initCtx.lookup(TRANSMODEL_JNDI_NAME);
+        DataSource ds = (DataSource) initCtx.lookup(KV7NETWERK_JNDI_NAME);
 
         return ds.getConnection();
     }

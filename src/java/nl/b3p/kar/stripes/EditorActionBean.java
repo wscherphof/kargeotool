@@ -51,8 +51,7 @@ import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
-import org.apache.commons.dbutils.handlers.ColumnListHandler;
-import org.apache.commons.dbutils.handlers.MapHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -175,30 +174,28 @@ public class EditorActionBean implements ActionBean {
 
         Connection conn = null;
         try {
-            log.debug("  makeOvInfoJSON(): lookup transmodel datasource");
+            log.debug("  makeOvInfoJSON(): lookup kv7netwerk datasource");
             Context initCtx = new InitialContext();
-            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/transmodel");
+            DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/kv7netwerk");
             log.debug("  makeOvInfoJSON(): open connection");
             conn = ds.getConnection();
 
-            log.debug("  makeOvInfoJSON(): get schemas");
-            List<String> schemas = new QueryRunner().query(conn, "select schema_name from information_schema.schemata where schema_owner <> 'postgres'", new ColumnListHandler<String>(1));
+            log.debug("  makeOvInfoJSON(): get imports");
+            List<Map<String,Object>> imports = new QueryRunner().query(conn, "select * from data.imports where state = 'active'", new MapListHandler());
 
             SortedMap<String,JSONObject> ovInfoMap = new TreeMap();
-            for(String schema: schemas) {
+            for(Map<String,Object> i: imports) {
                 JSONObject ovSchema = new JSONObject();
+                String schema = (String)i.get("schema");
                 ovSchema.put("schema", schema);
 
                 try {
-                    log.debug("  makeOvInfoJSON(): get metainfo for " + schema);
-                    Map<String,Object> meta = new QueryRunner().query(conn, "select * from " + schema + ".geo_ov_metainfo", new MapHandler());
-
-                    for(Map.Entry<String,Object> entry: meta.entrySet()) {
+                    for(Map.Entry<String,Object> entry: i.entrySet()) {
                         ovSchema.put(entry.getKey(), entry.getValue());
                     }
 
                     log.debug("  makeOvInfoJSON(): get extent for " + schema);
-                    Object[] extent = new QueryRunner().query(conn, "select st_xmin(ext),st_xmax(ext),st_ymin(ext),st_ymax(ext) from (select st_extent(the_geom) as ext from " + schema + ".jopa) e", new ArrayHandler());
+                    Object[] extent = new QueryRunner().query(conn, "select st_xmin(extent),st_xmax(extent),st_ymin(extent),st_ymax(extent) from data.imports where id = ?", new ArrayHandler(), i.get("id"));
                     JSONObject jExtent = new JSONObject();
                     jExtent.put("xmin", (Double)extent[0]);
                     jExtent.put("xmax", (Double)extent[1]);
@@ -206,7 +203,7 @@ public class EditorActionBean implements ActionBean {
                     jExtent.put("ymax", (Double)extent[3]);
                     ovSchema.put("extent", jExtent);
 
-                    ovInfoMap.put(ovSchema.getString("title"), ovSchema);
+                    ovInfoMap.put(ovSchema.getString("schema"), ovSchema);
                 } catch(Exception e) {
                     log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
                     // schema waarschijnlijk niet via geo-ov geimporteerd

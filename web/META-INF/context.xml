@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/geo-ov">
-    
+   
     <Resource 
-        name="jdbc/transmodel"
+        name="jdbc/kv7netwerk"
         auth="Container"
         type="javax.sql.DataSource"
-        username="transmodel"
-        password="transmodel"
+        username="geo_ov"
+        password="xXxXxXxXxXx"
         driverClassName="org.postgresql.Driver"
-        url="jdbc:postgresql://x17.b3p.nl/transmodel_acc"
+        url="jdbc:postgresql://x17.b3p.nl/kv7netwerk"
         maxActive="25"
         validationQuery="select 1"
         
@@ -18,6 +18,5 @@
         removeAbandoned="true"
         removeAbandonedTimeout="60"
         logAbandoned="true"            
-    />
-    <Parameter name="mapserver-url" value="http://b3p-meine/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/transmodel_acc.map" override="false"/>
+    />    
 </Context>
