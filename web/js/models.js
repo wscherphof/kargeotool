@@ -566,6 +566,15 @@ Ext.define('RSEQ', {
             }
         }
         return signalGroups;
+    },
+    areVehicletypesConsistent : function(){
+        for (var i = 0 ; i < this.movements.length; i++){
+            var movement = this.movements[i];
+            if(!movement.isConsistent()){
+                return false;
+            }
+        }
+        return true;
     }
 });
 
@@ -749,6 +758,28 @@ Ext.define('Movement', {
                 this.maps.splice(i,1);
             }
         }
+    },
+    isConsistent : function(){
+        var inmeldpunt = null;
+        var uitmeldpunt = null;
+        for ( var i = 0 ; i < this.maps.length; i++){
+            var map = this.maps[i];
+            if(map.beginEndOrActivation === "ACTIVATION"){
+                if(map.commandType === 1){
+                    inmeldpunt = map;
+                }else if(map.commandType === 2){
+                    uitmeldpunt = map;
+                }
+            }
+        }
+        if (inmeldpunt && uitmeldpunt) {
+            var diffAB = Ext.Array.difference(uitmeldpunt.vehicleTypes, inmeldpunt.vehicleTypes);
+            var diffBA = Ext.Array.difference(inmeldpunt.vehicleTypes, uitmeldpunt.vehicleTypes);
+            return diffAB.length === 0 && diffBA.length === 0;
+        } else {
+            return true;
+        }
+
     }
 });
 /**

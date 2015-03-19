@@ -152,6 +152,7 @@ Ext.define("Editor", {
 
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', getLayerVisibility("Luchtfoto"),'png?LAYERS=IPOlufo', getLayerOpacity("Luchtfoto"));
         this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
+        // Grijs:    this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tms/','brtachtergrondkaartgrijstijdelijk@EPSG:28992@png', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
 
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
@@ -373,69 +374,91 @@ Ext.define("Editor", {
      */
     saveOrUpdate: function(onSaved) {
         var rseq = this.activeRseq;
-        if(rseq !== null) {
-            this.setLoading(true, "Bezig met opslaan...");
-            Ext.Ajax.request({
-                url: editorActionBeanUrl,
-                method: 'POST',
-                scope: this,
-                params: {
-                    'saveOrUpdateRseq': true,
-                    'json': Ext.JSON.encode(editor.activeRseq.toJSON())
-                },
-                success: function (response){
-                    this.setLoading(false);
-                    var msg = Ext.JSON.decode(response.responseText);
-                    if(msg.success) {
-                        this.changeManager.rseqSaved();
+        if (rseq !== null) {
+              var saveFunction = function(){
+                this.setLoading(true, "Bezig met opslaan...");
+                Ext.Ajax.request({
+                    url: editorActionBeanUrl,
+                    method: 'POST',
+                    scope: this,
+                    params: {
+                        'saveOrUpdateRseq': true,
+                        'json': Ext.JSON.encode(editor.activeRseq.toJSON())
+                    },
+                    success: function (response){
+                        this.setLoading(false);
+                        var msg = Ext.JSON.decode(response.responseText);
+                        if(msg.success) {
+                            this.changeManager.rseqSaved();
 
-                        var rseq = makeRseq(msg.roadsideEquipment);
-                        var editable = msg.editable;
-                        rseq.setEditable (editable);
+                            var rseq = makeRseq(msg.roadsideEquipment);
+                            var editable = msg.editable;
+                            rseq.setEditable (editable);
 
-                        // Dit misschien in listener
-                        editor.olc.removeAllFeatures();
-                        editor.olc.addFeatures(rseq.toGeoJSON());
-                        this.setActiveRseq(rseq);
-                        var mixedMessage =  rseq.vehicleType === "Gemixt" ? "Er zijn in- en/of uitmeldpunten voor zowel hulpdiensten als openbaar vervoer. U kunt dit negeren als dit de bedoeling was.<br/>" :"";
-                        if (msg.extraMessage) {
-                            Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);
-                        } else {
-                            if (onSaved) {
-                                onSaved();
+                            // Dit misschien in listener
+                            editor.olc.removeAllFeatures();
+                            editor.olc.addFeatures(rseq.toGeoJSON());
+                            this.setActiveRseq(rseq);
+                            if (msg.extraMessage) {
+                                Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);
                             } else {
-                                if (rseq.validationErrors === 0) {
-                                    Ext.Msg.show({
-                                        title: "Informeren vervoerders",
-                                        msg: mixedMessage + "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
-                                        fn: function (button) {
-                                            if (button === 'yes') {
-                                                this.showCarriers();
-                                            }
-                                        },
-                                        scope: this,
-                                        buttons: Ext.Msg.YESNO,
-                                        buttonText: {
-                                            no: "Nee",
-                                            yes: "Ja"
-                                        },
-                                        icon: Ext.Msg.QUESTION
-                                    });
+                                if (onSaved) {
+                                    onSaved();
                                 } else {
-                                    Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen. <br/>' +
-                                            mixedMessage);
+                                    if (rseq.validationErrors === 0) {
+                                        Ext.Msg.show({
+                                            title: "Informeren vervoerders",
+                                            msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
+                                            fn: function (button) {
+                                                if (button === 'yes') {
+                                                    this.showCarriers();
+                                                }
+                                            },
+                                            scope: this,
+                                            buttons: Ext.Msg.YESNO,
+                                            buttonText: {
+                                                no: "Nee",
+                                                yes: "Ja"
+                                            },
+                                            icon: Ext.Msg.QUESTION
+                                        });
+                                    } else {
+                                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                                    }
                                 }
                             }
+                        }else{
+                            Ext.Msg.alert('Fout', 'Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
                         }
-                    }else{
-                        Ext.Msg.alert('Fout', 'Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
+                    },
+                    failure: function (response){
+                        this.setLoading(false);
+                        Ext.Msg.alert('Fout','Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' );
                     }
-                },
-                failure: function (response){
-                    this.setLoading(false);
-                    Ext.Msg.alert('Fout','Er is een fout opgetreden. VRI is niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder.' );
-                }
-            });
+                });
+            }
+            var hasMixedVehicletypesInMovement = rseq.areVehicletypesConsistent();
+            var me = this;
+            if (!hasMixedVehicletypesInMovement) {
+                Ext.Msg.show({
+                    title: "Gemengde beweging(en)",
+                    msg: "Binnen een beweging zijn er in- en uitmeldpunten met verschillende voertuigtypes. Was dit de bedoeling? Klik op 'ja' als dit de bedoeling was en om op te slaan, klik op 'nee' om niet op te slaan.",
+                    fn: function (button) {
+                        if (button === 'yes') {
+                            saveFunction.call(me);
+                        }
+                    },
+                    scope: this,
+                    buttons: Ext.Msg.YESNO,
+                    buttonText: {
+                        no: "Nee",
+                        yes: "Ja"
+                    },
+                    icon: Ext.Msg.QUESTION
+                });
+            } else {
+                saveFunction.call(me);
+            }
         }
     },
 
@@ -1102,7 +1125,6 @@ Ext.define("Editor", {
                 me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false,false,me.activeMovement);
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
                 me.activeMovement = null;
-
             }, function() {
                 me.fireEvent("activeRseqUpdated", me.activeRseq);
                 me.activeMovement = null;
@@ -1298,7 +1320,6 @@ Ext.define("Editor", {
     cancelSelection:function(){
         this.un('selectedObjectChanged',this.actionToCancel,this);
         this.changeCurrentEditAction(null);
-        console.log("cancelselection");
     },
 
     // ==== KV9 Validation results ====
