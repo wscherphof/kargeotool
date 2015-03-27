@@ -45,7 +45,7 @@ import nl.b3p.kar.hibernate.*;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -186,35 +186,34 @@ public class SearchActionBean implements ActionBean {
         Connection c = getConnection();
         try {
 
-            List<String> schemas = new QueryRunner().query(c, "select schema from data.imports where state='active'", new ColumnListHandler<String>(1));
+            String schema = new QueryRunner().query(c, "select schema from data.netwerk where state = 'active' order by processed_date desc limit 1", new ScalarHandler<String>());
 
             JSONArray lines = new JSONArray();
-            for (String schema : schemas) {
-                String sql = "select distinct(l.linepublicnumber,l.linename),l.linename,l.linepublicnumber, min(xmin(ls.the_geom)), min(ymin(ls.the_geom)), max(xmax(ls.the_geom)), "
-                        + "max(ymax(ls.the_geom)), l.dataownercode "
-                        + "from " + schema + ".lines ls left join " + schema
-                        + ".line l on (ls.lineplanningnumber = l.lineplanningnumber) "
-                        + "where ls.the_geom is not null and (l.linepublicnumber ilike ? or l.linename ilike ?)";
+            if(schema != null) {
+                String sql = "select linepublicnumber,linename, min(st_xmin(the_geom)), min(st_ymin(the_geom)), max(st_xmax(the_geom)), "
+                        + "max(st_ymax(the_geom)), dataownercode "
+                        + "from " + schema + ".map_line "
+                        + "where the_geom is not null and (linepublicnumber ilike ? or linename ilike ?)";
 
                 if (dataOwner != null) {
-                    sql += " and l.dataownercode = ?";
+                    sql += " and dataownercode = ?";
                 }
-                sql += " group by l.linepublicnumber,l.linename, l.dataownercode order by l.linename";
+                sql += " group by linepublicnumber,linename, dataownercode order by linename";
                 ResultSetHandler<JSONArray> h = new ResultSetHandler<JSONArray>() {
                     public JSONArray handle(ResultSet rs) throws SQLException {
                         JSONArray lines = new JSONArray();
                         while (rs.next()) {
                             JSONObject line = new JSONObject();
                             try {
-                                line.put("publicnumber", rs.getString(3));
+                                line.put("publicnumber", rs.getString(1));
                                 line.put("name", rs.getString(2));
                                 JSONObject jEnv = new JSONObject();
-                                jEnv.put("minx", rs.getDouble(4));
-                                jEnv.put("miny", rs.getDouble(5));
-                                jEnv.put("maxx", rs.getDouble(6));
-                                jEnv.put("maxy", rs.getDouble(7));
-                                line.put("dataowner", rs.getString(8));
+                                jEnv.put("minx", rs.getDouble(3));
+                                jEnv.put("miny", rs.getDouble(4));
+                                jEnv.put("maxx", rs.getDouble(5));
+                                jEnv.put("maxy", rs.getDouble(6));
                                 line.put("envelope", jEnv);
+                                line.put("dataowner", rs.getString(7));
                                 lines.put(line);
 
                             } catch (JSONException je) {

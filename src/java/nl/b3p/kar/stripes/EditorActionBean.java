@@ -36,8 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -50,8 +48,7 @@ import nl.b3p.kar.hibernate.*;
 import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ArrayHandler;
-import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,7 +83,7 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
-    private JSONArray ovInfoJSON;
+    private JSONObject ovInfoJSON;
 
     @Validate
     private String extent;
@@ -169,8 +166,8 @@ public class EditorActionBean implements ActionBean {
         return new ForwardResolution(JSP);
     }
 
-    private JSONArray makeOvInfoJSON() {
-        JSONArray ovInfo = new JSONArray();
+    private JSONObject makeOvInfoJSON() {
+        JSONObject ovInfo = new JSONObject();
 
         Connection conn = null;
         try {
@@ -180,38 +177,13 @@ public class EditorActionBean implements ActionBean {
             log.debug("  makeOvInfoJSON(): open connection");
             conn = ds.getConnection();
 
-            log.debug("  makeOvInfoJSON(): get imports");
-            List<Map<String,Object>> imports = new QueryRunner().query(conn, "select * from data.imports where state = 'active'", new MapListHandler());
+            log.debug("  makeOvInfoJSON(): get netwerk");
+            Map<String,Object> netwerk = new QueryRunner().query(conn, "select id::varchar,schema,processed_date::varchar from data.netwerk where state = 'active' order by processed_date desc limit 1", new MapHandler());
 
-            SortedMap<String,JSONObject> ovInfoMap = new TreeMap();
-            for(Map<String,Object> i: imports) {
-                JSONObject ovSchema = new JSONObject();
-                String schema = (String)i.get("schema");
-                ovSchema.put("schema", schema);
-
-                try {
-                    for(Map.Entry<String,Object> entry: i.entrySet()) {
-                        ovSchema.put(entry.getKey(), entry.getValue());
-                    }
-
-                    log.debug("  makeOvInfoJSON(): get extent for " + schema);
-                    Object[] extent = new QueryRunner().query(conn, "select st_xmin(extent),st_xmax(extent),st_ymin(extent),st_ymax(extent) from data.imports where id = ?", new ArrayHandler(), i.get("id"));
-                    JSONObject jExtent = new JSONObject();
-                    jExtent.put("xmin", (Double)extent[0]);
-                    jExtent.put("xmax", (Double)extent[1]);
-                    jExtent.put("ymin", (Double)extent[2]);
-                    jExtent.put("ymax", (Double)extent[3]);
-                    ovSchema.put("extent", jExtent);
-
-                    ovInfoMap.put(ovSchema.getString("schema"), ovSchema);
-                } catch(Exception e) {
-                    log.info("Fout bij opvragen geo_ov_metainfo tabel in schema in transmodel database \"" + schema + "\", geen ov info?", e);
-                    // schema waarschijnlijk niet via geo-ov geimporteerd
+            if(netwerk != null) {
+                for(Map.Entry<String,Object> entry: netwerk.entrySet()) {
+                    ovInfo.put(entry.getKey(), (String)entry.getValue());
                 }
-            }
-
-            for(JSONObject ovSchema: ovInfoMap.values()) {
-                ovInfo.put(ovSchema);
             }
         } catch(Exception e) {
             log.error("Kan geen ov info ophalen: ", e);
@@ -813,11 +785,11 @@ public class EditorActionBean implements ActionBean {
         this.extent = extent;
     }
 
-    public JSONArray getOvInfoJSON() {
+    public JSONObject getOvInfoJSON() {
         return ovInfoJSON;
     }
 
-    public void setOvInfoJSON(JSONArray ovInfoJSON) {
+    public void setOvInfoJSON(JSONObject ovInfoJSON) {
         this.ovInfoJSON = ovInfoJSON;
     }
 

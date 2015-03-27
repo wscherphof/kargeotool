@@ -158,13 +158,9 @@ Ext.define("Editor", {
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
 
-    createOvInfoLayers: function(mapfilePath, ovInfos) {
-
-        Ext.Array.each(ovInfos, function(ovInfo) {
-            var bounds = new OpenLayers.Bounds(ovInfo.extent.xmin, ovInfo.extent.ymin, ovInfo.extent.xmax, ovInfo.extent.ymax);
-            this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', getLayerVisibility('buslijnen'),null, 1, 13, bounds);
-            this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', getLayerVisibility('bushaltes'),null, 1, 13, bounds);
-        }, this);
+    createOvInfoLayers: function(mapfilePath, ovInfo) {
+        this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', getLayerVisibility('buslijnen'),null, 1, 13, null);
+        this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', getLayerVisibility('bushaltes'),null, 1, 13, null);
     },
 
     setLayerOpacity: function(layer, opacity) {
@@ -1022,7 +1018,7 @@ Ext.define("Editor", {
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
         var me = this;
-        
+
         var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
 
