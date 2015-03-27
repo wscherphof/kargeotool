@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/geo-ov">
-   
-    <Resource 
-        name="jdbc/kv7netwerk"
-        auth="Container"
-        type="javax.sql.DataSource"
-        username="geo_ov"
-        password="xXxXxXxXxXx"
-        driverClassName="org.postgresql.Driver"
-        url="jdbc:postgresql://x17.b3p.nl/kv7netwerk"
-        maxActive="25"
-        validationQuery="select 1"
-        
-        timeBetweenEvictionRunsMillis="30000"
-        minEvictableIdleTimeMillis="5000"       
-        
-        removeAbandoned="true"
-        removeAbandonedTimeout="60"
-        logAbandoned="true"            
-    />    
+    <ResourceLink global="jdbc/kv7netwerk" name="jdbc/kv7netwerk" type="javax.sql.Datasource"/>      
 </Context>
