@@ -40,6 +40,9 @@
             <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean"/>">Importeer</a>
         </div>
         <div class="headerlink">
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.OverviewActionBean"/>">Berichtoverzicht</a>
+        </div>
+        <div class="headerlink">
             <a href="#" onclick="showDefaultAttributes();">Instellingen</a>
         </div>
         <div class="headerlink">

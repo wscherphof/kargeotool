@@ -875,11 +875,11 @@ Ext.define("EditForms", {
         this.carriersWindow = Ext.create('Ext.window.Window', {
             title: 'Selecteer vervoerder(s)',
            // height: 200,
-            width: 420,
+            width: 720,
             items: [{
                     fieldLabel: 'Kies vervoerder(s)',
                     labelWidth: 150,
-                    width: 400,
+                    width: 700,
                     store: carrierStore,
                     queryMode: 'local',
                     name: "carrierIds",

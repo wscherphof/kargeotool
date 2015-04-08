@@ -104,8 +104,8 @@ public class CarrierInformer implements Job {
         String body = "";
         body += "Beste " + name + ", <br/>";
         body += "<br/>";
-        body += "U heeft een bericht via de applicatie geo-ov gekregen van " + inform.getAfzender().getFullname();
-        body += ". Dit betreft een update van het kruispunt met KAR-adres " + rseq.getKarAddress() + ": " + rseq.getDescription() + " | " + rseq.getCrossingCode() + ".<br/>";
+        body += "U heeft een bericht via de applicatie geo-ov gekregen van " + inform.getAfzender().getFullname() != null ? inform.getAfzender().getFullname() : inform.getAfzender().getUsername();
+        body += ". Dit betreft een update van het kruispunt met KAR-adres " + rseq.getKarAddress() + ": " + rseq.getDescription() + " | " + rseq.getCrossingCode() + ", van dataowner "  + rseq.getDataOwner().getOmschrijving() +".<br/>";
         body += "Een export kunt u ";
         body += "<a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">hier</a> ";
         body += " downloaden. <br/>";
