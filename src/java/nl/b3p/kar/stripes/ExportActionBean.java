@@ -122,12 +122,25 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public Resolution export() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         roadsideEquipmentList = new ArrayList();
+        List<RoadsideEquipment> notReadyForExport = new ArrayList<RoadsideEquipment>();
         for (Long id : rseqs) {
             RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
-
-            roadsideEquipmentList.add(r);
+            if(r.isReadyForExport()){
+                roadsideEquipmentList.add(r);
+            }else{
+                notReadyForExport.add(r);
+            }
         }
-        if (exportType == null) {
+        if(!notReadyForExport.isEmpty()){
+            String message = "Kan niet exporteren omdat er een of meerdere verkeerssytemen zijn die niet klaar voor export zijn. Pas de selectie aan. De volgende zijn nog niet klaar: ";
+
+            for (RoadsideEquipment r : notReadyForExport) {
+                message += r.getKarAddress() + " - " + r.getDescription() + ", ";
+            }
+            message = message.substring(0, message.length() - 2);
+            this.context.getValidationErrors().add("export", new SimpleError((message)));
+            return new ForwardResolution(OVERVIEW);
+        }else if (exportType == null) {
             this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
         } else if (exportType.equals("incaa")) {

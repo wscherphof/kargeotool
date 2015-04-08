@@ -439,6 +439,8 @@ public class EditorActionBean implements ActionBean {
             purgePreviousMessage(msg);
             em.persist(msg);
         }
+        rseq.setReadyForExport(true);
+        em.persist(rseq);
 
         em.getTransaction().commit();
         info.put("success", Boolean.TRUE);

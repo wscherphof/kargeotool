@@ -54,6 +54,9 @@
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
         <script type="text/javascript" src="${contextPath}/js/export.js"></script>
         <h1>Exporteer verkeerssystemen</h1>
+
+                <stripes:messages/>
+                <stripes:errors/>
         <div id="body" class="exportBody">
         </div>
 
