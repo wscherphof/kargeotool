@@ -98,9 +98,18 @@ public class OverviewActionBean implements ActionBean{
     public Resolution readMessage(){
 
         EntityManager em = Stripersist.getEntityManager();
-        message.setMailProcessed(true);
-        message.setProcessedAt(new Date());
-        em.persist(message);
+
+        List<InformMessage> messages = em.createQuery("FROM InformMessage where vervoerder = :vervoerder and afzender = :afzender and mailSent = true and mailProcessed = false "
+                + "and rseq = :rseq", InformMessage.class)
+                .setParameter("vervoerder", message.getVervoerder())
+                .setParameter("afzender", message.getAfzender())
+                .setParameter("rseq", message.getRseq()).getResultList();
+
+        for (InformMessage msg : messages) {
+            msg.setMailProcessed(true);
+            msg.setProcessedAt(new Date());
+            em.persist(msg);
+        }
         em.getTransaction().commit();
         context.getMessages().add(new SimpleMessage("Bericht over kruispunt " + message.getRseq().getDescription() + " succesvol verwerkt."));
         return overview();
