@@ -151,9 +151,7 @@ Ext.define("Editor", {
         this.olc.createMap(this.domId);
 
         this.olc.addLayer("TMS","Luchtfoto",'http://luchtfoto.services.gbo-provincies.nl/tilecache/tilecache.aspx/','IPOlufo', getLayerVisibility("Luchtfoto"),'png?LAYERS=IPOlufo', getLayerOpacity("Luchtfoto"));
-        //this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
-        // Grijs:
-            this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tms/','brtachtergrondkaartgrijstijdelijk@EPSG:28992@png', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
+        this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
 
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
