@@ -436,12 +436,22 @@ public class EditorActionBean implements ActionBean {
             msg.setAfzender(getGebruiker());
             msg.setVervoerder(vervoerder);
             msg.setRseq(rseq);
+            purgePreviousMessage(msg);
             em.persist(msg);
         }
 
         em.getTransaction().commit();
         info.put("success", Boolean.TRUE);
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
+    private void purgePreviousMessage(InformMessage current){
+        EntityManager em = Stripersist.getEntityManager();
+        em.createQuery("DELETE FROM InformMessage where vervoerder = :vervoerder and afzender = :afzender and mailSent = false "
+                + "and rseq = :rseq")
+                .setParameter("vervoerder", current.getVervoerder())
+                .setParameter("afzender", current.getAfzender())
+                .setParameter("rseq", current.getRseq()).executeUpdate();
     }
 
     /**
