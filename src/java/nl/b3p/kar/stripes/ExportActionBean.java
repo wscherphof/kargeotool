@@ -135,7 +135,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             String message = "Kan niet exporteren omdat er een of meerdere verkeerssytemen zijn die niet klaar voor export zijn. Pas de selectie aan. De volgende zijn nog niet klaar: ";
 
             for (RoadsideEquipment r : notReadyForExport) {
-                message += r.getKarAddress() + " - " + r.getDescription() + ", ";
+                message += "<br/> " + r.getKarAddress() + " - " + r.getDescription() + ", ";
             }
             message = message.substring(0, message.length() - 2);
             this.context.getValidationErrors().add("export", new SimpleError((message)));

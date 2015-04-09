@@ -514,7 +514,10 @@ Ext.define("Editor", {
 
     exportXml: function() {
         var me = this;
-
+        if(!this.activeRseq.readyForExport){
+            Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
+            return;
+        }
         var exportIt = function() {
             window.open(exportActionBeanUrl + "?exportType=kv9&export=true&rseqs=" + me.activeRseq.id, "exportwindow");
         };
@@ -543,7 +546,10 @@ Ext.define("Editor", {
     },
     exportPtx: function() {
         var me = this;
-
+        if(!this.activeRseq.readyForExport){
+            Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
+            return;
+        }
         var exportIt = function() {
             window.open(exportActionBeanUrl + "?exportType=incaa&export=&rseqs=" + me.activeRseq.id, "exportwindow");
         };

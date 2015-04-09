@@ -102,8 +102,6 @@ Ext.define('RSEQ', {
                 }
             });
         }
-        //config.readyForExport = true;
-        
         this.initConfig(config);
         this.readyIsSet = null;
     },
