@@ -1070,7 +1070,7 @@ Ext.define("Editor", {
                     fn: function(buttonId) {
                         if(buttonId === "yes") {
                             me.changeCurrentEditAction(null);
-                            me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, true);
+                            me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, true, me.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     },
