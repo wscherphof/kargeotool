@@ -424,8 +424,9 @@ Ext.define("nl.b3p.kar.Overview",{
                 var mvNode = this.createMovementNode(mv,bKey);
                 bewegingen.push(mvNode);
             }
+            var label = this.getSignalgroupLabel(signalGroup);
             var node = {
-                text : "Signaalgroep " + key,
+                text :label,
                 id : Ext.id(),//"sign-" + key,
                 expanded : true,
                 iconCls : "noTreeIcon",
@@ -437,6 +438,35 @@ Ext.define("nl.b3p.kar.Overview",{
         }
 
         return store;
+    },
+
+    getSignalgroupLabel : function(signalgroup){
+        var label = "Signaalgroep ";
+        var nums = {};
+        for (var bKey in signalgroup){
+            var movement = signalgroup[bKey];
+
+            var points = movement.points;
+            for (var i = 0 ; i < points.length; i++){
+                var point = points[i];
+                if(point.type.indexOf("ACTIVATION") === -1){
+                    continue;
+                }
+                var mvmnts = this.editor.activeRseq.findMovementsForPoint(point);
+                for (var j = 0 ; j < mvmnts.length; j++){
+                    var mvmnt = mvmnts[j];
+                    if(mvmnt.movement.id === movement.id){
+                        var map = mvmnt.map;
+                        nums[map.signalGroupNumber] = true;
+                    }
+                }
+            }
+        }
+
+        for (var num in nums){
+            label += num + ", ";
+        }
+        return label.substring(0, label.length -2);
     },
     createMovementNode : function (json,key){
         var points = new Array();
