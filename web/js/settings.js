@@ -181,7 +181,7 @@ Ext.define("SettingsForm", {
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
                     msgTarget: 'side',
-                    labelWidth: 150
+                    labelWidth: 180
                 },
                 defaultType: 'textfield',
                 defaults: {
@@ -198,13 +198,23 @@ Ext.define("SettingsForm", {
                     name: 'vehicleTypes',
                     store: vehicleTypesStore
                 },{
-                    fieldLabel: 'Kies vervoerder(s)',
-                    labelWidth: 150,
+                    fieldLabel: 'Kies vervoerder(s) OV',
                     width: 400,
                     store: carrierStore,
                     queryMode: 'local',
                     name: "defaultCarriers",
                     id: "defaultCarriers",
+                    multiSelect: true,
+                    displayField: 'username',
+                    valueField: 'id',
+                    xtype: "combo"
+                },{
+                    fieldLabel: 'Kies vervoerder(s) hulpdienst',
+                    width: 400,
+                    store: carrierStore,
+                    queryMode: 'local',
+                    name: "defaultHelpCarriers",
+                    id: "defaultHelpCarriers",
                     multiSelect: true,
                     displayField: 'username',
                     valueField: 'id',
@@ -246,7 +256,9 @@ Ext.define("SettingsForm", {
         }).show();
 
         var combo = Ext.getCmp("defaultCarriers");
+        var combo2 = Ext.getCmp("defaultHelpCarriers");
         combo.setLoading(true);
+        combo2.setLoading(true);
         Ext.Ajax.request({
             url: usersActionBeanUrl,
             method: 'POST',
@@ -256,19 +268,28 @@ Ext.define("SettingsForm", {
             },
             success: function (response) {
                 var combo = Ext.getCmp("defaultCarriers");
+                var combo2 = Ext.getCmp("defaultHelpCarriers");
                 combo.setLoading(false);
+                combo2.setLoading(false);
                 var msg = Ext.JSON.decode(response.responseText);
                 if (msg.success) {
                     var me = this;
                     var store = combo.getStore();
                     store.add(msg.carriers);
+
                     combo.setValue(profile.defaultCarriers);
+                    combo2.setValue(profile.defaultHelpCarriers);
                 } else {
                     Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
                 }
             },
             failure: function (response) {
                 this.setLoading(false);
+
+                var combo = Ext.getCmp("defaultCarriers");
+                var combo2 = Ext.getCmp("defaultHelpCarriers");
+                combo.setLoading(false);
+                combo2.setLoading(false);
                 Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.');
             }
         });
