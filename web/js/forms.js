@@ -871,7 +871,7 @@ Ext.define("EditForms", {
             }
         });
         var me = this;
-
+        var defaultCarriers = this.editor.activeRseq.vehicleType === 'OV' ? profile.defaultCarriers : this.editor.activeRseq.vehicleType === 'Hulpdiensten' ? profile.defaultHelpCarriers : '';
         this.carriersWindow = Ext.create('Ext.window.Window', {
             title: 'Selecteer vervoerder(s)',
            // height: 200,
@@ -885,7 +885,7 @@ Ext.define("EditForms", {
                     name: "carrierIds",
                     id: "carrierIds",
                     multiSelect: true,
-                    value: profile.defaultCarriers,
+                    value: defaultCarriers,
                     displayField: 'username',
                     valueField: 'id',
                     xtype: "combo"
