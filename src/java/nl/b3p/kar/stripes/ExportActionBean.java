@@ -274,7 +274,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            List<RoadsideEquipment> rseqList = em.createQuery("from RoadsideEquipment", RoadsideEquipment.class).getResultList();
+            List<RoadsideEquipment> rseqList = em.createQuery("from RoadsideEquipment where readyForExport = true", RoadsideEquipment.class).getResultList();
 
             JSONArray rseqArray = makeRseqArray(rseqList);
 
