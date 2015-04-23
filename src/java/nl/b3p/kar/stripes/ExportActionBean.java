@@ -170,7 +170,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
         Date now = new Date();
         DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String filename = "geo-ov_kv9_" + sdf.format(now);
+        String prefix =  "geo-ov_";
+        if(roadsideEquipmentList.size() == 1){
+            prefix = "" + roadsideEquipmentList.get(0).getKarAddress();
+        }
+        String filename = prefix + "_kv9_" + sdf.format(now);
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()))
                 .setAttachment(true)
                 .setFilename(filename + ".xml")
