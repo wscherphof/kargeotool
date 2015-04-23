@@ -71,7 +71,7 @@ public class ImportActionBean implements ActionBean {
     private JSONArray globalErrors = new JSONArray();
     private JSONArray allRseqErrors = new JSONArray();
 
-    // <editor-fold desc="getters and setters">
+    // <editor-fold defaultstate="collapsed" desc="getters and setters">
     public ActionBeanContext getContext() {
         return context;
     }
@@ -287,6 +287,8 @@ public class ImportActionBean implements ActionBean {
                             date,
                             getGebruiker().getFullname()
                     ));
+                    roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
+                    roadsideEquipment.setValidationErrors(validationErrors);
                     Stripersist.getEntityManager().persist(roadsideEquipment);
 
                     if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {

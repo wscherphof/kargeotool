@@ -39,6 +39,7 @@ import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.hibernate.VehicleType;
+import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.stripesstuff.stripersist.Stripersist;
@@ -96,6 +97,9 @@ public class IncaaImport {
                 for (ActivationPoint point : rseq.getPoints()) {
                     em.persist(point);
                 }
+                rseq.setVehicleType(rseq.determineType());
+                int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());
+                rseq.setValidationErrors(validationErrors);
                 em.persist(rseq);
                 savedRseqs.add(rseq);
             }
