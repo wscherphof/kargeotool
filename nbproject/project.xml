@@ -61,11 +61,11 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.b3p-commons-core.jar}</file>
+                    <file>${reference.securityfilter-b3p.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.securityfilter-b3p.jar}</file>
+                    <file>${reference.b3p-commons-core.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">

@@ -252,7 +252,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             Polygon deelgebiedPoly = filter.getGeom();
 
-            Query q = sess.createQuery("from RoadsideEquipment where intersects(location, ?) = true");
+            Query q = sess.createQuery("from RoadsideEquipment where readyForExport = true and intersects(location, ?) = true");
             Type geometryType = GeometryUserType.TYPE;
             q.setParameter(0, deelgebiedPoly, geometryType);
             List<RoadsideEquipment> rseqList = (List<RoadsideEquipment>) q.list();
