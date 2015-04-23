@@ -83,7 +83,7 @@ public class CarrierInformer implements Job {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(inform.getVervoerder().getEmail(), false));
 
-            msg.setSubject("[geo-ov] Er staat een nieuw bericht voor u klaar");
+            msg.setSubject("[geo-ov] Nieuwe KAR-gegevens");
             String body = getBody(inform, appUrl);
             msg.setText(body, "utf-8", "html");
 
@@ -97,23 +97,36 @@ public class CarrierInformer implements Job {
             log.error("Cannot send inform message:", ex);
         }
     }
+/**
+Beste xxxxx, 
 
+De KAR gegevens van het kruispunt {xxxxxxxx} met KAR-adres {xx}, van {dataowner} zijn gewijzigd.
+Een KV9 export kunt u, als u bent ingelogd, downloaden via {link} 
+
+Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, hier
+
+Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze link ……..
+
+
+Met vriendelijke groet, 
+
+
+xxxxx (naam gebruiker)
+
+*/
     private String getBody(InformMessage inform, String appUrl) {
         RoadsideEquipment rseq = inform.getRseq();
         String name = inform.getVervoerder().getFullname() != null ? inform.getVervoerder().getFullname()  : "vervoeder";
         String body = "";
         body += "Beste " + name + ", <br/>";
         body += "<br/>";
-        body += "U heeft een bericht via de applicatie geo-ov gekregen van " + inform.getAfzender().getFullname() != null ? inform.getAfzender().getFullname() : inform.getAfzender().getUsername();
-        body += ". Dit betreft een update van het kruispunt met KAR-adres " + rseq.getKarAddress() + ": " + rseq.getDescription() + " | " + rseq.getCrossingCode() + ", van dataowner "  + rseq.getDataOwner().getOmschrijving() +".<br/>";
-        body += "Een export kunt u ";
-        body += "<a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">hier</a> ";
-        body += " downloaden. <br/>";
-        body += "Een overzicht vind u ";
-        body += "<a href=\"" + appUrl + "/action/overview?carrier=true\">hier</a>.<br/><br/>";
-        body += "U wordt vriendelijk verzocht het door te geven als u de wijzingen heeft verwerkt. Dit kan via de overzichtspagina, of via ";
-        body += "<a href=\"" + appUrl + "/action/overview?readMessage=true&message=" + inform.getId()  + "\">deze link</a>.<br/><br/>";
-        body += "Met vriendelijke groet.";
+        body += "De KAR gegevens van het kruispunt " + rseq.getDescription() + " | " + rseq.getCrossingCode() + "met KAR-adres " + rseq.getKarAddress() + ", van "+ rseq.getDataOwner().getOmschrijving() +" zijn gewijzigd.<br/>";
+        body += "Een KV9 export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
+        body += "Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, <a href=\"" + appUrl + "/action/editor?view=true#&rseq=" + rseq.getId() + "&x="+rseq.getLocation().getX() +"&y="+rseq.getLocation().getY()+"&zoom=12\">hier</a>.<br/><br/>";
+        body += "Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze <a href=\"" + appUrl + "/action/overview?carrier=true\">link</a>.<br/><br/>";
+        body += "Met vriendelijke groet, <br/>";
+        body += inform.getAfzender().getFullname() != null ?inform.getAfzender().getFullname()  : inform.getAfzender().getUsername();
+        
         return body;
     }
 }
