@@ -64,7 +64,7 @@ public class ImportActionBean implements ActionBean {
     @Validate(required = true, on = {"importPtx", "importXml"})
     private FileBean bestand;
 
-    @Validate(required = true, on = {"importXmlSelectedRseqs"})
+    @Validate(required = true, on = {"importXmlSelectedRseqs"}, label = "De selectie van te importeren verkeerssystemen")
     private String selectedRseqPositions;
 
     private JSONArray imported = new JSONArray();
