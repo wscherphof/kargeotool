@@ -169,7 +169,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         m.marshal(push, bos);
 
         Date now = new Date();
-        DateFormat sdf = new SimpleDateFormat("yyyyMMDDHHmmss");
+        DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String filename = "geo-ov_kv9_" + sdf.format(now);
         return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()))
                 .setAttachment(true)
@@ -192,7 +192,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             String filename = "HLPXXXXX";
             Date now = new Date();
-            DateFormat sdf = new SimpleDateFormat("yyyyMMDDHHmmss");
+            DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             filename += sdf.format(now);
             return new StreamingResolution("text/ptx", fis)
                     .setAttachment(true)
