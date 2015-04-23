@@ -26,6 +26,7 @@ import java.util.List;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -68,46 +69,53 @@ public class IncaaExport {
 
     private void writeRseq(RoadsideEquipment rseq, PrintWriter pw) {
         for (Movement movement : rseq.getMovements()) {
+            String type = movement.determineVehicleType(null);
+            if(type.equals(VehicleType.VEHICLE_TYPE_OV)){
+                continue;
+            }
             for (MovementActivationPoint map : movement.getPoints()) {
-                
-                String line = "";
-                line += rseq.getDataOwner().getCode();  // 1
-                line += TAB;
-                line += map.getPoint().getX(); // 2
-                line += TAB;
-                line += map.getPoint().getY(); // 3
-                line += TAB;
-                line += rseq.getKarAddress(); // 4
-                line += TAB;
-                if (map.getSignal() != null) {
-                    Integer signalGroupNumber = map.getSignal().getSignalGroupNumber();
-                    if(signalGroupNumber == null){
-                        signalGroupNumber = 0;
-                    }
-                    line += signalGroupNumber;// 5
+                String vehicleType = map.determineVehicleType(null);
+                if(vehicleType == null || vehicleType.equals(VehicleType.VEHICLE_TYPE_HULPDIENSTEN)){
+                    
+                    String line = "";
+                    line += rseq.getDataOwner().getCode();  // 1
                     line += TAB;
-                    Integer distance = 0;
-                    if(map.getSignal().getDistanceTillStopLine() != null){
-                        distance = map.getSignal().getDistanceTillStopLine();
-                    }
-                    line += distance;// 6
+                    line += map.getPoint().getX(); // 2
                     line += TAB;
+                    line += map.getPoint().getY(); // 3
+                    line += TAB;
+                    line += rseq.getKarAddress(); // 4
+                    line += TAB;
+                    if (map.getSignal() != null) {
+                        Integer signalGroupNumber = map.getSignal().getSignalGroupNumber();
+                        if(signalGroupNumber == null){
+                            signalGroupNumber = 0;
+                        }
+                        line += signalGroupNumber;// 5
+                        line += TAB;
+                        Integer distance = 0;
+                        if(map.getSignal().getDistanceTillStopLine() != null){
+                            distance = map.getSignal().getDistanceTillStopLine();
+                        }
+                        line += distance;// 6
+                        line += TAB;
 
-                    Integer time = 0;
-                    if (map.getSignal().getDistanceTillStopLine() != null) {
-                        time = map.getSignal().getDistanceTillStopLine() / 5;
+                        Integer time = 0;
+                        if (map.getSignal().getDistanceTillStopLine() != null) {
+                            time = map.getSignal().getDistanceTillStopLine() / 5;
+                        }
+                        line += time; // 7
+                        line += TAB;
+                        line += map.getSignal().getKarCommandType();
+                     /*   line += TAB;
+                        line += map.getPoint().getLabel();
+                        line += TAB;
+                        line += map.getPoint().getId();*/
+                    } else {
+                        continue;
                     }
-                    line += time; // 7
-                    line += TAB;
-                    line += map.getSignal().getKarCommandType();
-                 /*   line += TAB;
-                    line += map.getPoint().getLabel();
-                    line += TAB;
-                    line += map.getPoint().getId();*/
-                } else {
-                    continue;
+                    pw.println(line);
                 }
-                pw.println(line);
             }
         }
     }

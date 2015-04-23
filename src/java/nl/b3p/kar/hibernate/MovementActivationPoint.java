@@ -19,6 +19,7 @@
 
 package nl.b3p.kar.hibernate;
 
+import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -84,6 +85,22 @@ public class MovementActivationPoint {
     @OneToOne(cascade= CascadeType.ALL)
     private ActivationPointSignal signal;
 
+
+    public String determineVehicleType(String previousType){
+        String typeMap = previousType;
+        if(this.getSignal() == null){
+            return null;
+        }
+        List<VehicleType> types = this.getSignal().getVehicleTypes();
+        for (VehicleType vt : types) {
+            if (typeMap == null) {
+                typeMap = vt.getGroep();
+            } else if (!typeMap.equals(vt.getGroep())) {
+                typeMap = VehicleType.VEHICLE_TYPE_GEMIXT;
+            }
+        }
+        return typeMap;
+    }
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *

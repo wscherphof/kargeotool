@@ -979,22 +979,10 @@ public class RoadsideEquipment {
     public String determineType() {
         String typeRseq = null;
         for (Movement movement : movements) {
-            for (MovementActivationPoint map : movement.getPoints()) {
-                if (map.getSignal() == null) {
-                    continue;
-                }
-                List<VehicleType> types = map.getSignal().getVehicleTypes();
-                for (VehicleType vt : types) {
-                    if (typeRseq == null) {
-                        typeRseq = vt.getGroep();
-                    } else if (!typeRseq.equals(vt.getGroep())) {
-                        typeRseq = "Gemixt";
-                    }
-                }
-            }
+            typeRseq =movement.determineVehicleType(typeRseq);
         }
         if (typeRseq == null) {
-            typeRseq = "Gemixt";
+            typeRseq = VehicleType.VEHICLE_TYPE_GEMIXT;
         }
         return typeRseq;
     }

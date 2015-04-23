@@ -112,6 +112,17 @@ public class Movement implements Comparable {
             }   
         }
     }
+
+    public String determineVehicleType(String previousType){
+        String typeMovement = previousType;
+        for (MovementActivationPoint map : this.getPoints()) {
+            if (map.getSignal() == null) {
+                continue;
+            }
+           typeMovement = map.determineVehicleType(typeMovement);
+        }
+        return typeMovement;
+    }
     
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         RoadsideEquipment rseq = (RoadsideEquipment)parent;

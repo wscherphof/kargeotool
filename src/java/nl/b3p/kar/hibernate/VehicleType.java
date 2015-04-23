@@ -43,6 +43,10 @@ public class VehicleType {
     
     private String groep;
 
+    public static final String VEHICLE_TYPE_OV = "OV";
+    public static final String VEHICLE_TYPE_HULPDIENSTEN = "Hulpdiensten";
+    public static final String VEHICLE_TYPE_GEMIXT = "Gemixt";
+
     /**
      *
      * @return nummer
