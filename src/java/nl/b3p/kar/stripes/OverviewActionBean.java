@@ -38,6 +38,7 @@ import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.InformMessage;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.inform.CarrierInformer;
+import nl.b3p.kar.inform.CarrierInformerListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.stripesstuff.stripersist.Stripersist;
@@ -118,8 +119,8 @@ public class OverviewActionBean implements ActionBean{
     public Resolution testInformer(){
 
         CarrierInformer ci = new CarrierInformer();
-
-        ci.run("http://localhost:8084/geo-ov", "kmail.b3p.nl", "support@b3partners.nl");
+        String url = context.getServletContext().getInitParameter(CarrierInformerListener.PARAM_INFORM_CARRIERS_APPLICATION_URL);
+        ci.run(url, "kmail.b3p.nl", "support@b3partners.nl");
         String llalala = "asfasfdasfsdf";
         return new StreamingResolution("plain/text", new StringReader(llalala));
     }
