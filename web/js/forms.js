@@ -178,6 +178,7 @@ Ext.define("EditForms", {
                     }
                 },{
                     fieldLabel: 'Beheerdersaanduiding',
+                    allowBlank:false,
                     name: 'crossingCode',
                     value: rseq.crossingCode
                 },{
