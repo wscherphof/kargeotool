@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,7 @@ import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.KarAttributes;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
@@ -42,6 +44,9 @@ import nl.b3p.kar.hibernate.VehicleType;
 import nl.b3p.kar.imp.KV9ValidationError;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
 
 /**
@@ -70,6 +75,9 @@ public class IncaaImport {
      * @throws Exception 
      */
     public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g) throws Exception {
+
+        JSONObject profile = new JSONObject(g.getProfile());
+        JSONObject defaultKarAttributes = profile.getJSONObject("defaultKarAttributes");
         // (Her)initialiseer de intermediate formats. 
         movements = new HashMap();
         rseqs = new HashMap();
@@ -100,8 +108,10 @@ public class IncaaImport {
                 rseq.setVehicleType(rseq.determineType());
                 int validationErrors = rseq.validateKV9(new ArrayList<KV9ValidationError>());
                 rseq.setValidationErrors(validationErrors);
+                getKarAttributes(defaultKarAttributes, rseq);
                 em.persist(rseq);
                 savedRseqs.add(rseq);
+
             }
         }
         em.getTransaction().commit();
@@ -273,5 +283,35 @@ public class IncaaImport {
             rseqLocations.put(karAddress, new ArrayList<Point>());
         }
         rseqLocations.get(karAddress).add(p);
+    }
+
+    private void getKarAttributes(JSONObject attributes, RoadsideEquipment rseq) throws JSONException{
+
+        for (Iterator it = attributes.keys(); it.hasNext();) {
+            String serviceType = (String) it.next();
+            JSONArray perCommandType = attributes.getJSONArray(serviceType);
+
+            KarAttributes ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_INMELDPUNT,
+                    perCommandType.getJSONArray(0));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+            ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_UITMELDPUNT,
+                    perCommandType.getJSONArray(1));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+            ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_VOORINMELDPUNT,
+                    perCommandType.getJSONArray(2));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+        }
     }
 }
