@@ -59,5 +59,5 @@
             <stripes:link href="/logout.jsp"><img src="<c:url value="/images/"/>/exit.png" alt="icon" class="navimg" /> Uitloggen</stripes:link>
         </div>
     </div>
-    <div id="headerTitle">Geo OV platform</div>
+    <div id="headerTitle">Geo KAR</div>
 </div>
