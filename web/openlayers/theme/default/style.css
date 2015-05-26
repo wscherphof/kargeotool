@@ -76,6 +76,8 @@ div.olControlMousePosition {
     position: absolute;
     font-family: Arial;
     font-size: small;
+    color: black;
+    text-shadow: 1px 1px 1px #fff;
 }
 
 .olControlOverviewMapContainer {
