@@ -1172,7 +1172,7 @@ Ext.define("Editor", {
                                 commandType: 1,
                                 pointId: inmeldpunt.getId()
                             });
-                            me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true);
+                            me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true,false, this.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     },

@@ -332,7 +332,6 @@ Ext.define('RSEQ', {
             this.addPoint(inmeldpunt);
         }        
         
-        //var pointMovements = this.findMovementsForPoint(puntVanMovement);
         var pointMovements = null;
         if(movement){
             var mvmnt = this.getMovementById(movement);
