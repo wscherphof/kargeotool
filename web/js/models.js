@@ -392,8 +392,23 @@ Ext.define('RSEQ', {
             mvmtAndMap.movement.maps.splice(0, 0, newMap);
         });        
     },
+
+    removeSingleCheckoutPoint : function(checkout, movement){
+
+        var mvmnt = this.getMovementById(movement);
+
+        var map = this.findMapForPoint(mvmnt.id, checkout.id);
+        var point = this.getPointById(map.pointId);
+        mvmnt.removeMapForPoint(point);
+
+        var mvmnts = this.findMovementsForPoint(checkout);
+        if(mvmnts.length === 0 ){
+            this.removePoint(point);
+        }
+    },
             
     removeCheckoutPoint : function(checkout){
+
         var mvmnts = this.findMovementsForPoint(checkout);
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;

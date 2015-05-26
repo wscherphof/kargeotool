@@ -183,9 +183,9 @@ Ext.define("nl.b3p.kar.Overview",{
                         case 'editUitmeldpuntOv':
                             this.editor.editSelectedObject();
                             break;                        
-                        case 'removeCheckoutcheckoutOv':
-                            Ext.Msg.alert("Niet mogelijk", "In deze proof-of-concept is verwijderen nog niet mogelijk!");
-                            break;                            
+                        case 'removeUitmeldpuntOv':
+                            this.editor.removeSingleCheckoutPoint();
+                            break;
                         case 'addEindpuntOv':
                             editor.addEindpunt();
                             break;

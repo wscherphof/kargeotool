@@ -638,6 +638,11 @@ Ext.define("Editor", {
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
 
+    removeSingleCheckoutPoint: function(){
+        this.activeRseq.removeSingleCheckoutPoint(this.selectedObject, this.activeMovement);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+
     removeOtherPoint : function(){
         this.activeRseq.removePoint(this.selectedObject);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
