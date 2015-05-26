@@ -144,7 +144,7 @@ public class EditorActionBean implements ActionBean {
         dataOwnersJSON = new JSONArray();
         Collection<DataOwner> dataOwners;
         if(isBeheerder) {
-            dataOwners = (List<DataOwner>) em.createQuery("from DataOwner order by code").getResultList();
+            dataOwners = (List<DataOwner>) em.createQuery("from DataOwner order by omschrijving").getResultList();
         } else {
             dataOwners = s;
         }
