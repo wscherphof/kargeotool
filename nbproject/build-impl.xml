@@ -1049,8 +1049,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.CommonsDbUtils.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-csv.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.securityfilter-b3p.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.b3p-commons-core.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Quartz.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.b3p-commons-core.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Mail.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update"/>
@@ -1069,8 +1069,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.CommonsDbUtils.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-csv.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.securityfilter-b3p.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.b3p-commons-core.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.Quartz.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${reference.b3p-commons-core.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.Mail.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init" if="dist.ear.dir" name="-clean-webinf-lib">

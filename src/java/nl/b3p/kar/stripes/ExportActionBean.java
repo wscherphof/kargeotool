@@ -123,6 +123,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         EntityManager em = Stripersist.getEntityManager();
         roadsideEquipmentList = new ArrayList();
         List<RoadsideEquipment> notReadyForExport = new ArrayList<RoadsideEquipment>();
+        if(rseqs == null){
+            this.context.getValidationErrors().add("Verkeerssystemen", new SimpleError(("Selecteer een of meerdere verkeerssystemen")));
+            return new ForwardResolution(OVERVIEW);
+        }
         for (Long id : rseqs) {
             RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
             if(r.isReadyForExport()){
