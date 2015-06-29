@@ -78,7 +78,7 @@ Ext.onReady(function (){
                         checked : true,
                         handler : function (item,checked){
                             if(checked){
-                                allRseqs();
+                                reloadVRIs();
                             }
                         }
                     },
@@ -121,7 +121,7 @@ Ext.onReady(function (){
                             scope : this,
                             select : {
                                 fn : function (combo,record,index){
-                                    deelgebiedChanged();
+                                    reloadVRIs();
                                 }
                             }
                         }
@@ -170,7 +170,7 @@ Ext.onReady(function (){
                     scope: this,
                     select: {
                         fn: function (combo, record, index) {
-                           dataownerChanged();
+                           reloadVRIs();
                         }
                     }
                 }
@@ -234,6 +234,21 @@ Ext.onReady(function (){
                 fieldLabel : 'Alleen geldige verkeerssystemen'
             },
             {
+                xtype : "checkbox",
+                name : 'onlyReady',
+                id : 'onlyReady',
+                checked:true,
+                fieldLabel : 'Alleen verkeerssystemen met vinkje "Gereed voor export"',
+                listeners:{
+                    change:{
+                        fn:function(){
+                            reloadVRIs();
+                        },
+                        scope:this
+                    }
+                }
+            },
+            {
                 xtype : "combo",
                 fieldLabel : 'Voertuigtypes',
                 store : Ext.create('Ext.data.Store',{
@@ -265,12 +280,7 @@ Ext.onReady(function (){
                 listeners : {
                     select : {
                         fn : function (){
-                            var filterType = Ext.getCmp("filterType").getValue().filterType;
-                            if(filterType == 'all'){
-                                allRseqs();
-                            }else{
-                                deelgebiedChanged();
-                            }
+                            reloadVRIs();
                         },
                         scope : this
                     }
@@ -305,40 +315,42 @@ Ext.onReady(function (){
         renderTo : 'body'
     });
     grid = Ext.getCmp("grid");
-    allRseqs();
+    reloadVRIs();
 });
 
-function deelgebiedChanged (){
-    var deelgebied = Ext.getCmp("deelgebied").getValue();
-    if(deelgebied){
+function reloadVRIs (){
+    var filtertypeCombo = Ext.getCmp("filterType").getValue();
+    var filtertype = filtertypeCombo.filterType;
+    if(Ext.isArray(filtertypeCombo.filterType)){
+        filtertype = filtertypeCombo.filterType[0];
+    }
+    var params = {};
+    var text = "";
+    var filter = null;
+    if(filtertype === "deelgebied"){
+        filter = Ext.getCmp("deelgebied").getValue();
         var deelgebiedText = Ext.getCmp("deelgebied").getValue();
-        doRseqRequest({
-            'rseqByDeelgebied' : true,
-            'filter' : deelgebied
-        },deelgebiedText);
-    } else{
-        rseqsReceived([],"...");
-    }
-}
-
-function dataownerChanged (){
-    var dataowner = Ext.getCmp("dataowner").getValue();
-    if(dataowner){
+        params ['rseqByDeelgebied'] = true;
+        params['filter'] = filter;
+        text = deelgebiedText;
+    }else if(filtertype === "dataowner"){
+        filter = Ext.getCmp("dataowner").getValue();
         var dataownerText = Ext.getCmp("dataowner").getDisplayValue();
-        doRseqRequest({
-            'rseqByDataowner' : true,
-            'dataowner' : dataowner
-        },dataownerText);
-    } else{
+        params ['rseqByDataowner'] = true;
+        params['dataowner'] = filter;
+        text = dataownerText;
+    }else{
+        // Default all
+        filter = "ALL";
+        params['allRseqs'] = true;
+        text = "gebruiker";
+
+    }
+    if(filter){
+        doRseqRequest(params,text);
+    }else{
         rseqsReceived([],"...");
     }
-}
-
-function allRseqs (){
-    doRseqRequest({
-        'allRseqs' : true
-    },
-    " gebruiker.");
 }
 
 function doRseqRequest (params,text){
