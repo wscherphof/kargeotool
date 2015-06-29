@@ -38,6 +38,10 @@ Ext.onReady(function (){
         fields : ['id','name'],
         data : deelgebieden
     });
+    var dataownerStore = Ext.create('Ext.data.Store',{
+        fields : ['code','omschrijving'],
+        data : dataowners
+    });
     var form = Ext.create(Ext.form.Panel,{
         title : 'Exporteer verkeerssystemen',
         bodyPadding : 5,
@@ -84,6 +88,14 @@ Ext.onReady(function (){
                         inputValue : 'deelgebied',
                         handler : function (checkbox,checked){
                             Ext.getCmp('deelgebied').setDisabled(!checked);
+                        }
+                    },
+                    {
+                        boxLabel : 'Beheerder',
+                        name : 'filterType',
+                        inputValue : 'dataowner',
+                        handler : function (checkbox,checked){
+                            Ext.getCmp('dataowner').setDisabled(!checked);
                         }
                     }]
             },
@@ -141,6 +153,27 @@ Ext.onReady(function (){
                         }
                     }
                 ]
+            },
+            {
+                labelWidth: '190px',
+                id: 'dataowner',
+                xtype: "combo",
+                fieldLabel: 'Kies een beheerder',
+                store: dataownerStore,
+                queryMode: 'local',
+                displayField: 'omschrijving',
+                disabled: true,
+                valueField: 'code',
+                emptyText: "Selecteer",
+                flex: 1,
+                listeners: {
+                    scope: this,
+                    select: {
+                        fn: function (combo, record, index) {
+                           // deelgebiedChanged();
+                        }
+                    }
+                }
             },
             {
                 title : 'Geselecteerde verkeerssystemen',

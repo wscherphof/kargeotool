@@ -48,6 +48,14 @@
                 };
                 deelgebieden.push(deelgebied);
             </c:forEach>
+            var dataowners = [];
+            <c:forEach items="${actionBean.dataowners}" var="dataowner">
+                var dataowner = {
+                    omschrijving : "${dataowner.omschrijving}",
+                    code: "${dataowner.code}"
+                };
+                dataowners.push(dataowner);
+            </c:forEach>
         </script>
 
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>

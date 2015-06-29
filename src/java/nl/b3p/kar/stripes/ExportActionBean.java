@@ -108,6 +108,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     @Validate ( on={"rseqByDeelgebied", "allRseqs"})
     private String vehicleType;
 
+    private List<DataOwner> dataowners = new ArrayList<DataOwner>();
+
     @DefaultHandler
     public Resolution overview() {
         return new ForwardResolution(OVERVIEW);
@@ -117,6 +119,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void lists() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         deelgebieden = em.createQuery("from Deelgebied where gebruiker = :geb order by id").setParameter("geb", getGebruiker()).getResultList();
+        dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
     }
 
     public Resolution export() throws Exception {
@@ -433,5 +436,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setRseq(RoadsideEquipment rseq) {
         this.rseq = rseq;
     }
+
+    public List<DataOwner> getDataowners() {
+        return dataowners;
+    }
+
+    public void setDataowners(List<DataOwner> dataowners) {
+        this.dataowners = dataowners;
+    }
     // </editor-fold>
+
 }
