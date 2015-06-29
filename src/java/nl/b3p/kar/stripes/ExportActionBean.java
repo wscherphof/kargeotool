@@ -112,6 +112,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     @Validate ( on={"rseqByDeelgebied", "allRseqs"})
     private String vehicleType;
 
+    @Validate
+    private boolean onlyReady = true;
+
     private List<DataOwner> dataowners = new ArrayList<DataOwner>();
 
     @DefaultHandler
@@ -136,7 +139,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
         for (Long id : rseqs) {
             RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
-            if(r.isReadyForExport()){
+            if(r.isReadyForExport() || !onlyReady){
                 roadsideEquipmentList.add(r);
             }else{
                 notReadyForExport.add(r);
@@ -209,9 +212,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             Date now = new Date();
             DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             filename += sdf.format(now);
-            return new StreamingResolution("text/ptx", fis)
+            return new StreamingResolution("text/plain", fis)
                     .setAttachment(true)
-                    .setFilename(filename + ".ptx");
+                    .setFilename(filename + ".ptx")
+                    .setLength(f.length());
         } else {
             throw new Exception("Could not find roadsideequipments");
         }
@@ -267,7 +271,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             Polygon deelgebiedPoly = filter.getGeom();
 
-            Query q = sess.createQuery("from RoadsideEquipment where readyForExport = true and intersects(location, ?) = true");
+            String query ="from RoadsideEquipment where intersects(location, ?) = true";
+            if(onlyReady){
+                query += " and readyForExport = true";
+            }
+            Query q = sess.createQuery(query);
             Type geometryType = GeometryUserType.TYPE;
             q.setParameter(0, deelgebiedPoly, geometryType);
             List<RoadsideEquipment> rseqList = (List<RoadsideEquipment>) q.list();
@@ -289,8 +297,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-
-            List<RoadsideEquipment> rseqs = em.createQuery("from RoadsideEquipment where readyForExport = true and dataOwner = :dataowner").setParameter("dataowner", dataowner).getResultList();
+            String query = "from RoadsideEquipment where dataOwner = :dataowner";
+            if(onlyReady){
+                query += " and readyForExport = true";
+            }
+            List<RoadsideEquipment> rseqs = em.createQuery(query).setParameter("dataowner", dataowner).getResultList();
 
             JSONArray rseqArray = makeRseqArray(rseqs);
 
@@ -309,7 +320,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            List<RoadsideEquipment> rseqList = em.createQuery("from RoadsideEquipment where readyForExport = true", RoadsideEquipment.class).getResultList();
+            String query = "from RoadsideEquipment";
+            if(onlyReady){
+                query += " where readyForExport = true";
+            }
+            List<RoadsideEquipment> rseqList = em.createQuery(query, RoadsideEquipment.class).getResultList();
 
             JSONArray rseqArray = makeRseqArray(rseqList);
 
@@ -475,6 +490,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setDataowner(DataOwner dataowner) {
         this.dataowner = dataowner;
+    }
+    
+    public boolean isOnlyReady() {
+        return onlyReady;
+    }
+
+    public void setOnlyReady(boolean onlyReady) {
+        this.onlyReady = onlyReady;
     }
     // </editor-fold>
 

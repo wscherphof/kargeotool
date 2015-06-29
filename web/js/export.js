@@ -288,31 +288,34 @@ Ext.onReady(function (){
             }
         ],
         // Reset and Submit buttons
-        buttons : [{
-                text : 'Reset',
-                handler : function (){
+        buttons: [{
+                text: 'Reset',
+                handler: function () {
                     this.up('form').getForm().reset();
                 }
-            },{
-                text : 'Exporteer',
-                formBind : true, //only enabled once the form is valid
-                disabled : true,
-                handler : function (){
+            }, {
+                text: 'Exporteer',
+                formBind: true, //only enabled once the form is valid
+                disabled: true,
+                handler: function () {
                     var form = this.up('form').getForm();
-                    if(form.isValid()){
+                    if (form.isValid()) {
                         form.submit({
-                            target : '_blank',
-                            success : function (form,action){
-                                Ext.Msg.alert('Success',action.result.msg);
+                            target: '_blank',
+                            success: function (form, action) {
+                                Ext.Msg.alert('Success', action.result.msg);
                             },
-                            failure : function (form,action){
-                                Ext.Msg.alert('Failed',action.result.msg);
+                            failure: function (form, action) {
+                                Ext.Msg.alert('Failed', action.result.msg);
+                            },
+                            params:{
+                                onlyReady: Ext.getCmp("onlyReady").getValue()
                             }
                         });
                     }
                 }
             }],
-        renderTo : 'body'
+        renderTo: 'body'
     });
     grid = Ext.getCmp("grid");
     reloadVRIs();
@@ -344,8 +347,11 @@ function reloadVRIs (){
         filter = "ALL";
         params['allRseqs'] = true;
         text = "gebruiker";
-
     }
+
+    var onlyReady = Ext.getCmp("onlyReady").getValue();
+    params["onlyReady"] = onlyReady;
+
     if(filter){
         doRseqRequest(params,text);
     }else{
