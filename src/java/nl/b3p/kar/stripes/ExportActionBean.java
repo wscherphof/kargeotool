@@ -96,6 +96,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private Deelgebied deelgebied;
     @Validate(converter = EntityTypeConverter.class, on = {"bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"})
     private Deelgebied filter;
+
+    @Validate (on = "export")
+    private DataOwner dataowner;
+
     @Validate(on = "saveDeelgebied", required = true)
     private String geom;
     @Validate(on = "export")
@@ -279,6 +283,26 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
 
+    public Resolution rseqByDataowner() throws JSONException {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+
+            List<RoadsideEquipment> rseqs = em.createQuery("from RoadsideEquipment where readyForExport = true and dataOwner = :dataowner").setParameter("dataowner", dataowner).getResultList();
+
+            JSONArray rseqArray = makeRseqArray(rseqs);
+
+            info.put("rseqs", rseqArray);
+            info.put("success", Boolean.TRUE);
+        } catch (Exception e) {
+            log.error("search rseq exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+
     public Resolution allRseqs() throws JSONException {
          EntityManager em = Stripersist.getEntityManager();
 
@@ -443,6 +467,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setDataowners(List<DataOwner> dataowners) {
         this.dataowners = dataowners;
+    }
+    
+    public DataOwner getDataowner() {
+        return dataowner;
+    }
+
+    public void setDataowner(DataOwner dataowner) {
+        this.dataowner = dataowner;
     }
     // </editor-fold>
 

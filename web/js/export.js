@@ -170,7 +170,7 @@ Ext.onReady(function (){
                     scope: this,
                     select: {
                         fn: function (combo, record, index) {
-                           // deelgebiedChanged();
+                           dataownerChanged();
                         }
                     }
                 }
@@ -311,11 +311,24 @@ Ext.onReady(function (){
 function deelgebiedChanged (){
     var deelgebied = Ext.getCmp("deelgebied").getValue();
     if(deelgebied){
-        var deelgebiedText = Ext.getCmp("deelgebied").getDisplayValue();
+        var deelgebiedText = Ext.getCmp("deelgebied").getValue();
         doRseqRequest({
             'rseqByDeelgebied' : true,
             'filter' : deelgebied
         },deelgebiedText);
+    } else{
+        rseqsReceived([],"...");
+    }
+}
+
+function dataownerChanged (){
+    var dataowner = Ext.getCmp("dataowner").getValue();
+    if(dataowner){
+        var dataownerText = Ext.getCmp("dataowner").getDisplayValue();
+        doRseqRequest({
+            'rseqByDataowner' : true,
+            'dataowner' : dataowner
+        },dataownerText);
     } else{
         rseqsReceived([],"...");
     }
