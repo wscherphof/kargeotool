@@ -939,6 +939,10 @@ Ext.define("Editor", {
     },
 
     changeCurrentEditAction: function(action) {
+        if(this.actionToCancel){
+            this.un('selectedObjectChanged',this.actionToCancel,this);
+            this.actionToCancel = null;
+        }
         this.currentEditAction = action;
         this.fireEvent("currentEditActionChanged", action);
     },
