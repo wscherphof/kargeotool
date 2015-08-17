@@ -183,6 +183,7 @@ public class ImportActionBean implements ActionBean {
                         allRseqErrors.put(rseqErrors);
 
                         List<KV9ValidationError> kvErrors = new ArrayList();
+                        roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
                         int validationErrors = roadsideEquipment.validateKV9(kvErrors);
                         boolean importFatal = false;
                         for(KV9ValidationError kvError: kvErrors) {
