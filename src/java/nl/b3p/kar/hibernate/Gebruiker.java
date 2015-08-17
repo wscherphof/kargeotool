@@ -419,4 +419,9 @@ public class Gebruiker implements Principal {
         obj.put("mail", email);
         return obj;
     }
+
+    @Override
+    public String toString(){
+        return username + " (" +fullname + ")";
+    }
 }
