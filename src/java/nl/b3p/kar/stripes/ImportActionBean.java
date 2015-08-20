@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
@@ -31,8 +34,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
+import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Movement;
+import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
@@ -250,7 +256,7 @@ public class ImportActionBean implements ActionBean {
         String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
 
         int rseqDefsPosition = 0, rseqDefPosition = 0;;
-
+        EntityManager em = Stripersist.getEntityManager();
         for (Kv9Def kv9Def: push.getRseqs()) {
             List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
             for (RseqDefs rseqDef: rseqs) {
@@ -287,8 +293,24 @@ public class ImportActionBean implements ActionBean {
                     ));
                     roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
                     roadsideEquipment.setValidationErrors(validationErrors);
-                    Stripersist.getEntityManager().persist(roadsideEquipment);
-
+                    
+                    SortedSet<Movement> movements = roadsideEquipment.getMovements();
+                    
+                    // First, save a rseq with no movement to prevent nullchecks on not-yet persisted ActivationPoints (or, not yet persisted rseqs when persisting the activationpoint first)
+                    roadsideEquipment.setMovements(new TreeSet<Movement>());
+                    em.persist(roadsideEquipment);
+                    
+                    SortedSet<ActivationPoint>points = roadsideEquipment.getPoints();
+                    // Now, persist each activationpoint from the movement.movementactivationpoint. Also add it to the set in the roadsideEquipment.
+                    for (Movement movement : movements) {
+                        for (MovementActivationPoint p : movement.getPoints()) {
+                            ActivationPoint point = p.getPoint();
+                            points.add(point);
+                            em.persist(point);
+                        }
+                    }
+                    em.persist(roadsideEquipment);
+   
                     if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
                         this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + roadsideEquipment.getKarAddress() + ", " + roadsideEquipment.getDescription()));
                     }
