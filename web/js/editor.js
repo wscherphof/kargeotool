@@ -461,7 +461,7 @@ Ext.define("Editor", {
     showCarriers : function(){
         this.setLoading(true, "Bezig met ophalen vervoerders...");
         Ext.Ajax.request({
-            url: usersActionBeanUrl,
+            url: editorActionBeanUrl,
             method: 'POST',
             scope: this,
             params: {

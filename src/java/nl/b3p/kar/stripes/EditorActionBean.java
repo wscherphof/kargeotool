@@ -699,6 +699,23 @@ public class EditorActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(j.toString(4)));
     }
+    
+    
+    public Resolution listCarriers() throws JSONException{
+        List<Gebruiker> gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
+        JSONObject info = new JSONObject();
+        info.put( "success", Boolean.FALSE );
+        JSONArray users = new JSONArray();
+        for (Gebruiker geb : gebruikers) {
+            if(geb.isVervoerder()){
+                users.put(geb.toJSON());
+            }
+        }
+
+        info.put("carriers", users);
+        info.put( "success", Boolean.TRUE );
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
 
     // <editor-fold desc="Getters and Setters">
     public ActionBeanContext getContext() {

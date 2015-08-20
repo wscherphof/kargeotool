@@ -29,7 +29,7 @@ function saveProfile() {
 
 function checkSaveProfile() {
     var encodedProfile = Ext.JSON.encode(profile);
-    
+
     if(encodedProfile != savedProfile) {
         savedProfile = encodedProfile;
         Ext.Ajax.request({
@@ -38,18 +38,18 @@ function checkSaveProfile() {
             scope: this,
             params: {settings: Ext.JSON.encode(profile)},
             failure: function (response){
-                Ext.MessageBox.show({title: "Ajax fout", msg: "Profiel niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder. " +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});                    
+                Ext.MessageBox.show({title: "Ajax fout", msg: "Profiel niet opgeslagen. Probeer het opnieuw of neem contact op met de applicatie beheerder. " +response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
             }
         });
     }
 }
 
 Ext.define("SettingsForm", {
-    
+
     editor: null,
-    
+
     window: null,
-    
+
     newDefaultKarAttributes: null,
 
     /* XXX move to common place */
@@ -71,11 +71,11 @@ Ext.define("SettingsForm", {
         {n: 19, label: "Type of command", range: "0 - 99", desc: "0 - reserved\n1 - entering announcement\n" +
                 "2 - leave announcement\n3 - pre-announcement\n4..99 - reserved"}
     ],
-    
+
     constructor: function(editor) {
         this.editor = editor;
     },
-    
+
     show: function() {
         if(this.window != null) {
             this.window.destroy();
@@ -110,7 +110,7 @@ Ext.define("SettingsForm", {
                 }
             ]
         }};
- 
+
         Ext.Array.each(vehicleTypes, function(vt) {
             if( vt.omschrijving.indexOf('Gereserveerd') == -1) {
                 var leaf = {
@@ -175,7 +175,7 @@ Ext.define("SettingsForm", {
                     });
                 }
             },
-            items: {  
+            items: {
                 xtype: 'form',
                 id: 'settingsForm',
                 bodyStyle: 'padding: 5px 5px 0',
@@ -260,7 +260,7 @@ Ext.define("SettingsForm", {
         combo.setLoading(true);
         combo2.setLoading(true);
         Ext.Ajax.request({
-            url: usersActionBeanUrl,
+            url: editorActionBeanUrl,
             method: 'POST',
             scope: this,
             params: {
