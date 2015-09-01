@@ -308,6 +308,7 @@ public class ImportActionBean implements ActionBean {
                             points.add(point);
                             em.persist(point);
                         }
+                        em.persist(movement);
                     }
                     em.persist(roadsideEquipment);
    
