@@ -142,6 +142,7 @@ public class ImportActionBean implements ActionBean {
 
             try {
                 d = db.parse(bestand.getInputStream());
+                context.getRequest().getSession().setAttribute("kv9file", bestand.getFileName());
             } catch(Exception e) {
                 this.context.getValidationErrors().addGlobalError(new SimpleError("Fout bij het parsen van het XML bestand: " + ExceptionUtils.getMessage(e)));
                 return new ForwardResolution(OVERVIEW);

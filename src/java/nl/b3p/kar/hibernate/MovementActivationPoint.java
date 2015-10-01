@@ -72,6 +72,7 @@ public class MovementActivationPoint {
      */
     @ManyToOne
     @Basic(optional=false)
+    @JoinColumn(nullable=false)
     private ActivationPoint point;
     
     /**
