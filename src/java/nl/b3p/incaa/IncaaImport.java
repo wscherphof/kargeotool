@@ -32,6 +32,10 @@ import java.util.Map;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.Message;
+import net.sourceforge.stripes.action.SimpleMessage;
+import net.sourceforge.stripes.validation.SimpleError;
 import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
@@ -71,10 +75,12 @@ public class IncaaImport {
     /**
      * Importeer een reader van een .ptx bestand. 
      * @param in Reader van een INCAA .ptx bestand.
+     * @param g
+     * @param context Context om meldingen terug te geven naar de gebruiker over rseqs die niet geimporteerd konden worden
      * @return De lijst van geïmporteerde roadside equipments
      * @throws Exception 
      */
-    public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g) throws Exception {
+    public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g, ActionBeanContext context) throws Exception {
 
         JSONObject profile = new JSONObject(g.getProfile());
         JSONObject defaultKarAttributes = profile.getJSONObject("defaultKarAttributes");
@@ -85,9 +91,14 @@ public class IncaaImport {
         
         // Definieer een parser en parse de ptx file 
         Iterable<CSVRecord> parser = CSVFormat.newBuilder().withCommentStart('#').withDelimiter('\t').withQuoteChar('"').parse(in);
-        
+
+        List<Message> messages = new ArrayList<Message>();
         for (CSVRecord csvRecord : parser) {
-            parseRecord(csvRecord);
+            try{
+                parseRecord(csvRecord, messages);
+            }catch (IllegalArgumentException e){
+                context.getValidationErrors().add("Kruispunt mislukt", new SimpleError(e.getMessage()));
+            }
         }
 
         // Sla de boel op
@@ -111,14 +122,16 @@ public class IncaaImport {
                 getKarAttributes(defaultKarAttributes, rseq);
                 em.persist(rseq);
                 savedRseqs.add(rseq);
-
+                messages.add(new SimpleMessage("Kruispunt met KAR-adres " + rseq.getKarAddress() + " is geïmporteerd"));
             }
         }
+        context.getMessages().add(new SimpleMessage(("Er zijn " + rseqs.size() + " verkeerssystemen succesvol geïmporteerd.")));
+        context.getMessages().addAll(messages);
         em.getTransaction().commit();
         return savedRseqs;
     }
 
-    private void parseRecord(CSVRecord record) {
+    private void parseRecord(CSVRecord record,List<Message> messages) throws IllegalArgumentException{
         ActivationPoint ap = new ActivationPoint();
         EntityManager em = Stripersist.getEntityManager();
         
@@ -171,7 +184,7 @@ public class IncaaImport {
 
         // Haal objecten op om aan elkaar te linken
         DataOwner dataOwner = getDataOwner(beheercode);
-        Movement movement = getMovement(karAddress, signalGroupNumber, dataOwner);
+        Movement movement = getMovement(karAddress, signalGroupNumber, dataOwner, messages);
         RoadsideEquipment rseq = movement.getRoadsideEquipment();
 
         rseq.getMovements().add(movement);
@@ -209,9 +222,9 @@ public class IncaaImport {
      * @param signalGroupNumber Signaalgroepnummer dat binnen de rseq van @karAddress een movement identificeert
      * @return De movement binnen een rseq met karAddress @karAddres en met signaalgroepnummer @signalGroupNumber
      */
-    private Movement getMovement(Integer karAddress, Integer signalGroupNumber, DataOwner dataOwner) {
+    private Movement getMovement(Integer karAddress, Integer signalGroupNumber, DataOwner dataOwner,List<Message> messages) throws IllegalArgumentException{
         Movement mvmnt = null;
-        RoadsideEquipment rseq = getRseq(karAddress,dataOwner);
+        RoadsideEquipment rseq = getRseq(karAddress,dataOwner, messages);
 
         EntityManager em = Stripersist.getEntityManager();
         if (!movements.containsKey(karAddress)) {
@@ -246,18 +259,36 @@ public class IncaaImport {
      * @param karAddres Haal de rseq op dat aangeduid wordt met een karAddress
      * @return 
      */
-    private RoadsideEquipment getRseq(Integer karAddres, DataOwner dataOwner) {
+    private RoadsideEquipment getRseq(Integer karAddres, DataOwner dataOwner, List<Message> messages) throws IllegalArgumentException{
         RoadsideEquipment rseq = null;
 
         if (!rseqs.containsKey(karAddres)) {
             EntityManager em = Stripersist.getEntityManager();
-            rseq = new RoadsideEquipment();
-            rseq.setKarAddress(karAddres);
-            rseq.setDataOwner(dataOwner);
-            rseq.setType(RoadsideEquipment.TYPE_CROSSING);
-            rseq.setValidFrom(new Date());
+
+            List<RoadsideEquipment> rseqsList = em.createQuery("FROM RoadsideEquipment WHERE dataOwner = :do and karAddress = :karAddress", RoadsideEquipment.class).setParameter("do", dataOwner).setParameter("karAddress", karAddres).getResultList();
+            if (rseqsList.size() > 0) {
+                if (rseqsList.size() == 1) {
+                    rseq = rseqsList.get(0);
+
+                    if (!rseq.getVehicleType().equalsIgnoreCase("OV")) {
+                        throw new IllegalArgumentException("Kruispunt met KAR-adres " + karAddres + " heeft al hulpdienst punten");
+                    }else{
+                        messages.add(new SimpleMessage("Kruispunt met KAR-adres " + karAddres + " bestaat al, maar heeft nog geen hulpdienstpunten. Hulpdienstpunten worden toegevoegd."));
+                    }
+                } else {
+                    throw new IllegalArgumentException("Meerdere kruispunten gevonden voor KAR-adres " + karAddres + " en wegbeheerder " + dataOwner.getOmschrijving());
+                }
+            }
+
+            if (rseq == null) {
+                rseq = new RoadsideEquipment();
+                rseq.setKarAddress(karAddres);
+                rseq.setDataOwner(dataOwner);
+                rseq.setType(RoadsideEquipment.TYPE_CROSSING);
+                rseq.setValidFrom(new Date());
+                em.persist(rseq);
+            }
             rseqs.put(karAddres, rseq);
-            em.persist(rseq);
         }
         rseq = rseqs.get(karAddres);
         return rseq;

@@ -350,8 +350,8 @@ public class ImportActionBean implements ActionBean {
         final FileBean zipFile = bestand;
         IncaaImport importer = new IncaaImport();
         try {
-            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker());
-            this.context.getMessages().add(new SimpleMessage(("Er zijn " + rseqs.size() + " verkeerssystemen succesvol geïmporteerd.")));
+            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker(),this.context);
+            
         } catch (Exception e) {
             log.error("Fout importeren PTX",e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
