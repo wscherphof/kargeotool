@@ -774,6 +774,15 @@ Ext.define('Movement', {
         }
         return map;
     },
+    getMapsForSignalgroup: function(signalgroupNumber){
+        var maps = [];
+        for (var i = 0 ; i < this.maps.length; i++){
+            if(this.maps[i].signalGroupNumber === signalgroupNumber){
+                maps.push(this.maps[i]);
+            }
+        }
+        return maps;
+    },
     removeMapForPoint:function(point){
         for (var i = this.maps.length-1 ; i >= 0 ; i--){
             if(this.maps[i].pointId == point.getId()){

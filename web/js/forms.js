@@ -422,6 +422,7 @@ Ext.define("EditForms", {
                 map = movements[0].map;
             }
         }
+        var oldSignalGroupNumber = map.signalGroupNumber;
 
         var ov = [];
         var hulpdienst = [];
@@ -631,14 +632,23 @@ Ext.define("EditForms", {
                         Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
                     }
                     if(editingUitmeldpunt) {
+                        var movement = mvmtAndMap.movement;
+                        
+                        // de allSignalValues moeten alleen naar de punten die hetzelfde signaalgroepnummer
+                        // hadden gepropageerd worden. Dit om te voorkomen dat alle punten in de huidige* beweging geupdatet worden met het nieuwe signaalgroepnummer
+                        //* bij het bewerken van 1 beweging zal movements op r628 alleen die beweging bevatten die geselecteerd is. Als via de kaart is geselecteerd,
+                        // bevat movements alle bewegingen die het aangeklikte punt bevat, en wordt het in alle bewegingen doorgevoerd.
+                        
+                        var maps = movement.getMapsForSignalgroup(oldSignalGroupNumber);
                         // merge allSignalValues naar alle MovementActivationPoints
                         // van movements die dit pointId gebruiken
-                        Ext.each(mvmtAndMap.movement.maps, function(theMap) {
+                        Ext.each(maps, function(theMap) {
                             if(theMap.beginEndOrActivation == "ACTIVATION") {
                                 //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
                                Ext.Object.merge(theMap, allSignalValues);
                             }
                         });
+                        
                     }
                 });
             }
