@@ -633,8 +633,8 @@ Ext.define("Editor", {
         }
     },
 
-    removeCheckoutPoint: function(){
-        this.activeRseq.removeCheckoutPoint(this.selectedObject);
+    removeCheckoutPoint: function(movement){
+        this.activeRseq.removeCheckoutPoint(this.selectedObject, movement);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
 
@@ -643,8 +643,8 @@ Ext.define("Editor", {
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
 
-    removeOtherPoint : function(){
-        this.activeRseq.removePoint(this.selectedObject);
+    removeOtherPoint : function(movement){
+        this.activeRseq.removePoint(this.selectedObject,movement);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
 

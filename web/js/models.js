@@ -436,16 +436,26 @@ Ext.define('RSEQ', {
         }
     },
     
-    removePoint: function (point){
+    removePoint: function (point, movementId){
         var mvmnts = this.findMovementsForPoint(point);
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
-            movement.removeMapForPoint(point);
+            if(movementId){
+                if( parseInt(movementId) === movement.id){
+                    movement.removeMapForPoint(point);
+                }
+            }else{
+                movement.removeMapForPoint(point);
+            }
         }
-        
-        for(var j = this.points.length - 1 ; j >= 0 ; j--){
-            if(this.points[j].getId() == point.getId()){
-                this.points.splice(j,1);
+
+
+        var currentsMvmnts = this.findMovementsForPoint(point);
+        if(currentsMvmnts.length === 0){
+            for(var j = this.points.length - 1 ; j >= 0 ; j--){
+                if(this.points[j].getId() == point.getId()){
+                    this.points.splice(j,1);
+                }
             }
         }
     },

@@ -636,7 +636,7 @@ Ext.define("EditForms", {
                         Ext.each(mvmtAndMap.movement.maps, function(theMap) {
                             if(theMap.beginEndOrActivation == "ACTIVATION") {
                                 //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
-                                Ext.Object.merge(theMap, allSignalValues);
+                               Ext.Object.merge(theMap, allSignalValues);
                             }
                         });
                     }

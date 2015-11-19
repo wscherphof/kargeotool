@@ -350,7 +350,7 @@ Ext.define("ContextMenu", {
                             this.editor.editSelectedObject();
                             break;                        
                         case 'removeUitmeldpunt':
-                            this.editor.removeCheckoutPoint();
+                            this.editor.removeCheckoutPoint(this.editor.activeMovement);
                             break;                            
                         case 'addEindpunt':
                             editor.addEindpunt();
@@ -424,7 +424,7 @@ Ext.define("ContextMenu", {
                             this.editor.editSelectedObject();
                             break;
                         case 'removeInmeldpunt':
-                            this.editor.removeOtherPoint();
+                            this.editor.removeOtherPoint(this.editor.activeMovement);
                             break;                               
                         case 'addVoorinmeldpunt':
                             editor.addVoorinmeldpunt();
