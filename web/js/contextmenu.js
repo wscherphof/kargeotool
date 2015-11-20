@@ -32,6 +32,7 @@ Ext.define("ContextMenu", {
     uitmeldpunt:null,
     inmeldpunt:null,
     nonActivationPoint: null,
+    onbekend:null,
     
     defaultMenu:null,
     
@@ -262,7 +263,37 @@ Ext.define("ContextMenu", {
                 scope: me
             }
         });
-        
+
+        // Context menu voor een onbekend punt verwijderen
+        this.onbekend = Ext.create ("Ext.menu.Menu",{
+            floating: true,
+            renderTo: Ext.getBody(),
+            items: [
+            {
+                id: 'removeOnbekend',
+                text: 'Verwijderen',
+                icon: contextPath + "/images/silk/table_delete.png"
+            }],
+            listeners: {
+                click: function(menu,item,e, opts) {
+                    var pos = {
+                        x: menu.x - Ext.get(editor.domId).getX(),
+                        y: menu.y
+                    }
+                    var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    switch (item.id) {
+                        case 'removeOnbekend':
+                            this.editor.removeOtherPoint();
+                            break;
+                    }
+                },
+                hide: {
+                    scope: me,
+                    fn:this.hideFired
+                },
+                scope:me
+            }
+        });
         // Context menu voor een uitmeldpunt
         
         this.uitmeldpunt = Ext.create ("Ext.menu.Menu",{
@@ -497,9 +528,8 @@ Ext.define("ContextMenu", {
             "GUARD" : this.rseq,
             "BAR" : this.rseq,
             
-            "ADDPOINT_WITH_LINE" : this.point_with_line
-            
-        //"onlyEdit" : this.onlyEdit // XXX
+            "ADDPOINT_WITH_LINE" : this.point_with_line,
+            "UNKNOWN" : this.onbekend
         };
         // Get control of the right-click event:
         document.oncontextmenu = function(e){
@@ -578,8 +608,7 @@ Ext.define("ContextMenu", {
             if(menu){
                 return menu;
             }else{
-                alert("Kan geen context menu vinden voor type " + type);
-                return this.menuContext["onlyEdit"];
+                return this.menuContext["UNKNOWN"];
             }
         }else{
             return this.menuContext["standaard"];
