@@ -94,6 +94,14 @@ Ext.define("EditForms", {
                         enter: okFunction,
                         scope: this
                     });
+                    var fields = this.query("field");
+                    var button = Ext.getCmp("rseqOkButton");
+                    var f = function(){
+                        button.setDisabled( false );
+                    };
+                    Ext.each(fields, function(field){
+                        field.addListener("change", f);
+                    });
                 }
             },
             items: {
@@ -255,7 +263,9 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
-                    handler: okFunction
+                    handler: okFunction,
+                    id:"rseqOkButton",
+                    disabled: true
                 },{
                     text: 'Annuleren',
                     handler: function() {
@@ -337,6 +347,14 @@ Ext.define("EditForms", {
                         enter: okFunction,
                         scope: this
                     });
+                    var fields = this.query("field");
+                    var button = Ext.getCmp("nonActivationPointOkButton");
+                    var f = function(){
+                        button.setDisabled( false );
+                    };
+                    Ext.each(fields, function(field){
+                        field.addListener("change", f);
+                    });
                 },
                 close:function(){
                     editor.activeMovement = null;
@@ -362,6 +380,8 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
+                    id: "nonActivationPointOkButton",
+                    disabled: true,
                     handler: okFunction
                 },{
                     text: 'Annuleren',
@@ -678,6 +698,14 @@ Ext.define("EditForms", {
                         enter: okFunction,
                         scope: this
                     });
+                    var fields = this.query("field");
+                    var button = Ext.getCmp("activationPointOkButton");
+                    var f = function(){
+                        button.setDisabled( false );
+                    };
+                    Ext.each(fields, function(field){
+                        field.addListener("change", f);
+                    });
                 },
                 close:function(){
                     editor.activeMovement = null;
@@ -715,6 +743,8 @@ Ext.define("EditForms", {
                 }],
                 buttons: [{
                     text: 'OK',
+                    disabled: true,
+                    id: "activationPointOkButton",
                     handler: okFunction
                 },{
                     text: 'Annuleren',
