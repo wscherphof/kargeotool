@@ -187,8 +187,6 @@ public class IncaaImport {
         Movement movement = getMovement(karAddress, signalGroupNumber, dataOwner, messages);
         RoadsideEquipment rseq = movement.getRoadsideEquipment();
 
-        rseq.getMovements().add(movement);
-
         Set<ActivationPoint> ps = rseq.getPoints();
         ap.setNummer(ps.size() + 1);
         ps.add(ap);
@@ -232,20 +230,22 @@ public class IncaaImport {
 
             mvmnt = new Movement();
             mvmnt.setRoadsideEquipment(rseq);
-            mvmnt.setNummer(signalGroupNumber);
+            mvmnt.setNummer(rseq.getMovements().size() + 1);
             em.persist(mvmnt);
             signalGroupMovement.put(signalGroupNumber, mvmnt);
 
+            rseq.getMovements().add(mvmnt);
             movements.put(karAddress, signalGroupMovement);
         } else {
             Map<Integer, Movement> signalGroupMovement = movements.get(karAddress);
             if (!signalGroupMovement.containsKey(signalGroupNumber)) {
                 mvmnt = new Movement();
                 mvmnt.setRoadsideEquipment(rseq);
-                mvmnt.setNummer(signalGroupNumber);
+                mvmnt.setNummer(rseq.getMovements().size() + 1);
                 signalGroupMovement.put(signalGroupNumber, mvmnt);
                 em.persist(mvmnt);
 
+                rseq.getMovements().add(mvmnt);
                 movements.put(karAddress, signalGroupMovement);
             }
         }
