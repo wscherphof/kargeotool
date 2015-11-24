@@ -211,7 +211,9 @@ Ext.define("nl.b3p.kar.Overview",{
     updateOverview : function (rseq, changed){
         Ext.get("context_vri").setHTML(rseq == null ? "" :
                 (rseq.description + " (" + rseq.karAddress + ")"));
-        Ext.get("rseqOptions").setVisible(rseq != null);
+        if(rseq && rseq.editable){
+            Ext.get("rseqOptions").setVisible(true);
+        }
         var memoIcon = Ext.get("memo_vri");
         if (rseq && rseq.memo && rseq.memo != ""){
             memoIcon.setVisible(true);
