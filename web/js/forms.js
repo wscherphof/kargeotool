@@ -414,9 +414,9 @@ Ext.define("EditForms", {
         }
 
         var me = this;
-        var label = point.getLabel() == null ? "" : point.getLabel();
         var apType = point.getType().split("_")[1];
         var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
+        var label = point.getLabel() == null ? "" : point.getLabel();
 
         var map = newMap;
         var movements = null;
@@ -444,6 +444,9 @@ Ext.define("EditForms", {
         }
         var oldSignalGroupNumber = map.signalGroupNumber;
 
+        if(apType === "1"){
+            label += " (Signaalgroep " + oldSignalGroupNumber + ")";
+        }
         var ov = [];
         var hulpdienst = [];
         var vehicles = {root:{
