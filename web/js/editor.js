@@ -514,11 +514,9 @@ Ext.define("Editor", {
     },
 
     exportXml: function() {
-        var me = this;
         window.open(exportActionBeanUrl + "?exportType=kv9&export=true&rseqs=" + me.activeRseq.id, "exportwindow");
     },
     exportPtx: function() {
-        var me = this;
         window.open(exportActionBeanUrl + "?exportType=incaa&export=&rseqs=" + me.activeRseq.id, "exportwindow");
     },
 
