@@ -356,7 +356,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
                             this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
-                        }else if(type === "signalGroup" || type === "movement" ){
+                        }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.editable){
                             this.otherMenu.showAt(event.xy[0],event.xy[1]);
                         }
                     },
