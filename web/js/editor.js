@@ -515,67 +515,11 @@ Ext.define("Editor", {
 
     exportXml: function() {
         var me = this;
-        if(!this.activeRseq.readyForExport){
-            Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
-            return;
-        }
-        var exportIt = function() {
-            window.open(exportActionBeanUrl + "?exportType=kv9&export=true&rseqs=" + me.activeRseq.id, "exportwindow");
-        };
-
-        if(me.changeManager.changeDetected) {
-             Ext.Msg.show({
-                title:"Opslaan verkeerssyteem",
-                msg: "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
-                fn: function (button){
-                    if(button === 'yes') {
-                        me.saveOrUpdate(exportIt);
-                    }
-                },
-                scope:this,
-                buttons: Ext.Msg.YESNO,
-                buttonText: {
-                    no: "Nee",
-                    yes: "Ja"
-                },
-                icon: Ext.Msg.WARNING
-
-            });
-        } else {
-            exportIt();
-        }
+        window.open(exportActionBeanUrl + "?exportType=kv9&export=true&rseqs=" + me.activeRseq.id, "exportwindow");
     },
     exportPtx: function() {
         var me = this;
-        if(!this.activeRseq.readyForExport){
-            Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
-            return;
-        }
-        var exportIt = function() {
-            window.open(exportActionBeanUrl + "?exportType=incaa&export=&rseqs=" + me.activeRseq.id, "exportwindow");
-        };
-
-        if(me.changeManager.changeDetected) {
-             Ext.Msg.show({
-                title:"Opslaan verkeerssyteem",
-                msg: "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
-                fn: function (button){
-                    if(button === 'yes') {
-                        me.saveOrUpdate(exportIt);
-                    }
-                },
-                scope:this,
-                buttons: Ext.Msg.YESNO,
-                buttonText: {
-                    no: "Nee",
-                    yes: "Ja"
-                },
-                icon: Ext.Msg.WARNING
-
-            });
-        } else {
-            exportIt();
-        }
+        window.open(exportActionBeanUrl + "?exportType=incaa&export=&rseqs=" + me.activeRseq.id, "exportwindow");
     },
 
     removeRseq : function(){

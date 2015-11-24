@@ -162,13 +162,46 @@ Ext.define("ContextMenu", {
                     listeners: {
                         click:
                         function(menu,item,e, opts) {
-                            switch (item.id) {
-                                case 'exportXml':
-                                    this.editor.exportXml();
-                                    break;
-                                case 'exportPtx':
-                                    this.editor.exportPtx();
-                                    break;
+                            var me = this;
+                            me.type = item.id;
+                            var f = function(){
+                                if (!me.editor.activeRseq.readyForExport) {
+                                    Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
+                                    return;
+                                }
+                                if (me.editor.activeRseq.validationErrors !== 0) {
+                                    Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem heeft nog validatiefouten.");
+                                    return;
+                                }
+                                switch (me.type) {
+                                    case 'exportXml':
+                                        me.editor.exportXml();
+                                        break;
+                                    case 'exportPtx':
+                                        me.editor.exportPtx();
+                                        break;
+                                }
+                            }
+                            if (me.editor.changeManager.changeDetected) {
+                                Ext.Msg.show({
+                                    title: "Opslaan verkeerssyteem",
+                                    msg: "Alleen een opgeslagen verkeerssysteem kan worden gexporteerd. Wilt u nu opslaan?",
+                                    fn: function (button) {
+                                        if (button === 'yes') {
+                                            me.editor.saveOrUpdate(f);
+                                        }
+                                    },
+                                    scope: this,
+                                    buttons: Ext.Msg.YESNO,
+                                    buttonText: {
+                                        no: "Nee",
+                                        yes: "Ja"
+                                    },
+                                    icon: Ext.Msg.WARNING
+
+                                });
+                            }else{
+                                f();
                             }
                         },
                         scope:me
