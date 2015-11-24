@@ -892,6 +892,8 @@ public class RoadsideEquipment {
                     // F133 kan niet gecontroleerd worden vanwege SortedSet
                 }
 
+                String movementVehicleType = m.determineVehicleType(null);
+
                 for(int i = 0; i < m.getPoints().size(); i++) {
                     MovementActivationPoint map = m.getPoints().get(i);
                     String mapXmlContext = mXmlContext + "/" + map.getBeginEndOrActivation();
@@ -913,7 +915,7 @@ public class RoadsideEquipment {
                         }
                     }
 
-                    if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType) && getVehicleType().equals("OV")) {
+                    if(i == m.getPoints().size() - 1 && !MovementActivationPoint.END.equals(mapType) && movementVehicleType.equals("OV")) {
                         errors.add(new KV9ValidationError(false, "F145", mXmlContext + "/END", mContext + ", eindpunt van beweging", null, "Afwezig"));
                     }
 
