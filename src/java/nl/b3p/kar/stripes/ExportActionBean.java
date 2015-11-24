@@ -271,7 +271,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             Polygon deelgebiedPoly = filter.getGeom();
 
-            String query ="from RoadsideEquipment where intersects(location, ?) = true";
+            String query ="from RoadsideEquipment where validation_errors = 0 AND intersects(location, ?) = true";
             if(onlyReady){
                 query += " and readyForExport = true";
             }
@@ -297,7 +297,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment where dataOwner = :dataowner";
+            String query = "from RoadsideEquipment where validation_errors = 0 AND dataOwner = :dataowner";
             if(onlyReady){
                 query += " and readyForExport = true";
             }
@@ -320,9 +320,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment";
+            String query = "from RoadsideEquipment where validation_errors = 0";
             if(onlyReady){
-                query += " where readyForExport = true";
+                query += " and readyForExport = true";
+                
             }
             List<RoadsideEquipment> rseqList = em.createQuery(query, RoadsideEquipment.class).getResultList();
 
