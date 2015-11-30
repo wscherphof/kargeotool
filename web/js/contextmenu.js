@@ -624,7 +624,7 @@ Ext.define("ContextMenu", {
 
             // Update state van disabled / enabled items op basis van selectedObject
 
-            if(type == "ACTIVATION_2") {
+            if(type === "ACTIVATION_2") {
                 // Voor een uitmeldpunt kan alleen een inmeldpunt worden toegevoegd
                 // indien voor dat uitmeldpunt in een movement een eindpunt aanwezig 
                 // is
@@ -632,6 +632,8 @@ Ext.define("ContextMenu", {
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
+            }else if (type === "CROSSING") {
+                Ext.getCmp("saveRseq").setDisabled(!editor.activeRseq.editable);
             }
             
             if(this.editor.olc.isMeasuring() ){
