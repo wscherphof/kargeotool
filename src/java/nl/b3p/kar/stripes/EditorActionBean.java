@@ -498,7 +498,7 @@ public class EditorActionBean implements ActionBean {
                 throw new IllegalArgumentException("Data owner is verplicht");
             }
             if(!g.isBeheerder()) {
-                if(!g.canEditDataOwner(rseq.getDataOwner())&& !g.canEditVRI(rseq) && g.isVervoerder()) {
+                if(!g.canEditDataOwner(rseq.getDataOwner()) || !g.canEditVRI(rseq) || g.isVervoerder()) {
                     throw new IllegalStateException(
                             String.format("Gebruiker \"%s\" heeft geen rechten op data owner code %s (\"%s\")",
                             g.getUsername(),
@@ -699,8 +699,8 @@ public class EditorActionBean implements ActionBean {
         }
         return new StreamingResolution("application/json", new StringReader(j.toString(4)));
     }
-    
-    
+
+
     public Resolution listCarriers() throws JSONException{
         List<Gebruiker> gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
         JSONObject info = new JSONObject();
