@@ -18,8 +18,8 @@
  */
 /**
  * Class for representing the currently selected trafficsystem
- * 
- * 
+ *
+ *
  */
 Ext.define("nl.b3p.kar.Overview",{
     editor : null,
@@ -35,12 +35,12 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqUpdated", function(rseq) { this.updateOverview(rseq, true) },this);
         this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false) },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
-        
+
         var panel = Ext.getCmp("rseqInfoPanel");
         panel.on('collapse',this.updateSize,this);
         panel.on('expand',this.updateSize,this);
         panel.on('resize',this.updateSize,this);
-        
+
         this.editor.olc.highlight.events.register('featurehighlighted',this,function (evt){
             if (this.isPoint(evt.feature)){
                 this.highlight(evt.feature.data.id);
@@ -51,7 +51,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 this.unhighlight(evt.feature.data.id);
             }
         });
-        
+
         var me = this;
         this.otherMenu = Ext.create("Ext.menu.Menu", {
             floating: true,
@@ -72,7 +72,7 @@ Ext.define("nl.b3p.kar.Overview",{
                                 var view = this.tree.getView();
                                 var dd = view.getPlugin('treeviewdragdrop');
                                 var enable = item.checked;
-                                
+
                                 if (enable) {
                                     dd.dragZone.unlock();
                                     editor.overview.tree.getView().getSelectionModel().selectionMode = "SINGLE";
@@ -182,7 +182,7 @@ Ext.define("nl.b3p.kar.Overview",{
                     switch (item.id) {
                         case 'editUitmeldpuntOv':
                             this.editor.editSelectedObject();
-                            break;                        
+                            break;
                         case 'removeUitmeldpuntOv':
                             this.editor.removeSingleCheckoutPoint();
                             break;
@@ -197,22 +197,24 @@ Ext.define("nl.b3p.kar.Overview",{
                             break;
                         case 'selectInmeldpuntOv':
                             editor.selectInmeldpunt();
-                            break;              
+                            break;
                         case 'setCoordsUitmeldOv':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
-                            break              
+                            break
                     }
                 },
                 scope:me
             }
         });
-      
+
     },
     updateOverview : function (rseq, changed){
         Ext.get("context_vri").setHTML(rseq == null ? "" :
                 (rseq.description + " (" + rseq.karAddress + ")"));
         if(rseq && rseq.editable){
             Ext.get("rseqOptions").setVisible(true);
+        } else {
+            Ext.get("rseqOptions").setVisible(false);
         }
         var memoIcon = Ext.get("memo_vri");
         if (rseq && rseq.memo && rseq.memo != ""){
@@ -220,7 +222,7 @@ Ext.define("nl.b3p.kar.Overview",{
         } else{
             memoIcon.setVisible(false);
         }
-        
+
         if(changed || rseq == null || rseq.validationErrors == null) {
             Ext.get("validationResults").setHTML("");
         } else {
@@ -251,7 +253,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 rootVisible : false,
                 renderTo: overzicht,
                 viewConfig: {
-                    plugins: 
+                    plugins:
                         [
                             {
                                 ptype: 'treeviewdragdrop',
@@ -557,12 +559,12 @@ Ext.define("nl.b3p.kar.Overview",{
                 }
             }
         }
-        
+
         var label = "Van " + begin + " naar " + eind;
         if(label == 'Van  naar '){
             label = '';
         }
-        
+
         return label;
     },
     updateSize : function (){
@@ -585,7 +587,7 @@ Ext.define("nl.b3p.kar.Overview",{
     getMapsPerMovement :function(movementNode){
         var rseq = this.editor.activeRseq;
         var childs = movementNode.childNodes;
-        
+
         var mapsPerMovement =[];
         Ext.Array.each(childs, function(child){
             var map = rseq.findMapForPoint(movementNode.raw.movementId,child.raw.pointId);
