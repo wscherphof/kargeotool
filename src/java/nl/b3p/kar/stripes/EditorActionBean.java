@@ -118,17 +118,6 @@ public class EditorActionBean implements ActionBean {
         }
 
         EntityManager em = Stripersist.getEntityManager();
-        log.debug("view(): getGebruiker()");
-
-        boolean isBeheerder = getGebruiker().isBeheerder();
-
-        log.debug("view(): getGebruiker().getEditableDataOwners()");
-        Set s = getGebruiker().getEditableDataOwners();
-        if (s.size() >= 1 || isBeheerder) {
-            magWalapparaatMaken = true;
-        } else {
-            magWalapparaatMaken = false;
-        }
 
         log.debug("view(): vehicleTypesJSON");
         vehicleTypesJSON = new JSONArray();
@@ -143,11 +132,15 @@ public class EditorActionBean implements ActionBean {
         log.debug("view(): dataOwnersJSON");
         dataOwnersJSON = new JSONArray();
         Collection<DataOwner> dataOwners;
-        if(isBeheerder) {
+        if(getGebruiker().isBeheerder()) {
             dataOwners = (List<DataOwner>) em.createQuery("from DataOwner order by omschrijving").getResultList();
         } else {
-            dataOwners = s;
+            // TODO: geen sortering op omschrijving
+            dataOwners = getGebruiker().getEditableDataOwners();
         }
+        // TODO: variabele weg, check kan ook client-side
+        magWalapparaatMaken = !dataOwners.isEmpty();
+
         for (DataOwner dao : dataOwners) {
             JSONObject jdao = new JSONObject();
             jdao.put("code", dao.getCode());
@@ -204,19 +197,14 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            RoadsideEquipment rseq2;
-
-            if (rseq != null) {
-                rseq2 = rseq;
-            } else {
+            if (rseq == null) {
                 throw new IllegalArgumentException("RoadSideEquipment not defined.");
             }
-            boolean editable = !getGebruiker().isVervoerder() && (getGebruiker().canEditDataOwner(rseq2.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq2));
-            if( !editable && !getGebruiker().canReadDataOwner(rseq2.getDataOwner()) && !getGebruiker().canReadVRI(rseq2) && !getGebruiker().isVervoerder()) {
+            if(!getGebruiker().canRead(rseq)) {
                 info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
             } else {
-                info.put("roadsideEquipment", rseq2.getJSON());
-                info.put("editable",editable);
+                info.put("roadsideEquipment", rseq.getJSON());
+                info.put("editable", getGebruiker().canEdit(rseq));
 
                 info.put("success", Boolean.TRUE);
             }
@@ -239,16 +227,19 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            List<RoadsideEquipment> rseq2;
+            List<RoadsideEquipment> rseqList;
 
             if(getGebruiker().isBeheerder() || getGebruiker().isVervoerder()) {
-                rseq2 = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+                rseqList = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
             } else {
-                Set<DataOwner> dos = getGebruiker().getAvailableDataOwners();
+                Set<DataOwner> dos = getGebruiker().getReadableDataOwners();
                 if (dos.isEmpty()) {
-                    rseq2 = Collections.EMPTY_LIST;
+                    rseqList = Collections.EMPTY_LIST;
                 } else {
-
+                    // Geen test op GebruikerVRIRights.readable nodig: als record
+                    // aanwezig is is editable of readable altijd true
+                    // Zie Gebruiker.canRead() comments
+                    // En editable betekent ook readable
                     List<RoadsideEquipment> allowedRseqs = em.createQuery(
                             "select distinct(gv.roadsideEquipment) from GebruikerVRIRights gv "
                             + "where gebruiker = :geb")
@@ -256,20 +247,19 @@ public class EditorActionBean implements ActionBean {
                             .getResultList();
 
 
-                    rseq2 = (List<RoadsideEquipment>) em.createQuery(
+                    rseqList = (List<RoadsideEquipment>) em.createQuery(
                             "from RoadsideEquipment "
                             + "where dataOwner in (:dos)")
                             .setParameter("dos", dos)
                             .getResultList();
-                    rseq2.addAll(allowedRseqs);
+                    rseqList.addAll(allowedRseqs);
                 }
             }
             Gebruiker g =getGebruiker();
             JSONArray rseqs = new JSONArray();
-            for (RoadsideEquipment r : rseq2) {
+            for (RoadsideEquipment r : rseqList) {
                 JSONObject rseqJson = r.getRseqGeoJSON();
-                boolean editable = !g.isVervoerder() && (g.canEditDataOwner(r.getDataOwner()) || g.canEditVRI(r) || getGebruiker().isBeheerder() );
-                rseqJson.put("editable", editable);
+                rseqJson.put("editable", g.canEdit(r));
                 rseqs.put(rseqJson);
             }
             info.put("rseqs", rseqs);
@@ -328,9 +318,9 @@ public class EditorActionBean implements ActionBean {
           //  p.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 
-            Collection<DataOwner> dos = getGebruiker().getAvailableDataOwners();
+            Collection<DataOwner> dos = getGebruiker().getReadableDataOwners();
             List<ActivationPoint> points;
-            if(getGebruiker().isBeheerder()) {
+            if(getGebruiker().isBeheerder() || getGebruiker().isVervoerder()) {
                 points = session.createQuery(
                         "from ActivationPoint "
                       + "where intersects(location, :pos) = true "
@@ -349,6 +339,8 @@ public class EditorActionBean implements ActionBean {
                         .setParameter("pos", p, GeometryUserType.TYPE)
                         .setParameter("this", rseq)
                         .list();
+
+                // TODO: include GebruikerVRIRights RSEQ's
             }
 
             JSONArray rs = new JSONArray();
@@ -390,6 +382,17 @@ public class EditorActionBean implements ActionBean {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
+            Gebruiker g = getGebruiker();
+            if(!g.canEdit(rseq)) {
+                throw new IllegalStateException(
+                        String.format("Gebruiker \"%s\" heeft geen schrijfrechten op VRI %d, \"%s\", data owner code %s (\"%s\")",
+                        g.getUsername(),
+                        rseq.getKarAddress(),
+                        rseq.getDescription(),
+                        rseq.getDataOwner().getCode(),
+                        rseq.getDescription()));
+            }
+
             Set<Long> mIds = new HashSet();
             for(Movement m : rseq.getMovements()) {
                 m.getPoints().clear();
@@ -497,14 +500,13 @@ public class EditorActionBean implements ActionBean {
             if(rseq.getDataOwner() == null) {
                 throw new IllegalArgumentException("Data owner is verplicht");
             }
-            if(!g.isBeheerder()) {
-                if(!g.canEditDataOwner(rseq.getDataOwner()) || !g.canEditVRI(rseq) || g.isVervoerder()) {
-                    throw new IllegalStateException(
-                            String.format("Gebruiker \"%s\" heeft geen rechten op data owner code %s (\"%s\")",
-                            g.getUsername(),
-                            rseq.getDataOwner().getCode(),
-                            rseq.getDescription()));
-                }
+            if(!g.canEdit(rseq)) {
+                throw new IllegalStateException(
+                        String.format("Gebruiker \"%s\" heeft geen schrijfrechten op VRI %d, \"%s\", data owner code %s",
+                        g.getUsername(),
+                        rseq.getKarAddress(),
+                        rseq.getDescription(),
+                        rseq.getDataOwner().getCode()));
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -669,14 +671,12 @@ public class EditorActionBean implements ActionBean {
 
             em.getTransaction().commit();
 
-            boolean editable = !getGebruiker().isVervoerder() && (getGebruiker().canEditDataOwner(rseq.getDataOwner()) || getGebruiker().isBeheerder() || getGebruiker().canEditVRI(rseq));
-            if (!editable && !getGebruiker().canReadDataOwner(rseq.getDataOwner()) && !getGebruiker().canReadVRI(rseq)) {
-                info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
-            } else {
-                info.put("editable", editable);
-                info.put("roadsideEquipment", rseq.getJSON());
-                info.getJSONObject("roadsideEquipment").put("validationErrors", validationErrors);
-            }
+            // Rechtencontrole is al gedaan aan het begin van deze methode, als
+            // gebruiker rseq niet zou kunnen bewerken kunnen we hier niet komen
+            info.put("editable", /* g.canEdit(rseq) */ true);
+
+            info.put("roadsideEquipment", rseq.getJSON());
+            info.getJSONObject("roadsideEquipment").put("validationErrors", validationErrors);
             info.put("success", Boolean.TRUE);
             if (incorrectJSON) {
                 info.put("extraMessage", "Bij het opslaan is iets mis gegaan: mogelijk zijn niet alle punten opgeslagen. Controleer het kruispunt en informeer de beheerder.");

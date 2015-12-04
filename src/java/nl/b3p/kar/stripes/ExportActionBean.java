@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -323,7 +322,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             String query = "from RoadsideEquipment where validation_errors = 0";
             if(onlyReady){
                 query += " and readyForExport = true";
-                
+
             }
             List<RoadsideEquipment> rseqList = em.createQuery(query, RoadsideEquipment.class).getResultList();
 
@@ -340,13 +339,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     private JSONArray makeRseqArray(List<RoadsideEquipment> rseqs) throws JSONException {
 
-        Gebruiker g = getGebruiker();
-        Set<DataOwner> rights = g.getAvailableDataOwners();
-
-        boolean isBeheerder = g.isBeheerder();
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
-            if (isBeheerder || rights.contains(rseqObj.getDataOwner()) || g.canReadVRI(rseqObj) || g.canEditVRI(rseqObj) || g.isVervoerder()) {
+            if(getGebruiker().canRead(rseq)) {
                 if(onlyValid && !rseqObj.isValid()){
                     continue;
                 }
@@ -484,7 +479,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setDataowners(List<DataOwner> dataowners) {
         this.dataowners = dataowners;
     }
-    
+
     public DataOwner getDataowner() {
         return dataowner;
     }
@@ -492,7 +487,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setDataowner(DataOwner dataowner) {
         this.dataowner = dataowner;
     }
-    
+
     public boolean isOnlyReady() {
         return onlyReady;
     }

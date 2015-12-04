@@ -58,12 +58,12 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
 public class IncaaImport {
-    
+
     public IncaaImport() {
     }
 
     private static final int RIJKSDRIEHOEKSTELSEL = 28992;
-    
+
     // Intermediate format: Map<karrAddres, Map<signalGroupNumber, Movement>
     private Map<Integer, Map<Integer, Movement>> movements;
     // Opzoeklijstje obv karaddress
@@ -73,23 +73,23 @@ public class IncaaImport {
 
 
     /**
-     * Importeer een reader van een .ptx bestand. 
+     * Importeer een reader van een .ptx bestand.
      * @param in Reader van een INCAA .ptx bestand.
      * @param g
      * @param context Context om meldingen terug te geven naar de gebruiker over rseqs die niet geimporteerd konden worden
      * @return De lijst van geïmporteerde roadside equipments
-     * @throws Exception 
+     * @throws Exception
      */
     public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g, ActionBeanContext context) throws Exception {
 
         JSONObject profile = new JSONObject(g.getProfile());
         JSONObject defaultKarAttributes = profile.getJSONObject("defaultKarAttributes");
-        // (Her)initialiseer de intermediate formats. 
+        // (Her)initialiseer de intermediate formats.
         movements = new HashMap();
         rseqs = new HashMap();
         rseqLocations = new HashMap();
-        
-        // Definieer een parser en parse de ptx file 
+
+        // Definieer een parser en parse de ptx file
         Iterable<CSVRecord> parser = CSVFormat.newBuilder().withCommentStart('#').withDelimiter('\t').withQuoteChar('"').parse(in);
 
         List<Message> messages = new ArrayList<Message>();
@@ -104,9 +104,10 @@ public class IncaaImport {
         // Sla de boel op
         EntityManager em = Stripersist.getEntityManager();
         List<RoadsideEquipment> savedRseqs = new ArrayList();
+        // ??? XXX is rseqs niet altijd empty?
         for (Integer karAddress : rseqs.keySet()) {
             RoadsideEquipment rseq = rseqs.get(karAddress);
-            if(g.isBeheerder() || g.canEditDataOwner(rseq.getDataOwner()) || g.canEditVRI(rseq)){
+            if(g.canEdit(rseq)){
                 // Maak van alle punten binnen een rseq een centroïde en gebruik dat als locatie van de rseq zelf
                 List<Point> points = rseqLocations.get(rseq.getKarAddress());
                 GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
@@ -134,7 +135,7 @@ public class IncaaImport {
     private void parseRecord(CSVRecord record,List<Message> messages) throws IllegalArgumentException{
         ActivationPoint ap = new ActivationPoint();
         EntityManager em = Stripersist.getEntityManager();
-        
+
         // Haal de data uit het csv record
         String beheercode = record.get(0);
         String x = record.get(1);
@@ -196,10 +197,10 @@ public class IncaaImport {
         int yInt = Integer.parseInt(y);
         ap.setX(xInt);
         ap.setY(yInt);
-        
+
         addPoint(karAddress, ap.getLocation());
         ap.setRoadsideEquipment(rseq);
-        
+
         em.persist(ap);
         // Maak MovementActivationPoint
         MovementActivationPoint map = new MovementActivationPoint();
@@ -213,7 +214,7 @@ public class IncaaImport {
     }
 
     /**
-     * Haal de movement op behorende bij het karAdress en signalGroupNumber. Binnen een .ptx gaan we ervan uit dat een karAdres 1 rseq 
+     * Haal de movement op behorende bij het karAdress en signalGroupNumber. Binnen een .ptx gaan we ervan uit dat een karAdres 1 rseq
      * vertegenwoordigd en een punten gegroepeerd op signalGroupNumber een movement vormen.
      * Mocht deze movement nog niet bestaan, dan wordt hij aangemaakt.
      * @param karAddress KarAddress dat binnen dit .ptx bestand een rseq vertegenwoordigd
@@ -255,9 +256,9 @@ public class IncaaImport {
     }
 
     /**
-     * 
+     *
      * @param karAddres Haal de rseq op dat aangeduid wordt met een karAddress
-     * @return 
+     * @return
      */
     private RoadsideEquipment getRseq(Integer karAddres, DataOwner dataOwner, List<Message> messages) throws IllegalArgumentException{
         RoadsideEquipment rseq = null;
@@ -307,7 +308,7 @@ public class IncaaImport {
     /**
      * Voeg een punt toe aan een lijstje voor een rseq met kar adres @karAddress. Voor latere verwerking tot centroïde voor de locatie van het rseq..
      * @param karAddress
-     * @param p 
+     * @param p
      */
     private void addPoint(Integer karAddress, Point p) {
         if (!rseqLocations.containsKey(karAddress)) {

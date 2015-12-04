@@ -207,10 +207,7 @@ public class ImportActionBean implements ActionBean {
                             continue;
                         }
 
-                        // g.canEditVRI(roadsideEquipment) niet van toepassing:
-                        // nieuw ingelezen KV9 RSEQ kan nog geen rechten hebben
-                        // (id is null)
-                        if((!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner())) || getGebruiker().isVervoerder()) {
+                        if(!getGebruiker().canEdit(roadsideEquipment)) {
                             e.put(new KV9ValidationError(true, null, "dataownercode", "Beheerder", roadsideEquipment.getDataOwner().getCode(), "U heeft geen rechten om verkeerssystemen voor deze beheerder te importeren"));
                             rseqErrors.put("fatal", Boolean.TRUE);
                             continue;
@@ -283,7 +280,7 @@ public class ImportActionBean implements ActionBean {
                         }
                     }
 
-                    if(importFatal || ((!getGebruiker().isBeheerder() && !getGebruiker().canEditDataOwner(roadsideEquipment.getDataOwner()))|| getGebruiker().isVervoerder()) ) {
+                    if(importFatal || !getGebruiker().canEdit(roadsideEquipment)) {
                         this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
                         continue;
                     }
@@ -294,13 +291,13 @@ public class ImportActionBean implements ActionBean {
                     ));
                     roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
                     roadsideEquipment.setValidationErrors(validationErrors);
-                    
+
                     SortedSet<Movement> movements = roadsideEquipment.getMovements();
-                    
+
                     // First, save a rseq with no movement to prevent nullchecks on not-yet persisted ActivationPoints (or, not yet persisted rseqs when persisting the activationpoint first)
                     roadsideEquipment.setMovements(new TreeSet<Movement>());
                     em.persist(roadsideEquipment);
-                    
+
                     SortedSet<ActivationPoint>points = roadsideEquipment.getPoints();
                     // Now, persist each activationpoint from the movement.movementactivationpoint. Also add it to the set in the roadsideEquipment.
                     for (Movement movement : movements) {
@@ -312,7 +309,7 @@ public class ImportActionBean implements ActionBean {
                         em.persist(movement);
                     }
                     em.persist(roadsideEquipment);
-   
+
                     if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
                         this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + roadsideEquipment.getKarAddress() + ", " + roadsideEquipment.getDescription()));
                     }
@@ -351,7 +348,7 @@ public class ImportActionBean implements ActionBean {
         IncaaImport importer = new IncaaImport();
         try {
             List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker(),this.context);
-            
+
         } catch (Exception e) {
             log.error("Fout importeren PTX",e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));

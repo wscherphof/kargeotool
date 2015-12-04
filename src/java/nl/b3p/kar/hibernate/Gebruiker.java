@@ -313,29 +313,27 @@ public class Gebruiker implements Principal {
         this.dataOwnerRights = dataOwnerRights;
     }
 
-    /**
-     *
-     * @param d
-     * @return kan/mag gebruiker de DataOwner bewerken?
-     */
-    public boolean canEditDataOwner(DataOwner d) {
-        GebruikerDataOwnerRights r = dataOwnerRights.get(d);
-        return r != null && r.isEditable();
+    public List<GebruikerVRIRights> getVriRights() {
+        return vriRights;
+    }
+
+    public void setVriRights(List<GebruikerVRIRights> vriRights) {
+        this.vriRights = vriRights;
     }
 
     /**
-     *
-     * @param d
-     * @return kan/mag gebruiker DataOwner lezen
+     * Lijst van van data owners die gebruiker met gebruiker role mag lezen (bij
+     * beheerder/vervoerder worden NIET alle data owners teruggegeven). Een
+     * dataOwnerRights record betekent altijd lezen of schrijven, nooit kan
+     * editable en readable beide false zijn.
      */
-    public boolean canReadDataOwner(DataOwner d) {
-        GebruikerDataOwnerRights r = dataOwnerRights.get(d);
-        return r != null && r.isReadable();
+    public Set<DataOwner> getReadableDataOwners() {
+        return dataOwnerRights.keySet();
     }
 
     /**
-     *
-     * @return dataOwners
+     * Lijst van van data owners die gebruiker met gebruiker role mag bewerken (bij
+     * beheerder role worden NIET alle data owners teruggegeven).
      */
     public Set<DataOwner> getEditableDataOwners() {
         HashSet<DataOwner> dataOwners = new HashSet<DataOwner>();
@@ -347,43 +345,86 @@ public class Gebruiker implements Principal {
         return dataOwners;
     }
 
-    public List<GebruikerVRIRights> getVriRights() {
-        return vriRights;
-    }
+    /**
+     * Gebruiker kan RoadsideEquipment editen als:
+     * - Gebruiker beheerder is, of
+     * - Gebruiker DataOwner kan editen, of
+     * - Gebruiker VRI kan editen.
+     *
+     * Vervoerders kunnen nooit editen, ook al staan in de database DataOwner/VRI
+     * rechten (zou GUI niet mogelijk moeten maken).
+     */
+    public boolean canEdit(RoadsideEquipment rseq) {
+        if(isBeheerder()) {
+            return true;
+        }
 
-    public void setVriRights(List<GebruikerVRIRights> vriRights) {
-        this.vriRights = vriRights;
-    }
+        if(isVervoerder()) {
+            return false;
+        }
 
-    public boolean canEditVRI(RoadsideEquipment rseq){
-        for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
-            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isEditable()){
+        DataOwner d = rseq.getDataOwner();
+        if(d != null) {
+            GebruikerDataOwnerRights r = dataOwnerRights.get(d);
+            if(r != null && r.isEditable()) {
                 return true;
             }
         }
+
+        Long rseqId = rseq.getId();
+        if(rseqId != null) {
+            for(GebruikerVRIRights gebruikerVRIRights : vriRights) {
+                if(gebruikerVRIRights.isEditable()) {
+                    if(gebruikerVRIRights.getRoadsideEquipment().getId().equals(rseqId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
-    public boolean canReadVRI(RoadsideEquipment rseq){
-         for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
-            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() && gebruikerVRIRights.isReadable()){
+    /**
+     * Gebruiker kan RoadsideEquipment lezen als:
+     * - Gebruiker is beheerder, of
+     * - Gebruiker is vervoerder, of
+     * - Gebruiker heeft GebruikerDataOwnerRights record voor DAO van RSEQ, of
+     * - Gebruiker heeft GebruikerVRIRights record voor RSEQ.
+     *
+     * Een DataOwner recht of VRI recht bij een gebruiker betekent altijd mimimaal
+     * leesrecht. Readable=false en editable=false bij rights records zouden niet
+     * in db moeten kunnen staan. Hier wordt gebruik van gemaakt bij zoekacties.
+     */
+    public boolean canRead(RoadsideEquipment rseq) {
+        if(isBeheerder()) {
+            return true;
+        }
+
+        DataOwner d = rseq.getDataOwner();
+        if(d != null) {
+            GebruikerDataOwnerRights r = dataOwnerRights.get(d);
+            if(r != null) {
+                // Geen test op isEditable() of isReadable() nodig, een van beide
+                // is voldoende maar zouden nooit met allebei false in database
+                // moeten staan
                 return true;
             }
         }
-        return false;
-    }
 
-    public boolean hasVRIRight(RoadsideEquipment rseq ){
-        for (GebruikerVRIRights gebruikerVRIRights : vriRights) {
-            if(gebruikerVRIRights.getRoadsideEquipment().getId() == rseq.getId() ){
-                return true;
+        Long rseqId = rseq.getId();
+        if(rseqId != null) {
+            for(GebruikerVRIRights gebruikerVRIRights: vriRights) {
+                // Geen test op isEditable() of isReadable() nodig, een van beide
+                // is voldoende maar zouden nooit met allebei false in database
+                // moeten staan
+                if(gebruikerVRIRights.getRoadsideEquipment().getId().equals(rseqId)) {
+                    return true;
+                }
             }
         }
-        return false;
-    }
 
-    public Set<DataOwner> getAvailableDataOwners(){
-        return dataOwnerRights.keySet();
+        return false;
     }
 
     /**
