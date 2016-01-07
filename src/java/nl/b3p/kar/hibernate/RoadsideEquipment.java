@@ -457,7 +457,7 @@ public class RoadsideEquipment {
     public void setReadyForExport(boolean readyForExport) {
         this.readyForExport = readyForExport;
     }
-    
+
     //</editor-fold>
 
     public ActivationPoint getPointByNumber(int number) {
@@ -894,6 +894,10 @@ public class RoadsideEquipment {
 
                 String movementVehicleType = m.determineVehicleType(null);
 
+                if(movementVehicleType == null) {
+                    errors.add(new KV9ValidationError(true, "F146", mXmlContext + "//karvehicletype", mContext + ", voertuigtype", null, "Niet ingevuld"));
+                    continue;
+                }
                 for(int i = 0; i < m.getPoints().size(); i++) {
                     MovementActivationPoint map = m.getPoints().get(i);
                     String mapXmlContext = mXmlContext + "/" + map.getBeginEndOrActivation();
