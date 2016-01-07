@@ -189,7 +189,11 @@ public class IncaaImport {
         RoadsideEquipment rseq = movement.getRoadsideEquipment();
 
         Set<ActivationPoint> ps = rseq.getPoints();
-        ap.setNummer(ps.size() + 1);
+        int maxNr = 0;
+        for(ActivationPoint p: ps) {
+            maxNr = Math.max(maxNr, p.getNummer());
+        }
+        ap.setNummer(maxNr + 1);
         ps.add(ap);
 
         // Maak geometrie
