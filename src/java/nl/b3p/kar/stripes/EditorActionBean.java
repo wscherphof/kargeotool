@@ -198,7 +198,7 @@ public class EditorActionBean implements ActionBean {
         info.put("success", Boolean.FALSE);
         try {
             if (rseq == null) {
-                throw new IllegalArgumentException("RoadSideEquipment not defined.");
+                throw new IllegalArgumentException("rseq parameter ontbreekt voor rseqJSON(), probeer het opnieuw");
             }
             if(!getGebruiker().canRead(rseq)) {
                 info.put("error", "De gebruiker is niet gemachtigd om dit verkeerssysteem te bewerken of lezen.");
