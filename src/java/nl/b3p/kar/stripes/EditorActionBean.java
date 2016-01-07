@@ -413,6 +413,9 @@ public class EditorActionBean implements ActionBean {
             em.createQuery("delete from GebruikerVRIRights where roadsideEquipment = :rseq")
                     .setParameter("rseq", rseq)
                     .executeUpdate();
+            em.createQuery("delete from InformMessage where rseq = :rseq")
+                    .setParameter("rseq", rseq)
+                    .executeUpdate();
             em.flush();
             em.remove(rseq);
             em.flush();
