@@ -79,6 +79,8 @@ public class SearchActionBean implements ActionBean {
     private String dataOwner;
     private static final String KV7NETWERK_JNDI_NAME = "java:comp/env/jdbc/kv7netwerk";
 
+    private static final String CODE_SEARCH_PREFIX = ":";
+
     @Validate
     private String vehicleType;
 
@@ -94,9 +96,9 @@ public class SearchActionBean implements ActionBean {
             if(term != null){
 
                 boolean validAddressSearch = false;
-                if(term.startsWith(":")) {
+                if(term.startsWith(CODE_SEARCH_PREFIX)) {
                     try {
-                        int karAddress = Integer.parseInt(term.substring(1));
+                        int karAddress = Integer.parseInt(term.substring(CODE_SEARCH_PREFIX.length()));
                         criteria.add(Restrictions.eq("karAddress", karAddress));
                         validAddressSearch = true;
                     } catch(NumberFormatException e) {
@@ -144,8 +146,14 @@ public class SearchActionBean implements ActionBean {
         try {
 
             Session sess = (Session) em.getDelegate();
+            String param;
+            if(term.startsWith(CODE_SEARCH_PREFIX)) {
+                param = term.substring(CODE_SEARCH_PREFIX.length());
+            } else {
+                param = "%" + term + "%";
+            }
             Query q = sess.createSQLQuery("SELECT ref,name,astext(st_union(geometry)) FROM Road where ref ilike :ref group by ref,name");
-            q.setParameter("ref", "%" + term + "%");
+            q.setParameter("ref", param);
 
             List<Object[]> l = (List<Object[]>) q.list();
             JSONArray roads = new JSONArray();
@@ -242,10 +250,16 @@ public class SearchActionBean implements ActionBean {
                 JSONObject s = new JSONObject();
                 s.put("schema", schema);
                 JSONArray matchedLines;
-                if (dataOwner != null) {
-                    matchedLines = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%", dataOwner);
+                String param;
+                if(term.startsWith(CODE_SEARCH_PREFIX)) {
+                    param = term.substring(CODE_SEARCH_PREFIX.length());
                 } else {
-                    matchedLines  = new QueryRunner().query(c, sql, h, "%" + term + "%", "%" + term + "%");
+                    param = "%" + term + "%";
+                }
+                if (dataOwner != null) {
+                    matchedLines = new QueryRunner().query(c, sql, h, param, param, dataOwner);
+                } else {
+                    matchedLines  = new QueryRunner().query(c, sql, h, param, param);
                 }
                 s.put("lines", matchedLines);
                 if(matchedLines.length() != 0) {
