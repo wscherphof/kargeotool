@@ -92,18 +92,31 @@ public class SearchActionBean implements ActionBean {
             Session sess = (Session) em.getDelegate();
             Criteria criteria = sess.createCriteria(RoadsideEquipment.class);
             if(term != null){
-                Disjunction dis = Restrictions.disjunction();
-                dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
 
-                try {
-                    int karAddress = Integer.parseInt(term);
-                    dis.add(Restrictions.eq("karAddress", karAddress));
-                } catch (NumberFormatException e) {
+                boolean validAddressSearch = false;
+                if(term.startsWith(":")) {
+                    try {
+                        int karAddress = Integer.parseInt(term.substring(1));
+                        criteria.add(Restrictions.eq("karAddress", karAddress));
+                        validAddressSearch = true;
+                    } catch(NumberFormatException e) {
+
+                    }
                 }
+                if(!validAddressSearch) {
+                    Disjunction dis = Restrictions.disjunction();
+                    dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
 
-                dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
+                    try {
+                        int karAddress = Integer.parseInt(term);
+                        dis.add(Restrictions.eq("karAddress", karAddress));
+                    } catch (NumberFormatException e) {
+                    }
 
-                criteria.add(dis);
+                    dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
+
+                    criteria.add(dis);
+                }
             }
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
