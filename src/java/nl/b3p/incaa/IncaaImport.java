@@ -173,7 +173,9 @@ public class IncaaImport {
         }
 
         // Alleen vehicletypes behorende bij de groep hulpdiensten: ptx is voor hulpdiensten
-        List<VehicleType> vehicleTypes = em.createQuery("from VehicleType where groep = \'Hulpdiensten\' order by nummer").getResultList();
+        List<VehicleType> vehicleTypes = em.createQuery("from VehicleType where groep = :h order by nummer")
+                .setParameter("h", VehicleType.VEHICLE_TYPE_HULPDIENSTEN)
+                .getResultList();
 
         // Maak een ActivationPointSignal obv de gegevens uit de ptx
         ActivationPointSignal aps = new ActivationPointSignal();
@@ -275,10 +277,10 @@ public class IncaaImport {
                 if (rseqsList.size() == 1) {
                     rseq = rseqsList.get(0);
 
-                    if (!rseq.getVehicleType().equalsIgnoreCase("OV")) {
-                        throw new IllegalArgumentException("Kruispunt met KAR-adres " + karAddres + " heeft al hulpdienst punten");
-                    }else{
+                    if (rseq.getVehicleType() == null || rseq.getVehicleType().equals(VehicleType.VEHICLE_TYPE_OV)) {
                         messages.add(new SimpleMessage("Kruispunt met KAR-adres " + karAddres + " bestaat al, maar heeft nog geen hulpdienstpunten. Hulpdienstpunten worden toegevoegd."));
+                    }else{
+                        throw new IllegalArgumentException("Kruispunt met KAR-adres " + karAddres + " heeft al hulpdienst punten");
                     }
                 } else {
                     throw new IllegalArgumentException("Meerdere kruispunten gevonden voor KAR-adres " + karAddres + " en wegbeheerder " + dataOwner.getOmschrijving());

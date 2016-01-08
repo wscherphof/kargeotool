@@ -987,9 +987,6 @@ public class RoadsideEquipment {
         for (Movement movement : movements) {
             typeRseq =movement.determineVehicleType(typeRseq);
         }
-        if (typeRseq == null) {
-            typeRseq = VehicleType.VEHICLE_TYPE_GEMIXT;
-        }
         return typeRseq;
     }
 }
