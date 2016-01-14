@@ -397,7 +397,7 @@ public class Gebruiker implements Principal {
      * in db moeten kunnen staan. Hier wordt gebruik van gemaakt bij zoekacties.
      */
     public boolean canRead(RoadsideEquipment rseq) {
-        if(isBeheerder()) {
+        if(isBeheerder() || isVervoerder()) {
             return true;
         }
 
