@@ -740,8 +740,8 @@ Ext.define("EditForms", {
                     fieldLabel: 'Label',
                     name: 'label',
                     value: point.label,
-                    maxLength: 4,
-                    maxLengthText: "Maximale lengte is 4 karakters",
+                    maxLength: 255,
+                    maxLengthText: "Maximale lengte is 255 karakters",
                     id: 'labelEdit'
                 }],
                 buttons: [{

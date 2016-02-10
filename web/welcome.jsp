@@ -64,6 +64,6 @@
         Deze applicatie is ontwikkeld door <a href="http://www.b3partners.nl/" target="_blank">B3Partners</a>.
     </p>
     <p>
-        Versie: 2.5(beta, 30-11-2015)
+        Versie: 2.6.1(beta, 10-02-2015)
     </p>
 </div>

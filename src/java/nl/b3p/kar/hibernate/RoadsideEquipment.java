@@ -864,10 +864,6 @@ public class RoadsideEquipment {
                     errors.add(new KV9ValidationError(true, "F128", pXmlContext + ", rdx-coordinate, rdy-coordinate", pContext + ", coordinaten", null, "Afwezig/ongeldig"));
                 }
 
-                if(ap.getLabel() != null && ap.getLabel().length() > 4) {
-                    errors.add(new KV9ValidationError(false, "F129", pXmlContext + ", label", pContext + ", label", ap.getLabel(), "Langer dan 4 tekens"));
-                    ap.setLabel(ap.getLabel().substring(0, 4));
-                }
             }
         }
 
