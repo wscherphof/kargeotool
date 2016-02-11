@@ -550,7 +550,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 eind = point.getLabel();
             }
 
-            if (point.getType() == "ACTIVATION_1"){
+            if (point.getType() == "ACTIVATION_1" && begin === ""){
                 begin = point.getLabel();
             }
             if (begin == null || begin == ""){
