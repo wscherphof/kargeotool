@@ -101,7 +101,7 @@ public class IncaaExport {
                         line += TAB;
 
                         Integer time = 0;
-                        if (map.getSignal().getDistanceTillStopLine() != null) {
+                        if (map.getSignal().getDistanceTillStopLine() != null && distance >= 0) {
                             time = map.getSignal().getDistanceTillStopLine() / 5;
                         }
                         line += time; // 7
