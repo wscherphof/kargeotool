@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -244,5 +245,11 @@ public class ActivationPoint implements Comparable {
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         RoadsideEquipment rseq = (RoadsideEquipment)parent;
         roadsideEquipment = rseq;
+    }
+
+    public void beforeMarshal(Marshaller marshaller) {
+        if(label.isEmpty()){
+            label = null;
+        }
     }
 }
