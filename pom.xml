@@ -9,19 +9,20 @@
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>geo-ov</name>
-
+    <scm>
+        <connection>scm:git:git@github.com:B3Partners/geo-ov.git</connection>
+        <developerConnection>scm:git:git@github.com:B3Partners/geo-ov.git</developerConnection>
+        <url>https://github.com/B3Partners/geo-ov.git</url>
+        <tag>HEAD</tag>
+    </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <geotools.version>8.0-M4</geotools.version>
         <hibernate.version>3.6.8.Final</hibernate.version>
+        <postgresql.version>9.4.1207</postgresql.version>
     </properties>
 
     <dependencies>
-
-        <!-- commons-email was in original 1.0
-            csv didn't have a version. Can't compile IncaaImport
-        -->
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
@@ -31,6 +32,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
         </dependency>
         <dependency>
             <groupId>nl.b3p</groupId>
@@ -53,22 +59,41 @@
             <artifactId>jaxb-impl</artifactId>
             <version>2.1.12</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.13</version>
+        </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>${geotools.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>1.1.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.hibernatespatial</groupId>
             <artifactId>hibernate-spatial</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernatespatial</groupId>
+            <artifactId>hibernate-spatial-postgis</artifactId>
             <version>1.1</version>
         </dependency>
         <dependency>
@@ -76,7 +101,6 @@
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
@@ -93,13 +117,11 @@
             <version>2.0</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.1.1</version>
         </dependency>
-
         <dependency>
             <groupId>net.sourceforge.stripes</groupId>
             <artifactId>stripes</artifactId>
@@ -110,13 +132,11 @@
             <artifactId>stripersist</artifactId>
             <version>1.0.3</version>
         </dependency>
-
         <dependency>
             <groupId>org.stripesstuff</groupId>
             <artifactId>stripesstuff</artifactId>
             <version>0.4.1</version>
         </dependency>
-
         <dependency>
             <groupId>jstl</groupId>
             <artifactId>jstl</artifactId>
@@ -132,13 +152,11 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
             <version>1.5</version>
         </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -156,7 +174,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.1</version>
                 <configuration>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
@@ -188,6 +206,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -201,7 +220,7 @@
                                 <artifactItem>
                                     <groupId>javax</groupId>
                                     <artifactId>javaee-endorsed-api</artifactId>
-                                    <version>6.0</version>
+                                    <version>7.0</version>
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>
