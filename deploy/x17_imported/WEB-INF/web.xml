@@ -3,7 +3,7 @@
     <!-- Localization context voor o.a. de <fmt:message> JSTL tag -->
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
-        <param-value>nl.b3p.kar.ApplicationResources</param-value>
+        <param-value>ApplicationResources</param-value>
     </context-param>
     <!-- NL locale voor formatten van getallen: 1.234.567,89 -->
     <context-param>
@@ -120,11 +120,11 @@
         </init-param>
         <init-param>
             <param-name>LocalizationBundleFactory.ErrorMessageBundle</param-name>
-            <param-value>nl.b3p.kar.ApplicationResources</param-value>
+            <param-value>ApplicationResources</param-value>
         </init-param>
         <init-param>
             <param-name>LocalizationBundleFactory.FieldNameBundle</param-name>
-            <param-value>nl.b3p.kar.ApplicationResources</param-value>
+            <param-value>ApplicationResources</param-value>
         </init-param>
         <init-param>
             <param-name>SecurityManager.Class</param-name>

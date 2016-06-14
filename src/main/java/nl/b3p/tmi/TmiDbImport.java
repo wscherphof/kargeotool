@@ -360,11 +360,11 @@ public class TmiDbImport {
         for(int i = 0; i < fields.length; i++) {
             header[i+3] = fields[i] == null ? "null" : fields[i].name;
         }
-        Iterable<CSVRecord> parser = CSVFormat.newBuilder()
-                .withCommentStart(';')
-                .withDelimiter('|')
-                .withHeader(header)
-                .parse(new InputStreamReader(input, "UTF-8"));
+
+        CSVFormat format = CSVFormat.newFormat('|');
+        format.withHeader(header);
+        format.withCommentMarker(';');
+        Iterable<CSVRecord> parser = format.parse(new InputStreamReader(input, "UTF-8"));
         
         boolean haveTable = false;
         String insert = "insert into " + table + " (";

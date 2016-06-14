@@ -90,7 +90,11 @@ public class IncaaImport {
         rseqLocations = new HashMap();
 
         // Definieer een parser en parse de ptx file
-        Iterable<CSVRecord> parser = CSVFormat.newBuilder().withCommentStart('#').withDelimiter('\t').withQuoteChar('"').parse(in);
+        CSVFormat format = CSVFormat.newFormat('\t');
+        format.withQuote('"');
+        format.withCommentMarker('#');
+        Iterable<CSVRecord> parser = format.parse(in);
+        //Iterable<CSVRecord> parser = CSVFormat.newBuilder().withCommentStart('#').withDelimiter('\t').withQuoteChar('"').parse(in);
 
         List<Message> messages = new ArrayList<Message>();
         for (CSVRecord csvRecord : parser) {
