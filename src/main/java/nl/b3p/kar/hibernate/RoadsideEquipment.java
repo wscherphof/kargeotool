@@ -183,7 +183,7 @@ public class RoadsideEquipment {
     @XmlElement(name="MOVEMENT")
     private SortedSet<Movement> movements = new TreeSet<Movement>();
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="roadsideEquipment", orphanRemoval=true)
+    @OneToMany(orphanRemoval=true,cascade=CascadeType.ALL, mappedBy="roadsideEquipment")
     @XmlElement(name="ACTIVATIONPOINT")
     @Sort(type=SortType.NATURAL)
     private SortedSet<ActivationPoint> points = new TreeSet<ActivationPoint>();
