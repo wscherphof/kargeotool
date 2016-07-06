@@ -212,7 +212,9 @@ public class EditorActionBean implements ActionBean {
             log.error("rseqJSON exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        StreamingResolution res = new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     /**
