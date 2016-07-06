@@ -341,7 +341,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
-            if(getGebruiker().canRead(rseq)) {
+            if(getGebruiker().canRead(rseqObj)) {
                 if(onlyValid && !rseqObj.isValid()){
                     continue;
                 }
