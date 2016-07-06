@@ -135,7 +135,9 @@ public class SearchActionBean implements ActionBean {
             log.error("search rseq exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     public Resolution road() throws Exception {
@@ -186,7 +188,9 @@ public class SearchActionBean implements ActionBean {
             log.error("search road exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     /**
@@ -273,7 +277,9 @@ public class SearchActionBean implements ActionBean {
         } finally {
             DbUtils.closeQuietly(c);
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     public Gebruiker getGebruiker() {

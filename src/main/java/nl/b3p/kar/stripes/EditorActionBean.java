@@ -271,7 +271,10 @@ public class EditorActionBean implements ActionBean {
             log.error("allRseqJSON exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        
+        StreamingResolution res = new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     public Resolution roads() throws Exception {
@@ -452,7 +455,10 @@ public class EditorActionBean implements ActionBean {
 
         em.getTransaction().commit();
         info.put("success", Boolean.TRUE);
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     private void purgePreviousMessage(InformMessage current){
@@ -690,7 +696,10 @@ public class EditorActionBean implements ActionBean {
             log.error("saveOrUpdateRseq exception", e);
             info.put("error", ExceptionUtils.getMessage(e));
         }
-        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(info.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
     public Resolution getValidationErrors() throws JSONException {
@@ -702,7 +711,10 @@ public class EditorActionBean implements ActionBean {
         for(KV9ValidationError kvError: kvErrors) {
             e.put(kvError.toJSONObject());
         }
-        return new StreamingResolution("application/json", new StringReader(j.toString(4)));
+        
+        StreamingResolution res =new StreamingResolution("application/json", new StringReader(j.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
     }
 
 
