@@ -85,10 +85,19 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     private List<String> dataOwnersReadable = new ArrayList();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+
+    /**
+     *
+     * @return
+     */
     public ActionBeanContext getContext() {
         return context;
     }
 
+    /**
+     *
+     * @param context
+     */
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
@@ -205,10 +214,18 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         this.dataOwnersEditable = dataOwnersEditable;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getDataOwnersReadable() {
         return dataOwnersReadable;
     }
 
+    /**
+     *
+     * @param dataOwnersReadable
+     */
     public void setDataOwnersReadable(List<String> dataOwnersReadable) {
         this.dataOwnersReadable = dataOwnersReadable;
     }
@@ -254,6 +271,12 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         dataOwnersJson = ja.toString();
     }
 
+    /**
+     *
+     * @param errors
+     * @return
+     * @throws Exception
+     */
     public Resolution handleValidationErrors(ValidationErrors errors) throws Exception {
         loadGebruikerLists();
         return context.getSourcePageResolution();
@@ -282,6 +305,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Default resolution voor het alleen tonen van de lijst met gebruikers.
      *
+     * @return 
      */
     @DefaultHandler
     @DontBind
@@ -292,6 +316,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution voor het bewerken van een gebruiker.
      *
+     * @return 
      */
     @DontValidate
     public Resolution edit() {
@@ -315,6 +340,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution voor het toevoegen van een gebruiker.
      *
+     * @return 
      */
     @DontValidate
     public Resolution add() {
@@ -325,6 +351,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution die een gebruiker opslaat.
      *
+     * @return 
+     * @throws java.lang.Exception 
      */
     public Resolution save() throws Exception {
 
@@ -380,6 +408,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution die een gebruiker verwijdert.
      *
+     * @return 
      */
     public Resolution delete() {
         EntityManager em = Stripersist.getEntityManager();

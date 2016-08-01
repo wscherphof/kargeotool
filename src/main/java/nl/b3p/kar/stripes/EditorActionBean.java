@@ -436,6 +436,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      * Ajax handler welke verwerkt welke vervoerders geïnformeerd moeten worden over het opgegeven RoadsideEquipment
+     * @return gelukt ja/nee
      */
 
     public Resolution informCarriers() throws JSONException{
