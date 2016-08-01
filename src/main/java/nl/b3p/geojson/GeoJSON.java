@@ -47,7 +47,7 @@ public class GeoJSON {
      *
      * @param g het Geometry object
      * @return het JSON object met de coordinaten
-     * @throws JSONException
+     * @throws JSONException Wordt gegooid als er geen geojsonobject gemaakt kan worden.
      */
     public static JSONObject toGeoJSON(Geometry g) throws JSONException {
         if (!(g instanceof Point || g instanceof LineString)) {
@@ -80,7 +80,7 @@ public class GeoJSON {
      *
      * @param j het JSON object
      * @return Geometry object
-     * @throws JSONException
+     * @throws JSONException Wordt gegooid als er geen geojsonobject gelezen kan worden.
      */
     public static Point toPoint(JSONObject j) throws JSONException {
         GeometryFactory gf = new GeometryFactory(new PrecisionModel(), SRID_RIJKSDRIEHOEKSTELSEL);

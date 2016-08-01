@@ -75,10 +75,10 @@ public class IncaaImport {
     /**
      * Importeer een reader van een .ptx bestand.
      * @param in Reader van een INCAA .ptx bestand.
-     * @param g
+     * @param g Gebruiker om het voor te importeren
      * @param context Context om meldingen terug te geven naar de gebruiker over rseqs die niet geimporteerd konden worden
      * @return De lijst van geïmporteerde roadside equipments
-     * @throws Exception
+     * @throws Exception Wordt gegooid als het parsen/opslaan mis gaat.
      */
     public List<RoadsideEquipment> importPtx(Reader in, Gebruiker g, ActionBeanContext context) throws Exception {
 

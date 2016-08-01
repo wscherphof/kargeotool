@@ -107,7 +107,7 @@ public class EditorActionBean implements ActionBean {
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
      *
      * @return Stripes Resolution view
-     * @throws Exception
+     * @throws Exception Wordt gegooid als er iets mis gaat.
      */
     @DefaultHandler
     public Resolution view() throws Exception {
@@ -191,7 +191,7 @@ public class EditorActionBean implements ActionBean {
      * Stripes methode waarmee de huidge roadside equipement wordt opgehaald.
      *
      * @return Stripes Resolution rseqJSON
-     * @throws Exception
+     * @throws Exception  Wordt gegooid als er iets mis gaat.
      */
     public Resolution rseqJSON() throws Exception {
         JSONObject info = new JSONObject();
@@ -221,7 +221,7 @@ public class EditorActionBean implements ActionBean {
      * Stripes methode waarmee alle roadside equipement wordt opgehaald.
      *
      * @return Stripes Resolution allRseqJSON
-     * @throws Exception
+     * @throws Exception Wordt gegooid als er iets mis gaat.
      */
     public Resolution allRseqJSON() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
@@ -380,6 +380,7 @@ public class EditorActionBean implements ActionBean {
     /**
      * Ajax handler om een RSEQ te verwijderen.
      *
+     * @return gelukt ja/nee
      */
     public Resolution removeRseq () throws JSONException{
         EntityManager em = Stripersist.getEntityManager();
@@ -473,6 +474,8 @@ public class EditorActionBean implements ActionBean {
     /**
      * Ajax handler om een RoadsideEquipment die in de json parameter is
      * meegegeven op te slaan.
+     * @return Opgeslagen rseq
+     * @throws java.lang.Exception Wordt gegooid als er iets mis gaat.
      */
     public Resolution saveOrUpdateRseq() throws Exception {
          if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_saveorupdate"))) {
@@ -745,7 +748,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @return magWalapparaatMaken
+     * @return magWalapparaatMaken magWalapparaatMaken
      */
     public boolean isMagWalapparaatMaken() {
         return magWalapparaatMaken;
@@ -753,7 +756,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @param magWalapparaatMaken
+     * @param magWalapparaatMaken magWalapparaatMaken
      */
     public void setMagWalapparaatMaken(boolean magWalapparaatMaken) {
         this.magWalapparaatMaken = magWalapparaatMaken;
@@ -761,7 +764,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @return rseq
+     * @return rseq rseq 
      */
     public RoadsideEquipment getRseq() {
         return rseq;
@@ -769,7 +772,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @param rseq
+     * @param rseq rseq
      */
     public void setRseq(RoadsideEquipment rseq) {
         this.rseq = rseq;
@@ -777,7 +780,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @return dataOwnersJSON
+     * @return dataOwnersJSON dataOwnersJSON
      */
     public JSONArray getDataOwnersJSON() {
         return dataOwnersJSON;
@@ -785,7 +788,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @param dataOwnersJSON
+     * @param dataOwnersJSON dataOwnersJSON
      */
     public void setDataOwnersJSON(JSONArray dataOwnersJSON) {
         this.dataOwnersJSON = dataOwnersJSON;
@@ -801,7 +804,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @param vehicleTypesJSON
+     * @param vehicleTypesJSON vehicleTypesJSON
      */
     public void setVehicleTypesJSON(JSONArray vehicleTypesJSON) {
         this.vehicleTypesJSON = vehicleTypesJSON;
@@ -817,7 +820,7 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @param json
+     * @param json json
      */
     public void setJson(String json) {
         this.json = json;
