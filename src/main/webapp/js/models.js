@@ -258,16 +258,33 @@ Ext.define('RSEQ', {
         if(pointMovements.length === 0) {
             alert("Ongeldige state, moet altijd movement zijn!");
         }
+        var previousPoints = [];
 
         for(var i = 0 ; i < pointMovements.length ;i++){
             var mvmtAndMap = pointMovements[i];
             var movement = mvmtAndMap.movement;
             var hasEnd = false;
+            var currentPoints =[];
             Ext.Array.each(movement.maps, function(map) {
                 if(map.beginEndOrActivation === "END") {
                     hasEnd = true;
                 }
+                currentPoints.push (map.pointId);
             });
+            
+            var found = false;
+            for(var j = 0 ; j < previousPoints.length;j++){
+                if(movement.equals(previousPoints[j],false)){
+                    found = true;
+                    break;
+                }
+            }
+            if(found){
+                continue;
+            }else{
+                previousPoints.push(currentPoints);
+            }
+           
             if(!hasEnd) {
                 newMap = Ext.create(MovementActivationPoint, {
                     id: Ext.id(),
@@ -287,15 +304,15 @@ Ext.define('RSEQ', {
 
             var newMap;
 
-            Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
-                if(map.beginEndOrActivation != "END") {
+            Ext.Array.each(mvmtAndMap.movement.maps, function (map) {
+                if (map.beginEndOrActivation != "END") {
 
                     var config = {
                         id: Ext.id(),
                         beginEndOrActivation: map.beginEndOrActivation,
                         pointId: map.pointId
                     };
-                    if(map.beginEndOrActivation == "ACTIVATION") {
+                    if (map.beginEndOrActivation == "ACTIVATION") {
                         Ext.Object.merge(config, {
                             commandType: map.commandType,
                             distanceTillStopLine: map.distanceTillStopLine,
@@ -827,6 +844,27 @@ Ext.define('Movement', {
             return true;
         }
 
+    },
+    equals : function(points, includeEndPoints){
+        if (points.length === this.maps.length) {
+            for (var j = 0; j < this.maps.length; j++) {
+                var foundInner = false;
+                for (var i = 0; i < points.length; i++) {
+                    if (this.maps[j].pointId === points[i]) {
+                        foundInner = true;
+                        break;
+                    }
+                }
+                if (!foundInner) {
+                    if(includeEndPoints && this.maps[j].beginEndOrActivation === "END"){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }else{
+            return false;
+        }
     }
 });
 /**
