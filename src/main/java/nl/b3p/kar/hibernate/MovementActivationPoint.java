@@ -113,7 +113,7 @@ public class MovementActivationPoint {
     
     /**
      *
-     * @param id
+     * @param id id
      */
     public void setId(Long id) {
         this.id = id;
@@ -129,7 +129,7 @@ public class MovementActivationPoint {
     
     /**
      *
-     * @param movement
+     * @param movement movement
      */
     public void setMovement(Movement movement) {
         this.movement = movement;
@@ -145,7 +145,7 @@ public class MovementActivationPoint {
     
     /**
      *
-     * @param point
+     * @param point point
      */
     public void setPoint(ActivationPoint point) {
         this.point = point;
@@ -161,7 +161,7 @@ public class MovementActivationPoint {
     
     /**
      *
-     * @param beginEndOrActivation
+     * @param beginEndOrActivation beginEndOrActivation
      */
     public void setBeginEndOrActivation(String beginEndOrActivation) {
         this.beginEndOrActivation = beginEndOrActivation;
@@ -177,7 +177,7 @@ public class MovementActivationPoint {
     
     /**
      *
-     * @param signal
+     * @param signal signal
      */
     public void setSignal(ActivationPointSignal signal) {
         this.signal = signal;

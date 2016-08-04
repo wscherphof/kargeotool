@@ -195,6 +195,10 @@ public class RoadsideEquipment {
     @XmlTransient
     private Integer validationErrors;
 
+    /**
+     *
+     * @return extra xml
+     */
     @XmlElement(name="b3pextra")
     public XmlB3pRseq getExtraXml() {
 
@@ -220,7 +224,7 @@ public class RoadsideEquipment {
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
-     * @return id
+     * @return id id
      */
     public Long getId() {
         return id;
@@ -228,7 +232,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param id
+     * @param id id
      */
     public void setId(Long id) {
         this.id = id;
@@ -244,7 +248,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param dataOwner
+     * @param dataOwner dataOwner
      */
     public void setDataOwner(DataOwner dataOwner) {
         this.dataOwner = dataOwner;
@@ -260,7 +264,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param karAddress
+     * @param karAddress karAddress
      */
     public void setKarAddress(Integer karAddress) {
         this.karAddress = karAddress;
@@ -276,7 +280,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param validFrom
+     * @param validFrom validFrom
      */
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
@@ -292,16 +296,24 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param validUntil
+     * @param validUntil validUntil
      */
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
     }
 
+    /**
+     *
+     * @return memo
+     */
     public String getMemo() {
         return memo;
     }
 
+    /**
+     *
+     * @param memo memo
+     */
     public void setMemo(String memo) {
         this.memo = memo;
     }
@@ -316,7 +328,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param type
+     * @param type type
      */
     public void setType(String type) {
         this.type = type;
@@ -332,7 +344,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param crossingCode
+     * @param crossingCode crossingCode
      */
     public void setCrossingCode(String crossingCode) {
         this.crossingCode = crossingCode;
@@ -348,7 +360,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param town
+     * @param town town
      */
     public void setTown(String town) {
         this.town = town;
@@ -364,7 +376,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param description
+     * @param description description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -380,7 +392,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param location
+     * @param location location
      */
     public void setLocation(Point location) {
         this.location = location;
@@ -396,7 +408,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param karAttributes
+     * @param karAttributes karAttributes
      */
     public void setKarAttributes(List<KarAttributes> karAttributes) {
         this.karAttributes = karAttributes;
@@ -412,7 +424,7 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param movements
+     * @param movements movements
      */
     public void setMovements(SortedSet<Movement> movements) {
         this.movements = movements;
@@ -428,37 +440,67 @@ public class RoadsideEquipment {
 
     /**
      *
-     * @param points
+     * @param points points
      */
     public void setPoints(SortedSet<ActivationPoint> points) {
         this.points = points;
     }
 
+    /**
+     *
+     * @return validationErrors
+     */
     public Integer getValidationErrors() {
         return validationErrors;
     }
 
+    /**
+     *
+     * @param validationErrors validationErrors
+     */
     public void setValidationErrors(Integer validationErrors) {
         this.validationErrors = validationErrors;
     }
 
+    /**
+     *
+     * @return vehicleType
+     */
     public String getVehicleType() {
         return vehicleType;
     }
 
+    /**
+     *
+     * @param vehicleType vehicleType
+     */
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
     }
 
+    /**
+     *
+     * @return readyForExport
+     */
     public boolean isReadyForExport() {
         return readyForExport;
     }
 
+    /**
+     *
+     * @param readyForExport readyForExport
+     */
     public void setReadyForExport(boolean readyForExport) {
         this.readyForExport = readyForExport;
     }
 
     //</editor-fold>
+
+    /**
+     *
+     * @param number number to retrieve point for
+     * @return The activationpoint for number
+     */
 
     public ActivationPoint getPointByNumber(int number) {
         for(ActivationPoint p: points) {
@@ -469,7 +511,10 @@ public class RoadsideEquipment {
         return null;
     }
 
-
+    /**
+     *
+     * @return boolean if it's valid
+     */
     public boolean isValid(){
         Date now = new Date();
         if(validFrom.compareTo(now) <= 0 && (validUntil == null || validUntil.after(now))){
@@ -481,8 +526,8 @@ public class RoadsideEquipment {
 
     /**
      * Checkt of dit rseq signaalgroepen voor het opgegeven @param vehicleType heeft.
-     * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Beide/<null> (geeft altijd true)
-     * @return
+     * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Beide/null (geeft altijd true)
+     * @return true/false
      */
     public boolean hasSignalForVehicleType(String vehicleType){
         if(vehicleType == null || vehicleType.equalsIgnoreCase("beide")){
@@ -505,7 +550,7 @@ public class RoadsideEquipment {
      * Methode converteert dit RoadsideEquipment object in een JSON object
      *
      * @return JSON object
-     * @throws JSONException
+     * @throws JSONException JSONException 
      */
     public JSONObject getRseqGeoJSON() throws JSONException {
         JSONObject gj = new JSONObject();
@@ -536,7 +581,7 @@ public class RoadsideEquipment {
      * object.
      *
      * @return JSON Object
-     * @throws JSONException
+     * @throws JSONException JSONException
      */
     public JSONObject getJSON() throws JSONException {
         JSONObject j = new JSONObject();
@@ -630,7 +675,11 @@ public class RoadsideEquipment {
         return j;
     }
 
-
+    /**
+     *
+     * @param unmarshaller The unmarshaller
+     * @param parent Parentnode
+     */
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         List<Point> ps = new ArrayList();
         for (ActivationPoint activationPoint : points) {
@@ -643,10 +692,21 @@ public class RoadsideEquipment {
         this.location = gc.getCentroid();
     }
 
+    /**
+     *
+     * @param maxDistance Boundary
+     * @return does it have a VRI in the vicinity
+     */
     public boolean hasDuplicateKARAddressWithinDistance(int maxDistance) {
         return hasDuplicateKARAddressWithinDistance(maxDistance,false);
     }
 
+    /**
+     *
+     * @param maxDistance Bounds
+     * @param mustCheckForSameId yes/no
+     * @return  does it have a VRI in the vicinity
+     */
     public boolean hasDuplicateKARAddressWithinDistance(int maxDistance, boolean mustCheckForSameId){
         EntityManager em = Stripersist.getEntityManager();
         String query = "FROM RoadsideEquipment where karAddress = :karaddress and dataOwner = :dao";
@@ -668,6 +728,10 @@ public class RoadsideEquipment {
         return false;
     }
 
+    /**
+     *
+     * @return default attributes
+     */
     public static List<KarAttributes> getDefaultKarAttributes() {
         JSONArray ptBitmask = new JSONArray();
         JSONArray esBitmask = new JSONArray();
@@ -714,6 +778,7 @@ public class RoadsideEquipment {
     /**
      * Let op: kapt te lange waardes af / vervangt ongeldige waardes door defaults.
      *
+     * @param errors The errors 
      * @return Aantal KV9 validatie meldingen.
      */
     public int validateKV9(List<KV9ValidationError> errors) {
@@ -978,6 +1043,10 @@ public class RoadsideEquipment {
         return errors.size() - errorsStartIndex;
     }
 
+    /**
+     *
+     * @return type of rseq 
+     */
     public String determineType() {
         String typeRseq = null;
         for (Movement movement : movements) {

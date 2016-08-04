@@ -88,7 +88,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return context
      */
     public ActionBeanContext getContext() {
         return context;
@@ -96,7 +96,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param context
+     * @param context context
      */
     public void setContext(ActionBeanContext context) {
         this.context = context;
@@ -104,7 +104,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return gebruikers
      */
     public List<Gebruiker> getGebruikers() {
         return gebruikers;
@@ -112,7 +112,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param gebruikers
+     * @param gebruikers gebruikers
      */
     public void setGebruikers(List<Gebruiker> gebruikers) {
         this.gebruikers = gebruikers;
@@ -120,7 +120,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return gebruiker
      */
     public Gebruiker getGebruiker() {
         return gebruiker;
@@ -128,7 +128,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param gebruiker
+     * @param gebruiker gebruiker
      */
     public void setGebruiker(Gebruiker gebruiker) {
         this.gebruiker = gebruiker;
@@ -136,7 +136,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return password
      */
     public String getPassword() {
         return password;
@@ -144,7 +144,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param password
+     * @param password password
      */
     public void setPassword(String password) {
         this.password = password;
@@ -152,7 +152,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return allRoles
      */
     public List<Role> getAllRoles() {
         return allRoles;
@@ -160,7 +160,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param allRoles
+     * @param allRoles allRoles
      */
     public void setAllRoles(List<Role> allRoles) {
         this.allRoles = allRoles;
@@ -168,7 +168,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return dataOwners
      */
     public List<DataOwner> getDataOwners() {
         return dataOwners;
@@ -176,7 +176,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param dataOwners
+     * @param dataOwners dataOwners
      */
     public void setDataOwners(List<DataOwner> dataOwners) {
         this.dataOwners = dataOwners;
@@ -184,7 +184,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return dataOwnersJson
      */
     public String getDataOwnersJson() {
         return dataOwnersJson;
@@ -192,7 +192,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param dataOwnersJson
+     * @param dataOwnersJson dataOwnersJson
      */
     public void setDataOwnersJson(String dataOwnersJson) {
         this.dataOwnersJson = dataOwnersJson;
@@ -200,7 +200,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return dataOwnersEditable
      */
     public List<String> getDataOwnersEditable() {
         return dataOwnersEditable;
@@ -208,7 +208,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param dataOwnersEditable
+     * @param dataOwnersEditable dataOwnersEditable
      */
     public void setDataOwnersEditable(List<String> dataOwnersEditable) {
         this.dataOwnersEditable = dataOwnersEditable;
@@ -216,7 +216,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return dataOwnersReadable
      */
     public List<String> getDataOwnersReadable() {
         return dataOwnersReadable;
@@ -224,7 +224,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param dataOwnersReadable
+     * @param dataOwnersReadable dataOwnersReadable
      */
     public void setDataOwnersReadable(List<String> dataOwnersReadable) {
         this.dataOwnersReadable = dataOwnersReadable;
@@ -232,7 +232,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @return
+     * @return role
      */
     public Integer getRole() {
         return role;
@@ -240,7 +240,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param role
+     * @param role role
      */
     public void setRole(Integer role) {
         this.role = role;
@@ -273,9 +273,9 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     /**
      *
-     * @param errors
-     * @return
-     * @throws Exception
+     * @param errors errors
+     * @return ValidationErrors
+     * @throws Exception De fout
      */
     public Resolution handleValidationErrors(ValidationErrors errors) throws Exception {
         loadGebruikerLists();
@@ -305,7 +305,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Default resolution voor het alleen tonen van de lijst met gebruikers.
      *
-     * @return 
+     * @return Resolution
      */
     @DefaultHandler
     @DontBind
@@ -316,7 +316,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution voor het bewerken van een gebruiker.
      *
-     * @return 
+     * @return Resolution
      */
     @DontValidate
     public Resolution edit() {
@@ -340,7 +340,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution voor het toevoegen van een gebruiker.
      *
-     * @return 
+     * @return Resolution
      */
     @DontValidate
     public Resolution add() {
@@ -351,8 +351,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution die een gebruiker opslaat.
      *
-     * @return 
-     * @throws java.lang.Exception 
+     * @return Resolution
+     * @throws java.lang.Exception De fout
      */
     public Resolution save() throws Exception {
 
@@ -408,7 +408,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     /**
      * Resolution die een gebruiker verwijdert.
      *
-     * @return 
+     * @return Resolution
      */
     public Resolution delete() {
         EntityManager em = Stripersist.getEntityManager();

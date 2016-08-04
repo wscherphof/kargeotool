@@ -84,6 +84,11 @@ public class SearchActionBean implements ActionBean {
     @Validate
     private String vehicleType;
 
+    /**
+     *
+     * @return De rseq
+     * @throws Exception The error
+     */
     public Resolution rseq() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -140,6 +145,11 @@ public class SearchActionBean implements ActionBean {
         return res;
     }
 
+    /**
+     *
+     * @return De gevonden wegen
+     * @throws Exception The error
+     */
     public Resolution road() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -200,7 +210,7 @@ public class SearchActionBean implements ActionBean {
      *
      * @return Resolution Resolution met daarin een JSONObject met de gevonden
      * buslijnen (bij succes) of een fout (bij falen).
-     * @throws Exception
+     * @throws Exception De error
      *
      */
     public Resolution busline() throws Exception {
@@ -282,6 +292,10 @@ public class SearchActionBean implements ActionBean {
         return res;
     }
 
+    /**
+     *
+     * @return De gebruiker
+     */
     public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
         Gebruiker g = (Gebruiker) getContext().getRequest().getAttribute(attribute);
@@ -297,7 +311,7 @@ public class SearchActionBean implements ActionBean {
     /**
      *
      * @return Stripes Resolution geocode
-     * @throws Exception
+     * @throws Exception De fout
      */
     public Resolution geocode() throws Exception {
         InputStream in = new URL(GEOCODER_URL + URLEncoder.encode(term, "UTF-8")).openStream();
@@ -309,34 +323,66 @@ public class SearchActionBean implements ActionBean {
     }
     // <editor-fold desc="Getters and Setters">
 
+    /**
+     *
+     * @return De context
+     */
     public ActionBeanContext getContext() {
         return context;
     }
 
+    /**
+     *
+     * @param context context
+     */
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
 
+    /**
+     *
+     * @return dataowner
+     */
     public String getDataOwner() {
         return dataOwner;
     }
 
+    /**
+     * 
+     * @param dataOwner dataowner
+     */
     public void setDataOwner(String dataOwner) {
         this.dataOwner = dataOwner;
     }
 
+    /**
+     *
+     * @return vehicletype
+     */
     public String getVehicleType() {
         return vehicleType;
     }
 
+    /**
+     *
+     * @param vehicleType vehicleType
+     */
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
     }
 
+    /**
+     *
+     * @return term
+     */
     public String getTerm() {
         return term;
     }
 
+    /**
+     *
+     * @param term term
+     */
     public void setTerm(String term) {
         this.term = term;
     }

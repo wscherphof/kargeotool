@@ -51,7 +51,7 @@ public class GebruikerDataOwnerRights implements Serializable {
     
     /**
      *
-     * @param gebruiker
+     * @param gebruiker gebruiker
      */
     public void setGebruiker(Gebruiker gebruiker) {
         this.gebruiker = gebruiker;
@@ -67,7 +67,7 @@ public class GebruikerDataOwnerRights implements Serializable {
     
     /**
      *
-     * @param dataOwner
+     * @param dataOwner dataOwner
      */
     public void setDataOwner(DataOwner dataOwner) {
         this.dataOwner = dataOwner;
@@ -83,7 +83,7 @@ public class GebruikerDataOwnerRights implements Serializable {
     
     /**
      *
-     * @param editable
+     * @param editable editable
      */
     public void setEditable(boolean editable) {
         this.editable = editable;

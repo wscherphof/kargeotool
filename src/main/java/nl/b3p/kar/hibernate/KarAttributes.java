@@ -146,7 +146,7 @@ public class KarAttributes {
     
     /**
      *
-     * @param serviceType
+     * @param serviceType serviceType
      */
     public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
@@ -162,7 +162,7 @@ public class KarAttributes {
     
     /**
      *
-     * @param commandType
+     * @param commandType commandType
      */
     public void setCommandType(Integer commandType) {
         this.commandType = commandType;

@@ -61,8 +61,8 @@ public class RightsActionBean implements ActionBean {
      * Stripes methode waarmee de view van het edit proces wordt voorbereid.
      *
      * @return Stripes Resolution view
-     * @throws Exception
-     */
+     * @throws Exception de fout
+     */ 
     @DefaultHandler
     public Resolution view() throws Exception {
 

@@ -84,8 +84,8 @@ public class Gebruiker implements Principal {
      *
      * @param request nodig voor bepaling random salt
      * @param pw het wachtwoord
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException The error
+     * @throws UnsupportedEncodingException The error
      */
     public void changePassword(HttpServletRequest request, String pw) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String salt = SecurityRealm.generateHexSalt(request);
@@ -98,8 +98,8 @@ public class Gebruiker implements Principal {
      * Zoekt de huidige gebruiker
      *
      * @param request waarin gebruiker is te vinden
-     * @return de gebruiker
-     * @throws Exception
+     * @return getter de gebruiker
+     * @throws Exception The error
      */
     public static Gebruiker getNonTransientPrincipal(HttpServletRequest request) throws Exception {
         Gebruiker g = (Gebruiker)request.getUserPrincipal();
@@ -112,7 +112,7 @@ public class Gebruiker implements Principal {
     /**
      * Haalt id van gebruiker op
      *
-     * @return id
+     * @return getter id
      */
     public Integer getId() {
         return id;
@@ -120,7 +120,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param id
+     * @param id setter
      */
     public void setId(Integer id) {
         this.id = id;
@@ -129,7 +129,7 @@ public class Gebruiker implements Principal {
     /**
      * Haalt gebruikersnaam op
      *
-     * @return username
+     * @return getter username
      */
     public String getUsername() {
         return username;
@@ -137,7 +137,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param username
+     * @param username setter
      */
     public void setUsername(String username) {
         this.username = username;
@@ -145,7 +145,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return passwordsalt
+     * @return getter passwordsalt
      */
     public String getPasswordsalt() {
         return passwordsalt;
@@ -153,7 +153,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param passwordSalt
+     * @param passwordSalt setter
      */
     public void setPasswordsalt(String passwordSalt) {
         this.passwordsalt = passwordSalt;
@@ -161,7 +161,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return passwordhash
+     * @return getter passwordhash
      */
     public String getPasswordhash() {
         return passwordhash;
@@ -169,7 +169,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param passwordhash
+     * @param passwordhash setter
      */
     public void setPasswordhash(String passwordhash) {
         this.passwordhash = passwordhash;
@@ -184,7 +184,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return fullname
+     * @return getter fullname
      */
     public String getFullname() {
         return fullname;
@@ -192,7 +192,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param fullname
+     * @param fullname setter
      */
     public void setFullname(String fullname) {
         this.fullname = fullname;
@@ -200,7 +200,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return email
+     * @return getter email
      */
     public String getEmail() {
         return email;
@@ -208,7 +208,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param email
+     * @param email setter
      */
     public void setEmail(String email) {
         this.email = email;
@@ -216,7 +216,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return phone
+     * @return getter phone
      */
     public String getPhone() {
         return phone;
@@ -224,7 +224,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param phone
+     * @param phone setter
      */
     public void setPhone(String phone) {
         this.phone = phone;
@@ -232,7 +232,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return position
+     * @return getter position
      */
     public String getPosition() {
         return position;
@@ -240,7 +240,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param position
+     * @param position setter
      */
     public void setPosition(String position) {
         this.position = position;
@@ -248,7 +248,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return roles
+     * @return getter roles
      */
     public Set<Role> getRoles() {
         return roles;
@@ -256,36 +256,48 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param roles
+     * @param roles setter
      */
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
+    /**
+     *
+     * @return getter profile
+     */
     public String getProfile() {
         return profile;
     }
 
+    /**
+     *
+     * @param profile setter
+     */
     public void setProfile(String profile) {
         this.profile = profile;
     }
 
     /**
      *
-     * @return is gebruiker beheerder?
+     * @return getter is gebruiker beheerder?
      */
     public boolean isBeheerder() {
         return isInRole(Role.BEHEERDER);
     }
 
+    /**
+     *
+     * @return getter
+     */
     public boolean isVervoerder(){
         return isInRole(Role.VERVOERDER);
     }
 
     /**
      *
-     * @param roleName
-     * @return heeft gebruiker de gevraagde rol?
+     * @param roleName roleName
+     * @return getter heeft gebruiker de gevraagde rol?
      */
     public boolean isInRole(String roleName) {
         for(Iterator it = getRoles().iterator(); it.hasNext();) {
@@ -299,7 +311,7 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @return dataOwnerRights
+     * @return getter dataOwnerRights
      */
     public Map<DataOwner, GebruikerDataOwnerRights> getDataOwnerRights() {
         return dataOwnerRights;
@@ -307,16 +319,24 @@ public class Gebruiker implements Principal {
 
     /**
      *
-     * @param dataOwnerRights
+     * @param dataOwnerRights setter
      */
     public void setDataOwnerRights(SortedMap<DataOwner, GebruikerDataOwnerRights> dataOwnerRights) {
         this.dataOwnerRights = dataOwnerRights;
     }
 
+    /**
+     *
+     * @return getter
+     */
     public List<GebruikerVRIRights> getVriRights() {
         return vriRights;
     }
 
+    /**
+     *
+     * @param vriRights setter
+     */
     public void setVriRights(List<GebruikerVRIRights> vriRights) {
         this.vriRights = vriRights;
     }
@@ -326,6 +346,7 @@ public class Gebruiker implements Principal {
      * beheerder/vervoerder worden NIET alle data owners teruggegeven). Een
      * dataOwnerRights record betekent altijd lezen of schrijven, nooit kan
      * editable en readable beide false zijn.
+     * @return getter 
      */
     public Set<DataOwner> getReadableDataOwners() {
         return dataOwnerRights.keySet();
@@ -334,6 +355,7 @@ public class Gebruiker implements Principal {
     /**
      * Lijst van van data owners die gebruiker met gebruiker role mag bewerken (bij
      * beheerder role worden NIET alle data owners teruggegeven).
+     * @return getter 
      */
     public Set<DataOwner> getEditableDataOwners() {
         HashSet<DataOwner> dataOwners = new HashSet<DataOwner>();
@@ -353,6 +375,8 @@ public class Gebruiker implements Principal {
      *
      * Vervoerders kunnen nooit editen, ook al staan in de database DataOwner/VRI
      * rechten (zou GUI niet mogelijk moeten maken).
+     * @param rseq rseq
+     * @return getter 
      */
     public boolean canEdit(RoadsideEquipment rseq) {
         if(isBeheerder()) {
@@ -395,6 +419,8 @@ public class Gebruiker implements Principal {
      * Een DataOwner recht of VRI recht bij een gebruiker betekent altijd mimimaal
      * leesrecht. Readable=false en editable=false bij rights records zouden niet
      * in db moeten kunnen staan. Hier wordt gebruik van gemaakt bij zoekacties.
+     * @param rseq rseq
+     * @return getter 
      */
     public boolean canRead(RoadsideEquipment rseq) {
         if(isBeheerder() || isVervoerder()) {
@@ -432,7 +458,7 @@ public class Gebruiker implements Principal {
      * @param dao het dataowner object
      * @param editable mag geedit worden
      * @param readable mag gelezen worden
-     * @throws Exception
+     * @throws Exception The error
      */
     public void setDataOwnerRight(DataOwner dao, Boolean editable, Boolean readable) throws Exception {
         EntityManager em = Stripersist.getEntityManager();
@@ -452,6 +478,11 @@ public class Gebruiker implements Principal {
         }
     }
 
+    /**
+     *
+     * @return getter
+     * @throws JSONException The error
+     */
     public JSONObject toJSON() throws JSONException{
         JSONObject obj = new JSONObject();
         obj.put("id", id);

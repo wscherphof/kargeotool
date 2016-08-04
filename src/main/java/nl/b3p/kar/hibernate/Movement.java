@@ -199,7 +199,7 @@ public class Movement implements Comparable {
 
     /**
      *
-     * @param id
+     * @param  id id
      */
     public void setId(Long id) {
         this.id = id;
@@ -215,7 +215,7 @@ public class Movement implements Comparable {
 
     /**
      *
-     * @param roadsideEquipment
+     * @param roadsideEquipment roadsideEquipment
      */
     public void setRoadsideEquipment(RoadsideEquipment roadsideEquipment) {
         this.roadsideEquipment = roadsideEquipment;
@@ -231,7 +231,7 @@ public class Movement implements Comparable {
 
     /**
      *
-     * @param nummer
+     * @param nummer nummer
      */
     public void setNummer(Integer nummer) {
         this.nummer = nummer;
@@ -247,7 +247,7 @@ public class Movement implements Comparable {
 
     /**
      *
-     * @param points
+     * @param points points
      */
     public void setPoints(List<MovementActivationPoint> points) {
         this.points = points;

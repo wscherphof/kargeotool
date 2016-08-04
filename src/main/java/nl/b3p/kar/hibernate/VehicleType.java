@@ -57,7 +57,7 @@ public class VehicleType {
 
     /**
      *
-     * @param nummer
+     * @param nummer nummer
      */
     public void setNummer(int nummer) {
         this.nummer = nummer;
@@ -73,7 +73,7 @@ public class VehicleType {
 
     /**
      *
-     * @param omschrijving
+     * @param omschrijving omschrijving
      */
     public void setOmschrijving(String omschrijving) {
         this.omschrijving = omschrijving;

@@ -126,7 +126,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param id
+     * @param id setter
      */
     public void setId(Long id) {
         this.id = id;
@@ -142,7 +142,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param karCommandType
+     * @param karCommandType setter
      */
     public void setKarCommandType(Integer karCommandType) {
         this.karCommandType = karCommandType;
@@ -158,7 +158,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param vehicleTypes
+     * @param vehicleTypes setter
      */
     public void setVehicleTypes(List<VehicleType> vehicleTypes) {
         this.vehicleTypes = vehicleTypes;
@@ -174,7 +174,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param triggerType
+     * @param triggerType setter
      */
     public void setTriggerType(String triggerType) {
         this.triggerType = triggerType;
@@ -190,7 +190,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param distanceTillStopLine
+     * @param distanceTillStopLine setter
      */
     public void setDistanceTillStopLine(Integer distanceTillStopLine) {
         this.distanceTillStopLine = distanceTillStopLine;
@@ -206,7 +206,7 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param signalGroupNumber
+     * @param signalGroupNumber setter
      */
     public void setSignalGroupNumber(Integer signalGroupNumber) {
         this.signalGroupNumber = signalGroupNumber;
@@ -222,16 +222,24 @@ public class ActivationPointSignal {
     
     /**
      *
-     * @param virtualLocalLoopNumber
+     * @param virtualLocalLoopNumber setter
      */
     public void setVirtualLocalLoopNumber(Integer virtualLocalLoopNumber) {
         this.virtualLocalLoopNumber = virtualLocalLoopNumber;
     }
     
+    /**
+     *
+     * @return getter
+     */
     public String getDirection() {
         return direction;
     }
 
+    /**
+     *
+     * @param direction setter
+     */
     public void setDirection(String direction) {
         this.direction = direction;
     }

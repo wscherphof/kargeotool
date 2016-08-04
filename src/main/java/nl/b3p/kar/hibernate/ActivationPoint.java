@@ -85,11 +85,19 @@ public class ActivationPoint implements Comparable {
     @XmlTransient
     private Point location;
     
+    /**
+     *
+     * @return getter
+     */
     @XmlElement(name="rdx-coordinate")
     public int getX() {
         return location == null ? 0 : (int)Math.round(location.getCoordinate().x);
     }
     
+    /**
+     *
+     * @param x setter
+     */
     public void setX(int x) {
         double y = 0;
         if(location != null) {
@@ -98,11 +106,19 @@ public class ActivationPoint implements Comparable {
         location = new GeometryFactory(null, 28992).createPoint(new Coordinate(x, y));
     }
     
+    /**
+     *
+     * @return getter
+     */
     @XmlElement(name="rdy-coordinate")
     public int getY() {
         return location == null ? 0 : (int)Math.round(location.getCoordinate().y);
     }
     
+    /**
+     *
+     * @param y setter
+     */
     public void setY(int y) {
         double x = 0;
         if(location != null) {
@@ -116,6 +132,11 @@ public class ActivationPoint implements Comparable {
      */
     private String label;
     
+    /**
+     *
+     * @return getter
+     * @throws JSONException The error
+     */
     public JSONObject getGeoJSON() throws JSONException{
         JSONObject pj = new JSONObject();
         pj.put("id",getId());
@@ -160,7 +181,7 @@ public class ActivationPoint implements Comparable {
     
     /**
      *
-     * @param id
+     * @param id setter
      */
     public void setId(Long id) {
         this.id = id;
@@ -176,7 +197,7 @@ public class ActivationPoint implements Comparable {
 
     /**
      *
-     * @param roadsideEquipment
+     * @param roadsideEquipment setter
      */
     public void setRoadsideEquipment(RoadsideEquipment roadsideEquipment) {
         this.roadsideEquipment = roadsideEquipment;
@@ -192,7 +213,7 @@ public class ActivationPoint implements Comparable {
 
     /**
      *
-     * @param nummer
+     * @param nummer setter
      */
     public void setNummer(Integer nummer) {
         this.nummer = nummer;
@@ -208,7 +229,7 @@ public class ActivationPoint implements Comparable {
     
     /**
      *
-     * @param location
+     * @param location setter
      */
     public void setLocation(Point location) {
         this.location = location;
@@ -224,7 +245,7 @@ public class ActivationPoint implements Comparable {
     
     /**
      *
-     * @param label
+     * @param label setter
      */
     public void setLabel(String label) {
         this.label = label;
@@ -242,11 +263,20 @@ public class ActivationPoint implements Comparable {
         return nummer.compareTo(rhs.nummer);
     } 
     
+    /**
+     *
+     * @param unmarshaller setter
+     * @param parent setter
+     */
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         RoadsideEquipment rseq = (RoadsideEquipment)parent;
         roadsideEquipment = rseq;
     }
 
+    /**
+     *
+     * @param marshaller setter
+     */
     public void beforeMarshal(Marshaller marshaller) {
         if(label.isEmpty()){
             label = null;

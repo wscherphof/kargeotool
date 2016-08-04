@@ -61,7 +61,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *
-     * @return
+     * @return getter
      */
     public String getCode() {
         return code;
@@ -69,7 +69,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     
     /**
      *
-     * @param code
+     * @param code code
      */
     public void setCode(String code) {
         this.code = code;
@@ -85,7 +85,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     
     /**
      *
-     * @param companyNumber
+     * @param companyNumber setter
      */
     public void setCompanyNumber(Integer companyNumber) {
         this.companyNumber = companyNumber;
@@ -101,7 +101,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     
     /**
      *
-     * @param omschrijving
+     * @param omschrijving setter
      */
     public void setOmschrijving(String omschrijving) {
         this.omschrijving = omschrijving;
@@ -117,7 +117,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     
     /**
      *
-     * @param classificatie
+     * @param classificatie setter
      */
     public void setClassificatie(String classificatie) {
         this.classificatie = classificatie;
