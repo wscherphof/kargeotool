@@ -106,7 +106,7 @@
                     <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
                     <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
-                    <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Voorinnmeldpunt" class="legendimg" /> Voorinnmeldpunt<br />
+                    <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Voorinmeldpunt" class="legendimg" /> Voorinmeldpunt<br />
                 </div>
                 <div id="starteindpunten" class="legendseparator">
                     <b>Begin- en eindpunten</b><br/>

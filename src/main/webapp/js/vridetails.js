@@ -21,7 +21,7 @@ var rseqType = {
     "" : "nieuw verkeerssysteem",
     "CROSSING" : "VRI",
     "GUARD" : "bewakingssysteem nadering voertuig",
-    "BAR" : "afsluittingssysteem"
+    "BAR" : "afsluitingssysteem"
 };
 
 var rightsStore;
