@@ -40,6 +40,7 @@ Ext.define('RSEQ', {
         location:null,
         description:null,
         validFrom:null,
+        validUntil:null,
         movements:null,
         karAddress:null,
         crossingCode: null,
@@ -60,6 +61,7 @@ Ext.define('RSEQ', {
      * @param config.location de locatie als geometry
      * @param config.description de omschrijving
      * @param config.validFrom geldig vanaf
+     * @param config.validUntil geldig tot
      * @param config.movements de movements die bij deze RSEQ horen.
      * @param config.karAddress het kar adres
      * @param config.crossingCode het kruispunt nummer
@@ -521,6 +523,7 @@ Ext.define('RSEQ', {
                 id: this.id,
                 description:this.description,
                 validFrom:this.validFrom,
+                validUntil:this.validUntil,
                 karAddress:this.karAddress,
                 dataOwner:this.dataOwner,
                 crossingCode: this.crossingCode,
@@ -555,7 +558,7 @@ Ext.define('RSEQ', {
      * @return json object
      */
     toJSON: function() {
-        var j = objectSubset(this, ["id", "description", "validFrom",
+        var j = objectSubset(this, ["id", "description", "validFrom","validUntil",
             "karAddress", "dataOwner", "crossingCode", "town", "type",
             "location","memo","attributes","readyForExport"]);
 
