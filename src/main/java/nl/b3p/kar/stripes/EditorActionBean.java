@@ -526,7 +526,7 @@ public class EditorActionBean implements ActionBean {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             rseq.setValidFrom(jrseq.has("validFrom") ? sdf.parse(jrseq.getString("validFrom")) : null);
-            rseq.setValidUntil(jrseq.has("validUntil") ? sdf.parse(jrseq.getString("validUntil")) : null);
+            rseq.setValidUntil(jrseq.has("validUntil") &&  !jrseq.getString("validUntil").isEmpty() ? sdf.parse(jrseq.getString("validUntil")) : null);
             rseq.setMemo(jrseq.has("memo") ? jrseq.getString("memo") : null);
 
             rseq.getKarAttributes().clear();
