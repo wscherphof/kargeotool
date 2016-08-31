@@ -323,10 +323,12 @@ Ext.define("Editor", {
 
         Ext.Array.each(this.allRseqs, function(rseq) {
             var vehicleType = rseq.properties.vehicleType;
+            if(!vehicleType){
+                vehicleType = "Gemixt";
+            }
             // Check welke layer aan moet: OV of Hulpdienst. Wanneer een rseq beiden types bevat, heeft het het vehicleType "Gemixt" en staat het bij beide aan.
             // Alleen als een rseq van het type OV is, hebben de KV9 validaties zin (een ambulance rijdt niet op een bepaald traject, dus je kan geen uitmeldpunten defniëren).
-            if((!vehicleType && (layersOV ||layersHulpdiensten )) ||
-                    (( (layersOV && (vehicleType === "OV" || vehicleType === "Gemixt"))
+            if((( (layersOV && (vehicleType === "OV" || vehicleType === "Gemixt"))
                         && ((kv9valid && rseq.properties.validationErrors === 0) || (kv9invalid && rseq.properties.validationErrors > 0))) ||
                     (layersHulpdiensten && (vehicleType === "Hulpdiensten" || vehicleType === "Gemixt") ))) {
                 filtered.push(rseq);
