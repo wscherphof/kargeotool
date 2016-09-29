@@ -370,6 +370,7 @@ function doRseqRequest (params,text){
         url : exportActionBeanUrl,
         method : 'GET',
         scope : me,
+        timeout: 120000,
         params : params,
         success : function (response){
             var msg = Ext.JSON.decode(response.responseText);
