@@ -278,7 +278,7 @@ public class ActivationPoint implements Comparable {
      * @param marshaller setter
      */
     public void beforeMarshal(Marshaller marshaller) {
-        if(label.isEmpty()){
+        if(label == null || label.isEmpty()){
             label = null;
         }
     }
