@@ -723,7 +723,7 @@ public class EditorActionBean implements ActionBean {
 
 
     public Resolution listCarriers() throws JSONException{
-        List<Gebruiker> gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
+        List<Gebruiker> gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker where email is not null order by id").getResultList();
         JSONObject info = new JSONObject();
         info.put( "success", Boolean.FALSE );
         JSONArray users = new JSONArray();

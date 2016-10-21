@@ -79,18 +79,21 @@ public class CarrierInformer implements Job {
             MimeMessage msg = new MimeMessage(session);
             // -- Set the FROM and TO fields --
             msg.setFrom(new InternetAddress(fromAddress));
+            if (inform.getVervoerder().getEmail() != null) {
+                msg.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(inform.getVervoerder().getEmail(), false));
 
-            msg.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(inform.getVervoerder().getEmail(), false));
+                msg.setSubject("[geo-ov] Nieuwe KAR-gegevens");
+                String body = getBody(inform, appUrl);
+                msg.setText(body, "utf-8", "html");
 
-            msg.setSubject("[geo-ov] Nieuwe KAR-gegevens");
-            String body = getBody(inform, appUrl);
-            msg.setText(body, "utf-8", "html");
-
-            msg.setSentDate(new Date());
-            Transport.send(msg);
-            inform.setMailSent(true);
-            inform.setSentAt(new Date());
+                msg.setSentDate(new Date());
+                Transport.send(msg);
+                inform.setMailSent(true);
+                inform.setSentAt(new Date());
+            } else {
+                log.error("Vervoerder heeft geen mailadres ingevuld. Bericht niet verzonden aan: " + inform.getVervoerder().getFullname() + " - " + inform.getVervoerder().getUsername());
+            }
         } catch (AddressException ex) {
             log.error("Cannot send inform message:", ex);
         } catch (MessagingException ex) {
