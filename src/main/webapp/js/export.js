@@ -39,7 +39,7 @@ Ext.onReady(function (){
         data : deelgebieden
     });
     var dataownerStore = Ext.create('Ext.data.Store',{
-        fields : ['code','omschrijving'],
+        fields : ['id', 'code','omschrijving'],
         data : dataowners
     });
     var form = Ext.create(Ext.form.Panel,{
@@ -163,7 +163,7 @@ Ext.onReady(function (){
                 queryMode: 'local',
                 displayField: 'omschrijving',
                 disabled: true,
-                valueField: 'code',
+                valueField: 'id',
                 emptyText: "Selecteer",
                 flex: 1,
                 listeners: {

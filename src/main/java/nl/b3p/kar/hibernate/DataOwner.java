@@ -50,6 +50,9 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
     }
     
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Integer id;
+    
     private String code;
     
     private Integer companyNumber;
@@ -65,6 +68,14 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
      */
     public String getCode() {
         return code;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
     
     /**
@@ -153,7 +164,7 @@ public class DataOwner extends XmlAdapter<String, DataOwner> implements Comparab
 
     @Override
     public DataOwner unmarshal(String code) throws Exception {
-        DataOwner d = (DataOwner)Stripersist.getEntityManager().find(DataOwner.class, code);
+        DataOwner d = (DataOwner)Stripersist.getEntityManager().createQuery("FROM DataOwner where code = :code",DataOwner.class).setParameter("code", code).getSingleResult();
         if(d == null) {
             d = new DataOwner();
             d.setCode(code);

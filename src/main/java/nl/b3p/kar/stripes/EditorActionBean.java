@@ -144,6 +144,7 @@ public class EditorActionBean implements ActionBean {
         for (DataOwner dao : dataOwners) {
             JSONObject jdao = new JSONObject();
             jdao.put("code", dao.getCode());
+            jdao.put("id", dao.getId());
             jdao.put("classificatie", dao.getClassificatie());
             jdao.put("companyNumber", dao.getCompanyNumber());
             jdao.put("omschrijving", dao.getOmschrijving());
@@ -511,7 +512,7 @@ public class EditorActionBean implements ActionBean {
             rseq.setReadyForExport(jrseq.getBoolean("readyForExport"));
             rseq.setKarAddress(jrseq.getInt("karAddress"));
             rseq.setCrossingCode(jrseq.optString("crossingCode"));
-            rseq.setDataOwner(em.find(DataOwner.class, jrseq.getString("dataOwner")));
+            rseq.setDataOwner(em.find(DataOwner.class, jrseq.getInt("dataOwner")));
             if(rseq.getDataOwner() == null) {
                 throw new IllegalArgumentException("Data owner is verplicht");
             }

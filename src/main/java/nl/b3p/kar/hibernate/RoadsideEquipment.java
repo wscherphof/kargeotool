@@ -147,8 +147,8 @@ public class RoadsideEquipment {
      */
     @XmlElement(name="rseqtype")
     private String type;
-
-    /**
+ 
+   /**
      * Identificeert het kruispunt volgens codering domein DataOwner
      * (wegbeheerder). Verplicht voor Kv9.
      */
@@ -586,7 +586,7 @@ public class RoadsideEquipment {
     public JSONObject getJSON() throws JSONException {
         JSONObject j = new JSONObject();
         j.put("id", id);
-        j.put("dataOwner", dataOwner.getCode());
+        j.put("dataOwner", dataOwner.getId());
         j.put("crossingCode", crossingCode);
         j.put("description", description);
         j.put("karAddress", karAddress);

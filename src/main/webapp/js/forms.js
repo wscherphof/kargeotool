@@ -164,10 +164,10 @@ Ext.define("EditForms", {
                     queryMode:'local',
                     typeAhead:true,
                     minChars:2,
-                    valueField: 'code',
+                    valueField: 'id',
                     value: rseq.dataOwner,
                     store: Ext.create('Ext.data.Store', {
-                        fields: ['code', 'classificatie', 'companyNumber', 'omschrijving'],
+                        fields: [ 'id','code', 'classificatie', 'companyNumber', 'omschrijving'],
                         data: dataOwners
                     }),
                     listeners: {

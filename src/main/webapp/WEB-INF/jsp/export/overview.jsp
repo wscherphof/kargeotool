@@ -51,6 +51,7 @@
             var dataowners = [];
             <c:forEach items="${actionBean.dataowners}" var="dataowner">
                 var dataowner = {
+                    id: "${dataowner.id}",
                     omschrijving : "${dataowner.omschrijving}",
                     code: "${dataowner.code}"
                 };
