@@ -469,6 +469,11 @@ Ext.define("ContextMenu", {
                 id: 'addVoorinmeldpunt',
                 text: 'Voeg nieuw voorinmeldpunt toe',
                 icon: karTheme.voorinmeldPunt
+            },
+            {
+                id: 'selectVoorInmeldPunt',
+                text: 'Selecteer bestaand voorinmeldpunt',
+                icon: contextPath + "/images/silk/cursor.png"
             },/*
             {
                 id: 'voegBeginpuntToecheckin',
@@ -495,6 +500,9 @@ Ext.define("ContextMenu", {
                             break;
                         case 'setCoordsInmeld':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break
+                        case 'selectVoorInmeldPunt':
+                            this.editor.selectVoorInmeldpunt();
                             break
                     }
                 },

@@ -1089,7 +1089,59 @@ Ext.define("Editor", {
 
         this.addPoint(true);
     },
+    selectVoorInmeldpunt: function(){
+        this.changeCurrentEditAction("SELECT_VOORINMELDPUNT");
+        this.contextMenu.showCancelSelecting(this.voorinmeldpuntSelected);
+        this.on('selectedObjectChanged',this.voorinmeldpuntSelected,this);
+        
+    },
+    
+     /**
+     * Handler voor als een bestaand inmeldpunt is geselecteerd.
+     */
+    voorinmeldpuntSelected: function(voorinmeldpunt) {
+        if(voorinmeldpunt){
 
+            var inmeldpunt = this.selectedObject = this.previousSelectedObject; // moet denk ik uitmeldpunt worden
+            
+            if(voorinmeldpunt instanceof Point && voorinmeldpunt.getType() === "ACTIVATION_3"){
+
+                // TODO: Check of al gebruikt in movements voor uitmeldpunt
+
+                var me = this;
+                Ext.Msg.show({
+                    title:'Voorinmeldpunt selecteren',
+                    msg:'Wilt u voorinmeldpunt ' + voorinmeldpunt.getLabel() + " selecteren voor bewegingen naar inmeldpunt " + this.selectedObject.getLabel() + "?",
+                    fn: function(buttonId) {
+                        if(buttonId == "yes") {
+                            var map = Ext.create(MovementActivationPoint, {
+                                beginEndOrActivation: "ACTIVATION",
+                                commandType: 1,
+                                pointId: voorinmeldpunt.getId()
+                            });
+                            me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, this.activeMovement);
+                            me.fireEvent("activeRseqUpdated", me.activeRseq);
+                        }
+                    },
+                    scope:this,
+                    buttons: Ext.Msg.YESNO,
+                    buttonText: {
+                        no: "Nee",
+                        yes: "Ja"
+                    },
+                    icon: Ext.Msg.WARNING
+
+                });
+                this.un('selectedObjectChanged',this.voorinmeldpuntSelected,this);
+                this.contextMenu.hideCancelSelecting();
+            }else{
+                Ext.Msg.alert("Kan punt niet selecteren", "Geselecteerd punt is geen voorinmeldpunt");
+            }
+            this.olc.selectFeature(this.selectedObject.getId(), "Point");
+        }
+    },
+    
+    
     /**
      * Selecteren bestaand inmeldpunt
      */
@@ -1511,6 +1563,9 @@ Ext.define("HelpPanel", {
                 break;
             case "SELECT_INMELDPUNT":
                 txt = "Klik op een bestaand inmeldpunt(<img src='" +karTheme.inmeldPunt+ "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
+                break;
+            case "SELECT_VOORINMELDPUNT":
+                txt = "Klik op een bestaand voorinmeldpunt(<img src='" +karTheme.voorinmeldPunt+ "' width='20px'/>) om het te selecteren. Klik <a href='JavaScript: void(0);' onclick='editor.cancelSelection();'>hier</a> om deze actie te stoppen.";
                 break;
             case "SELECT_EXISTING_UITMELDPUNT":
                 txt = "Selecteer een bestaand uitmeldpunt";
