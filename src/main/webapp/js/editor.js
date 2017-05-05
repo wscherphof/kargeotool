@@ -1089,17 +1089,17 @@ Ext.define("Editor", {
 
         this.addPoint(true);
     },
-    selectVoorInmeldpunt: function(){
+    selectVoorInmeldpunt: function(movementId){
         this.changeCurrentEditAction("SELECT_VOORINMELDPUNT");
         this.contextMenu.showCancelSelecting(this.voorinmeldpuntSelected);
-        this.on('selectedObjectChanged',this.voorinmeldpuntSelected,this);
+        this.on('selectedObjectChanged',this.voorinmeldpuntSelected,this,movementId);
         
     },
     
      /**
      * Handler voor als een bestaand inmeldpunt is geselecteerd.
      */
-    voorinmeldpuntSelected: function(voorinmeldpunt) {
+    voorinmeldpuntSelected: function(voorinmeldpunt, movementId) {
         if(voorinmeldpunt){
 
             var inmeldpunt = this.selectedObject = this.previousSelectedObject; // moet denk ik uitmeldpunt worden
@@ -1119,7 +1119,7 @@ Ext.define("Editor", {
                                 commandType: 1,
                                 pointId: voorinmeldpunt.getId()
                             });
-                            me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, this.activeMovement);
+                            me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, movementId);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
                         }
                     },

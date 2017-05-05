@@ -1,3 +1,5 @@
+/* global Ext */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -32,8 +34,8 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor = editor;
         this.domId = domId;
         this.heightOffset = 75;
-        this.editor.on("activeRseqUpdated", function(rseq) { this.updateOverview(rseq, true) },this);
-        this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false) },this);
+        this.editor.on("activeRseqUpdated", function(rseq) { this.updateOverview(rseq, true); },this);
+        this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false); },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
 
         var panel = Ext.getCmp("rseqInfoPanel");
@@ -341,7 +343,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         if (type !== "signalGroup" && type !== "movement" ){
                             this.selectedMovement = record.parentNode.raw.movementId;
                         }
-                        if (type !== "signalGroup" && type !== "movement" && point.type !== "ACTIVATION_2"){
+                        if (type !== "signalGroup" && type !== "movement" && point.type !== "ACTIVATION_2" ){
                             var resetFn = function(){
                                 var windowOpened = editor.editForms.hasOpenWindows();
                                 if(!windowOpened){
@@ -349,7 +351,7 @@ Ext.define("nl.b3p.kar.Overview",{
                                 }
                                 this.editor.contextMenu.un("hide", resetFn,this);
                             };
-                            editor.activeMovement = this.selectedMovement;
+                            this.editor.activeMovement = this.selectedMovement;
                             this.editor.contextMenu.on("hide", resetFn,this);
                             this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
                         }

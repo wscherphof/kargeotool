@@ -1,3 +1,5 @@
+/* global editor, Ext, karTheme, contextPath */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -45,7 +47,6 @@ Ext.define("ContextMenu", {
     constructor: function(editor) {
         this.mixins.observable.constructor.call(this);
         this.editor = editor;
-        this.editor.on("selectedObjectChanged", this.updateStates,this);
     },
     /**
      * Maak de menu's aan.
@@ -181,7 +182,7 @@ Ext.define("ContextMenu", {
                                         me.editor.exportPtx();
                                         break;
                                 }
-                            }
+                            };
                             if (me.editor.changeManager.changeDetected) {
                                 Ext.Msg.show({
                                     title: "Opslaan verkeerssyteem",
@@ -312,7 +313,7 @@ Ext.define("ContextMenu", {
                     var pos = {
                         x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
-                    }
+                    };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'removeOnbekend':
@@ -407,7 +408,7 @@ Ext.define("ContextMenu", {
                     var pos = {
                         x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
-                    }
+                    };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'editUitmeldpunt':
@@ -474,7 +475,7 @@ Ext.define("ContextMenu", {
                 id: 'selectVoorInmeldPunt',
                 text: 'Selecteer bestaand voorinmeldpunt',
                 icon: contextPath + "/images/silk/cursor.png"
-            },/*
+            }/*
             {
                 id: 'voegBeginpuntToecheckin',
                 text: 'Voeg beginpunt toe',
@@ -486,7 +487,7 @@ Ext.define("ContextMenu", {
                     var pos = {
                         x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
-                    }
+                    };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
                     switch (item.id) {
                         case 'editInmeldpunt':
@@ -502,7 +503,7 @@ Ext.define("ContextMenu", {
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
                             break
                         case 'selectVoorInmeldPunt':
-                            this.editor.selectVoorInmeldpunt();
+                            this.editor.selectVoorInmeldpunt(this.editor.activeMovement);
                             break
                     }
                 },
@@ -581,7 +582,7 @@ Ext.define("ContextMenu", {
             if(f&& !f.cluster){
                 var x = e.clientX;
                 var y = e.clientY;
-                if(f.layer.name== "RseqSelect"){
+                if(f.layer.name === "RseqSelect"){
                     editor.loadRseqInfo({
                         rseq: f.data.id
                     },function(){
@@ -600,19 +601,14 @@ Ext.define("ContextMenu", {
         };
     },
     /**
-     * Update de status van het menu bij verandering.
-     */
-    updateStates: function(selectedObject){
-    // TODO update the states according to the selected object
-    },
-    /**
      * Toon het menu op de gewenste x en y pixel
      * @param x de x pixel
      * @param y de y pixel
+     * @param forceDefault Laat het standaard menu zien
      */
     show : function(x,y,forceDefault){
         var context = this.getMenuContext();
-        if(forceDefault === true&& context != this.point_with_line){
+        if(forceDefault === true && context !== this.point_with_line){
             context = this.menuContext['standaard'];
         }
         if(context){
