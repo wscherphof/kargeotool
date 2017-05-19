@@ -15,7 +15,7 @@
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <geotools.version>17.0</geotools.version>
+        <geotools.version>14.5</geotools.version>
         <hibernate.version>3.6.8.Final</hibernate.version>
         <postgresql.version>9.4.1207</postgresql.version>
     </properties>
