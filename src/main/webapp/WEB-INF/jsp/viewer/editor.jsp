@@ -122,8 +122,8 @@
                 <div id="Luchtfoto_div" style="width: 90%; height: 38px">
                     <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
                 </div>
-                <div id="BRT_div" style="width: 90%; height: 38px">
-                    <input type="checkbox" id="BRT_visible" onclick="toggleLayer(event);"/> Topografie (BRT)<br/>
+                <div id="Openbasiskaart_div" style="width: 90%; height: 38px">
+                    <input type="checkbox" id="Openbasiskaart_visible" onclick="toggleLayer(event);"/> Topografie (OSM)<br/>
                 </div>
                 <br/>
                 <b>Extra</b><br/>
@@ -146,7 +146,7 @@
                 var welcomeForm = null;
                 Ext.onReady(function() {
 
-                    var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'BRT'];
+                    var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart'];
                     Ext.Array.each(checkboxes, function(checkbox) {
                         Ext.get(checkbox + "_visible").dom.checked = getLayerVisibility(checkbox);
                     });
@@ -206,7 +206,7 @@
                 function getLayerVisibility(layer) {
                     var state = profile.state[layer + "_visible"];
                     if(state == undefined) {
-                        return layer == "BRT";
+                        return layer == "Openbasiskaart";
                     } else {
                         return state;
                     }
@@ -242,15 +242,15 @@
                     });
 
                     Ext.create('Ext.slider.Single', {
-                        id: 'BRT_slider',
-                        renderTo: 'BRT_div',
+                        id: 'Openbasiskaart_slider',
+                        renderTo: 'Openbasiskaart_div',
                         hideLabel: true,
                         useTips: true,
                         width: '100%',
                         style: {
                             marginLeft: '15px'
                         },
-                        value: getLayerOpacity("BRT") * 100,
+                        value: getLayerOpacity("Openbasiskaart") * 100,
                         increment: 10,
                         minValue: 0,
                         maxValue: 100,

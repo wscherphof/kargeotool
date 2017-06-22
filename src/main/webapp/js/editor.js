@@ -151,7 +151,8 @@ Ext.define("Editor", {
         this.olc.createMap(this.domId);
 
         this.olc.addLayer("TMS","Luchtfoto",'http://geodata1.nationaalgeoregister.nl/luchtfoto/tms/','luchtfoto/EPSG28992', getLayerVisibility("Luchtfoto"),'jpeg', getLayerOpacity("Luchtfoto"));
-        this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
+       // this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
+        this.olc.addLayer("TMS","Openbasiskaart",'http://openbasiskaart.nl/mapcache/tms/','osm-nb', getLayerVisibility("Openbasiskaart"), 'png', getLayerOpacity("Openbasiskaart"));
 
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
