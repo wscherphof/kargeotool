@@ -5,13 +5,13 @@
     <groupId>nl.b3p</groupId>
     <artifactId>geo-ov</artifactId>
     <packaging>war</packaging>
-    <version>2.6.8-SNAPSHOT</version>
+    <version>2.6.8</version>
     <name>geo-ov</name>
     <scm>
         <connection>scm:git:git@github.com:B3Partners/geo-ov.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/geo-ov.git</developerConnection>
         <url>https://github.com/B3Partners/geo-ov.git</url>
-        <tag>HEAD</tag>
+        <tag>geo-ov-2.6.8</tag>
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
