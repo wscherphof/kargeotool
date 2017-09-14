@@ -1,3 +1,5 @@
+/* global Ext, searchActionBeanUrl */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -181,7 +183,7 @@ Ext.define("nl.b3p.kar.Search", {
     },
     searchFinished:function(numResults,optionalText){
         this.panel.setTitle(this.category + " (" + numResults + ")");
-        if(numResults == 0){
+        if(numResults === 0){
             var text = "Geen resultaten gevonden.";
             if(optionalText){
                 text = optionalText;
@@ -241,14 +243,13 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
             method: 'GET',
             scope:this,
             success: function(response) {
-                var results = new OpenLayers.Format.XLS().read(response.responseXML);
-                var rl = results.responseLists[0];
+                var res = Ext.JSON.decode(response.responseText);
 
-                if(rl) {
-                    Ext.Array.each(rl.features, function(feature) {
-                        me.displayGeocodeResult( feature);
+                if(res) {
+                    Ext.Array.each(res.results, function(result) {
+                        me.displayGeocodeResult( result);
                     });
-                    this.searchFinished(rl.features.length);
+                    this.searchFinished(res.results.length);
                 } else{
                     this.searchFinished(0);
                 }
@@ -259,38 +260,19 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         });
     },
 
-    displayGeocodeResult: function( feature) {
-        var address = feature.attributes.address;
-
-        var number = address.building && address.building.number ?
-        " " + address.building.number : "";
-        var label = address.street != "" ? address.street + number : "";
-        if(address.postalCode != undefined) {
-            label += (label != "" ? ", " : "") + address.postalCode;
-        }
-        // woonplaats
-        if(address.place.MunicipalitySubdivision != undefined) {
-            label += (label != "" ? ", " : "") + address.place.MunicipalitySubdivision;
-        }
-        // gemeente
-        if(address.place.Municipality != undefined && address.place.Municipality != address.place.MunicipalitySubdivision) {
-            label += (label != "" ? ", " : "") + address.place.Municipality;
-        }
-        // provincie
-        if(label == "" && address.place.CountrySubdivision != undefined) {
-            label = address.place.CountrySubdivision;
-        }
-
+    displayGeocodeResult: function( feature) {     
         var addresslink = document.createElement('a');
         addresslink.href = '#';
         addresslink.className = '.resultlink';
-        addresslink.innerHTML = Ext.util.Format.htmlEncode(label);
+        addresslink.innerHTML = Ext.util.Format.htmlEncode(feature.label);
         var link = Ext.get(addresslink);
         var me = this;
+        var bounds = new OpenLayers.Bounds([feature.location.minx, feature.location.miny, feature.location.maxx, feature.location.maxy]);
+                var location = bounds.getCenterLonLat();
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
-                x:feature.geometry.x,
-                y:feature.geometry.y,
+                bounds:bounds,
+                location: location,
                 addMarker:true
             });
             me.fireEvent("searchResultClicked",result );

@@ -25,18 +25,18 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.naming.directory.SearchResult;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import net.sourceforge.stripes.action.*;
@@ -46,10 +46,16 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.geotools.geometry.jts.WKTReader2;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -83,6 +89,9 @@ public class SearchActionBean implements ActionBean {
 
     @Validate
     private String vehicleType;
+    
+    
+    private final WKTReader2 wkt = new WKTReader2();
 
     /**
      *
@@ -314,12 +323,72 @@ public class SearchActionBean implements ActionBean {
      * @throws Exception De fout
      */
     public Resolution geocode() throws Exception {
-        InputStream in = new URL(GEOCODER_URL + URLEncoder.encode(term, "UTF-8")).openStream();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        IOUtils.copy(in, bos);
-        in.close();
-        bos.close();
-        return new StreamingResolution("text/xml", new ByteArrayInputStream(bos.toByteArray()));
+        HttpSolrServer server = new HttpSolrServer("http://geodata.nationaalgeoregister.nl/locatieserver");
+      
+        JSONObject result = new JSONObject();
+        try {
+            JSONArray respDocs = new JSONArray();
+            SolrQuery query = new SolrQuery();
+            // add asterisk to make it match partial queries (for autosuggest)
+            term += "*";
+    
+            query.setQuery(term);
+            query.setRequestHandler("/free");
+            QueryResponse rsp = server.query(query);
+            SolrDocumentList list = rsp.getResults();
+            
+            for (SolrDocument solrDocument : list) {
+                JSONObject doc = solrDocumentToResult(solrDocument);
+                if (doc != null) {
+                    respDocs.put(doc);
+                }
+            }
+            result.put("results", respDocs);
+            result.put("numResults", list.size());
+        } catch (SolrServerException ex) {
+            log.error("Cannot search:",ex);
+        }
+        
+        StreamingResolution res = new StreamingResolution("text/xml",  new StringReader(result.toString(4)));
+        res.setCharacterEncoding("UTF-8");
+        return res;
+    }
+    
+    private JSONObject solrDocumentToResult(SolrDocument doc){
+        JSONObject result = null;
+        try {
+            Map<String, Object> values = doc.getFieldValueMap();
+            result = new JSONObject();
+            for (String key : values.keySet()) {
+                result.put(key, values.get(key));
+            }
+            String centroide = (String)doc.getFieldValue("centroide_rd");
+            
+            String geom = centroide;
+            if(values.containsKey("geometrie_rd")){
+                geom = (String) values.get("geometrie_rd");
+            }
+            Geometry g = wkt.read(geom);
+            Envelope env = g.getEnvelopeInternal();
+            
+            if (centroide != null) {
+                Map bbox = new HashMap();
+                bbox.put("minx", env.getMinX());
+                bbox.put("miny", env.getMinY());
+                bbox.put("maxx", env.getMaxX());
+                bbox.put("maxy", env.getMaxY());
+
+                result.put("location", bbox);
+            }
+            result.put("label", values.get("weergavenaam"));
+            
+        } catch (JSONException ex) {
+            log.error(ex);
+        }catch( ParseException ex){
+            log.error(ex);
+            
+        }
+        return result;
     }
     // <editor-fold desc="Getters and Setters">
 
