@@ -6,7 +6,7 @@
     <artifactId>geo-ov</artifactId>
     <packaging>war</packaging>
     <version>2.6.9-SNAPSHOT</version>
-    <name>geo-ov</name>
+    <name>kargeotool</name>
     <scm>
         <connection>scm:git:git@github.com:B3Partners/geo-ov.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/geo-ov.git</developerConnection>
@@ -15,21 +15,21 @@
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <geotools.version>14.5</geotools.version>
-        <hibernate.version>3.6.8.Final</hibernate.version>
-        <postgresql.version>9.4.1207</postgresql.version>
+        <geotools.version>18.1</geotools.version>
+        <hibernate.version>3.6.10.Final</hibernate.version>
+        <postgresql.version>42.1.1</postgresql.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.1</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>nl.b3p</groupId>
             <artifactId>b3p-commons-core</artifactId>
-            <version>4.2.4</version>
+            <version>5.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.persistence</groupId>
@@ -50,12 +50,12 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.3</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.1.12</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
@@ -112,7 +112,7 @@
             <!-- override the version provided by hibernate -->
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.22.0-CR1</version>
+            <version>3.22.0-CR2</version>
         </dependency>
         <dependency>
             <groupId>com.mchange</groupId>
@@ -168,12 +168,12 @@
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20160810</version>
+            <version>20171018</version>
         </dependency>
         <dependency>
             <groupId>securityfilter</groupId>
