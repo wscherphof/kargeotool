@@ -371,7 +371,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return null;
     }
 
-    // <editor-fold desc="Getters and Setters">
+    // <editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
         Gebruiker g = (Gebruiker) getContext().getRequest().getAttribute(attribute);
