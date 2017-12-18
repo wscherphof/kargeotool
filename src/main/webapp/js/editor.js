@@ -64,7 +64,7 @@ Ext.define("Editor", {
      */
     constructor: function(domId, mapfilePath, ovInfo) {
         this.mixins.observable.constructor.call(this);
-        this.addEvents(
+        /*this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
             'selectedObjectChanged',
@@ -72,7 +72,7 @@ Ext.define("Editor", {
             'movementAdded',
             'movementUpdated',
             'currentEditActionChanged'
-        );
+        );*/
 
         this.domId = domId;
 
@@ -134,7 +134,7 @@ Ext.define("Editor", {
         this.olc.on('measureChanged', function( length, unit){
             var measureIntField = Ext.get("measureInt");
             if(measureIntField ){
-                measureIntField.setHTML(length + " " + unit);
+                measureIntField.setHtml(length + " " + unit);
             }
         },this);
 

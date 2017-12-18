@@ -96,7 +96,7 @@ Ext.define("ChangeManager",{
             if(overviewTitle.indexOf("*") != -1){
                 overviewTitle = overviewTitle.substring(0,overviewTitle.indexOf("*"));
             }
-            Ext.get("context_vri").setHTML(overviewTitle);
+            Ext.get("context_vri").setHtml(overviewTitle);
         }
     }
 });

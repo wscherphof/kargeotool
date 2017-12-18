@@ -211,7 +211,7 @@ Ext.define("nl.b3p.kar.Overview",{
 
     },
     updateOverview : function (rseq, changed){
-        Ext.get("context_vri").setHTML(rseq == null ? "" :
+        Ext.get("context_vri").setHtml(rseq == null ? "" :
                 (rseq.description + " (" + rseq.karAddress + ")"));
         if(rseq && rseq.editable){
             Ext.get("rseqOptions").setVisible(true);
@@ -226,12 +226,12 @@ Ext.define("nl.b3p.kar.Overview",{
         }
 
         if(changed || rseq == null || rseq.validationErrors == null) {
-            Ext.get("validationResults").setHTML("");
+            Ext.get("validationResults").setHtml("");
         } else {
             if(rseq.validationErrors == 0) {
-                Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
+                Ext.get("validationResults").setHtml("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
-                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
+                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
             }
         }
 

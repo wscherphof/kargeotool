@@ -50,7 +50,7 @@ Ext.define("SearchManager", {
         var bus = Ext.create(nl.b3p.kar.SearchBusline,{editor:this.editor});
         this.addSearchEntity(bus);
 
-        this.addEvents('searchResultClicked');
+        //this.addEvents('searchResultClicked');
 
     },
     createForm : function(){
@@ -167,7 +167,7 @@ Ext.define("nl.b3p.kar.Search", {
             cls: 'search-accordion'
         });
 
-        this.addEvents('searchResultClicked');
+      //  this.addEvents('searchResultClicked');
     },
     search: function(term){
         alert("Search called on superclas. Must be implemented.");
@@ -569,7 +569,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 });
 
                 editor.olc.addFilterToKargis(busline.publicnumber,layerName);
-                Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
+                Ext.get("buslijnen_filter_a").setHtml('Verwijder filter \'' + busline.publicnumber + '\'');
                 Ext.get("buslijnen_filter").setDisplayed(true);
 
 

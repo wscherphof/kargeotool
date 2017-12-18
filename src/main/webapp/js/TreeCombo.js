@@ -61,9 +61,9 @@ Ext.define('Ext.ux.TreeCombo',{
     treeHeight : 400,
     afterLoadSetValue : false,
     constructor : function (config){
-        this.addEvents({
+      /*  this.addEvents({
             "itemclick" : true
-        });
+        });*/
 
         this.ids = new Array();
         this.recursiveRecords = new Array();

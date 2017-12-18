@@ -35,7 +35,7 @@ Ext.define("Measure", {
         this.mixins.observable.constructor.call(this);  
         
         
-        this.addEvents('measureChanged');
+      //  this.addEvents('measureChanged');
         this.map = options.map;
         var panel = options.panel;
         var styleMap = new OpenLayers.StyleMap (
