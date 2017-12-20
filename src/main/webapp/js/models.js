@@ -113,10 +113,10 @@ Ext.define('RSEQ', {
      * @return het gevonden punt of null indien niet gevonden.
      */
     getPointById : function (id){
-        if(this.points){
-            for (var i = 0 ; i < this.points.length ;i++){
-                if(this.points[i].getId() == id){
-                    return this.points[i];
+        if(this.getPoints()){
+            for (var i = 0 ; i < this.getPoints().length ;i++){
+                if(this.getPoints()[i].getId() == id){
+                    return this.getPoints()[i];
                 }
             }
         }
@@ -128,9 +128,9 @@ Ext.define('RSEQ', {
      * @return het movement object of null indien niet gevonden.
      */
     getMovementById : function (id){
-        for (var i = 0 ; i < this.movements.length ;i++){
-            if(this.movements[i].getId() == id){
-                return this.movements[i];
+        for (var i = 0 ; i < this.getMovements().length ;i++){
+            if(this.getMovements()[i].getId() == id){
+                return this.getMovements()[i];
             }
         }
         return null;
@@ -517,20 +517,20 @@ Ext.define('RSEQ', {
         }
         var rseq ={
             type: "Feature",
-            editable: this.editable,
-            geometry: this.location,
+            editable: this.config.editable,
+            geometry: this.config.location,
             properties:{
-                id: this.id,
-                description:this.description,
-                validFrom:this.validFrom,
-                validUntil:this.validUntil,
-                karAddress:this.karAddress,
-                dataOwner:this.dataOwner,
-                crossingCode: this.crossingCode,
-                town:this.town,
-                type:this.type,
-                className: this.$className,
-                memo: this.memo
+                id: this.config.id,
+                description:this.config.description,
+                validFrom:this.config.validFrom,
+                validUntil:this.config.validUntil,
+                karAddress:this.config.karAddress,
+                dataOwner:this.config.dataOwner,
+                crossingCode: this.config.crossingCode,
+                town:this.config.town,
+                type:this.config.type,
+                className: this.config.$className,
+                memo: this.config.memo
             }
         };
         if(onlyRSEQ){
@@ -592,33 +592,33 @@ Ext.define('RSEQ', {
     },
     getOverviewJSON : function(){
         var signalGroups = {};
-
-        for(var i = 0 ; i < this.movements.length; i++){
-            var mvmnt = this.movements[i];
+        var movements = this.getMovements();
+        for(var i = 0 ; i < movements.length; i++){
+            var mvmnt = movements[i];
             var signalGroupNumber = null;
-            for(var j = 0 ; j < mvmnt.maps.length ;j++){
-                var map = mvmnt.maps[j];
+            for(var j = 0 ; j < mvmnt.getMaps().length ;j++){
+                var map = mvmnt.getMaps()[j];
                 if(map.getSignalGroupNumber () !== null){
                     signalGroupNumber = map.getSignalGroupNumber();
                     if(!signalGroups.hasOwnProperty(signalGroupNumber)){
                         signalGroups[signalGroupNumber] = new Object();
                     }
 
-                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.id)){
+                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.getId())){
 
-                         signalGroups[signalGroupNumber][ mvmnt.id] = new Object();
-                         signalGroups[signalGroupNumber][ mvmnt.id]["id"] = mvmnt.id;
-                         signalGroups[signalGroupNumber][ mvmnt.id]["points"] = new Array();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()] = new Object();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()]["id"] = mvmnt.getId();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()]["points"] = new Array();
                     }
                     break;
 
                 }
             }
             if(signalGroupNumber !== null){
-                for(var k = 0 ; k < mvmnt.maps.length;k++){
-                    var point = this.getPointById(mvmnt.maps[k].pointId);
+                for(var k = 0 ; k < mvmnt.getMaps().length;k++){
+                    var point = this.getPointById(mvmnt.getMaps()[k].getPointId());
                     if(point){
-                        signalGroups[signalGroupNumber][ mvmnt.id]["points"].push(point);
+                        signalGroups[signalGroupNumber][ mvmnt.getId()]["points"].push(point);
                     }
                 }
             }

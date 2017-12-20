@@ -1,4 +1,4 @@
-/* global Ext */
+/* global Ext, karTheme, contextPath */
 
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -250,7 +250,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 selModel : {
                     mode : "MULTI"
                 },
-                height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
+                height : 500,//Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
                 renderTo: overzicht,
@@ -455,7 +455,7 @@ Ext.define("nl.b3p.kar.Overview",{
             var points = movement.points;
             for (var i = 0 ; i < points.length; i++){
                 var point = points[i];
-                if(point.type.indexOf("ACTIVATION") === -1){
+                if(point.getType().indexOf("ACTIVATION") === -1){
                     continue;
                 }
                 var mvmnts = this.editor.activeRseq.findMovementsForPoint(point);
@@ -513,9 +513,9 @@ Ext.define("nl.b3p.kar.Overview",{
         var label = point.getLabel();
 
         var movement = this.editor.activeRseq.getMovementById(movementId);
-        var maps = movement.maps;
+        var maps = movement.getMaps();
         for(var i = 0 ; i < maps.length ;i++){
-            if(maps[i].pointId === point.id && maps[i].distanceTillStopLine){
+            if(maps[i].getPointId() === point.getId() && maps[i].getDistanceTillStopLine()){
                 label += " (" + maps[i].distanceTillStopLine + " m)";
             }
         }
@@ -545,9 +545,9 @@ Ext.define("nl.b3p.kar.Overview",{
     getBewegingLabel : function (mvmnt){
         var begin = "";
         var eind = "";
-        for (var i = 0;i < mvmnt.maps.length;i++){
-            var map = mvmnt.maps[i];
-            var point = this.editor.activeRseq.getPointById(map.pointId);
+        for (var i = 0;i < mvmnt.getMaps().length;i++){
+            var map = mvmnt.getMaps()[i];
+            var point = this.editor.activeRseq.getPointById(map.getPointId());
             if (point.getType() == "END"){
                 eind = point.getLabel();
             }
