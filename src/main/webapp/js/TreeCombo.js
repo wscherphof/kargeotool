@@ -268,7 +268,7 @@ Ext.define('Ext.ux.TreeCombo',{
         me.setRawValue(valueFin.join(', '));
 
         me.checkChange();
-        me.applyEmptyText();
+        //me.applyEmptyText();
         return me;
     },
     checkParentNodes : function (node){

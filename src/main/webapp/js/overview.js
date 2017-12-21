@@ -1,4 +1,4 @@
-/* global Ext, karTheme, contextPath */
+/* global Ext, karTheme, contextPath, editor, Point */
 
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -211,26 +211,26 @@ Ext.define("nl.b3p.kar.Overview",{
 
     },
     updateOverview : function (rseq, changed){
-        Ext.get("context_vri").setHtml(rseq == null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
+        Ext.get("context_vri").setHtml(rseq === null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
         if(rseq && rseq.getEditable()){
             Ext.get("rseqOptions").setVisible(true);
         } else {
             Ext.get("rseqOptions").setVisible(false);
         }
         var memoIcon = Ext.get("memo_vri");
-        if (rseq && rseq.getMemo() && rseq.getMemo() != ""){
+        if (rseq && rseq.getMemo() && rseq.getMemo() !== ""){
             memoIcon.setVisible(true);
         } else{
             memoIcon.setVisible(false);
         }
 
-        if(changed || rseq == null || rseq.getValidationErrors() == null) {
+        if(changed || rseq === null || rseq.getValidationErrors() === null) {
             Ext.get("validationResults").setHtml("");
         } else {
-            if(rseq.getValidationErrors() == 0) {
+            if(rseq.getValidationErrors() === 0) {
                 Ext.get("validationResults").setHtml("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
-                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
+                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors === 1 ? "" : "en") + "</a>");
             }
         }
 
@@ -283,7 +283,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 listeners : {
                     scope : this,
                     select : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
@@ -307,13 +307,13 @@ Ext.define("nl.b3p.kar.Overview",{
                         }
                     },
                     itemmouseenter : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
-                            if (features != null && features.length > 0){
+                            if (features !== null && features.length > 0){
                                 var feat = features[0];
-                                if (feat.renderIntent != "select"){
+                                if (feat.renderIntent !== "select"){
                                     feat.renderIntent = "temporary";
                                     vectorLayer.redraw();
                                 }
@@ -321,13 +321,13 @@ Ext.define("nl.b3p.kar.Overview",{
                         }
                     },
                     itemmouseleave : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var currentSelectedObject = this.editor.selectedObject;
-                            if (currentSelectedObject == null || currentSelectedObject.getId() != id){
+                            if (currentSelectedObject === null || currentSelectedObject.getId() !== id){
                                 var vectorLayer = this.editor.olc.vectorLayer;
                                 var features = vectorLayer.getFeaturesByAttribute("id",id);
-                                if (features != null && features.length > 0){
+                                if (features !== null && features.length > 0){
                                     var feat = features[0];
                                     feat.renderIntent = "default";
                                     vectorLayer.redraw();
@@ -353,7 +353,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             this.editor.contextMenu.on("hide", resetFn,this);
                             this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
                         }
-                        if(point && point.type == "ACTIVATION_2"){
+                        if(point && point.type === "ACTIVATION_2"){
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
@@ -374,9 +374,9 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.helpPanel.updateHelpPanel();
     },
     updateSelection : function (point){
-        if (this.tree != null){
+        if (this.tree !== null){
             var sm = this.tree.getSelectionModel();
-            if (point != null && point instanceof Point){
+            if (point !== null && point instanceof Point){
                 this.unhighlight(point.getId());
                 var root = this.tree.getRootNode();
                 var nodes = new Array();
@@ -388,7 +388,7 @@ Ext.define("nl.b3p.kar.Overview",{
         }
     },
     highlight : function (id){
-        if (this.tree != null){
+        if (this.tree !== null){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
@@ -400,7 +400,7 @@ Ext.define("nl.b3p.kar.Overview",{
         }
     },
     unhighlight : function (id){
-        if (this.tree != null){
+        if (this.tree !== null){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
@@ -457,9 +457,11 @@ Ext.define("nl.b3p.kar.Overview",{
                 var mvmnts = this.editor.activeRseq.findMovementsForPoint(point);
                 for (var j = 0 ; j < mvmnts.length; j++){
                     var mvmnt = mvmnts[j];
-                    if(mvmnt.movement.id === movement.id){
+                    if(mvmnt.movement.config.id === movement.id){
                         var map = mvmnt.map;
-                        nums[map.signalGroupNumber] = true;
+                        if(map.config.signalGroupNumber){
+                            nums[map.config.signalGroupNumber] = true;
+                        }
                     }
                 }
             }
@@ -512,7 +514,7 @@ Ext.define("nl.b3p.kar.Overview",{
         var maps = movement.getMaps();
         for(var i = 0 ; i < maps.length ;i++){
             if(maps[i].getPointId() === point.getId() && maps[i].getDistanceTillStopLine()){
-                label += " (" + maps[i].distanceTillStopLine + " m)";
+                label += " (" + maps[i].config.distanceTillStopLine + " m)";
             }
         }
         return label;
@@ -544,29 +546,29 @@ Ext.define("nl.b3p.kar.Overview",{
         for (var i = 0;i < mvmnt.getMaps().length;i++){
             var map = mvmnt.getMaps()[i];
             var point = this.editor.activeRseq.getPointById(map.getPointId());
-            if (point.getType() == "END"){
+            if (point.getType() === "END"){
                 eind = point.getLabel();
             }
 
-            if (point.getType() == "ACTIVATION_1" && begin === ""){
+            if (point.getType() === "ACTIVATION_1" && begin === ""){
                 begin = point.getLabel();
             }
-            if (begin == null || begin == ""){
-                if (point.getType() == "ACTIVATION_2"){
+            if (begin === null || begin === ""){
+                if (point.getType() === "ACTIVATION_2"){
                     begin = point.getLabel();
                 }
             }
         }
 
         var label = "Van " + begin + " naar " + eind;
-        if(label == 'Van  naar '){
+        if(label === 'Van  naar '){
             label = '';
         }
 
         return label;
     },
     updateSize : function (){
-        if (this.tree != null){
+        if (this.tree !== null){
             var ov = Ext.get("rseqInfoPanel-body");
             this.tree.setHeight(ov.getHeight()- this.heightOffset);
         }
@@ -597,7 +599,7 @@ Ext.define("nl.b3p.kar.Overview",{
     findChildrenByPointId : function (record,pointId,result){
         var me = this;
         record.eachChild(function (child){
-            if (child.raw.pointId == pointId){
+            if (child.raw.pointId === pointId){
                 result.push(child);
             }
             if (child.hasChildNodes()){
@@ -606,7 +608,7 @@ Ext.define("nl.b3p.kar.Overview",{
         });
     },
     isPoint : function (object){
-        if ((object.cluster == null || object.cluster == undefined) && object.data.type != "CROSSING" && object.data.type != "GUARD" && object.data.type != "BAR"){
+        if ((object.cluster === null || object.cluster === undefined) && object.data.type !== "CROSSING" && object.data.type !== "GUARD" && object.data.type !== "BAR"){
             return true;
         } else{
             return false;
