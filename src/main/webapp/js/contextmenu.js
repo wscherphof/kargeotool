@@ -82,7 +82,7 @@ Ext.define("ContextMenu", {
                     };
                     var lonlat = this.editor.olc.map.getLonLatFromPixel(pos);
                     
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'cancelSelecting':
                             this.editor.cancelSelection();
                             break;                            
@@ -113,7 +113,7 @@ Ext.define("ContextMenu", {
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'resetMeasure':
                             this.editor.resetMeasure();
                             break;
@@ -164,7 +164,7 @@ Ext.define("ContextMenu", {
                         click:
                         function(menu,item,e, opts) {
                             var me = this;
-                            me.type = item.id;
+                            me.type = item.getId();
                             var f = function(){
                                 if (!me.editor.activeRseq.readyForExport) {
                                     Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
@@ -251,7 +251,7 @@ Ext.define("ContextMenu", {
                     listeners: {
                         click:
                         function(menu,item,e, opts) {
-                            switch (item.id) {
+                            switch (item.getId()) {
                                 case 'selectUitmeldpuntAndereSignaalgroepRseq':
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
                                     break;
@@ -266,7 +266,7 @@ Ext.define("ContextMenu", {
                 click: function(menu,item,e, opts) {
                     // Huidige positie van muis wordt niet gebruikt voor dit context menu
                     
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'addUitmeldpunt':
                             this.editor.addUitmeldpunt();
                             break;
@@ -315,7 +315,7 @@ Ext.define("ContextMenu", {
                         y: menu.y
                     };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'removeOnbekend':
                             this.editor.removeOtherPoint();
                             break;
@@ -392,7 +392,7 @@ Ext.define("ContextMenu", {
                     listeners: {
                         click:
                         function(menu,item,e, opts) {
-                            switch (item.id) {
+                            switch (item.getId()) {
                                 case 'addBeginpunt':
                                     this.editor.addBeginpunt();
                                     break;
@@ -410,7 +410,7 @@ Ext.define("ContextMenu", {
                         y: menu.y
                     };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'editUitmeldpunt':
                             this.editor.editSelectedObject();
                             break;                        
@@ -489,7 +489,7 @@ Ext.define("ContextMenu", {
                         y: menu.y
                     };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'editInmeldpunt':
                             this.editor.editSelectedObject();
                             break;
@@ -537,7 +537,7 @@ Ext.define("ContextMenu", {
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
-                    switch (item.id) {
+                    switch (item.getId()) {
                         case 'editNAPoint':
                             editor.editSelectedObject();
                             break;
@@ -637,7 +637,7 @@ Ext.define("ContextMenu", {
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }else if (type === "CROSSING") {
-                Ext.getCmp("saveRseq").setDisabled(!editor.activeRseq.editable);
+                Ext.getCmp("saveRseq").setDisabled(!editor.activeRseq.getEditable());
             }
             
             if(this.editor.olc.isMeasuring() ){

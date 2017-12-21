@@ -211,24 +211,23 @@ Ext.define("nl.b3p.kar.Overview",{
 
     },
     updateOverview : function (rseq, changed){
-        Ext.get("context_vri").setHtml(rseq == null ? "" :
-                (rseq.description + " (" + rseq.karAddress + ")"));
-        if(rseq && rseq.editable){
+        Ext.get("context_vri").setHtml(rseq == null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
+        if(rseq && rseq.getEditable()){
             Ext.get("rseqOptions").setVisible(true);
         } else {
             Ext.get("rseqOptions").setVisible(false);
         }
         var memoIcon = Ext.get("memo_vri");
-        if (rseq && rseq.memo && rseq.memo != ""){
+        if (rseq && rseq.getMemo() && rseq.getMemo() != ""){
             memoIcon.setVisible(true);
         } else{
             memoIcon.setVisible(false);
         }
 
-        if(changed || rseq == null || rseq.validationErrors == null) {
+        if(changed || rseq == null || rseq.getValidationErrors() == null) {
             Ext.get("validationResults").setHtml("");
         } else {
-            if(rseq.validationErrors == 0) {
+            if(rseq.getValidationErrors() == 0) {
                 Ext.get("validationResults").setHtml("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
                 Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
@@ -236,9 +235,8 @@ Ext.define("nl.b3p.kar.Overview",{
         }
 
         var overzicht = Ext.get("overzicht");
-        var tree = Ext.get("tree");
-        if (tree){
-            tree.remove();
+        if (this.tree){
+            this.tree.destroy();
         }
         if(rseq){
             var root = this.createRootNode(rseq.getOverviewJSON());
@@ -246,11 +244,11 @@ Ext.define("nl.b3p.kar.Overview",{
             this.tree = Ext.create('Ext.tree.Panel',{
                 border : false,
                 header : false,
-                id : "tree",
+                //id : "tree",
                 selModel : {
                     mode : "MULTI"
                 },
-                height : 500,//Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
+                height : Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
                 renderTo: overzicht,
@@ -360,7 +358,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
                             this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
-                        }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.editable){
+                        }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.getEditable()){
                             this.otherMenu.showAt(event.xy[0],event.xy[1]);
                         }
                     },
@@ -396,9 +394,8 @@ Ext.define("nl.b3p.kar.Overview",{
             var nodes = new Array();
             this.findChildrenByPointId(root,id,nodes);
             for (var i = 0;i < nodes.length;i++){
-                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
-                var nodeElement = view.getNode(myNode);
-                Ext.get(nodeElement).addCls(view.overItemCls);
+                var n = nodes[i];
+                n.addCls(view.overItemCls);
             }
         }
     },
@@ -409,9 +406,8 @@ Ext.define("nl.b3p.kar.Overview",{
             var nodes = new Array();
             this.findChildrenByPointId(root,id,nodes);
             for (var i = 0;i < nodes.length;i++){
-                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
-                var nodeElement = view.getNode(myNode);
-                Ext.get(nodeElement).removeCls(view.overItemCls);
+                var n = nodes[i];
+                n.removeCls(view.overItemCls);
             }
         }
     },

@@ -83,7 +83,6 @@
 
         <div id="kaart">
             <div id="map" style="width: 100%; height: 100%;"></div>
-            <!--div id="overview" style="width:19%;border:1px solid #000; float:right; height:300px;overflow:hidden;"></div-->
         </div>
 
         <div id="rightbar">

@@ -1,3 +1,5 @@
+/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *
@@ -793,11 +795,11 @@ Ext.define("Editor", {
      */
     changeGeom : function (className, id, x,y){
         if(className == "RSEQ"){
-            this.activeRseq.location.coordinates = [x,y];
+            this.activeRseq.getLocation().coordinates = [x,y];
         }else{
             var point = this.activeRseq.getPointById(id);
             if(point){
-                point.geometry.coordinates = [x,y];
+                point.getGeometry().coordinates = [x,y];
             }
         }
         this.fireEvent("activeRseqUpdated", this.activeRseq);
@@ -1287,9 +1289,16 @@ Ext.define("Editor", {
       */
     addPoint: function(withLine, point) {
         if(withLine ){
-            var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
-            var startX = this.selectedObject[geomName].coordinates[0];
-            var startY = this.selectedObject[geomName].coordinates[1];
+            var isRseq = this.selectedObject instanceof RSEQ;// ? "location" : "geometry";
+            var startX, startY;
+            
+            if (isRseq) {
+                startX = this.selectedObject.getLocation().coordinates[0];
+                startY = this.selectedObject.getLocation().coordinates[1];
+            }else{
+                startX = this.selectedObject.getGeometry().coordinates[0];
+                startY = this.selectedObject.getGeometry().coordinates[1];
+            }
             this.olc.drawLineFromPoint(startX,startY);
         }else{
             this.pointFinished(point);

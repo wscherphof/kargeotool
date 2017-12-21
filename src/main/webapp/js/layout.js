@@ -108,16 +108,16 @@ Ext.onReady(function() {
                         items: [
                             {
                                 contentEl: 'overzichtTitel',
-                                height: 40,
+                              //  height: 40,
                                 margin: '3px'
                             },
                             {
-                                id:'overzicht',
-                                flex: 1
+                                id:'overzicht'/*,
+                                flex: 1*/
                             },
                             {
-                                contentEl: 'rseqOptions',
-                                height: 25
+                                contentEl: 'rseqOptions'/*,
+                                height: 25*/
                             }
                         ]
                     },

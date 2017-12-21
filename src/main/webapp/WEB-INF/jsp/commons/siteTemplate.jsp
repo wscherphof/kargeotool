@@ -65,7 +65,7 @@
             };
         </script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/ext/ext-all${param.debug == true ? '-debug' : ''}.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug${param.debug == true ? '-debug' : ''}.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/styles.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>

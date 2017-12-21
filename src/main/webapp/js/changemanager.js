@@ -1,3 +1,5 @@
+/* global Ext */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -93,7 +95,7 @@ Ext.define("ChangeManager",{
                 Ext.getDoc().dom.title = title;
             }
             var overviewTitle = Ext.get("context_vri").dom.innerHTML;
-            if(overviewTitle.indexOf("*") != -1){
+            if(overviewTitle.indexOf("*") !== -1){
                 overviewTitle = overviewTitle.substring(0,overviewTitle.indexOf("*"));
             }
             Ext.get("context_vri").setHtml(overviewTitle);

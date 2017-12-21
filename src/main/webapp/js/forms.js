@@ -82,13 +82,13 @@ Ext.define("EditForms", {
         };
 
         var me = this;
-        var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
+        var theType = rseq.getType() == "" ? "CROSSING" : rseq.getType(); // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
+            title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             height: 382,
             width: 450,
             modal: true,
-            icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
+            icon: rseq.getType() == "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -108,7 +108,7 @@ Ext.define("EditForms", {
             },
             items: {
                 id: 'rseqForm',
-                disabled: !rseq.editable,
+                disabled: !rseq.getEditable(),
                 xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
@@ -289,7 +289,7 @@ Ext.define("EditForms", {
         }
 
         this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow,
-            "Bewerken KAR attributen voor " + this.rseqType[rseq.type] +
+            "Bewerken KAR attributen voor " + this.rseqType[rseq.getType()] +
                 (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
             "In dit scherm kan worden aangegeven welke KAR attributen in KAR " +
                 "berichten die aan dit verkeerssysteem worden verzonden moeten " +
