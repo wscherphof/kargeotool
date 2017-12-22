@@ -20,7 +20,7 @@
  * Als het document klaar is met laden, zet de layout goed.
  */
 Ext.onReady(function() {
-    viewport = Ext.create('Ext.Viewport', {
+    Ext.create('Ext.Viewport', {
         layout: 'border',
         defaultType: 'panel',
         defaults: {
@@ -32,7 +32,9 @@ Ext.onReady(function() {
             {
                 region: 'north',
                 height: 30,
-                contentEl: 'header'
+                contentEl: 'header',
+                title: 'Header',
+                header: false
             }, {
                 region: 'east',
                 stateId: 'east',
@@ -44,10 +46,7 @@ Ext.onReady(function() {
                 minWidth: 0,
                 contentEl: 'rightbar',
                 layout: {
-                    type: 'accordion',
-                    align: 'stretch',
-                    multi: true,
-                    hideCollapseTool: true
+                    type: 'fit'
                 },
                 defaultType: 'panel',
                 defaults: {
@@ -57,80 +56,75 @@ Ext.onReady(function() {
                 },
                 items: [
                     {
-                        title: 'Legenda',
+                        title: 'Legend',
+                        header: false,
                         contentEl: 'legend'
                     }
-                ]
-            }, {
-                region: 'west',
-                id:'west',
-                stateId: 'west',
-                animCollapse: true,
-                collapsible: true,
-                split: true,
-                width: 275,
-                minWidth: 0,
-                contentEl: 'leftbar',
-                layout: {
-                    type: 'accordion',
-                    align: 'stretch',
-                    multi: true
-                },
-                defaultType: 'panel',
-                defaults: {
-                    border: 0,
-                    width: '100%',
-                    flex: 1,
-                    stateful: true
-                },
-                items: [
-                    {
-                        id: 'searchformPanel',
-                        stateId: 'searchform',
-                        autoScroll: true,
-                        title: 'Zoeken',
-                        layout: 'vbox',
-                        defaults: {
-                            border: 0,
-                            width: '100%'
-                        }
-                    },
-                    {
-                        id:'rseqInfoPanel',
-                        stateId: 'rseqInfoPanel',
-                        title: 'Overzicht verkeerssysteem',
-                        defaultType: 'container',
-                        layout: 'vbox',
-                        defaults: {
-                            border: 0,
-                            width: '100%'
-                        },
-                        items: [
-                            {
-                                contentEl: 'overzichtTitel',
-                              //  height: 40,
-                                margin: '3px'
-                            },
-                            {
-                                id:'overzicht'/*,
-                                flex: 1*/
-                            },
-                            {
-                                contentEl: 'rseqOptions'/*,
-                                height: 25*/
-                            }
-                        ]
-                    },
-                    {
-                        contentEl: 'form',
-                        stateId: 'help',
-                        title: 'Help'
-                    }
-                ]
+                ],
+                title: 'Legenda',
+                header: true
             },
             {
                 region: 'center',
-                contentEl: 'kaart'
+                contentEl: 'kaart',
+                title: 'Kaart',
+                header: false
+            }
+        ]
+    });
+    Ext.create('CollapsibleWindow', {
+        title: 'Zoeken',
+        id: 'searchformWindow',
+        height: 300
+    });
+    Ext.create('CollapsibleWindow', {
+        title: 'Overzicht verkeerssysteem',
+        id: 'rseqInfoWindow',
+        y: 350,
+        items: [
+            {
+                xtype: 'container',
+                contentEl: 'overzichtTitel',
+                margin: 5
+            },
+            {
+                xtype: 'container',
+                id:'overzicht'
+            },
+            {
+                xtype: 'container',
+                contentEl: 'rseqOptions'
+            }
+        ]
+    });
+    Ext.create('CollapsibleWindow', {
+        title: 'Help',
+        y: 560,
+        height: 140,
+        layout: 'fit',
+        id: 'helpWindow',
+        items: [
+            {
+                xtype: 'container',
+                itemId: 'help',
+                contentEl: 'form',
+                padding: 5,
+                scrollable: true
+            }
+        ]
+    });
+    Ext.create('CollapsibleWindow', {
+        title: 'Filters en kaartlagen',
+        y: 710,
+        layout: 'fit',
+        id: 'tocWindow',
+        items: [
+            {
+                xtype: 'container',
+                itemId: 'toc',
+                contentEl: 'toc',
+                padding: 5,
+                scrollable: true
             }
         ]
     });

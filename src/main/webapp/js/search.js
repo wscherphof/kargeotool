@@ -54,6 +54,7 @@ Ext.define("SearchManager", {
 
     },
     createForm : function(){
+        var searchFormPanel = Ext.ComponentQuery.query('#searchformWindow')[0];
         var panel = Ext.create(Ext.panel.Panel,{
             border:false,
             layout:'hbox',
@@ -91,7 +92,7 @@ Ext.define("SearchManager", {
             }
             ]
         });
-        Ext.getCmp('searchformPanel').add(panel);
+        searchFormPanel.add(panel);
         this.searchPanel = Ext.create('Ext.panel.Panel', {
             id: 'searchPanel',
             flex: 1,
@@ -116,7 +117,7 @@ Ext.define("SearchManager", {
                 collapsed: false
             }]
         });
-        Ext.getCmp('searchformPanel').add(this.searchPanel);
+        searchFormPanel.add(this.searchPanel);
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
