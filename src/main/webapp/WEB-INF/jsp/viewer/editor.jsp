@@ -65,8 +65,8 @@
                 <div id="overzichtTitel">
                     Huidig geselecteerde VRI: <span id="context_vri"></span><img id="memo_vri" src="${contextPath}/images/silk/attach.png" OnMouseOut="this.style.cursor='default';" OnMouseOver="this.style.cursor='pointer';" style="visibility: hidden;" onclick="editor.addMemo();"/>
                 </div>
-                <div id="overzicht" style="margin-top: 5px; font-size: 10pt"></div>
-                <div id="rseqOptions" style="visibility: hidden">
+                <div id="overzicht"></div>
+                <div id="rseqOptions" style="visibility: hidden;height:50px">
                     <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate();">
                     <span id="validationResults"></span>
                 </div>

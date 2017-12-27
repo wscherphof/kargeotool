@@ -1,4 +1,4 @@
-/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor */
+/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile */
 
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten

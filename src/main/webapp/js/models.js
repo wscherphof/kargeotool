@@ -186,7 +186,7 @@ Ext.define('RSEQ', {
         var movement = this.getMovementById(movementId);
         var m = null
         Ext.Array.each(movement.getMaps(), function(map) {
-            if(map.pointId === pointId) {
+            if(map.getPointId() === pointId) {
                 m = map;
             }
         });
@@ -502,14 +502,14 @@ Ext.define('RSEQ', {
         var oldMaps = movement.getMaps();
         var oldIndexed = {};
         for (var i = 0 ; i < oldMaps.length ; i++){
-            oldIndexed [oldMaps[i].id] = oldMaps[i];
+            oldIndexed [oldMaps[i].getId()] = oldMaps[i];
         }
 
         Ext.Array.each(mapIds,function(id){
             var map = oldIndexed[id];
             newMaps.push(map);
         });
-        movement.maps = newMaps;
+        movement.setMaps(newMaps);
     },
     /**
      * Geeft een GeoJSON object terug dat deze RSEQ representeert

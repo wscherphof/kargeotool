@@ -351,15 +351,15 @@ Ext.define("nl.b3p.kar.Overview",{
                             };
                             this.editor.activeMovement = this.selectedMovement;
                             this.editor.contextMenu.on("hide", resetFn,this);
-                            this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
+                            this.editor.contextMenu.show(event.clientX,event.clientY,false,true);
                         }
                         if(point && point.type === "ACTIVATION_2"){
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
-                            this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
+                            this.uitmeldpuntMenu.showAt(event.clientX,event.clientY);
                         }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.getEditable()){
-                            this.otherMenu.showAt(event.xy[0],event.xy[1]);
+                            this.otherMenu.showAt(event.clientX,event.clientY);
                         }
                     },
                     viewready : function(tree){
@@ -579,7 +579,7 @@ Ext.define("nl.b3p.kar.Overview",{
     nodeDragged : function(){
         var mapsPerMovements = {};
         this.tree.getRootNode().cascadeBy (function(node){
-            if(node.raw.type === "movement"){
+            if(node.raw && node.raw.type === "movement"){
                 var mapsPerMovement = this.getMapsPerMovement(node);
                 mapsPerMovements [node.raw.movementId] = mapsPerMovement;
             }
@@ -594,7 +594,7 @@ Ext.define("nl.b3p.kar.Overview",{
         var mapsPerMovement =[];
         Ext.Array.each(childs, function(child){
             var map = rseq.findMapForPoint(movementNode.raw.movementId,child.raw.pointId);
-            mapsPerMovement.push(map.id);
+            mapsPerMovement.push(map.getId());
         });
         return mapsPerMovement;
 
