@@ -375,7 +375,7 @@ public class EditorActionBean implements ActionBean {
      */
     private static boolean isNew(JSONObject j) {
         String id = j.optString("id");
-        return id != null && id.startsWith("ext-gen");
+        return id != null && id.startsWith("ext-");
     }
 
     /**

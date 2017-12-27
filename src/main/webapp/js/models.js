@@ -25,9 +25,10 @@ function objectSubset(object, keys) {
     var j = { };
 
     Ext.Object.each(object, function(key, value) {
-        var stripUnderscore = key.substring(1);
-        if(Ext.Array.contains(keys, stripUnderscore)) {
-            j[stripUnderscore] = value;
+        var processedKey = key.charAt(0) === '_' ? key.substring(1) : key;
+        
+        if(Ext.Array.contains(keys, processedKey)) {
+            j[processedKey] = value;
         }
     });
 
@@ -212,7 +213,7 @@ Ext.define('RSEQ', {
                 return true;
             });
             // Indien nog geen eindpunt gevonden ga verder met volgende movement
-            return result == false;
+            return result === false;
         });
         return result;
     },
@@ -381,12 +382,12 @@ Ext.define('RSEQ', {
                 pointId: inmeldpunt.getId()
             });
             // De voor dit inmeldpunt ingestelde inmeldpuntwaardes
-            Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine","virtualLocalLoopNumber", "triggerType"]));
+            newMap.setConfig(objectSubset(theMap, ["distanceTillStopLine","virtualLocalLoopNumber", "triggerType"]));
 
             // De signal waardes komen van de MovementActivationPoint van het uitmeldpunt
-            Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber","vehicleTypes"]));
+            newMap.setConfig(objectSubset(mvmtAndMap.map, ["signalGroupNumber","vehicleTypes"]));
 
-            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+            mvmtAndMap.movement.getMaps().splice(0, 0, newMap);
         });
     },
 

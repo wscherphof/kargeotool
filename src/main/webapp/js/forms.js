@@ -69,7 +69,7 @@ Ext.define("EditForms", {
                 return;
             }
 
-            Ext.Object.merge(rseq, form.getValues());
+            rseq.setConfig(form.getValues());
             if(rseq == me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
@@ -322,7 +322,7 @@ Ext.define("EditForms", {
                 return;
             }
 
-            Ext.Object.merge(point, form.getValues());
+            point.setConfig(form.getValues());
             if(rseq == me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
@@ -627,8 +627,7 @@ Ext.define("EditForms", {
 
             // merge label naar point
             var formValues = form.getValues();
-            Ext.Object.merge(point, objectSubset(formValues, ["label"]));
-
+            point.setConfig(objectSubset(formValues, ["label"]));
             // deze waardes naar alle maps van movements die dit
             // pointId gebruiken
             var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "virtualLocalLoopNumber", "vehicleTypes", "triggerType"]);
@@ -642,9 +641,9 @@ Ext.define("EditForms", {
 
             // nieuw punt, alleen naar map mergen
             if(!movements) {
-                Ext.Object.merge(map, pointSignalValues);
+                map.setConfig(pointSignalValues);
                 if(editingUitmeldpunt) {
-                    Ext.Object.merge(map, allSignalValues);
+                    map.setConfig(allSignalValues);
                 }
             } else {
 
@@ -654,7 +653,7 @@ Ext.define("EditForms", {
                     //console.log("movement nummer " + mvmtAndMap.movement.nummer);
                     if(mvmtAndMap.map) {
                         //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
-                        Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
+                        mvmtAndMap.map.setConfig(pointSignalValues);
                     }
                     if(editingUitmeldpunt) {
                         var movement = mvmtAndMap.movement;
@@ -670,7 +669,7 @@ Ext.define("EditForms", {
                         Ext.each(maps, function(theMap) {
                             if(theMap.beginEndOrActivation == "ACTIVATION") {
                                 //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
-                               Ext.Object.merge(theMap, allSignalValues);
+                               theMap.setConfig(allSignalValues);
                             }
                         });
                         
