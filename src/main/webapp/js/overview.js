@@ -38,7 +38,7 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false); },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
 
-        var panel = Ext.getCmp("rseqInfoPanel");
+        var panel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
         panel.on('collapse',this.updateSize,this);
         panel.on('expand',this.updateSize,this);
         panel.on('resize',this.updateSize,this);
@@ -248,7 +248,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 selModel : {
                     mode : "MULTI"
                 },
-                height : Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
+                height : this.getRseqBodyHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
                 renderTo: overzicht,
@@ -569,9 +569,12 @@ Ext.define("nl.b3p.kar.Overview",{
     },
     updateSize : function (){
         if (this.tree !== null){
-            var ov = Ext.get("rseqInfoPanel-body");
-            this.tree.setHeight(ov.getHeight()- this.heightOffset);
+            this.tree.setHeight(this.getRseqBodyHeight() - this.heightOffset);
         }
+    },
+    getRseqBodyHeight: function() {
+        var rseqPanel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
+        return rseqPanel.body.getHeight();
     },
     nodeDragged : function(){
         var mapsPerMovements = {};

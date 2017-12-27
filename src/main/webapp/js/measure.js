@@ -31,6 +31,7 @@ Ext.define("Measure", {
     line:null,
     modify:null,
     lastLength:null,
+    tooltipId: 'kar-measure-tool',
     constructor : function(options){
         this.mixins.observable.constructor.call(this);  
         
@@ -110,7 +111,7 @@ Ext.define("Measure", {
         });
         this.line.events.register('featureadded', this, this.featureFinished);
         this.map.addControl(this.line);
-        
+
         this.modify = new OpenLayers.Control.ModifyFeature(this.vectorLayer,{standAlone:false, clickout:true, toggle:true,vertexRenderIntent: "vertexStyle"});
 
         this.vectorLayer.events.register('featuremodified',this, this.featureModified);
@@ -126,6 +127,7 @@ Ext.define("Measure", {
         this.vectorLayer.removeAllFeatures();
         this.modify.deactivate();
         editor.changeCurrentEditAction(null);
+        this.hideMouseTooltip();
     },
     featureFinished: function(evt){
         var feature = evt.feature;
@@ -147,9 +149,46 @@ Ext.define("Measure", {
             var bestlengthtokens = this.measure.getBestLength(geom);         
             this.lastLength = bestlengthtokens;
             this.fireEvent('measureChanged', bestlengthtokens[0].toFixed(0), bestlengthtokens[1]);
+            this.showMouseTooltip(evt, bestlengthtokens[0].toFixed(0), bestlengthtokens[1]);
         }
     },
+
     resetLayerIndex : function(evt){
         this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(evt.layer)+3);
+    },
+
+    showMouseTooltip: function(evt, measure, unit) {
+        var measureValueDiv = document.getElementById(this.tooltipId);
+        var measureValueText = document.getElementById(this.tooltipId + 'Text');
+        if (measureValueDiv === null){
+            measureValueDiv = document.createElement('div');
+            measureValueDiv.id = this.tooltipId;
+            measureValueDiv.style.position = 'absolute';
+            document.querySelector('.olMap').appendChild(measureValueDiv);
+            measureValueDiv.style.zIndex = "10000";
+            measureValueDiv.className = "olControlMaptip";
+            measureValueText = document.createElement('div');
+            measureValueText.id = this.tooltipId + 'Text';
+            measureValueDiv.appendChild(measureValueText);
+        }
+        var x = evt.x; var y = evt.y;
+        if(!x && !y && evt.feature && evt.feature.geometry && evt.feature.geometry.components) {
+            var lastComponent = evt.feature.geometry.components[evt.feature.geometry.components.length - 1];
+            x = lastComponent.x;
+            y = lastComponent.y;
+        }
+        var px = this.measure.map.getViewPortPxFromLonLat(new OpenLayers.LonLat(x, y));
+        measureValueDiv.style.top = px.y + "px";
+        measureValueDiv.style.left = px.x + 10 + 'px';
+        measureValueDiv.style.display = "block";
+        measureValueText.innerHTML= measure + " " + unit;
+    },
+
+    hideMouseTooltip: function() {
+        var measureValueDiv = document.getElementById(this.tooltipId);
+        if(measureValueDiv) {
+            measureValueDiv.style.display = 'none';
+        }
     }
+
 });

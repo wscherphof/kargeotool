@@ -114,13 +114,9 @@ Ext.define("Editor", {
          * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
          */
         var east = Ext.getCmp("east");
-        var west = Ext.getCmp("west");
         east.on('resize', this.olc.resizeMap, this.olc);
-        west.on('resize', this.olc.resizeMap, this.olc);
         east.on('collapse', this.olc.resizeMap, this.olc);
-        west.on('collapse', this.olc.resizeMap, this.olc);
         east.on('expand', this.olc.resizeMap, this.olc);
-        west.on('expand', this.olc.resizeMap, this.olc);
 
         this.on('activeRseqChanged', function(){
             var snapRoads = Ext.get("snapRoads");
@@ -1597,7 +1593,7 @@ Ext.define("HelpPanel", {
                 }
         }
 
-        Ext.get("help").dom.innerHTML = txt;
+        Ext.ComponentQuery.query("#help")[0].getEl().dom.innerHTML = txt;
     }
 
 });

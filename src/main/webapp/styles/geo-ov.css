@@ -251,3 +251,29 @@ body.editor {
     white-space: nowrap;
     vertical-align: top;
 }
+
+.olMap .olControlPanel {
+    left: auto;
+    right: 5px;
+    top: 300px;
+    margin: 0;
+    border: 0 none;
+    width: 40px;
+}
+
+.olMap .olControlPanel div {
+    display: block;
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 5px;
+    margin-bottom: 10px;
+    position: static;
+}
+
+.olMap .olControlPanZoomBar {
+    right: 46px;
+    left: auto !important;
+}
