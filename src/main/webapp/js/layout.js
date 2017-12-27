@@ -1,3 +1,5 @@
+/* global Ext */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *

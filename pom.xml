@@ -18,6 +18,8 @@
         <geotools.version>18.1</geotools.version>
         <hibernate.version>3.6.10.Final</hibernate.version>
         <postgresql.version>42.1.1</postgresql.version>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <dependencies>

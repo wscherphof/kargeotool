@@ -171,7 +171,7 @@ Ext.define('RSEQ', {
 
         Ext.Array.each(this.getMovements(), function(movement) {
             Ext.Array.each(movement.getMaps(), function(map) {
-                if(map.pointId == point.id) {
+                if(map.getPointId() === point.getId()) {
                     movements.push({
                         movement: movement,
                         map: map
@@ -203,8 +203,8 @@ Ext.define('RSEQ', {
 
         var result = false;
         Ext.Array.each(pointMovements, function(mvmtAndMap) {
-            Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
-                if(map.beginEndOrActivation == "END") {
+            Ext.Array.each(mvmtAndMap.movement.getMaps(), function(map) {
+                if(map.getBeginEndOrActivation() === "END") {
                     result = true;
                     // Stop met Ext.Array.each() (break)
                     return false;
@@ -297,7 +297,7 @@ Ext.define('RSEQ', {
                     beginEndOrActivation: "END",
                     pointId: eindpunt.getId()
                 });
-                movement.maps.push(newMap);
+                movement.getMaps().push(newMap);
                 continue;
             }
             // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
