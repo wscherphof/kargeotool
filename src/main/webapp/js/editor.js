@@ -1120,6 +1120,7 @@ Ext.define("Editor", {
                             });
                             me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, movementId);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
+                            me.changeCurrentEditAction(null);
                         }
                     },
                     scope:this,
@@ -1174,6 +1175,7 @@ Ext.define("Editor", {
                             });
                             me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true,false, this.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
+                            me.changeCurrentEditAction(null);
                         }
                     },
                     scope:this,

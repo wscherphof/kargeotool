@@ -359,7 +359,7 @@ Ext.define('RSEQ', {
         if(movement){
             var mvmnt = this.getMovementById(movement);
 
-            var map = this.findMapForPoint(mvmnt.id, puntVanMovement.id);
+            var map = this.findMapForPoint(mvmnt.getId(), puntVanMovement.getId());
             pointMovements=[{
                 map: map,
                 movement: mvmnt
