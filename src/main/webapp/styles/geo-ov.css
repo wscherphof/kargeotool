@@ -54,9 +54,9 @@ body.editor {
 }
 
 #header {
-    background-color: #D9E7F8;
-    color: Black;
-    border-bottom: 1px solid #99BCE8;
+    background-color: #f5f5f5;
+    color: #157fcc;
+    border-bottom: 1px solid #c1c1c1;
     font-size: 12pt;
     font-weight: bold;
     height: 30px;

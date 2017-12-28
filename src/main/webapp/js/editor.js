@@ -953,13 +953,13 @@ Ext.define("Editor", {
                 var map =  srcMovement.getMapForPoint(uitmeldpunt);
                 if(Ext.isString(movementId)){ // movementId is a string. If no string is passed (ie. the uitmeldpunt should be used in a new movement), it's an object.
                     var destMovement = this.activeRseq.getMovementById(movementId);
-                    destMovement.addMapAfter(map, baseUitmeldpunt.id);
+                    destMovement.addMapAfter(map, baseUitmeldpunt.getId());
                 }else{
                     var map = Ext.create(MovementActivationPoint, {
                         beginEndOrActivation: "ACTIVATION",
                         commandType: 2,
                         pointId: uitmeldpunt.getId(),
-                        distanceTillStopLine: map.distanceTillStopLine,
+                        distanceTillStopLine: map.getDistanceTillStopLine(),
                         vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
                     });
 
