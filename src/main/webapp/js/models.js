@@ -411,7 +411,7 @@ Ext.define('RSEQ', {
                 pointId: beginpunt.getId()
             });
 
-            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+            mvmtAndMap.movement.getMaps().splice(0, 0, newMap);
         });
     },
 
@@ -419,8 +419,8 @@ Ext.define('RSEQ', {
 
         var mvmnt = this.getMovementById(movement);
 
-        var map = this.findMapForPoint(mvmnt.id, checkout.id);
-        var point = this.getPointById(map.pointId);
+        var map = this.findMapForPoint(mvmnt.getId(), checkout.getId());
+        var point = this.getPointById(map.getPointId());
         mvmnt.removeMapForPoint(point);
 
         var mvmnts = this.findMovementsForPoint(checkout);
@@ -434,18 +434,18 @@ Ext.define('RSEQ', {
         var mvmnts = this.findMovementsForPoint(checkout);
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
-            for (var j = movement.maps.length-1 ;j >= 0 ; j--){
-                var point = this.getPointById(movement.maps[j].pointId);
-                if(point.id != checkout.id){
+            for (var j = movement.getMaps().length-1 ;j >= 0 ; j--){
+                var point = this.getPointById(movement.getMaps()[j].getPointId());
+                if(point.getId() !== checkout.getId()){
                     var ms = this.findMovementsForPoint(point);
-                    if(ms.length == 1){
+                    if(ms.length === 1){
                         this.removePoint(point);
                     }else{
                         movement.removeMapForPoint(point);
                     }
                 }
             }
-            this.removeMovement(movement.id);
+            this.removeMovement(movement.getId());
         }
         this.removePoint(checkout);
     },
@@ -464,7 +464,7 @@ Ext.define('RSEQ', {
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
             if(movementId){
-                if( parseInt(movementId) === movement.id){
+                if( parseInt(movementId) === movement.getId()){
                     movement.removeMapForPoint(point);
                 }
             }else{
@@ -825,7 +825,7 @@ Ext.define('Movement', {
     },
     removeMapForPoint:function(point){
         for (var i = this.getMaps().length-1 ; i >= 0 ; i--){
-            if(this.getMaps()[i].pointId == point.getId()){
+            if(this.getMaps()[i].getPointId() === point.getId()){
                 this.getMaps().splice(i,1);
             }
         }

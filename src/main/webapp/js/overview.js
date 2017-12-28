@@ -341,7 +341,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         if (type !== "signalGroup" && type !== "movement" ){
                             this.selectedMovement = record.parentNode.raw.movementId;
                         }
-                        if (type !== "signalGroup" && type !== "movement" && point.type !== "ACTIVATION_2" ){
+                        if (type !== "signalGroup" && type !== "movement" && point.getType() !== "ACTIVATION_2" ){
                             var resetFn = function(){
                                 var windowOpened = editor.editForms.hasOpenWindows();
                                 if(!windowOpened){
@@ -353,7 +353,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             this.editor.contextMenu.on("hide", resetFn,this);
                             this.editor.contextMenu.show(event.clientX,event.clientY,false,true);
                         }
-                        if(point && point.type === "ACTIVATION_2"){
+                        if(point && point.getType() === "ACTIVATION_2"){
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
