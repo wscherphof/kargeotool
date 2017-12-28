@@ -616,7 +616,10 @@ Ext.define("ContextMenu", {
         }
     },
     hideFired : function(menu, eventOptions){
-        this.fireEvent("hide",menu, eventOptions);
+        var me = this;
+        setTimeout(function(){
+            me.fireEvent("hide",menu, eventOptions);
+        },500);
     },
     /**
  * Haal het nodige menu op door te kijken wat het type is van het geselecteerde object
