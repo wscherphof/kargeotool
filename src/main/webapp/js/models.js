@@ -807,7 +807,7 @@ Ext.define('Movement', {
     getMapForPoint : function (point){
         var map = null;
         for (var i = 0 ; i < this.getMaps().length; i++){
-            if(this.getMaps()[i].pointId == point.getId()){
+            if(this.getMaps()[i].getPointId() == point.getId()){
                 map = this.getMaps()[i];
                 break;
             }
