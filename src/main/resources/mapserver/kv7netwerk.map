@@ -10,12 +10,12 @@ fontset "fonts.list"
 
 web
   metadata
-    "ows_title"				"KV7netwerk"
-    "ows_onlineresource"		"http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/kv7netwerk.map"
-    "ows_srs"				"EPSG:28992"
-    "ows_extent"			"12000 304000 280000 620000"
-    "ows_schemas_location"		"http://schemas.opengeospatial.net"
-	"ows_enable_request"   "*"
+    "ows_title"       "KV7netwerk"
+    "ows_onlineresource"    "http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/kv7netwerk.map"
+    "ows_srs"       "EPSG:28992"
+    "ows_extent"      "12000 304000 280000 620000"
+    "ows_schemas_location"    "http://schemas.opengeospatial.net"
+  "ows_enable_request"   "*"
   end
   imagepath "/tmp"
 end
@@ -25,12 +25,12 @@ projection
 end
 
 OUTPUTFORMAT
-	NAME png
-	DRIVER "AGG/PNG"
-	MIMETYPE "image/png"
-	IMAGEMODE RGBA
-	EXTENSION "png"
-	TRANSPARENT ON
+  NAME png
+  DRIVER "AGG/PNG"
+  MIMETYPE "image/png"
+  IMAGEMODE RGBA
+  EXTENSION "png"
+  TRANSPARENT ON
 END
 
 legend
@@ -54,14 +54,16 @@ symbol
   points 1 1 end
 end
 
-#symbol
-#  name "pijl"
-#  type truetype
-#  font "freesans"
-#  character ">"
-#  antialias true
-#  gap -50
-#end
+
+symbol
+  name "pijl"
+  type truetype
+  font "freesans"
+  character ">"
+  antialias true
+  #gap -50
+end
+
 
 layer
   name buslijnen
@@ -70,7 +72,7 @@ layer
     "gml_include_items" "all"
     "ows_linepublicnumber_type" "Character" 
     "wfs_featureid" "id"
-	'default_filtering' 'no'
+  'default_filtering' 'no'
   end
   type line
   dump true
@@ -78,7 +80,7 @@ layer
   status off
   validation
     "schema"    "[a-z_]+"
-	"filtering"	"[0-9]*"
+  "filtering" "[0-9]*"
   end
   
   connectiontype postgis
@@ -89,14 +91,32 @@ layer
   end
   labelitem "linepublicnumber"
   filter ("linepublicnumber" = '%filtering%' or 'no' = '%filtering%')
-  	  
+      
   class 
     name ""
-    style      
-		color 255 0 0
-	end
+ 
+    style
+      color 255 0 0 
+    end
+    STYLE
+      geomtransform vertices
+      COLOR 255 0 0
+      SYMBOL "pijl"
+      SIZE 15.0
+      ANGLE AUTO
+    END # STYLE
+    label
+        type truetype
+        font "freesans"
+        antialias true
+        size 8
+        color 2 2 2
+        outlinecolor 255 255 255
+        buffer 2
+        position auto
+    end  
    END
-	 
+   
   processing "CLOSE_CONNECTION=DEFER"
 end
 
@@ -168,8 +188,8 @@ layer
         color 2 2 2
         outlinecolor 255 255 255
         buffer 2
-	force true
-	position auto
+        #force true
+        position auto
     end  
   end
   processing "CLOSE_CONNECTION=DEFER"

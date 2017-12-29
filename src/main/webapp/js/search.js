@@ -1,4 +1,4 @@
-/* global Ext, searchActionBeanUrl */
+/* global Ext, searchActionBeanUrl, ovInfo, editor */
 
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -68,7 +68,7 @@ Ext.define("SearchManager", {
                 listeners:{
                     keypress: {
                         fn: function(form,evt){
-                            if(evt.getKey() == Ext.EventObject.ENTER){
+                            if(evt.getKey() === Ext.EventObject.ENTER){
                                 this.search(form.value);
                             }
                         },
@@ -213,7 +213,7 @@ Ext.define("nl.b3p.kar.SearchResult", {
     },
     constructor: function(config) {
         this.initConfig(config);
-        if(this.x != null && this.y != null){
+        if(this.x !== null && this.y !== null){
             this.location = new OpenLayers.LonLat(this.x, this.y);
         }
     }
@@ -563,7 +563,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 Ext.Array.each(ovInfo, function(ov) {
                     var currentName = "buslijnen_" + ov.schema;
                     var visible = false;
-                    if(currentName == layerName){
+                    if(currentName === layerName){
                         visible = true;
                     }
                     editor.olc.setLayerVisible(currentName, visible);
