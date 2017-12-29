@@ -1,3 +1,5 @@
+/* global Ext, deelgebieden, dataowners, exportActionBeanUrl */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -30,7 +32,7 @@ Ext.onReady(function (){
             type : 'memory',
             reader : {
                 type : 'json',
-                root : 'items'
+                rootProperty : 'items'
             }
         }
     });
@@ -130,7 +132,7 @@ Ext.onReady(function (){
                         xtype : "button",
                         text : 'Nieuw',
                         handler : function (){
-                            var url = exportActionBeanUrl + "?maakDeelgebied=true"
+                            var url = exportActionBeanUrl + "?maakDeelgebied=true";
                             document.location.href = url;
                         }
                     },

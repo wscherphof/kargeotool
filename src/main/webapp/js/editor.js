@@ -1,4 +1,4 @@
-/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile */
+/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile, SearchManager, EditForms, ChangeManager, nl, RSEQ, contextPath, karTheme */
 
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -184,7 +184,7 @@ Ext.define("Editor", {
      */
     parseLocationHash: function() {
         var hash = window.location.hash;
-        hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
+        hash = hash.charAt(0) === '#' ? hash.substring(1) : hash;
         return Ext.Object.fromQueryString(hash);
     },
 
@@ -283,7 +283,6 @@ Ext.define("Editor", {
 
     /**
      * Laad alle road side equipment.
-     * @param id (optioneel) het id dat niet opgehaald moet worden
      */
     loadAllRseqs: function() {
         Ext.Ajax.request({
@@ -340,16 +339,16 @@ Ext.define("Editor", {
 
         var filteredRseqs = this.getFilteredRseqs();
         var me = this;
-        if(this.activeRseq != null) {
+        if(this.activeRseq !== null) {
             var activeRseqIndex = -1;
             Ext.Array.each(filteredRseqs, function(rseq, index) {
-                if(rseq.properties.id == me.activeRseq.id) {
+                if(rseq.properties.id === me.activeRseq.id) {
                     activeRseqIndex = index;
                     return false;
                 }
                 return true;
             });
-            if(activeRseqIndex != -1) {
+            if(activeRseqIndex !== -1) {
                 // active rseq is moved from rseq to vector layer, do not add
                 // it to rseq layer
                 Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
@@ -524,9 +523,9 @@ Ext.define("Editor", {
 
     removeRseq : function(){
         var rseq = this.activeRseq;
-        var isNewRseq = typeof this.activeRseq.getId() != "number";
+        var isNewRseq = typeof this.activeRseq.getId() !== "number";
 
-        if(rseq != null && !isNewRseq) {
+        if(rseq !== null && !isNewRseq) {
              Ext.Msg.show({
                 title:"Weet u het zeker?",
                 msg: "Weet u zeker dat u dit verkeerssysteem wilt weggooien?",
@@ -644,7 +643,7 @@ Ext.define("Editor", {
          if(this.activeRseq){
              var resLimit = 1;
              var resolution = this.olc.map.getResolution();
-             var isNewRseq = typeof this.activeRseq.getId() != "number";
+             var isNewRseq = typeof this.activeRseq.getId() !== "number";
              if(resolution < resLimit && !isNewRseq){
                 var extent = this.olc.map.getExtent().add(50,50).toGeometry().toString();
                 Ext.Ajax.request({
@@ -692,7 +691,7 @@ Ext.define("Editor", {
      * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
     zoomToActiveRseq: function() {
-        if(this.activeRseq != null) {
+        if(this.activeRseq !== null) {
             this.olc.map.setCenter(new OpenLayers.LonLat(
                 this.activeRseq.location.coordinates[0],
                 this.activeRseq.location.coordinates[1]),
@@ -706,9 +705,9 @@ Ext.define("Editor", {
      * @param rseq de nieuwe actieve Rseq
      */
     setActiveRseq: function (rseq){
-        if(rseq != null) {
+        if(rseq !== null) {
             this.unedittedRseq = cloneObject(rseq.toJSON());
-            if(this.activeRseq != null ){
+            if(this.activeRseq !== null ){
                 this.olc.cacheControl.insertIntoTree(this.activeRseq);
             }
             this.olc.cacheControl.removeFromTree(rseq);
@@ -774,7 +773,7 @@ Ext.define("Editor", {
 
             var type = this.selectedObject.getType();
 
-            if(type == null || type == "END" || type == "BEGIN") {
+            if(type === null || type === "END" || type === "BEGIN") {
                 this.editForms.editNonActivationPoint();
             } else {
                 this.editForms.editActivationPoint();
@@ -790,7 +789,7 @@ Ext.define("Editor", {
      * @param y de nieuwe y coordinaat
      */
     changeGeom : function (className, id, x,y){
-        if(className == "RSEQ"){
+        if(className === "RSEQ"){
             this.activeRseq.getLocation().coordinates = [x,y];
         }else{
             var point = this.activeRseq.getPointById(id);
@@ -868,10 +867,10 @@ Ext.define("Editor", {
             multiline: true,
             value: memo,
             fn: function(btn, text){
-                if (btn == 'yes'){
+                if (btn === 'yes'){
                     this.activeRseq.memo = text;
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
-                }else if (btn == 'no') {
+                }else if (btn === 'no') {
                     this.activeRseq.memo = '';
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
                 }
@@ -947,7 +946,7 @@ Ext.define("Editor", {
         if(uitmeldpunt){
 
             var baseUitmeldpunt = this.selectedObject = this.previousSelectedObject;
-            if(uitmeldpunt instanceof Point && uitmeldpunt.getType() == "ACTIVATION_2"){
+            if(uitmeldpunt instanceof Point && uitmeldpunt.getType() === "ACTIVATION_2"){
                 var mvmnts = this.activeRseq.findMovementsForPoint(uitmeldpunt);
                 var srcMovement = mvmnts[0].movement;
                 var map =  srcMovement.getMapForPoint(uitmeldpunt);
@@ -1112,7 +1111,7 @@ Ext.define("Editor", {
                     title:'Voorinmeldpunt selecteren',
                     msg:'Wilt u voorinmeldpunt ' + voorinmeldpunt.getLabel() + " selecteren voor bewegingen naar inmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
-                        if(buttonId == "yes") {
+                        if(buttonId === "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
@@ -1158,7 +1157,7 @@ Ext.define("Editor", {
         if(inmeldpunt){
 
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
-            if(inmeldpunt instanceof Point && inmeldpunt.getType() == "ACTIVATION_1"){
+            if(inmeldpunt instanceof Point && inmeldpunt.getType() === "ACTIVATION_1"){
 
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
 
@@ -1167,7 +1166,7 @@ Ext.define("Editor", {
                     title:'Inmeldpunt selecteren',
                     msg:'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
-                        if(buttonId == "yes") {
+                        if(buttonId === "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
@@ -1323,10 +1322,10 @@ Ext.define("Editor", {
 
     // ==== Search ==== ///
     searchResultClicked : function(searchResult){
-        if(searchResult.getBounds() != null){
+        if(searchResult.getBounds() !== null){
             var bounds = searchResult.getBounds();
             this.olc.map.zoomToExtent(bounds.toArray());
-        }else if (searchResult.getX() != null && searchResult.getY() != null){
+        }else if (searchResult.getX() !== null && searchResult.getY() !== null){
             this.olc.map.setCenter(searchResult.getLocation(), 12);
         }
         if(searchResult.getAddMarker()){
@@ -1340,7 +1339,7 @@ Ext.define("Editor", {
 
     // ==== KV9 Validation results ====
     showValidationResults: function() {
-        if(this.activeRseq == null) {
+        if(this.activeRseq === null) {
             return;
         }
 
@@ -1527,7 +1526,7 @@ Ext.define("HelpPanel", {
                 if(mvmObj){
                     var movement = mvmObj.movement;
                     var signalGroupNumber = movement.nummer;
-                    var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) != -1;
+                    var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) !== -1;
                     if(signalGroupNumbers.length > 0 && !alreadyPresent){
                         signalGroupNumbers += ', ';
                     }

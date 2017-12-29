@@ -459,7 +459,7 @@ Ext.define("nl.b3p.kar.SearchRoad", {
 */
 Ext.define("nl.b3p.kar.SearchBusline", {
     extend: "nl.b3p.kar.Search",
-    category: "Buslijnen",
+    category: "OV-lijnen",
     beheerder:null,
     constructor: function(config) {
         this.callParent(arguments);
