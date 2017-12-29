@@ -69,7 +69,7 @@ Ext.define("EditForms", {
                 return;
             }
 
-            Ext.Object.merge(rseq, form.getValues());
+            rseq.setConfig(form.getValues());
             if(rseq == me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
@@ -82,13 +82,13 @@ Ext.define("EditForms", {
         };
 
         var me = this;
-        var theType = rseq.type == "" ? "CROSSING" : rseq.type; // default voor nieuw
+        var theType = rseq.getType() == "" ? "CROSSING" : rseq.getType(); // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + me.rseqType[rseq.type] + (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
+            title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
             height: 382,
             width: 450,
             modal: true,
-            icon: rseq.type == "" ? karTheme.crossing : karTheme[rseq.type.toLowerCase()],
+            icon: rseq.getType() == "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -108,7 +108,7 @@ Ext.define("EditForms", {
             },
             items: {
                 id: 'rseqForm',
-                disabled: !rseq.editable,
+                disabled: !rseq.getEditable(),
                 xtype: 'form',
                 bodyStyle: 'padding: 5px 5px 0',
                 fieldDefaults: {
@@ -167,7 +167,7 @@ Ext.define("EditForms", {
                     typeAhead:true,
                     minChars:2,
                     valueField: 'id',
-                    value: rseq.dataOwner,
+                    value: rseq.config.dataOwner,
                     store: Ext.create('Ext.data.Store', {
                         fields: [ 'id','code', 'classificatie', 'companyNumber', 'omschrijving'],
                         data: dataOwners
@@ -190,14 +190,14 @@ Ext.define("EditForms", {
                     fieldLabel: 'Beheerdersaanduiding',
                     allowBlank:false,
                     name: 'crossingCode',
-                    value: rseq.crossingCode
+                    value: rseq.config.crossingCode
                 },{
                     xtype: 'numberfield',
                     fieldLabel: 'KAR adres',
                     name: 'karAddress',
                     allowBlank: false,
                     minValue: 0,
-                    value: rseq.karAddress,
+                    value: rseq.config.karAddress,
                     listeners: {
                         change: function(field, value) {
                             value = parseInt(value, 10);
@@ -208,36 +208,36 @@ Ext.define("EditForms", {
                     fieldLabel: 'Plaats',
                     name: 'town',
                     allowBlank: false,
-                    value: rseq.town
+                    value: rseq.config.town
                 },{
                     fieldLabel: 'Locatie',
                     name: 'description',
-                    value: rseq.description
+                    value: rseq.config.description
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
                     fieldLabel: 'Geldig vanaf',
                     name: 'validFrom',
-                    value: rseq.validFrom
+                    value: rseq.config.validFrom
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
                     fieldLabel: 'Geldig tot',
                     name: 'validUntil',
-                    value: rseq.validUntil
+                    value: rseq.config.validUntil
                 },{
                     xtype: 'checkbox',
                     fieldLabel: 'Gereed voor export',
                     name: 'readyForExport',
                     id: 'readyForExport',
                     inputValue: true,
-                    value: rseq.readyForExport,
-                    checked: rseq.readyForExport,
+                    value: rseq.config.readyForExport,
+                    checked: rseq.config.readyForExport,
                     listeners:{
                         change:{
                             scope: this,
                             fn: function (form, value) {
-                                rseq.readyIsSet = value;
+                                rseq.config.readyIsSet = value;
                             }
                         }
                     }
@@ -256,10 +256,10 @@ Ext.define("EditForms", {
                         xtype: 'button',
                         name: 'messagesOverview',
                         width: 100,
-                        disabled: Ext.isString(rseq.id),
+                        disabled: Ext.isString(rseq.config.id),
                         text: 'Export informatie',
                         handler: function() {
-                            Ext.create("MessagesOverview").show(rseq.id);
+                            Ext.create("MessagesOverview").show(rseq.config.id);
                         }
                     }]
                 }],
@@ -289,15 +289,15 @@ Ext.define("EditForms", {
         }
 
         this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow,
-            "Bewerken KAR attributen voor " + this.rseqType[rseq.type] +
-                (rseq.karAddress == null ? "" : " met KAR adres " + rseq.karAddress),
+            "Bewerken KAR attributen voor " + this.rseqType[rseq.getType()] +
+                (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
             "In dit scherm kan worden aangegeven welke KAR attributen in KAR " +
                 "berichten die aan dit verkeerssysteem worden verzonden moeten " +
                 "worden gevuld. Dit geldt voor alle soorten berichten " +
                 "(voorinmeldpunt, inmeldpunt en uitmeldpunt).",
-            rseq.attributes,
+            rseq.config.attributes,
             function(atts) {
-                rseq.attributes = atts;
+                rseq.config.attributes = atts;
             }
         );
 
@@ -322,7 +322,7 @@ Ext.define("EditForms", {
                 return;
             }
 
-            Ext.Object.merge(point, form.getValues());
+            point.setConfig(form.getValues());
             if(rseq == me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
@@ -337,7 +337,7 @@ Ext.define("EditForms", {
         var me = this;
         var label = point.getLabel() == null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + (point.getType() == null ? "ongebruikt punt " : (point.getType() == "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
+            title: 'Bewerken ' + (point.getType() === null ? "ongebruikt punt " : (point.getType() === "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
             height: 96,
             width: 250,
             modal: true,
@@ -377,7 +377,7 @@ Ext.define("EditForms", {
                 items: [{
                     fieldLabel: 'Label',
                     name: 'label',
-                    value: point.label,
+                    value: point.config.label,
                     id: 'labelEdit'
                 }],
                 buttons: [{
@@ -426,7 +426,7 @@ Ext.define("EditForms", {
             if(this.editor.activeMovement){
                 var mvmnt = this.editor.activeRseq.getMovementById(this.editor.activeMovement);
 
-                map = rseq.findMapForPoint(mvmnt.id, point.id);
+                map = rseq.findMapForPoint(mvmnt.config.id, point.config.id);
                 if (!mvmnt || !map) {
                     alert("Kan geen movements vinden voor activation point!");
                     return;
@@ -444,7 +444,7 @@ Ext.define("EditForms", {
                 map = movements[0].map;
             }
         }
-        var oldSignalGroupNumber = map.signalGroupNumber;
+        var oldSignalGroupNumber = map.config.signalGroupNumber;
 
         if(apType === "1"){
             label += " (Signaalgroep " + oldSignalGroupNumber + ")";
@@ -479,11 +479,11 @@ Ext.define("EditForms", {
             ]
         }};
         var selectedVehicleTypes = [];
-        if(!map.vehicleTypes){
-            map.vehicleTypes = new Array();
+        if(!map.config.vehicleTypes){
+            map.config.vehicleTypes = new Array();
         }
         Ext.Array.each(vehicleTypes, function(vt) {
-            var selected = map.vehicleTypes.indexOf(vt.nummer) != -1;
+            var selected = map.config.vehicleTypes.indexOf(vt.nummer) != -1;
             if(selected) {
                 selectedVehicleTypes.push(vt.nummer);
             }
@@ -504,13 +504,13 @@ Ext.define("EditForms", {
 
         var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
 
-        var editingUitmeldpunt = map.commandType === 2;
-        var edittingInmeldpunt = map.commandType === 1;
+        var editingUitmeldpunt = map.config.commandType === 2;
+        var edittingInmeldpunt = map.config.commandType === 1;
         var signalItems = [{
             xtype: 'numberfield',
             fieldLabel: 'Afstand tot stopstreep',
             name: 'distanceTillStopLine',
-            value: map.distanceTillStopLine
+            value: map.config.distanceTillStopLine
         },
         {
             xtype: 'numberfield',
@@ -523,7 +523,7 @@ Ext.define("EditForms", {
             },
             fieldLabel: 'Virtual local loop number',
             name: 'virtualLocalLoopNumber',
-            value: map.virtualLocalLoopNumber
+            value: map.config.virtualLocalLoopNumber
         },{
             xtype: 'treecombo',
             valueField: 'id',
@@ -545,7 +545,7 @@ Ext.define("EditForms", {
             hidden:!edittingInmeldpunt,
             displayField: 'desc',
             valueField: 'value',
-            value: map.triggerType,
+            value: map.config.triggerType,
             store: Ext.create('Ext.data.Store', {
                 fields: ['value', 'desc'],
                 data: [
@@ -588,7 +588,7 @@ Ext.define("EditForms", {
             }};
 
             var directionStore = Ext.create('Ext.data.TreeStore', dirs);
-            var direction = map.direction ? map.direction : "";
+            var direction = map.config.direction ? map.config.direction : "";
             var dir = direction.join ? direction.join(",") : direction;
             signalItems = Ext.Array.merge(signalItems, [{
                 xtype: 'numberfield',
@@ -602,7 +602,7 @@ Ext.define("EditForms", {
                 fieldLabel: 'Signaalgroep',
                 allowBlank: false,
                 name: 'signalGroupNumber',
-                value: map.signalGroupNumber
+                value: map.config.signalGroupNumber
             },
             {
                 xtype: 'treecombo',
@@ -627,8 +627,7 @@ Ext.define("EditForms", {
 
             // merge label naar point
             var formValues = form.getValues();
-            Ext.Object.merge(point, objectSubset(formValues, ["label"]));
-
+            point.setConfig(objectSubset(formValues, ["label"]));
             // deze waardes naar alle maps van movements die dit
             // pointId gebruiken
             var pointSignalValues = objectSubset(formValues, ["distanceTillStopLine", "virtualLocalLoopNumber", "vehicleTypes", "triggerType"]);
@@ -642,9 +641,9 @@ Ext.define("EditForms", {
 
             // nieuw punt, alleen naar map mergen
             if(!movements) {
-                Ext.Object.merge(map, pointSignalValues);
+                map.setConfig(pointSignalValues);
                 if(editingUitmeldpunt) {
-                    Ext.Object.merge(map, allSignalValues);
+                    map.setConfig(allSignalValues);
                 }
             } else {
 
@@ -654,7 +653,7 @@ Ext.define("EditForms", {
                     //console.log("movement nummer " + mvmtAndMap.movement.nummer);
                     if(mvmtAndMap.map) {
                         //console.log("merging distanceTillStopLine and triggerType values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + mvmtAndMap.map.pointId);
-                        Ext.Object.merge(mvmtAndMap.map, pointSignalValues);
+                        mvmtAndMap.map.setConfig(pointSignalValues);
                     }
                     if(editingUitmeldpunt) {
                         var movement = mvmtAndMap.movement;
@@ -670,7 +669,7 @@ Ext.define("EditForms", {
                         Ext.each(maps, function(theMap) {
                             if(theMap.beginEndOrActivation == "ACTIVATION") {
                                 //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
-                               Ext.Object.merge(theMap, allSignalValues);
+                               theMap.setConfig(allSignalValues);
                             }
                         });
                         
@@ -692,7 +691,7 @@ Ext.define("EditForms", {
 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.commandType == 2 ? 310 : 247,
+            height: map.config.commandType == 2 ? 310 : 247,
             width: 490,
             modal: true,
             icon: karTheme[apName],
@@ -741,7 +740,7 @@ Ext.define("EditForms", {
                 },{
                     fieldLabel: 'Label',
                     name: 'label',
-                    value: point.label,
+                    value: point.config.label,
                     maxLength: 255,
                     maxLengthText: "Maximale lengte is 255 karakters",
                     id: 'labelEdit'
@@ -783,8 +782,8 @@ Ext.define("EditForms", {
         var wgs = new Proj4js.Proj("EPSG:4236");
         var rd = new Proj4js.Proj("EPSG:28992");
         Proj4js.transform(rd, wgs, point);
-        var wgsX = point.x;
-        var wgsY = point.y;
+        var wgsX = point.config.x;
+        var wgsY = point.config.y;
 
         var okFunction = function() {
             var form = Ext.getCmp('coordinatesForm').getForm();
@@ -799,8 +798,8 @@ Ext.define("EditForms", {
                     // converteer nieuwe wgs naar rd en sla ze op
                     var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
                     Proj4js.transform(wgs, rd, point);
-                    rdX = point.x;
-                    rdY = point.y;
+                    rdX = point.config.x;
+                    rdY = point.config.y;
                 }
             }else{
                 rdX = formValues.rdX;

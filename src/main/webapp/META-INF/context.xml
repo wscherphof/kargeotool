@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/geo-ov">
+<Context antiJARLocking="true" path="/kar">
   <ResourceLink global="jdbc/kv7netwerk" name="jdbc/kv7netwerk" type="javax.sql.Datasource"/>
 </Context>

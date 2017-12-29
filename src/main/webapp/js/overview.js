@@ -1,4 +1,4 @@
-/* global Ext */
+/* global Ext, karTheme, contextPath, editor, Point */
 
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -38,7 +38,7 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false); },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
 
-        var panel = Ext.getCmp("rseqInfoPanel");
+        var panel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
         panel.on('collapse',this.updateSize,this);
         panel.on('expand',this.updateSize,this);
         panel.on('resize',this.updateSize,this);
@@ -211,34 +211,32 @@ Ext.define("nl.b3p.kar.Overview",{
 
     },
     updateOverview : function (rseq, changed){
-        Ext.get("context_vri").setHTML(rseq == null ? "" :
-                (rseq.description + " (" + rseq.karAddress + ")"));
-        if(rseq && rseq.editable){
+        Ext.get("context_vri").setHtml(rseq === null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
+        if(rseq && rseq.getEditable()){
             Ext.get("rseqOptions").setVisible(true);
         } else {
             Ext.get("rseqOptions").setVisible(false);
         }
         var memoIcon = Ext.get("memo_vri");
-        if (rseq && rseq.memo && rseq.memo != ""){
+        if (rseq && rseq.getMemo() && rseq.getMemo() !== ""){
             memoIcon.setVisible(true);
         } else{
             memoIcon.setVisible(false);
         }
 
-        if(changed || rseq == null || rseq.validationErrors == null) {
-            Ext.get("validationResults").setHTML("");
+        if(changed || rseq === null || rseq.getValidationErrors() === null) {
+            Ext.get("validationResults").setHtml("");
         } else {
-            if(rseq.validationErrors == 0) {
-                Ext.get("validationResults").setHTML("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
+            if(rseq.getValidationErrors() === 0) {
+                Ext.get("validationResults").setHtml("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
-                Ext.get("validationResults").setHTML("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors == 1 ? "" : "en") + "</a>");
+                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors === 1 ? "" : "en") + "</a>");
             }
         }
 
         var overzicht = Ext.get("overzicht");
-        var tree = Ext.get("tree");
-        if (tree){
-            tree.remove();
+        if (this.tree){
+            this.tree.destroy();
         }
         if(rseq){
             var root = this.createRootNode(rseq.getOverviewJSON());
@@ -246,11 +244,11 @@ Ext.define("nl.b3p.kar.Overview",{
             this.tree = Ext.create('Ext.tree.Panel',{
                 border : false,
                 header : false,
-                id : "tree",
+                //id : "tree",
                 selModel : {
                     mode : "MULTI"
                 },
-                height :Ext.get("rseqInfoPanel-body").getHeight() - this.heightOffset,
+                height : this.getRseqBodyHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
                 renderTo: overzicht,
@@ -285,7 +283,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 listeners : {
                     scope : this,
                     select : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
@@ -309,13 +307,13 @@ Ext.define("nl.b3p.kar.Overview",{
                         }
                     },
                     itemmouseenter : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var vectorLayer = this.editor.olc.vectorLayer;
                             var features = vectorLayer.getFeaturesByAttribute("id",id);
-                            if (features != null && features.length > 0){
+                            if (features !== null && features.length > 0){
                                 var feat = features[0];
-                                if (feat.renderIntent != "select"){
+                                if (feat.renderIntent !== "select"){
                                     feat.renderIntent = "temporary";
                                     vectorLayer.redraw();
                                 }
@@ -323,13 +321,13 @@ Ext.define("nl.b3p.kar.Overview",{
                         }
                     },
                     itemmouseleave : function (tree,record){
-                        if (record.raw.type == "point"){
+                        if (record.raw.type === "point"){
                             var id = record.raw.pointId;
                             var currentSelectedObject = this.editor.selectedObject;
-                            if (currentSelectedObject == null || currentSelectedObject.getId() != id){
+                            if (currentSelectedObject === null || currentSelectedObject.getId() !== id){
                                 var vectorLayer = this.editor.olc.vectorLayer;
                                 var features = vectorLayer.getFeaturesByAttribute("id",id);
-                                if (features != null && features.length > 0){
+                                if (features !== null && features.length > 0){
                                     var feat = features[0];
                                     feat.renderIntent = "default";
                                     vectorLayer.redraw();
@@ -343,7 +341,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         if (type !== "signalGroup" && type !== "movement" ){
                             this.selectedMovement = record.parentNode.raw.movementId;
                         }
-                        if (type !== "signalGroup" && type !== "movement" && point.type !== "ACTIVATION_2" ){
+                        if (type !== "signalGroup" && type !== "movement" && point.getType() !== "ACTIVATION_2" ){
                             var resetFn = function(){
                                 var windowOpened = editor.editForms.hasOpenWindows();
                                 if(!windowOpened){
@@ -353,15 +351,15 @@ Ext.define("nl.b3p.kar.Overview",{
                             };
                             this.editor.activeMovement = this.selectedMovement;
                             this.editor.contextMenu.on("hide", resetFn,this);
-                            this.editor.contextMenu.show(event.xy[0],event.xy[1],false,true);
+                            this.editor.contextMenu.show(event.clientX,event.clientY,false,true);
                         }
-                        if(point && point.type == "ACTIVATION_2"){
+                        if(point && point.getType() === "ACTIVATION_2"){
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
-                            this.uitmeldpuntMenu.showAt(event.xy[0],event.xy[1]);
-                        }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.editable){
-                            this.otherMenu.showAt(event.xy[0],event.xy[1]);
+                            this.uitmeldpuntMenu.showAt(event.clientX,event.clientY);
+                        }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.getEditable()){
+                            this.otherMenu.showAt(event.clientX,event.clientY);
                         }
                     },
                     viewready : function(tree){
@@ -376,9 +374,9 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.helpPanel.updateHelpPanel();
     },
     updateSelection : function (point){
-        if (this.tree != null){
+        if (this.tree !== null){
             var sm = this.tree.getSelectionModel();
-            if (point != null && point instanceof Point){
+            if (point !== null && point instanceof Point){
                 this.unhighlight(point.getId());
                 var root = this.tree.getRootNode();
                 var nodes = new Array();
@@ -390,28 +388,26 @@ Ext.define("nl.b3p.kar.Overview",{
         }
     },
     highlight : function (id){
-        if (this.tree != null){
+        if (this.tree !== null){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
             this.findChildrenByPointId(root,id,nodes);
             for (var i = 0;i < nodes.length;i++){
-                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
-                var nodeElement = view.getNode(myNode);
-                Ext.get(nodeElement).addCls(view.overItemCls);
+                var n = nodes[i];
+                n.addCls(view.overItemCls);
             }
         }
     },
     unhighlight : function (id){
-        if (this.tree != null){
+        if (this.tree !== null){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
             this.findChildrenByPointId(root,id,nodes);
             for (var i = 0;i < nodes.length;i++){
-                var myNode = this.tree.getStore().getNodeById(nodes[i].internalId);
-                var nodeElement = view.getNode(myNode);
-                Ext.get(nodeElement).removeCls(view.overItemCls);
+                var n = nodes[i];
+                n.removeCls(view.overItemCls);
             }
         }
     },
@@ -455,15 +451,17 @@ Ext.define("nl.b3p.kar.Overview",{
             var points = movement.points;
             for (var i = 0 ; i < points.length; i++){
                 var point = points[i];
-                if(point.type.indexOf("ACTIVATION") === -1){
+                if(point.getType().indexOf("ACTIVATION") === -1){
                     continue;
                 }
                 var mvmnts = this.editor.activeRseq.findMovementsForPoint(point);
                 for (var j = 0 ; j < mvmnts.length; j++){
                     var mvmnt = mvmnts[j];
-                    if(mvmnt.movement.id === movement.id){
+                    if(mvmnt.movement.config.id === movement.id){
                         var map = mvmnt.map;
-                        nums[map.signalGroupNumber] = true;
+                        if(map.config.signalGroupNumber){
+                            nums[map.config.signalGroupNumber] = true;
+                        }
                     }
                 }
             }
@@ -513,10 +511,10 @@ Ext.define("nl.b3p.kar.Overview",{
         var label = point.getLabel();
 
         var movement = this.editor.activeRseq.getMovementById(movementId);
-        var maps = movement.maps;
+        var maps = movement.getMaps();
         for(var i = 0 ; i < maps.length ;i++){
-            if(maps[i].pointId === point.id && maps[i].distanceTillStopLine){
-                label += " (" + maps[i].distanceTillStopLine + " m)";
+            if(maps[i].getPointId() === point.getId() && maps[i].getDistanceTillStopLine()){
+                label += " (" + maps[i].config.distanceTillStopLine + " m)";
             }
         }
         return label;
@@ -545,40 +543,43 @@ Ext.define("nl.b3p.kar.Overview",{
     getBewegingLabel : function (mvmnt){
         var begin = "";
         var eind = "";
-        for (var i = 0;i < mvmnt.maps.length;i++){
-            var map = mvmnt.maps[i];
-            var point = this.editor.activeRseq.getPointById(map.pointId);
-            if (point.getType() == "END"){
+        for (var i = 0;i < mvmnt.getMaps().length;i++){
+            var map = mvmnt.getMaps()[i];
+            var point = this.editor.activeRseq.getPointById(map.getPointId());
+            if (point.getType() === "END"){
                 eind = point.getLabel();
             }
 
-            if (point.getType() == "ACTIVATION_1" && begin === ""){
+            if (point.getType() === "ACTIVATION_1" && begin === ""){
                 begin = point.getLabel();
             }
-            if (begin == null || begin == ""){
-                if (point.getType() == "ACTIVATION_2"){
+            if (begin === null || begin === ""){
+                if (point.getType() === "ACTIVATION_2"){
                     begin = point.getLabel();
                 }
             }
         }
 
         var label = "Van " + begin + " naar " + eind;
-        if(label == 'Van  naar '){
+        if(label === 'Van  naar '){
             label = '';
         }
 
         return label;
     },
     updateSize : function (){
-        if (this.tree != null){
-            var ov = Ext.get("rseqInfoPanel-body");
-            this.tree.setHeight(ov.getHeight()- this.heightOffset);
+        if (this.tree !== null){
+            this.tree.setHeight(this.getRseqBodyHeight() - this.heightOffset);
         }
+    },
+    getRseqBodyHeight: function() {
+        var rseqPanel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
+        return rseqPanel.body.getHeight();
     },
     nodeDragged : function(){
         var mapsPerMovements = {};
         this.tree.getRootNode().cascadeBy (function(node){
-            if(node.raw.type === "movement"){
+            if(node.raw && node.raw.type === "movement"){
                 var mapsPerMovement = this.getMapsPerMovement(node);
                 mapsPerMovements [node.raw.movementId] = mapsPerMovement;
             }
@@ -593,7 +594,7 @@ Ext.define("nl.b3p.kar.Overview",{
         var mapsPerMovement =[];
         Ext.Array.each(childs, function(child){
             var map = rseq.findMapForPoint(movementNode.raw.movementId,child.raw.pointId);
-            mapsPerMovement.push(map.id);
+            mapsPerMovement.push(map.getId());
         });
         return mapsPerMovement;
 
@@ -601,7 +602,7 @@ Ext.define("nl.b3p.kar.Overview",{
     findChildrenByPointId : function (record,pointId,result){
         var me = this;
         record.eachChild(function (child){
-            if (child.raw.pointId == pointId){
+            if (child.raw.pointId === pointId){
                 result.push(child);
             }
             if (child.hasChildNodes()){
@@ -610,7 +611,7 @@ Ext.define("nl.b3p.kar.Overview",{
         });
     },
     isPoint : function (object){
-        if ((object.cluster == null || object.cluster == undefined) && object.data.type != "CROSSING" && object.data.type != "GUARD" && object.data.type != "BAR"){
+        if ((object.cluster === null || object.cluster === undefined) && object.data.type !== "CROSSING" && object.data.type !== "GUARD" && object.data.type !== "BAR"){
             return true;
         } else{
             return false;

@@ -65,8 +65,8 @@
                 <div id="overzichtTitel">
                     Huidig geselecteerde VRI: <span id="context_vri"></span><img id="memo_vri" src="${contextPath}/images/silk/attach.png" OnMouseOut="this.style.cursor='default';" OnMouseOver="this.style.cursor='pointer';" style="visibility: hidden;" onclick="editor.addMemo();"/>
                 </div>
-                <div id="overzicht" style="margin-top: 5px; font-size: 10pt"></div>
-                <div id="rseqOptions" style="visibility: hidden">
+                <div id="overzicht"></div>
+                <div id="rseqOptions" style="visibility: hidden;height:50px">
                     <input type="button" id="rseqSave" value="Opslaan" onclick="editor.saveOrUpdate();">
                     <span id="validationResults"></span>
                 </div>
@@ -79,11 +79,39 @@
                 </div>
             </div>
 
+            <div id="toc">
+                <div class="legendseparator">
+                    <b>Filters</b><br/>
+                    <label><input type="checkbox" id="kv9valid" onclick="setFilter('kv9', 'valid');"/>KV9 validatie OK</label><br/>
+                    <label><input type="checkbox" id="kv9invalid" onclick="setFilter('kv9','invalid');"/>KV9 validatie niet OK</label><br/>
+                    <label><input type="checkbox" id="layerOV" onclick="setFilter('layer','OV');"/>OV</label><br/>
+                    <label><input type="checkbox" id="layerHulpdiensten" onclick="setFilter('layer','Hulpdiensten');"/>Hulpdiensten</label><br/>
+                </div>
+                <div class="legendseparator">
+                    <b>OV-informatie</b><br/>
+                    <input type="checkbox" id="buslijnen_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
+                    <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href="#" id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
+                    <input type="checkbox" id="bushaltes_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
+                    <div style="display:block;" id="bushaltes"></div>
+                </div>
+                <div class="legendseparator">
+                    <b>Achtergrond</b><br/>
+                    <div id="Luchtfoto_div" style="width: 90%; height: 38px">
+                        <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
+                    </div>
+                    <div id="Openbasiskaart_div" style="width: 90%; height: 38px">
+                        <input type="checkbox" id="Openbasiskaart_visible" onclick="toggleLayer(event);"/> Topografie (OSM)<br/>
+                    </div>
+                </div>
+                <div class="legendseparator">
+                    <b>Extra</b><br/>
+                    <input type="checkbox" id="snapRoads" onclick="toggleRoad(this);"/> Wegen
+                </div>
+            </div>
         </div>
 
         <div id="kaart">
             <div id="map" style="width: 100%; height: 100%;"></div>
-            <!--div id="overview" style="width:19%;border:1px solid #000; float:right; height:300px;overflow:hidden;"></div-->
         </div>
 
         <div id="rightbar">
@@ -94,12 +122,6 @@
                     <img src="<c:url value="/images/"/>icons/wri.png" alt="Waarschuwingssysteem" class="legendimg" /> Waarschuwingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/afsluitingssysteem.png" alt="Afsluitingssysteem" class="legendimg" /> Afsluitingssysteem<br />
                     <img src="<c:url value="/images/"/>icons/cluster.png" alt="Meerdere verkeersystemen" class="legendimg" /> Meerdere verkeersystemen<br />
-                    <b>Filters</b><br/>
-                    <label><input type="checkbox" id="kv9valid" onclick="setFilter('kv9', 'valid');"/>KV9 validatie OK</label><br/>
-                    <label><input type="checkbox" id="kv9invalid" onclick="setFilter('kv9','invalid');"/>KV9 validatie niet OK</label><br/>
-                    <label><input type="checkbox" id="layerOV" onclick="setFilter('layer','OV');"/>OV</label><br/>
-                    <label><input type="checkbox" id="layerHulpdiensten" onclick="setFilter('layer','Hulpdiensten');"/>Hulpdiensten</label><br/>
-
                 </div>
                 <div id="triggerpunten" class="legendseparator">
                     <b>Punten</b><br/>
@@ -112,22 +134,7 @@
                     <b>Begin- en eindpunten</b><br/>
                     <img src="<c:url value="/images/"/>/icons/beginpunt.png" alt="Beginpunt" class="legendimg" /> Beginpunt<br />
                     <img src="<c:url value="/images/"/>/icons/eindpunt.png" alt="Eindpunt" class="legendimg" /> Eindpunt<br />
-                </div><br/>
-                <b>OV-informatie</b><br/>
-                <input type="checkbox" id="buslijnen_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
-                <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href="#" id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
-                <input type="checkbox" id="bushaltes_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
-                <div style="display:block;" id="bushaltes"></div><br/>
-                <b>Achtergrond</b><br/>
-                <div id="Luchtfoto_div" style="width: 90%; height: 38px">
-                    <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
                 </div>
-                <div id="Openbasiskaart_div" style="width: 90%; height: 38px">
-                    <input type="checkbox" id="Openbasiskaart_visible" onclick="toggleLayer(event);"/> Topografie (OSM)<br/>
-                </div>
-                <br/>
-                <b>Extra</b><br/>
-                <input type="checkbox" id="snapRoads" onclick="toggleRoad(this);"/> Wegen<br/>
             </div>
 
 

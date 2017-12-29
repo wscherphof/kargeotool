@@ -1,3 +1,5 @@
+/* global Ext */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *
@@ -23,8 +25,10 @@ function objectSubset(object, keys) {
     var j = { };
 
     Ext.Object.each(object, function(key, value) {
-        if(Ext.Array.contains(keys, key)) {
-            j[key] = value;
+        var processedKey = key.charAt(0) === '_' ? key.substring(1) : key;
+        
+        if(Ext.Array.contains(keys, processedKey)) {
+            j[processedKey] = value;
         }
     });
 
@@ -113,10 +117,10 @@ Ext.define('RSEQ', {
      * @return het gevonden punt of null indien niet gevonden.
      */
     getPointById : function (id){
-        if(this.points){
-            for (var i = 0 ; i < this.points.length ;i++){
-                if(this.points[i].getId() == id){
-                    return this.points[i];
+        if(this.getPoints()){
+            for (var i = 0 ; i < this.getPoints().length ;i++){
+                if(this.getPoints()[i].getId() == id){
+                    return this.getPoints()[i];
                 }
             }
         }
@@ -128,9 +132,9 @@ Ext.define('RSEQ', {
      * @return het movement object of null indien niet gevonden.
      */
     getMovementById : function (id){
-        for (var i = 0 ; i < this.movements.length ;i++){
-            if(this.movements[i].getId() == id){
-                return this.movements[i];
+        for (var i = 0 ; i < this.getMovements().length ;i++){
+            if(this.getMovements()[i].getId() == id){
+                return this.getMovements()[i];
             }
         }
         return null;
@@ -140,20 +144,20 @@ Ext.define('RSEQ', {
      * @param point het toe te voegen punt
      */
     addPoint : function (point){
-        if(!this.points){
+       /*if(!this.getPoints()){
             this.points = new Array();
-        }
-        this.points.push(point);
+        }*/
+        this.getPoints().push(point);
     },
     /**
      * Voegt een movement toe
      * @param movement de toe te voegen movement
      */
     addMovement: function (movement){
-        if(!this.movements){
+        /*if(!this.movements){
             this.movements = new Array();
-        }
-        this.movements.push(movement);
+        }*/
+        this.getMovements().push(movement);
     },
 
 
@@ -167,7 +171,7 @@ Ext.define('RSEQ', {
 
         Ext.Array.each(this.getMovements(), function(movement) {
             Ext.Array.each(movement.getMaps(), function(map) {
-                if(map.pointId == point.id) {
+                if(map.getPointId() === point.getId()) {
                     movements.push({
                         movement: movement,
                         map: map
@@ -182,7 +186,7 @@ Ext.define('RSEQ', {
         var movement = this.getMovementById(movementId);
         var m = null
         Ext.Array.each(movement.getMaps(), function(map) {
-            if(map.pointId === pointId) {
+            if(map.getPointId() === pointId) {
                 m = map;
             }
         });
@@ -199,8 +203,8 @@ Ext.define('RSEQ', {
 
         var result = false;
         Ext.Array.each(pointMovements, function(mvmtAndMap) {
-            Ext.Array.each(mvmtAndMap.movement.maps, function(map) {
-                if(map.beginEndOrActivation == "END") {
+            Ext.Array.each(mvmtAndMap.movement.getMaps(), function(map) {
+                if(map.getBeginEndOrActivation() === "END") {
                     result = true;
                     // Stop met Ext.Array.each() (break)
                     return false;
@@ -209,7 +213,7 @@ Ext.define('RSEQ', {
                 return true;
             });
             // Indien nog geen eindpunt gevonden ga verder met volgende movement
-            return result == false;
+            return result === false;
         });
         return result;
     },
@@ -246,7 +250,7 @@ Ext.define('RSEQ', {
         if(movement){
             var mvmnt = this.getMovementById(movement);
 
-            var map = this.findMapForPoint(mvmnt.id, uitmeldpunt.id);
+            var map = this.findMapForPoint(mvmnt.getId(), uitmeldpunt.getId());
             pointMovements=[{
                 map: map,
                 movement: mvmnt
@@ -268,10 +272,10 @@ Ext.define('RSEQ', {
             var hasEnd = false;
             var currentPoints =[];
             Ext.Array.each(movement.maps, function(map) {
-                if(map.beginEndOrActivation === "END") {
+                if(map.getBeginEndOrActivation() === "END") {
                     hasEnd = true;
                 }
-                currentPoints.push (map.pointId);
+                currentPoints.push (map.getPointId());
             });
             
             var found = false;
@@ -293,7 +297,7 @@ Ext.define('RSEQ', {
                     beginEndOrActivation: "END",
                     pointId: eindpunt.getId()
                 });
-                movement.maps.push(newMap);
+                movement.getMaps().push(newMap);
                 continue;
             }
             // Kopieer alle punten van andere movements voor dit uitmeldpunt behalve
@@ -307,21 +311,21 @@ Ext.define('RSEQ', {
             var newMap;
 
             Ext.Array.each(mvmtAndMap.movement.maps, function (map) {
-                if (map.beginEndOrActivation != "END") {
+                if (map.getBeginEndOrActivation() != "END") {
 
                     var config = {
                         id: Ext.id(),
-                        beginEndOrActivation: map.beginEndOrActivation,
-                        pointId: map.pointId
+                        beginEndOrActivation: map.getBeginEndOrActivation(),
+                        pointId: map.getPointId()
                     };
                     if (map.beginEndOrActivation == "ACTIVATION") {
                         Ext.Object.merge(config, {
-                            commandType: map.commandType,
-                            distanceTillStopLine: map.distanceTillStopLine,
-                            signalGroupNumber: map.signalGroupNumber,
-                            virtualLocalLoopNumber: map.virtualLocalLoopNumber,
-                            triggerType: map.triggerType,
-                            vehicleTypes: map.vehicleTypes
+                            commandType: map.getCommandType(),
+                            distanceTillStopLine: map.getDistanceTillStopLine(),
+                            signalGroupNumber: map.getSignalGroupNumber(),
+                            virtualLocalLoopNumber: map.getVirtualLocalLoopNumber(),
+                            triggerType: map.getTriggerType(),
+                            vehicleTypes: map.getVehicleTypes()
                         });
                     }
                     newMap = Ext.create(MovementActivationPoint, config);
@@ -355,7 +359,7 @@ Ext.define('RSEQ', {
         if(movement){
             var mvmnt = this.getMovementById(movement);
 
-            var map = this.findMapForPoint(mvmnt.id, puntVanMovement.id);
+            var map = this.findMapForPoint(mvmnt.getId(), puntVanMovement.getId());
             pointMovements=[{
                 map: map,
                 movement: mvmnt
@@ -378,12 +382,12 @@ Ext.define('RSEQ', {
                 pointId: inmeldpunt.getId()
             });
             // De voor dit inmeldpunt ingestelde inmeldpuntwaardes
-            Ext.Object.merge(newMap, objectSubset(theMap, ["distanceTillStopLine","virtualLocalLoopNumber", "triggerType"]));
+            newMap.setConfig(objectSubset(theMap, ["distanceTillStopLine","virtualLocalLoopNumber", "triggerType"]));
 
             // De signal waardes komen van de MovementActivationPoint van het uitmeldpunt
-            Ext.Object.merge(newMap, objectSubset(mvmtAndMap.map, ["signalGroupNumber","vehicleTypes"]));
+            newMap.setConfig(objectSubset(mvmtAndMap.map, ["signalGroupNumber","vehicleTypes"]));
 
-            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+            mvmtAndMap.movement.getMaps().splice(0, 0, newMap);
         });
     },
 
@@ -407,7 +411,7 @@ Ext.define('RSEQ', {
                 pointId: beginpunt.getId()
             });
 
-            mvmtAndMap.movement.maps.splice(0, 0, newMap);
+            mvmtAndMap.movement.getMaps().splice(0, 0, newMap);
         });
     },
 
@@ -415,8 +419,8 @@ Ext.define('RSEQ', {
 
         var mvmnt = this.getMovementById(movement);
 
-        var map = this.findMapForPoint(mvmnt.id, checkout.id);
-        var point = this.getPointById(map.pointId);
+        var map = this.findMapForPoint(mvmnt.getId(), checkout.getId());
+        var point = this.getPointById(map.getPointId());
         mvmnt.removeMapForPoint(point);
 
         var mvmnts = this.findMovementsForPoint(checkout);
@@ -430,26 +434,26 @@ Ext.define('RSEQ', {
         var mvmnts = this.findMovementsForPoint(checkout);
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
-            for (var j = movement.maps.length-1 ;j >= 0 ; j--){
-                var point = this.getPointById(movement.maps[j].pointId);
-                if(point.id != checkout.id){
+            for (var j = movement.getMaps().length-1 ;j >= 0 ; j--){
+                var point = this.getPointById(movement.getMaps()[j].getPointId());
+                if(point.getId() !== checkout.getId()){
                     var ms = this.findMovementsForPoint(point);
-                    if(ms.length == 1){
+                    if(ms.length === 1){
                         this.removePoint(point);
                     }else{
                         movement.removeMapForPoint(point);
                     }
                 }
             }
-            this.removeMovement(movement.id);
+            this.removeMovement(movement.getId());
         }
         this.removePoint(checkout);
     },
 
     removeMovement: function(id){
-        for (var i = 0 ; i < this.movements.length ;i++){
-            if(this.movements[i].getId() == id){
-                this.movements.splice(i,1);
+        for (var i = 0 ; i < this.getMovements().length ;i++){
+            if(this.getMovements()[i].getId() == id){
+                this.getMovements().splice(i,1);
                 break;
             }
         }
@@ -460,7 +464,7 @@ Ext.define('RSEQ', {
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
             if(movementId){
-                if( parseInt(movementId) === movement.id){
+                if( parseInt(movementId) === movement.getId()){
                     movement.removeMapForPoint(point);
                 }
             }else{
@@ -471,9 +475,9 @@ Ext.define('RSEQ', {
 
         var currentsMvmnts = this.findMovementsForPoint(point);
         if(currentsMvmnts.length === 0){
-            for(var j = this.points.length - 1 ; j >= 0 ; j--){
-                if(this.points[j].getId() == point.getId()){
-                    this.points.splice(j,1);
+            for(var j = this.getPoints().length - 1 ; j >= 0 ; j--){
+                if(this.getPoints()[j].getId() == point.getId()){
+                    this.getPoints().splice(j,1);
                 }
             }
         }
@@ -498,14 +502,14 @@ Ext.define('RSEQ', {
         var oldMaps = movement.getMaps();
         var oldIndexed = {};
         for (var i = 0 ; i < oldMaps.length ; i++){
-            oldIndexed [oldMaps[i].id] = oldMaps[i];
+            oldIndexed [oldMaps[i].getId()] = oldMaps[i];
         }
 
         Ext.Array.each(mapIds,function(id){
             var map = oldIndexed[id];
             newMaps.push(map);
         });
-        movement.maps = newMaps;
+        movement.setMaps(newMaps);
     },
     /**
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
@@ -517,20 +521,20 @@ Ext.define('RSEQ', {
         }
         var rseq ={
             type: "Feature",
-            editable: this.editable,
-            geometry: this.location,
+            editable: this.getEditable(),
+            geometry: this.getLocation(),
             properties:{
-                id: this.id,
-                description:this.description,
-                validFrom:this.validFrom,
-                validUntil:this.validUntil,
-                karAddress:this.karAddress,
-                dataOwner:this.dataOwner,
-                crossingCode: this.crossingCode,
-                town:this.town,
-                type:this.type,
+                id: this.getId(),
+                description:this.getDescription(),
+                validFrom:this.getValidFrom(),
+                validUntil:this.getValidUntil(),
+                karAddress:this.getKarAddress(),
+                dataOwner:this.getDataOwner(),
+                crossingCode: this.getCrossingCode(),
+                town:this.getTown(),
+                type:this.getType(),
                 className: this.$className,
-                memo: this.memo
+                memo: this.getMemo()
             }
         };
         if(onlyRSEQ){
@@ -538,9 +542,9 @@ Ext.define('RSEQ', {
         }
         var points = new Array();
         if(!onlyRSEQ){
-            if(this.points){
-                for (var i = 0 ; i < this.points.length; i++){
-                    var point = this.points[i].toGeoJSON();
+            if(this.getPoints()){
+                for (var i = 0 ; i < this.getPoints().length; i++){
+                    var point = this.getPoints()[i].toGeoJSON();
                     points.push(point);
                 }
             }
@@ -563,18 +567,18 @@ Ext.define('RSEQ', {
             "location","memo","attributes","readyForExport"]);
 
         j.points = [];
-        Ext.Array.each(this.points, function(point) {
+        Ext.Array.each(this.getPoints(), function(point) {
             j.points.push(point.toJSON());
         });
 
         j.movements = [];
-        Ext.Array.each(this.movements, function(mvmt) {
+        Ext.Array.each(this.getMovements(), function(mvmt) {
 
             // Do not save movements without signalgroupnumber
             // Should not exist, but has happened (movement with only endpoint)
             var signalGroupNumber = null;
-            for(var i = 0 ; i < mvmt.maps.length ;i++){
-                var map = mvmt.maps[i];
+            for(var i = 0 ; i < mvmt.getMaps().length ;i++){
+                var map = mvmt.getMaps()[i];
                 if(map.getSignalGroupNumber () !== null){
                     signalGroupNumber = map.getSignalGroupNumber();
                     break;
@@ -592,33 +596,33 @@ Ext.define('RSEQ', {
     },
     getOverviewJSON : function(){
         var signalGroups = {};
-
-        for(var i = 0 ; i < this.movements.length; i++){
-            var mvmnt = this.movements[i];
+        var movements = this.getMovements();
+        for(var i = 0 ; i < movements.length; i++){
+            var mvmnt = movements[i];
             var signalGroupNumber = null;
-            for(var j = 0 ; j < mvmnt.maps.length ;j++){
-                var map = mvmnt.maps[j];
+            for(var j = 0 ; j < mvmnt.getMaps().length ;j++){
+                var map = mvmnt.getMaps()[j];
                 if(map.getSignalGroupNumber () !== null){
                     signalGroupNumber = map.getSignalGroupNumber();
                     if(!signalGroups.hasOwnProperty(signalGroupNumber)){
                         signalGroups[signalGroupNumber] = new Object();
                     }
 
-                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.id)){
+                    if(!(signalGroups[signalGroupNumber]).hasOwnProperty( mvmnt.getId())){
 
-                         signalGroups[signalGroupNumber][ mvmnt.id] = new Object();
-                         signalGroups[signalGroupNumber][ mvmnt.id]["id"] = mvmnt.id;
-                         signalGroups[signalGroupNumber][ mvmnt.id]["points"] = new Array();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()] = new Object();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()]["id"] = mvmnt.getId();
+                         signalGroups[signalGroupNumber][ mvmnt.getId()]["points"] = new Array();
                     }
                     break;
 
                 }
             }
             if(signalGroupNumber !== null){
-                for(var k = 0 ; k < mvmnt.maps.length;k++){
-                    var point = this.getPointById(mvmnt.maps[k].pointId);
+                for(var k = 0 ; k < mvmnt.getMaps().length;k++){
+                    var point = this.getPointById(mvmnt.getMaps()[k].getPointId());
                     if(point){
-                        signalGroups[signalGroupNumber][ mvmnt.id]["points"].push(point);
+                        signalGroups[signalGroupNumber][ mvmnt.getId()]["points"].push(point);
                     }
                 }
             }
@@ -626,8 +630,8 @@ Ext.define('RSEQ', {
         return signalGroups;
     },
     areVehicletypesConsistent : function(){
-        for (var i = 0 ; i < this.movements.length; i++){
-            var movement = this.movements[i];
+        for (var i = 0 ; i < this.getMovements().length; i++){
+            var movement = this.getMovements()[i];
             if(!movement.isConsistent()){
                 return false;
             }
@@ -675,14 +679,14 @@ Ext.define('Point', {
     toGeoJSON : function(){
         var json = {
             type: "Feature",
-            geometry : this.geometry,
+            geometry : this.getGeometry(),
             properties:{
-                id: this.id,
-                label:this.label,
-                movementNumbers:this.movementNumbers,
-                type:this.type,
-                nummer:this.nummer,
-                signalGroupNumbers:this.signalGroupNumbers,
+                id: this.getId(),
+                label:this.getLabel(),
+                movementNumbers:this.getMovementNumbers(),
+                type:this.getType(),
+                nummer:this.getNummer(),
+                signalGroupNumbers:this.getSignalGroupNumbers(),
                 className: this.$className
             }
         };
@@ -735,7 +739,7 @@ Ext.define('MovementActivationPoint', {
      */
     toJSON: function() {
         var keys = ["id", "beginEndOrActivation", "pointId"];
-        if(this.beginEndOrActivation == "ACTIVATION") {
+        if(this.getBeginEndOrActivation() == "ACTIVATION") {
             keys = Ext.Array.merge(keys, ["commandType", "distanceTillStopLine",
                 "triggerType", "signalGroupNumber", "virtualLocalLoopNumber",
                 "vehicleTypes", "direction"]);
@@ -766,10 +770,10 @@ Ext.define('Movement', {
      * @param map het Movement Activatie Punt dat toegevoegd moet worden.
      */
     addMap : function (map){
-        if(!this.maps){
-            this.maps = new Array();
-        }
-        this.maps.push(map);
+       /* if(!this.getMaps()){
+            this.getMaps() = new Array();
+        }*/
+        this.getMaps().push(map);
     },
      /**
      * Voeg een punt toe na een ander punt
@@ -777,15 +781,15 @@ Ext.define('Movement', {
      * @param after Het punt waar het toe te voegen punt achter geplaatst moet worden.
      */
     addMapAfter : function (mapToAdd, after){
-        var index = this.maps.length;
-        for(var i = 0 ; i < this.maps.length;i++){
-            if(this.maps[i].pointId == after){
+        var index = this.getMaps().length;
+        for(var i = 0 ; i < this.getMaps().length;i++){
+            if(this.getMaps()[i].pointId == after){
                 index = i+1;
                 break;
             }
         }
 
-        this.maps.splice(index,0,mapToAdd);
+        this.getMaps().splice(index,0,mapToAdd);
     },
     /**
      * Geeft een JSON object van dit object terug
@@ -795,16 +799,16 @@ Ext.define('Movement', {
         var j = objectSubset(this, ["id", "nummer"]);
 
         j.maps = [];
-        Ext.Array.each(this.maps, function(map) {
+        Ext.Array.each(this.getMaps(), function(map) {
             j.maps.push(map.toJSON());
         });
         return j;
     },
     getMapForPoint : function (point){
         var map = null;
-        for (var i = 0 ; i < this.maps.length; i++){
-            if(this.maps[i].pointId == point.getId()){
-                map = this.maps[i];
+        for (var i = 0 ; i < this.getMaps().length; i++){
+            if(this.getMaps()[i].getPointId() == point.getId()){
+                map = this.getMaps()[i];
                 break;
             }
         }
@@ -812,36 +816,36 @@ Ext.define('Movement', {
     },
     getMapsForSignalgroup: function(signalgroupNumber){
         var maps = [];
-        for (var i = 0 ; i < this.maps.length; i++){
-            if(this.maps[i].signalGroupNumber === signalgroupNumber){
-                maps.push(this.maps[i]);
+        for (var i = 0 ; i < this.getMaps().length; i++){
+            if(this.getMaps()[i].signalGroupNumber === signalgroupNumber){
+                maps.push(this.getMaps()[i]);
             }
         }
         return maps;
     },
     removeMapForPoint:function(point){
-        for (var i = this.maps.length-1 ; i >= 0 ; i--){
-            if(this.maps[i].pointId == point.getId()){
-                this.maps.splice(i,1);
+        for (var i = this.getMaps().length-1 ; i >= 0 ; i--){
+            if(this.getMaps()[i].getPointId() === point.getId()){
+                this.getMaps().splice(i,1);
             }
         }
     },
     isConsistent : function(){
         var inmeldpunt = null;
         var uitmeldpunt = null;
-        for ( var i = 0 ; i < this.maps.length; i++){
-            var map = this.maps[i];
-            if(map.beginEndOrActivation === "ACTIVATION"){
-                if(map.commandType === 1){
+        for ( var i = 0 ; i < this.getMaps().length; i++){
+            var map = this.getMaps()[i];
+            if(map.getBeginEndOrActivation() === "ACTIVATION"){
+                if(map.getCommandType() === 1){
                     inmeldpunt = map;
-                }else if(map.commandType === 2){
+                }else if(map.getCommandType() === 2){
                     uitmeldpunt = map;
                 }
             }
         }
         if (inmeldpunt && uitmeldpunt) {
-            var diffAB = Ext.Array.difference(uitmeldpunt.vehicleTypes, inmeldpunt.vehicleTypes);
-            var diffBA = Ext.Array.difference(inmeldpunt.vehicleTypes, uitmeldpunt.vehicleTypes);
+            var diffAB = Ext.Array.difference(uitmeldpunt.getVehicleTypes(), inmeldpunt.getVehicleTypes());
+            var diffBA = Ext.Array.difference(inmeldpunt.getVehicleTypes(), uitmeldpunt.getVehicleTypes());
             return diffAB.length === 0 && diffBA.length === 0;
         } else {
             return true;
@@ -849,17 +853,17 @@ Ext.define('Movement', {
 
     },
     equals : function(points, includeEndPoints){
-        if (points.length === this.maps.length) {
-            for (var j = 0; j < this.maps.length; j++) {
+        if (points.length === this.getMaps().length) {
+            for (var j = 0; j < this.getMaps().length; j++) {
                 var foundInner = false;
                 for (var i = 0; i < points.length; i++) {
-                    if (this.maps[j].pointId === points[i]) {
+                    if (this.getMaps()[j].pointId === points[i]) {
                         foundInner = true;
                         break;
                     }
                 }
                 if (!foundInner) {
-                    if(includeEndPoints && this.maps[j].beginEndOrActivation === "END"){
+                    if(includeEndPoints && this.getMaps()[j].beginEndOrActivation === "END"){
                         return false;
                     }
                 }

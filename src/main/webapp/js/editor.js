@@ -1,3 +1,5 @@
+/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile, SearchManager, EditForms, ChangeManager, nl, RSEQ, contextPath, karTheme */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *
@@ -64,7 +66,7 @@ Ext.define("Editor", {
      */
     constructor: function(domId, mapfilePath, ovInfo) {
         this.mixins.observable.constructor.call(this);
-        this.addEvents(
+        /*this.addEvents(
             'activeRseqChanged',
             'activeRseqUpdated',
             'selectedObjectChanged',
@@ -72,7 +74,7 @@ Ext.define("Editor", {
             'movementAdded',
             'movementUpdated',
             'currentEditActionChanged'
-        );
+        );*/
 
         this.domId = domId;
 
@@ -112,13 +114,9 @@ Ext.define("Editor", {
          * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
          */
         var east = Ext.getCmp("east");
-        var west = Ext.getCmp("west");
         east.on('resize', this.olc.resizeMap, this.olc);
-        west.on('resize', this.olc.resizeMap, this.olc);
         east.on('collapse', this.olc.resizeMap, this.olc);
-        west.on('collapse', this.olc.resizeMap, this.olc);
         east.on('expand', this.olc.resizeMap, this.olc);
-        west.on('expand', this.olc.resizeMap, this.olc);
 
         this.on('activeRseqChanged', function(){
             var snapRoads = Ext.get("snapRoads");
@@ -134,7 +132,7 @@ Ext.define("Editor", {
         this.olc.on('measureChanged', function( length, unit){
             var measureIntField = Ext.get("measureInt");
             if(measureIntField ){
-                measureIntField.setHTML(length + " " + unit);
+                measureIntField.setHtml(length + " " + unit);
             }
         },this);
 
@@ -186,7 +184,7 @@ Ext.define("Editor", {
      */
     parseLocationHash: function() {
         var hash = window.location.hash;
-        hash = hash.charAt(0) == '#' ? hash.substring(1) : hash;
+        hash = hash.charAt(0) === '#' ? hash.substring(1) : hash;
         return Ext.Object.fromQueryString(hash);
     },
 
@@ -285,7 +283,6 @@ Ext.define("Editor", {
 
     /**
      * Laad alle road side equipment.
-     * @param id (optioneel) het id dat niet opgehaald moet worden
      */
     loadAllRseqs: function() {
         Ext.Ajax.request({
@@ -342,16 +339,16 @@ Ext.define("Editor", {
 
         var filteredRseqs = this.getFilteredRseqs();
         var me = this;
-        if(this.activeRseq != null) {
+        if(this.activeRseq !== null) {
             var activeRseqIndex = -1;
             Ext.Array.each(filteredRseqs, function(rseq, index) {
-                if(rseq.properties.id == me.activeRseq.id) {
+                if(rseq.properties.id === me.activeRseq.id) {
                     activeRseqIndex = index;
                     return false;
                 }
                 return true;
             });
-            if(activeRseqIndex != -1) {
+            if(activeRseqIndex !== -1) {
                 // active rseq is moved from rseq to vector layer, do not add
                 // it to rseq layer
                 Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
@@ -526,9 +523,9 @@ Ext.define("Editor", {
 
     removeRseq : function(){
         var rseq = this.activeRseq;
-        var isNewRseq = typeof this.activeRseq.getId() != "number";
+        var isNewRseq = typeof this.activeRseq.getId() !== "number";
 
-        if(rseq != null && !isNewRseq) {
+        if(rseq !== null && !isNewRseq) {
              Ext.Msg.show({
                 title:"Weet u het zeker?",
                 msg: "Weet u zeker dat u dit verkeerssysteem wilt weggooien?",
@@ -646,7 +643,7 @@ Ext.define("Editor", {
          if(this.activeRseq){
              var resLimit = 1;
              var resolution = this.olc.map.getResolution();
-             var isNewRseq = typeof this.activeRseq.getId() != "number";
+             var isNewRseq = typeof this.activeRseq.getId() !== "number";
              if(resolution < resLimit && !isNewRseq){
                 var extent = this.olc.map.getExtent().add(50,50).toGeometry().toString();
                 Ext.Ajax.request({
@@ -694,7 +691,7 @@ Ext.define("Editor", {
      * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
     zoomToActiveRseq: function() {
-        if(this.activeRseq != null) {
+        if(this.activeRseq !== null) {
             this.olc.map.setCenter(new OpenLayers.LonLat(
                 this.activeRseq.location.coordinates[0],
                 this.activeRseq.location.coordinates[1]),
@@ -708,9 +705,9 @@ Ext.define("Editor", {
      * @param rseq de nieuwe actieve Rseq
      */
     setActiveRseq: function (rseq){
-        if(rseq != null) {
+        if(rseq !== null) {
             this.unedittedRseq = cloneObject(rseq.toJSON());
-            if(this.activeRseq != null ){
+            if(this.activeRseq !== null ){
                 this.olc.cacheControl.insertIntoTree(this.activeRseq);
             }
             this.olc.cacheControl.removeFromTree(rseq);
@@ -776,7 +773,7 @@ Ext.define("Editor", {
 
             var type = this.selectedObject.getType();
 
-            if(type == null || type == "END" || type == "BEGIN") {
+            if(type === null || type === "END" || type === "BEGIN") {
                 this.editForms.editNonActivationPoint();
             } else {
                 this.editForms.editActivationPoint();
@@ -792,12 +789,12 @@ Ext.define("Editor", {
      * @param y de nieuwe y coordinaat
      */
     changeGeom : function (className, id, x,y){
-        if(className == "RSEQ"){
-            this.activeRseq.location.coordinates = [x,y];
+        if(className === "RSEQ"){
+            this.activeRseq.getLocation().coordinates = [x,y];
         }else{
             var point = this.activeRseq.getPointById(id);
             if(point){
-                point.geometry.coordinates = [x,y];
+                point.getGeometry().coordinates = [x,y];
             }
         }
         this.fireEvent("activeRseqUpdated", this.activeRseq);
@@ -870,10 +867,10 @@ Ext.define("Editor", {
             multiline: true,
             value: memo,
             fn: function(btn, text){
-                if (btn == 'yes'){
+                if (btn === 'yes'){
                     this.activeRseq.memo = text;
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
-                }else if (btn == 'no') {
+                }else if (btn === 'no') {
                     this.activeRseq.memo = '';
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
                 }
@@ -949,19 +946,19 @@ Ext.define("Editor", {
         if(uitmeldpunt){
 
             var baseUitmeldpunt = this.selectedObject = this.previousSelectedObject;
-            if(uitmeldpunt instanceof Point && uitmeldpunt.getType() == "ACTIVATION_2"){
+            if(uitmeldpunt instanceof Point && uitmeldpunt.getType() === "ACTIVATION_2"){
                 var mvmnts = this.activeRseq.findMovementsForPoint(uitmeldpunt);
                 var srcMovement = mvmnts[0].movement;
                 var map =  srcMovement.getMapForPoint(uitmeldpunt);
                 if(Ext.isString(movementId)){ // movementId is a string. If no string is passed (ie. the uitmeldpunt should be used in a new movement), it's an object.
                     var destMovement = this.activeRseq.getMovementById(movementId);
-                    destMovement.addMapAfter(map, baseUitmeldpunt.id);
+                    destMovement.addMapAfter(map, baseUitmeldpunt.getId());
                 }else{
                     var map = Ext.create(MovementActivationPoint, {
                         beginEndOrActivation: "ACTIVATION",
                         commandType: 2,
                         pointId: uitmeldpunt.getId(),
-                        distanceTillStopLine: map.distanceTillStopLine,
+                        distanceTillStopLine: map.getDistanceTillStopLine(),
                         vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
                     });
 
@@ -1114,7 +1111,7 @@ Ext.define("Editor", {
                     title:'Voorinmeldpunt selecteren',
                     msg:'Wilt u voorinmeldpunt ' + voorinmeldpunt.getLabel() + " selecteren voor bewegingen naar inmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
-                        if(buttonId == "yes") {
+                        if(buttonId === "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
@@ -1122,6 +1119,7 @@ Ext.define("Editor", {
                             });
                             me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, movementId);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
+                            me.changeCurrentEditAction(null);
                         }
                     },
                     scope:this,
@@ -1159,7 +1157,7 @@ Ext.define("Editor", {
         if(inmeldpunt){
 
             var uitmeldpunt = this.selectedObject = this.previousSelectedObject;
-            if(inmeldpunt instanceof Point && inmeldpunt.getType() == "ACTIVATION_1"){
+            if(inmeldpunt instanceof Point && inmeldpunt.getType() === "ACTIVATION_1"){
 
                 // TODO: Check of al gebruikt in movements voor uitmeldpunt
 
@@ -1168,7 +1166,7 @@ Ext.define("Editor", {
                     title:'Inmeldpunt selecteren',
                     msg:'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
-                        if(buttonId == "yes") {
+                        if(buttonId === "yes") {
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
@@ -1176,6 +1174,7 @@ Ext.define("Editor", {
                             });
                             me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true,false, this.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
+                            me.changeCurrentEditAction(null);
                         }
                     },
                     scope:this,
@@ -1287,9 +1286,16 @@ Ext.define("Editor", {
       */
     addPoint: function(withLine, point) {
         if(withLine ){
-            var geomName = this.selectedObject instanceof RSEQ ? "location" : "geometry";
-            var startX = this.selectedObject[geomName].coordinates[0];
-            var startY = this.selectedObject[geomName].coordinates[1];
+            var isRseq = this.selectedObject instanceof RSEQ;// ? "location" : "geometry";
+            var startX, startY;
+            
+            if (isRseq) {
+                startX = this.selectedObject.getLocation().coordinates[0];
+                startY = this.selectedObject.getLocation().coordinates[1];
+            }else{
+                startX = this.selectedObject.getGeometry().coordinates[0];
+                startY = this.selectedObject.getGeometry().coordinates[1];
+            }
             this.olc.drawLineFromPoint(startX,startY);
         }else{
             this.pointFinished(point);
@@ -1316,10 +1322,10 @@ Ext.define("Editor", {
 
     // ==== Search ==== ///
     searchResultClicked : function(searchResult){
-        if(searchResult.getBounds() != null){
+        if(searchResult.getBounds() !== null){
             var bounds = searchResult.getBounds();
             this.olc.map.zoomToExtent(bounds.toArray());
-        }else if (searchResult.getX() != null && searchResult.getY() != null){
+        }else if (searchResult.getX() !== null && searchResult.getY() !== null){
             this.olc.map.setCenter(searchResult.getLocation(), 12);
         }
         if(searchResult.getAddMarker()){
@@ -1333,7 +1339,7 @@ Ext.define("Editor", {
 
     // ==== KV9 Validation results ====
     showValidationResults: function() {
-        if(this.activeRseq == null) {
+        if(this.activeRseq === null) {
             return;
         }
 
@@ -1520,7 +1526,7 @@ Ext.define("HelpPanel", {
                 if(mvmObj){
                     var movement = mvmObj.movement;
                     var signalGroupNumber = movement.nummer;
-                    var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) != -1;
+                    var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) !== -1;
                     if(signalGroupNumbers.length > 0 && !alreadyPresent){
                         signalGroupNumbers += ', ';
                     }
@@ -1588,7 +1594,7 @@ Ext.define("HelpPanel", {
                 }
         }
 
-        Ext.get("help").dom.innerHTML = txt;
+        Ext.ComponentQuery.query("#help")[0].getEl().dom.innerHTML = txt;
     }
 
 });

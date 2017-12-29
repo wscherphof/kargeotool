@@ -50,10 +50,11 @@ Ext.define("SearchManager", {
         var bus = Ext.create(nl.b3p.kar.SearchBusline,{editor:this.editor});
         this.addSearchEntity(bus);
 
-        this.addEvents('searchResultClicked');
+        //this.addEvents('searchResultClicked');
 
     },
     createForm : function(){
+        var searchFormPanel = Ext.ComponentQuery.query('#searchformWindow')[0];
         var panel = Ext.create(Ext.panel.Panel,{
             border:false,
             layout:'hbox',
@@ -91,7 +92,7 @@ Ext.define("SearchManager", {
             }
             ]
         });
-        Ext.getCmp('searchformPanel').add(panel);
+        searchFormPanel.add(panel);
         this.searchPanel = Ext.create('Ext.panel.Panel', {
             id: 'searchPanel',
             flex: 1,
@@ -116,7 +117,7 @@ Ext.define("SearchManager", {
                 collapsed: false
             }]
         });
-        Ext.getCmp('searchformPanel').add(this.searchPanel);
+        searchFormPanel.add(this.searchPanel);
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
@@ -167,7 +168,7 @@ Ext.define("nl.b3p.kar.Search", {
             cls: 'search-accordion'
         });
 
-        this.addEvents('searchResultClicked');
+      //  this.addEvents('searchResultClicked');
     },
     search: function(term){
         alert("Search called on superclas. Must be implemented.");
@@ -458,7 +459,7 @@ Ext.define("nl.b3p.kar.SearchRoad", {
 */
 Ext.define("nl.b3p.kar.SearchBusline", {
     extend: "nl.b3p.kar.Search",
-    category: "Buslijnen",
+    category: "OV-lijnen",
     beheerder:null,
     constructor: function(config) {
         this.callParent(arguments);
@@ -569,7 +570,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 });
 
                 editor.olc.addFilterToKargis(busline.publicnumber,layerName);
-                Ext.get("buslijnen_filter_a").setHTML('Verwijder filter \'' + busline.publicnumber + '\'');
+                Ext.get("buslijnen_filter_a").setHtml('Verwijder filter \'' + busline.publicnumber + '\'');
                 Ext.get("buslijnen_filter").setDisplayed(true);
 
 

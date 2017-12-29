@@ -17,7 +17,10 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <geotools.version>18.1</geotools.version>
         <hibernate.version>3.6.10.Final</hibernate.version>
-        <postgresql.version>42.1.1</postgresql.version>
+        <postgresql.version>42.1.4</postgresql.version>
+        <postgresql.postgis-jdbc.version>2.2.1</postgresql.postgis-jdbc.version>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -52,6 +55,13 @@
             <artifactId>quartz</artifactId>
             <version>2.3.0</version>
         </dependency>
+        
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
@@ -68,16 +78,14 @@
             <version>${geotools.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.postgis</groupId>
+            <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
-            <version>1.1.6</version>
-            <scope>provided</scope>
+            <version>${postgresql.postgis-jdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

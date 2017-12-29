@@ -54,9 +54,9 @@ body.editor {
 }
 
 #header {
-    background-color: #D9E7F8;
-    color: Black;
-    border-bottom: 1px solid #99BCE8;
+    background-color: #f5f5f5;
+    color: #157fcc;
+    border-bottom: 1px solid #c1c1c1;
     font-size: 12pt;
     font-weight: bold;
     height: 30px;
@@ -250,4 +250,30 @@ body.editor {
 .kv9error table tr td.wnb {
     white-space: nowrap;
     vertical-align: top;
+}
+
+.olMap .olControlPanel {
+    left: auto;
+    right: 5px;
+    top: 300px;
+    margin: 0;
+    border: 0 none;
+    width: 40px;
+}
+
+.olMap .olControlPanel div {
+    display: block;
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 5px;
+    margin-bottom: 10px;
+    position: static;
+}
+
+.olMap .olControlPanZoomBar {
+    right: 46px;
+    left: auto !important;
 }

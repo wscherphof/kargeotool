@@ -60,7 +60,7 @@ Ext.define("ol", {
         this.mixins.observable.constructor.call(this);
         this.editor = editor;
 
-        this.addEvents('measureChanged');
+        //this.addEvents('measureChanged');
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
     },
@@ -1072,7 +1072,7 @@ Ext.define("nl.b3p.kar.Cache", {
     constructor: function(config) {
         this.initConfig(config);
         this.rt = RTree();
-        this.olc.map.events.register ("moveend",this, this.update);
+        this.config.olc.map.events.register ("moveend",this, this.update);
     },
     initTree: function(features) {
         if (this.rt.getTree().nodes.length > 0) {
@@ -1099,14 +1099,14 @@ Ext.define("nl.b3p.kar.Cache", {
     },
     update: function(object,bbox) {
         if(!bbox){
-            bbox = this.olc.map.getExtent().toArray();
+            bbox = this.config.olc.map.getExtent().toArray();
         }
         var left = [bbox[0],bbox[1]];
         var right = [bbox[2],bbox[3]];
         var features =  this.rt.bbox(left,right);
-        var currentResolution = this.olc.map.getResolution();
-        this.olc.removeAllRseqs();
-        if(!this.pause && this.maxResolution > currentResolution){
+        var currentResolution = this.config.olc.map.getResolution();
+        this.config.olc.removeAllRseqs();
+        if(!this.pause && this.config.maxResolution > currentResolution){
             this.insertIntoVectorlayer(features);
         }
     },
@@ -1115,7 +1115,7 @@ Ext.define("nl.b3p.kar.Cache", {
             type: "FeatureCollection",
             features: features
         };
-        this.olc.addRseqGeoJson(featureCollection);
+        this.config.olc.addRseqGeoJson(featureCollection);
     }
 });
 

@@ -65,7 +65,7 @@
             };
         </script>
         <script type="text/javascript" src="${contextPath}/openlayers/OpenLayers.js"></script>
-        <script type="text/javascript" src="${contextPath}/js/ext/ext-all${param.debug == true ? '-debug' : ''}.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/ext/ext-all-debug${param.debug == true ? '-debug' : ''}.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/styles.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>
@@ -73,7 +73,8 @@
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/changemanager.js" ></script>
-        <link rel="stylesheet" href="${contextPath}/js/ext/ext-all.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="${contextPath}/js/collapsibleWindow.js" ></script>
+        <link rel="stylesheet" href="${contextPath}/js/ext/resources/css/crisp/theme-crisp-all.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
         <stripes:layout-component name="head"/>        
     </head>
