@@ -95,9 +95,6 @@ Ext.define('Ext.ux.TreeCombo',{
                 checkchange : function (node,checked,opt){                    //IE hack for itemclick event                  
                     node.set("checked",!checked);
                     me.itemTreeClick(me.tree.getView(),node,node,1,null,null,me);
-                },
-                itemclick : function (view,record,item,index,e,eOpts){
-                    me.itemTreeClick(view,record,item,index,e,eOpts,me);
                 }
             }
         });

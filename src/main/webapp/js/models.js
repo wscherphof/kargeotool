@@ -817,7 +817,7 @@ Ext.define('Movement', {
     getMapsForSignalgroup: function(signalgroupNumber){
         var maps = [];
         for (var i = 0 ; i < this.getMaps().length; i++){
-            if(this.getMaps()[i].signalGroupNumber === signalgroupNumber){
+            if(this.getMaps()[i].getSignalGroupNumber() === signalgroupNumber){
                 maps.push(this.getMaps()[i]);
             }
         }

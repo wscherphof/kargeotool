@@ -667,7 +667,7 @@ Ext.define("EditForms", {
                         // merge allSignalValues naar alle MovementActivationPoints
                         // van movements die dit pointId gebruiken
                         Ext.each(maps, function(theMap) {
-                            if(theMap.beginEndOrActivation == "ACTIVATION") {
+                            if(theMap.getBeginEndOrActivation() === "ACTIVATION") {
                                 //console.log("merging signalGroupNumber, virtualLocalLoopNumber and vehicleType values point signal values to movement nummer " + mvmtAndMap.movement.nummer + " map pointId " + theMap.pointId);
                                theMap.setConfig(allSignalValues);
                             }

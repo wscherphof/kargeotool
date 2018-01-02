@@ -1,3 +1,5 @@
+/* global Ext */
+
 /**
  * Geo-OV - applicatie voor het registreren van KAR meldpunten
  *
@@ -47,6 +49,7 @@ Ext.define("CollapsibleWindow", {
         var config = {
             itemId: this.config.id,
             closable: false,
+            titleCollapse:true,
             collapsible: true,
             animCollapse: false,
             stateful: {
@@ -102,7 +105,7 @@ Ext.define("CollapsibleWindow", {
                 y: this.config.y,
                 width: this.config.width,
                 height: this.config.height
-            }
+            };
         }
         window.animate({
             to: {
