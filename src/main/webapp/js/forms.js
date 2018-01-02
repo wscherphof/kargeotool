@@ -85,7 +85,7 @@ Ext.define("EditForms", {
         var theType = rseq.getType() == "" ? "CROSSING" : rseq.getType(); // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
-            height: 382,
+            height: 430,
             width: 450,
             modal: true,
             icon: rseq.getType() == "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
@@ -167,7 +167,7 @@ Ext.define("EditForms", {
                     typeAhead:true,
                     minChars:2,
                     valueField: 'id',
-                    value: rseq.config.dataOwner,
+                    value: rseq.getDataOwner(),
                     store: Ext.create('Ext.data.Store', {
                         fields: [ 'id','code', 'classificatie', 'companyNumber', 'omschrijving'],
                         data: dataOwners
@@ -190,14 +190,14 @@ Ext.define("EditForms", {
                     fieldLabel: 'Beheerdersaanduiding',
                     allowBlank:false,
                     name: 'crossingCode',
-                    value: rseq.config.crossingCode
+                    value: rseq.getCrossingCode()
                 },{
                     xtype: 'numberfield',
                     fieldLabel: 'KAR adres',
                     name: 'karAddress',
                     allowBlank: false,
                     minValue: 0,
-                    value: rseq.config.karAddress,
+                    value: rseq.getKarAddress(),
                     listeners: {
                         change: function(field, value) {
                             value = parseInt(value, 10);
@@ -208,36 +208,36 @@ Ext.define("EditForms", {
                     fieldLabel: 'Plaats',
                     name: 'town',
                     allowBlank: false,
-                    value: rseq.config.town
+                    value: rseq.getTown()
                 },{
                     fieldLabel: 'Locatie',
                     name: 'description',
-                    value: rseq.config.description
+                    value: rseq.getDescription()
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
                     fieldLabel: 'Geldig vanaf',
                     name: 'validFrom',
-                    value: rseq.config.validFrom
+                    value: rseq.getValidFrom()
                 },{
                     xtype: 'datefield',
                     format: 'Y-m-d',
                     fieldLabel: 'Geldig tot',
                     name: 'validUntil',
-                    value: rseq.config.validUntil
+                    value: rseq.getValidUntil()
                 },{
                     xtype: 'checkbox',
                     fieldLabel: 'Gereed voor export',
                     name: 'readyForExport',
                     id: 'readyForExport',
                     inputValue: true,
-                    value: rseq.config.readyForExport,
-                    checked: rseq.config.readyForExport,
+                    value: rseq.getReadyForExport(),
+                    checked: rseq.getReadyForExport(),
                     listeners:{
                         change:{
                             scope: this,
                             fn: function (form, value) {
-                                rseq.config.readyIsSet = value;
+                                rseq.readyIsSet = value;
                             }
                         }
                     }
@@ -256,10 +256,10 @@ Ext.define("EditForms", {
                         xtype: 'button',
                         name: 'messagesOverview',
                         width: 100,
-                        disabled: Ext.isString(rseq.config.id),
+                        disabled: Ext.isString(rseq.getId()),
                         text: 'Export informatie',
                         handler: function() {
-                            Ext.create("MessagesOverview").show(rseq.config.id);
+                            Ext.create("MessagesOverview").show(rseq.getId());
                         }
                     }]
                 }],

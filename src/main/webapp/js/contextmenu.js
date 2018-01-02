@@ -166,11 +166,11 @@ Ext.define("ContextMenu", {
                             var me = this;
                             me.type = item.getId();
                             var f = function(){
-                                if (!me.editor.activeRseq.readyForExport) {
+                                if (!me.editor.activeRseq.getReadyForExport()) {
                                     Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem is nog niet klaar om te exporteren.");
                                     return;
                                 }
-                                if (me.editor.activeRseq.validationErrors !== 0) {
+                                if (me.editor.activeRseq.getValidationErrors() !== 0) {
                                     Ext.Msg.alert('Fout! Kan niet exporteren', "Verkeerssysteem heeft nog validatiefouten.");
                                     return;
                                 }
