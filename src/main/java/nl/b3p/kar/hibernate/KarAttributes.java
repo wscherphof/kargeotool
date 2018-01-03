@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -135,6 +136,10 @@ public class KarAttributes {
         }
     }
 
+    public KarAttributes deepCopy()throws Exception{
+        KarAttributes copy = (KarAttributes) BeanUtils.cloneBean(this);
+        return copy;
+    }
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *

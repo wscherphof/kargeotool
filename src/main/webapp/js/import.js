@@ -124,7 +124,7 @@ function loadGrid() {
             type : 'memory',
             reader : {
                 type : 'json',
-                root : 'items'
+                rootProperty : 'items'
             }
         }
     });
@@ -213,7 +213,7 @@ function createValidationResultsGrid() {
             type : 'memory',
             reader : {
                 type : 'json',
-                root : 'items'
+                rootProperty : 'items'
             }
         }
     });
@@ -300,7 +300,7 @@ function createValidationResultsGrid() {
                         });
                         
                     }
-                    panel.doLayout();                    
+                    panel.updateLayout();                    
                 }
             }
         }
@@ -310,5 +310,5 @@ function createValidationResultsGrid() {
     panel.add(detailsPanel);
     
     panel.suspendLayout = false;
-    panel.doLayout();
+    panel.updateLayout();
 }

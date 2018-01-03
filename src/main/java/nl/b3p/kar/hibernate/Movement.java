@@ -20,6 +20,7 @@ package nl.b3p.kar.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -32,6 +33,7 @@ import org.json.JSONObject;
 import static nl.b3p.kar.hibernate.MovementActivationPoint.*;
 import nl.b3p.kar.jaxb.XmlActivation;
 import nl.b3p.kar.jaxb.XmlActivationPointSignal;
+import org.apache.commons.beanutils.BeanUtils;
 import org.stripesstuff.stripersist.Stripersist;
 
 
@@ -296,5 +298,20 @@ public class Movement implements Comparable {
             }
         }
         return jm;
+    }
+    
+    public Movement deepCopy(RoadsideEquipment rseq, Map<ActivationPoint, ActivationPoint> oldToNew)throws Exception{
+        Movement copy = (Movement)BeanUtils.cloneBean(this);
+        copy.setId(null);
+        copy.setRoadsideEquipment(rseq);
+        copy.setPoints(null);
+        
+        List<MovementActivationPoint> copiedPoints = new ArrayList<>();
+        for (MovementActivationPoint point : points) {
+            copiedPoints.add(point.deepCopy(rseq, copy, oldToNew));
+        }
+        copy.setPoints(copiedPoints);
+        return copy;
+        
     }
 }

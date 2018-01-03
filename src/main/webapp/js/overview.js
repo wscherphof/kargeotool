@@ -230,7 +230,7 @@ Ext.define("nl.b3p.kar.Overview",{
             if(rseq.getValidationErrors() === 0) {
                 Ext.get("validationResults").setHtml("KV9 validatie: <span style=\"color: green; font-weight: bold\">OK</span>");
             } else {
-                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.validationErrors + " fout" + (rseq.validationErrors === 1 ? "" : "en") + "</a>");
+                Ext.get("validationResults").setHtml("KV9 validatie: <a href=\"#\" onclick=\"editor.showValidationResults()\" style=\"color: red; font-weight: bold\">Toon " + rseq.getValidationErrors() + " fout" + (rseq.getValidationErrors() === 1 ? "" : "en") + "</a>");
             }
         }
 

@@ -22,6 +22,7 @@ package nl.b3p.kar.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import org.apache.commons.beanutils.BeanUtils;
 
 /**
  * Entity voor een activation point in een beweging welke een KAR-signaal moet
@@ -245,4 +246,10 @@ public class ActivationPointSignal {
     }
     //</editor-fold>
 
+    public ActivationPointSignal deepCopy() throws Exception{
+        ActivationPointSignal copy = (ActivationPointSignal)BeanUtils.cloneBean(this);
+        copy.setId(null);
+        
+        return copy;
+    }
 }

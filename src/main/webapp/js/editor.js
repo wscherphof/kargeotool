@@ -342,7 +342,7 @@ Ext.define("Editor", {
         if(this.activeRseq !== null) {
             var activeRseqIndex = -1;
             Ext.Array.each(filteredRseqs, function(rseq, index) {
-                if(rseq.properties.id === me.activeRseq.id) {
+                if(rseq.properties.id === me.activeRseq.getId()) {
                     activeRseqIndex = index;
                     return false;
                 }
@@ -496,7 +496,7 @@ Ext.define("Editor", {
             params: {
                 'informCarriers': true,
                 'usersToInform': carriers.join(", "),
-                rseq: this.activeRseq.id
+                rseq: this.activeRseq.getId()
             },
             success: function (response) {
                 this.setLoading(false);
@@ -852,7 +852,7 @@ Ext.define("Editor", {
     },
 
     addMemo : function(){
-        var memo = this.activeRseq.memo;
+        var memo = this.activeRseq.getMemo();
         var animId = this.olc.vectorLayer.getFeaturesByAttribute("className", "RSEQ")[0].geometry.id;
         Ext.Msg.show({
             title: 'Memo',
@@ -868,10 +868,10 @@ Ext.define("Editor", {
             value: memo,
             fn: function(btn, text){
                 if (btn === 'yes'){
-                    this.activeRseq.memo = text;
+                    this.activeRseq.setMemo(text);
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
                 }else if (btn === 'no') {
-                    this.activeRseq.memo = '';
+                    this.activeRseq.setMemo('');
                     this.fireEvent('activeRseqUpdated', this.activeRseq);
                 }
             },
@@ -1347,7 +1347,7 @@ Ext.define("Editor", {
         var validationResultsWindow;
 
         Ext.Ajax.request({
-            url: editorActionBeanUrl + "?rseq=" + me.activeRseq.id + "&getValidationErrors=1",
+            url: editorActionBeanUrl + "?rseq=" + me.activeRseq.getId() + "&getValidationErrors=1",
             method: 'GET',
             scope: this,
             success: function (response){

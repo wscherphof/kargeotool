@@ -20,7 +20,9 @@
 package nl.b3p.kar.hibernate;
 
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
+import org.apache.commons.beanutils.BeanUtils;
 
 /**
  * Entity voor de punten van een Movement.
@@ -102,6 +104,21 @@ public class MovementActivationPoint {
         }
         return typeMap;
     }
+    
+    public MovementActivationPoint deepCopy(RoadsideEquipment rseq, Movement m,Map<ActivationPoint, ActivationPoint> oldToNew) throws Exception{
+        MovementActivationPoint copy = (MovementActivationPoint)BeanUtils.cloneBean(this);
+        copy.setId(null);
+        copy.setMovement(m);
+        ActivationPoint ap = oldToNew.get(getPoint());
+        copy.setPoint(ap);
+        if(signal ==null){
+            int a = 0;
+        }else{
+            copy.setSignal(signal.deepCopy());
+        }
+        return copy;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *

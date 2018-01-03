@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import nl.b3p.geojson.GeoJSON;
+import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.Stripersist;
@@ -281,5 +282,12 @@ public class ActivationPoint implements Comparable {
         if(label == null || label.isEmpty()){
             label = null;
         }
+    }
+    
+    public ActivationPoint deepCopy(RoadsideEquipment rseq) throws Exception{
+        ActivationPoint copy = (ActivationPoint)BeanUtils.cloneBean(this);
+        copy.setId(null);
+        copy.setRoadsideEquipment(rseq);
+        return copy;
     }
 }

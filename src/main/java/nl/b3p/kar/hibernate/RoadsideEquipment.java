@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -43,6 +44,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.XmlB3pRseq;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -1053,5 +1055,43 @@ public class RoadsideEquipment {
             typeRseq =movement.determineVehicleType(typeRseq);
         }
         return typeRseq;
+    }
+    
+    public RoadsideEquipment deepCopy(EntityManager em) throws Exception{
+        RoadsideEquipment copy = (RoadsideEquipment) BeanUtils.cloneBean(this);
+        
+        copy.setId(null);
+        copy.setMovements(null);
+        copy.setPoints(null);
+        copy.setKarAttributes(null);
+        Point p = copy.getLocation();
+        p.getCoordinate().x += 10;
+        p.getCoordinate().y += 10;
+        em.persist(copy);
+        
+        
+        SortedSet<ActivationPoint> copiedPoints = new TreeSet<>();
+        Map<ActivationPoint, ActivationPoint> oldToNew = new HashMap<>();
+        for (ActivationPoint oldPoint : points) {
+            ActivationPoint pointCopy = oldPoint.deepCopy(copy);
+            oldToNew.put(oldPoint, pointCopy);
+            em.persist(pointCopy);
+            copiedPoints.add(pointCopy);
+        }
+        copy.setPoints(copiedPoints);
+        
+        
+        SortedSet<Movement> copiedMovements = new TreeSet<>();
+        for (Movement movement : movements) {
+            copiedMovements.add(movement.deepCopy(copy, oldToNew));
+        }
+        copy.setMovements(copiedMovements);
+        
+        List<KarAttributes> attrs = new ArrayList<>();
+        for (KarAttributes karAttribute : karAttributes) {
+            attrs.add(karAttribute.deepCopy());
+        }
+        copy.setKarAttributes(attrs);
+        return copy;
     }
 }
