@@ -117,16 +117,16 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
             @Override
             public void stream(HttpServletResponse response) throws IOException {
 
-                //haal rseqs op
+                // haal rseqs op
                 // per rseq, bepaal type
                 // als type gemixt is
-                // maak kopie
-                // maak van kopie type Hulpdienst
-                // gooi van kopie de punten van type OV weg
-                // sla kopie op
-                // maak van origineel type OV
-                // gooi van origineel alle punten van type Hulpdienst weg
-                // sla origineel op
+                    // loop over alle bewegingen
+                        // als beweging OV is, doe niks
+                        // als beweging HD is, doe niks
+                        // als beweging gemixt is
+                            // dupliceer beweging, inclusief punten
+                                // maak van duplicaat HD
+                                // maak van origineel OV
                 PrintWriter out = new PrintWriter(response.getWriter());
 
                 EntityManager em = Stripersist.getEntityManager();
@@ -165,63 +165,59 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
 
     private void processRseq(RoadsideEquipment rseq, EntityManager em) throws Exception {
         makeHulpdienst(rseq,em);
-        makePointsOV(rseq);
-
     }
 
-    private void makeHulpdienst(RoadsideEquipment ovRseq, EntityManager em) throws Exception {
-        em.refresh(ovRseq);
-        RoadsideEquipment hd = ovRseq.deepCopy(em);
-        hd.setDescription(hd.getDescription() + "HD");
+    private void makeHulpdienst(RoadsideEquipment rseq, EntityManager em) throws Exception {
+        makePointsHD(rseq, em);
         
-        em.persist(hd);
-        em.detach(ovRseq);
-        em.getTransaction().commit();
-        
-        makePointsHD(hd, em);
-        
-        em.getTransaction().begin();
-        em.persist(hd);
+        em.persist(rseq);
         em.getTransaction().commit();
     }
 
-    private void makePointsOV(RoadsideEquipment ovRseq) {
-
-    }
     
-    private void makePointsHD(RoadsideEquipment hd, EntityManager em){
-        SortedSet<Movement> newMovements = new TreeSet<>();
-        List<ActivationPoint> apsToRemoved=new ArrayList<>();
-        for (Movement movement : hd.getMovements()) {
+    private void makePointsHD(RoadsideEquipment rseq, EntityManager em) throws Exception{
+
+        for (Movement movement : rseq.getMovements()) {
             String type = movement.determineVehicleType(null);
-            if (type.equals(VehicleType.VEHICLE_TYPE_OV)) {
-                for (MovementActivationPoint point : movement.getPoints()) {
-                    apsToRemoved.add(point.getPoint());
-                }
-                em.remove(movement);
-            } else {
-                List<MovementActivationPoint> newMaps = new ArrayList<>();
-                if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
-                    for (MovementActivationPoint map : movement.getPoints()) {
-                        String t = map.determineVehicleType(null);
-                        if (t != null && t.equals(VehicleType.VEHICLE_TYPE_OV)) {
-                            em.remove(map);
-                        } else {
-                            if (t != null && t.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
-                                filterVehicleTypes(defaultHDTypes, map.getSignal());                                
-                            }
-                            newMaps.add(map);
-                        }
-                    }
-                }else{
-                    newMaps = movement.getPoints();
-                }
-                movement.getPoints().retainAll(newMaps);
-                newMovements.add(movement);
+            if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+  
+                Movement hd = movement.deepCopy(rseq, em);
+                // maak van origineel OV
+                changeVehicleType(movement, em, VehicleType.VEHICLE_TYPE_HULPDIENSTEN, defaultOVTypes);
+                
+                // maak van copy HD
+                changeVehicleType(hd, em, VehicleType.VEHICLE_TYPE_OV, defaultHDTypes);
             }
         }
-        hd.getPoints().removeAll(apsToRemoved);
-        hd.getMovements().retainAll(newMovements);
+    }
+    
+    private void changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove, List<VehicleType> defaultVehicleTypes) {
+        
+        List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
+        for (MovementActivationPoint map : movement.getPoints()) {
+            String t = map.determineVehicleType(null);
+            if (t != null && t.equals(vehicleTypeToRemove)) {
+                em.remove(map);
+                
+                mapsToRemove.add(map);
+            } else {
+                if (t != null && t.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+                    filterVehicleTypes(defaultVehicleTypes, map.getSignal());
+                }
+            }
+        }
+        movement.getPoints().removeAll(mapsToRemove);
+        processLabelsAPs(movement, vehicleTypeToRemove.equals(VehicleType.VEHICLE_TYPE_OV) ? "H" : "");
+    }
+
+    private void processLabelsAPs(Movement m, String prefix){
+        for (MovementActivationPoint point : m.getPoints()) {
+            ActivationPoint ap = point.getPoint();
+            String label = ap.getLabel().toLowerCase();
+            if(label.startsWith("va") || label.startsWith("ia") || label.startsWith("ua")){
+                ap.setLabel(ap.getLabel().substring(0,1) + prefix + ap.getLabel().substring(2));
+            }
+        }
     }
 
     private void filterVehicleTypes(List<VehicleType> allTypes,ActivationPointSignal aps){

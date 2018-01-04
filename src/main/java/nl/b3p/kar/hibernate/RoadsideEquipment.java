@@ -1056,7 +1056,7 @@ public class RoadsideEquipment {
         }
         return typeRseq;
     }
-    
+    /*
     public RoadsideEquipment deepCopy(EntityManager em) throws Exception{
         RoadsideEquipment copy = (RoadsideEquipment) BeanUtils.cloneBean(this);
         
@@ -1094,5 +1094,5 @@ public class RoadsideEquipment {
         copy.setKarAttributes(attrs);
        
         return copy;
-    }
+    }*/
 }
