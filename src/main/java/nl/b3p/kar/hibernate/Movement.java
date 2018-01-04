@@ -300,7 +300,7 @@ public class Movement implements Comparable {
         return jm;
     }
     
-    public Movement deepCopy(RoadsideEquipment rseq, Map<ActivationPoint, ActivationPoint> oldToNew)throws Exception{
+    public Movement deepCopy(RoadsideEquipment rseq, Map<ActivationPoint, ActivationPoint> oldToNew, EntityManager em)throws Exception{
         Movement copy = (Movement)BeanUtils.cloneBean(this);
         copy.setId(null);
         copy.setRoadsideEquipment(rseq);
@@ -308,7 +308,7 @@ public class Movement implements Comparable {
         
         List<MovementActivationPoint> copiedPoints = new ArrayList<>();
         for (MovementActivationPoint point : points) {
-            copiedPoints.add(point.deepCopy(rseq, copy, oldToNew));
+            copiedPoints.add(point.deepCopy(rseq, copy, oldToNew, em));
         }
         copy.setPoints(copiedPoints);
         return copy;

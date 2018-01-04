@@ -1083,7 +1083,7 @@ public class RoadsideEquipment {
         
         SortedSet<Movement> copiedMovements = new TreeSet<>();
         for (Movement movement : movements) {
-            copiedMovements.add(movement.deepCopy(copy, oldToNew));
+            copiedMovements.add(movement.deepCopy(copy, oldToNew, em));
         }
         copy.setMovements(copiedMovements);
         
@@ -1092,6 +1092,7 @@ public class RoadsideEquipment {
             attrs.add(karAttribute.deepCopy());
         }
         copy.setKarAttributes(attrs);
+       
         return copy;
     }
 }

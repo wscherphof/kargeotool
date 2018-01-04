@@ -105,7 +105,7 @@ public class MovementActivationPoint {
         return typeMap;
     }
     
-    public MovementActivationPoint deepCopy(RoadsideEquipment rseq, Movement m,Map<ActivationPoint, ActivationPoint> oldToNew) throws Exception{
+    public MovementActivationPoint deepCopy(RoadsideEquipment rseq, Movement m,Map<ActivationPoint, ActivationPoint> oldToNew, EntityManager em) throws Exception{
         MovementActivationPoint copy = (MovementActivationPoint)BeanUtils.cloneBean(this);
         copy.setId(null);
         copy.setMovement(m);
@@ -114,7 +114,7 @@ public class MovementActivationPoint {
         if(signal ==null){
             int a = 0;
         }else{
-            copy.setSignal(signal.deepCopy());
+            copy.setSignal(signal.deepCopy(em));
         }
         return copy;
     }

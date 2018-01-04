@@ -246,10 +246,15 @@ public class ActivationPointSignal {
     }
     //</editor-fold>
 
-    public ActivationPointSignal deepCopy() throws Exception{
+    public ActivationPointSignal deepCopy(EntityManager em) throws Exception{
         ActivationPointSignal copy = (ActivationPointSignal)BeanUtils.cloneBean(this);
         copy.setId(null);
         
+        List<VehicleType> newTypes = new ArrayList<>();
+        for (VehicleType vehicleType : vehicleTypes) {
+            newTypes.add(em.find(VehicleType.class, vehicleType.getNummer()));
+        }
+        copy.setVehicleTypes(newTypes);
         return copy;
     }
 }
