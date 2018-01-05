@@ -35,6 +35,7 @@ Ext.define("nl.b3p.kar.Overview",{
         this.domId = domId;
         this.heightOffset = 75;
         this.editor.on("activeRseqUpdated", function(rseq) { this.updateOverview(rseq, true); },this);
+        this.editor.on("vehicleTypeChanged", function() { this.updateOverview(editor.activeRseq, false); },this);
         this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false); },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
 

@@ -250,7 +250,7 @@ Ext.define("TOC", {
     },
     changeVehicleType: function (vehicleType){
         if(editor.activeRseq){
-            editor.fireEvent("activeRseqUpdated", editor.activeRseq);
+            editor.fireEvent("vehicleTypeChanged", vehicleType);
         }
     },
     toggleOvInfoLayer: function (layer, visible) {
