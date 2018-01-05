@@ -115,19 +115,8 @@ Ext.onReady(function() {
             }
         ]
     });
-    Ext.create('CollapsibleWindow', {
-        title: 'Filters en kaartlagen',
-        y: 710,
-        layout: 'fit',
-        id: 'tocWindow',
-        items: [
-            {
-                xtype: 'container',
-                itemId: 'toc',
-                contentEl: 'toc',
-                padding: 5,
-                scrollable: true
-            }
-        ]
+    
+    Ext.create('TOC', {
+        editor:editor
     });
 });

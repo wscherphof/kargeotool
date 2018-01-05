@@ -53,6 +53,7 @@
         <script type="text/javascript" src="${contextPath}/js/editor.js"></script>
         <script type="text/javascript" src="${contextPath}/js/layout.js"></script>
         <script type="text/javascript" src="${contextPath}/js/TreeCombo.js"></script>
+        <script type="text/javascript" src="${contextPath}/js/TOC.js"></script>
         <script type="text/javascript" src="${contextPath}/js/overview.js"></script>
         <script type="text/javascript" src="${contextPath}/js/messagesOverview.js"></script>
         <script type="text/javascript" src="${contextPath}/js/rtree.js"></script> <!-- Possibly later rtree.min.js, for now some edits/bugfixes are made in rtree.js, which are not in the minified version -->
@@ -78,37 +79,6 @@
                     of klik rechts om een verkeerssysteem toe te voegen.
                 </div>
             </div>
-
-            <div id="toc">
-                <div class="legendseparator">
-                    <b>Filters</b><br/>
-                    <label><input type="checkbox" id="kv9valid" onclick="setFilter('kv9', 'valid');"/>KV9 validatie OK</label><br/>
-                    <label><input type="checkbox" id="kv9invalid" onclick="setFilter('kv9','invalid');"/>KV9 validatie niet OK</label><br/>
-                    <label><input type="checkbox" id="layerOV" onclick="setFilter('layer','OV');"/>OV</label><br/>
-                    <label><input type="checkbox" id="layerHulpdiensten" onclick="setFilter('layer','Hulpdiensten');"/>Hulpdiensten</label><br/>
-                </div>
-                <div class="legendseparator">
-                    <b>OV-informatie</b><br/>
-                    <input type="checkbox" id="buslijnen_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=buslijnen&amp;format=image/png"/> Buslijnen<br/>
-                    <div style="display: none;margin-left: 15px;" id="buslijnen_filter"><a href="#" id="buslijnen_filter_a" onclick='removeFilter();'>Verwijder filter</a></div>
-                    <input type="checkbox" id="bushaltes_visible" onclick="toggleOvInfoLayer(event);"/><img src="${initParam['mapserver-url']}&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=bushaltes_symbol&amp;format=image/png"/> Bushaltes<br/>
-                    <div style="display:block;" id="bushaltes"></div>
-                </div>
-                <div class="legendseparator">
-                    <b>Achtergrond</b><br/>
-                    <div id="Luchtfoto_div" style="width: 90%; height: 38px">
-                        <input type="checkbox" id="Luchtfoto_visible" onclick="toggleLayer(event);"/> Luchtfoto<br/>
-                    </div>
-                    <div id="Openbasiskaart_div" style="width: 90%; height: 38px">
-                        <input type="checkbox" id="Openbasiskaart_visible" onclick="toggleLayer(event);"/> Topografie (OSM)<br/>
-                    </div>
-                </div>
-                <div class="legendseparator">
-                    <b>Extra</b><br/>
-                    <input type="checkbox" id="snapRoads" onclick="toggleRoad(this);"/> Wegen
-                </div>
-            </div>
-        </div>
 
         <div id="kaart">
             <div id="map" style="width: 100%; height: 100%;"></div>
@@ -153,19 +123,6 @@
                 var welcomeForm = null;
                 Ext.onReady(function() {
 
-                    var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart'];
-                    Ext.Array.each(checkboxes, function(checkbox) {
-                        Ext.get(checkbox + "_visible").dom.checked = getLayerVisibility(checkbox);
-                    });
-
-                    Ext.get("kv9valid").dom.checked = profile.state["kv9valid"] !== undefined ? profile.state["kv9valid"] : true;
-                    Ext.get("kv9invalid").dom.checked = profile.state["kv9invalid"] !== undefined ? profile.state["kv9invalid"] : true;
-
-                    Ext.get("layerOV").dom.checked = profile.state["layerOV"] !== undefined ? profile.state["layerOV"] : true;
-                    Ext.get("layerHulpdiensten").dom.checked = profile.state["layerHulpdiensten"] !== undefined ? profile.state["layerHulpdiensten"] : true;
-
-                    createLegendSliders();
-
                     editor = Ext.create(Editor, "map", mapfilePath, ovInfo);
 
                     settingsForm = Ext.create(SettingsForm, editor);
@@ -206,127 +163,6 @@
                 var dataOwners = ${actionBean.dataOwnersJSON};
                 var ovInfo = ${actionBean.ovInfoJSON};
 
-                function getLayerOpacity(layer) {
-                    return profile.state[layer + "_slider"] / 100.0 || 1;
-                }
-
-                function getLayerVisibility(layer) {
-                    var state = profile.state[layer + "_visible"];
-                    if(state == undefined) {
-                        return layer == "Openbasiskaart";
-                    } else {
-                        return state;
-                    }
-                }
-
-                function getFilterStatus(prefix,type) {
-                    return Ext.get(prefix + type).dom.checked;
-                }
-
-                function createLegendSliders() {
-
-                    var changeFunc = function(slider, newValue, thumb, eOpts) {
-                        profile.state[slider.id] = newValue;
-                        saveProfile();
-                        editor.setLayerOpacity(slider.id.substr(0, slider.id.indexOf('_')), newValue / 100.0);
-                    };
-                    Ext.create('Ext.slider.Single', {
-                        id: 'Luchtfoto_slider',
-                        renderTo: 'Luchtfoto_div',
-                        hideLabel: true,
-                        useTips: true,
-                        width: '100%',
-                        style: {
-                            marginLeft: '15px'
-                        },
-                        value: getLayerOpacity("Luchtfoto") * 100,
-                        increment: 10,
-                        minValue: 0,
-                        maxValue: 100,
-                        listeners: {
-                            change: changeFunc
-                        }
-                    });
-
-                    Ext.create('Ext.slider.Single', {
-                        id: 'Openbasiskaart_slider',
-                        renderTo: 'Openbasiskaart_div',
-                        hideLabel: true,
-                        useTips: true,
-                        width: '100%',
-                        style: {
-                            marginLeft: '15px'
-                        },
-                        value: getLayerOpacity("Openbasiskaart") * 100,
-                        increment: 10,
-                        minValue: 0,
-                        maxValue: 100,
-                        listeners: {
-                            change: changeFunc
-                        }
-                    });
-                }
-
-                function toggleOvInfoLayer(event) {
-                    if(!event) {
-                        event = window.event;
-                    }
-                    var target = event.target ? event.target : event.srcElement;
-
-                    var layer = target.id.substr(0, target.id.indexOf('_'));
-                    var visible = target.checked;
-
-                    Ext.Array.each(ovInfo, function(ov) {
-                        editor.olc.setLayerVisible(layer + "_" + ov.schema, visible);
-                    });
-
-                    profile.state[layer + "_visible"] = visible;
-                    saveProfile();
-                }
-
-                function toggleLayer(event) {
-                    if(!event) {
-                        event = window.event;
-                    }
-                    var target = event.target ? event.target : event.srcElement;
-
-                    var layer = target.id.substr(0, target.id.indexOf('_'));
-                    var visible = target.checked;
-
-                    editor.olc.setLayerVisible(layer, visible);
-                    profile.state[layer + "_visible"] = visible;
-                    saveProfile();
-                }
-
-                function setFilter(prefix, type) {
-                    var checked = Ext.get(prefix + type).dom.checked;
-
-                    editor.updateFilteredRseqs();
-                    profile.state[prefix + type] = checked;
-                    saveProfile();
-                }
-
-                function toggleRoad(form){
-                    var activate = form.checked;
-                    if(activate){
-                        editor.loadRoads();
-                    }else{
-                        editor.removeRoads();
-                    }
-                }
-
-                function removeFilter(){
-                    Ext.Array.each(ovInfo, function(ov) {
-                        var currentName = "buslijnen_" + ov.schema;
-
-                        // Prevent old image from showing
-                        editor.olc.setLayerVisible(currentName, false);
-                        editor.olc.removeFilterFromKargis(currentName);
-                        editor.olc.setLayerVisible(currentName, true);
-                    });
-
-                    Ext.get("buslijnen_filter").setDisplayed(false);
-                }
             </script>
         </div>
 

@@ -149,21 +149,33 @@ Ext.define("Editor", {
         this.olc.createMap(this.domId);
 
     
-        this.olc.addLayer("TMS","Luchtfoto",'http://geodata.nationaalgeoregister.nl/luchtfoto/rgb/tms/','Actueel_ortho25/EPSG:28992', getLayerVisibility("Luchtfoto"),'jpeg', getLayerOpacity("Luchtfoto"));    // this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', getLayerVisibility("BRT"), 'png8', getLayerOpacity("BRT"));
-        this.olc.addLayer("TMS","Openbasiskaart",'http://openbasiskaart.nl/mapcache/tms/','osm-nb', getLayerVisibility("Openbasiskaart"), 'png', getLayerOpacity("Openbasiskaart"));
+        this.olc.addLayer("TMS","Luchtfoto",'http://geodata.nationaalgeoregister.nl/luchtfoto/rgb/tms/','Actueel_ortho25/EPSG:28992', this.getLayerVisibility("Luchtfoto"),'jpeg', this.getLayerOpacity("Luchtfoto"));    // this.olc.addLayer("TMS","BRT",'http://geodata.nationaalgeoregister.nl/tiles/service/tms/','brtachtergrondkaart', this.getLayerVisibility("BRT"), 'png8', this.getLayerOpacity("BRT"));
+        this.olc.addLayer("TMS","Openbasiskaart",'http://openbasiskaart.nl/mapcache/tms/','osm-nb', this.getLayerVisibility("Openbasiskaart"), 'png', this.getLayerOpacity("Openbasiskaart"));
 
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
 
-    createOvInfoLayers: function(mapfilePath, ovInfo) {
-        this.olc.addLayer("WMS","buslijnen_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'buslijnen', getLayerVisibility('buslijnen'),null, 1, 13, null);
-        this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', getLayerVisibility('bushaltes'),null, 1, 13, null);
+    getLayerVisibility: function (layer) {
+        var state = profile.state[layer + "_visible"];
+        if (state === undefined) {
+            return layer === "Openbasiskaart";
+        } else {
+            return state;
+        }
+    },
+
+    createOvInfoLayers: function (mapfilePath, ovInfo) {
+        this.olc.addLayer("WMS", "buslijnen_" + ovInfo.schema, Ext.String.format(mapfilePath, ovInfo.schema), 'buslijnen', this.getLayerVisibility('buslijnen'), null, 1, 13, null);
+        this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', this.getLayerVisibility('bushaltes'),null, 1, 13, null);
     },
 
     setLayerOpacity: function(layer, opacity) {
         this.olc.map.getLayersByName(layer)[0].setOpacity(opacity);
     },
 
+    getLayerOpacity: function (layer) {
+        return profile.state[layer + "_slider"] / 100.0 || 1;
+    },
     /**
      * Maak het context menu
      */
@@ -309,15 +321,19 @@ Ext.define("Editor", {
             }
         });
     },
+    
+    getFilterStatus: function (prefix, type) {
+        return Ext.getCmp(prefix + type).getValue();
+    },
 
-    getFilteredRseqs: function() {
+    getFilteredRseqs: function () {
         var filtered = [];
 
-        var kv9valid = getFilterStatus('kv9',"valid");
-        var kv9invalid = getFilterStatus('kv9',"invalid");
+        var kv9valid = this.getFilterStatus('kv9',"valid");
+        var kv9invalid = this.getFilterStatus('kv9',"invalid");
 
-        var layersOV = getFilterStatus('layer',"OV");
-        var layersHulpdiensten = getFilterStatus('layer',"Hulpdiensten");
+        var layersOV = this.getFilterStatus('layer',"OV");
+        var layersHulpdiensten = this.getFilterStatus('layer',"Hulpdiensten");
 
         Ext.Array.each(this.allRseqs, function(rseq) {
             var vehicleType = rseq.properties.vehicleType;
