@@ -20,7 +20,6 @@ package nl.b3p.kar.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -101,6 +100,9 @@ public class Movement implements Comparable {
     @XmlElement(name="END")
     private XmlActivationPoint end;
     
+    @XmlTransient
+    private String vehicleType;
+    
     public void beforeMarshal(Marshaller marshaller) {
         activations = new ArrayList();
         
@@ -123,6 +125,7 @@ public class Movement implements Comparable {
             }
            typeMovement = map.determineVehicleType(typeMovement);
         }
+        this.vehicleType = typeMovement;
         return typeMovement;
     }
     
@@ -254,8 +257,18 @@ public class Movement implements Comparable {
     public void setPoints(List<MovementActivationPoint> points) {
         this.points = points;
     }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+    
     //</editor-fold>
 
+    @Override
     public int compareTo(Object t) {
         Movement rhs = (Movement)t;
         if(nummer == null) {

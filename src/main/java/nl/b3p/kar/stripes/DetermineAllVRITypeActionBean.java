@@ -154,7 +154,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                     em.persist(rseq);
                 }
                 if (commit) {
-                    //   em.getTransaction().commit();
+                    em.getTransaction().commit();
                 }
 
                 out.println("Correct handler");
@@ -164,19 +164,6 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
     }
 
     private void processRseq(RoadsideEquipment rseq, EntityManager em) throws Exception {
-        makeHulpdienst(rseq,em);
-    }
-
-    private void makeHulpdienst(RoadsideEquipment rseq, EntityManager em) throws Exception {
-        makePointsHD(rseq, em);
-        
-        em.persist(rseq);
-        em.getTransaction().commit();
-    }
-
-    
-    private void makePointsHD(RoadsideEquipment rseq, EntityManager em) throws Exception{
-
         for (Movement movement : rseq.getMovements()) {
             String type = movement.determineVehicleType(null);
             if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
@@ -184,13 +171,19 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                 Movement hd = movement.deepCopy(rseq, em);
                 // maak van origineel OV
                 changeVehicleType(movement, em, VehicleType.VEHICLE_TYPE_HULPDIENSTEN, defaultOVTypes);
+                movement.setVehicleType(VehicleType.VEHICLE_TYPE_OV);
                 
                 // maak van copy HD
                 changeVehicleType(hd, em, VehicleType.VEHICLE_TYPE_OV, defaultHDTypes);
+                hd.setVehicleType(VehicleType.VEHICLE_TYPE_HULPDIENSTEN);
+                
+            }else{
+                movement.setVehicleType(type);
             }
         }
+        em.persist(rseq);
     }
-    
+
     private void changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove, List<VehicleType> defaultVehicleTypes) {
         
         List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
