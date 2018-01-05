@@ -76,27 +76,46 @@ Ext.define("TOC", {
                             ]
                         },
                         {
-                            xtype: "checkbox",
+                            xtype: "radio",
                             boxLabel: "OV",
+                            value: false,
+                            inputValue: "OV",
+                            name: "vehicleType",
                             id: "layerOV",
                             listeners: [
                                 {
                                     scope: this,
                                     change: function (obj, newValue) {
-                                        this.setFilter(newValue, 'layer', 'OV');
+                                        this.changeVehicleType('OV');
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            xtype: "radio",
+                            name: "vehicleType",
+                            boxLabel: "Hulpdiensten",
+                            inputValue: "Hulpdiensten",
+                            value: false,
+                            id: 'layerHulpdiensten',
+                            listeners: [
+                                {
+                                    scope: this,
+                                    change: function () {
+                                        this.changeVehicleType('Hulpdiensten');
                                     }
                                 }
                             ]
                         },
                         {
                             xtype: "checkbox",
-                            boxLabel: "Hulpdiensten",
-                            id: 'layerHulpdiensten',
+                            boxLabel: "Laat ander voertuigtype zien",
+                            id: "showOtherVehicleType",
                             listeners: [
                                 {
                                     scope: this,
                                     change: function (obj, newValue) {
-                                        this.setFilter(newValue, 'layer', 'Hulpdiensten');
+                                        //this.setFilter(newValue, 'kv9', 'valid');
                                     }
                                 }
                             ]
@@ -197,6 +216,7 @@ Ext.define("TOC", {
                         },
                         {
                             xtype: "checkbox",
+                            id: "snapRoads",
                             boxLabel: "Wegen",
                             listeners: {
                                 change: this.toggleRoad
@@ -224,10 +244,14 @@ Ext.define("TOC", {
         Ext.getCmp("Luchtfoto_slider").setValue(editor.getLayerOpacity("Luchtfoto") * 100);
     },
     setFilter: function (checked, prefix, type) {
-
         editor.updateFilteredRseqs();
         profile.state[prefix + type] = checked;
         saveProfile();
+    },
+    changeVehicleType: function (vehicleType){
+        if(editor.activeRseq){
+            editor.fireEvent("activeRseqUpdated", editor.activeRseq);
+        }
     },
     toggleOvInfoLayer: function (layer, visible) {
         Ext.Array.each(ovInfo, function (ov) {

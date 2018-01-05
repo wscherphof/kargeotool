@@ -1,3 +1,5 @@
+/* global karTheme */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *

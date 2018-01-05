@@ -1,3 +1,5 @@
+/* global style, selectstyle, tempstyle, surroundStyle, Ext, Measure */
+
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
 *

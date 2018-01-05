@@ -284,6 +284,7 @@ public class Movement implements Comparable {
         JSONObject jm = new JSONObject();
         jm.put("id",getId());
         jm.put("nummer", getNummer());
+        jm.put("vehicleType", vehicleType != null ? vehicleType : determineVehicleType(null));
 
         JSONArray maps = new JSONArray();
         jm.put("maps", maps);

@@ -754,7 +754,8 @@ Ext.define('Movement', {
     config:{
         id: null,
         maps:null,
-        nummer:null
+        nummer:null,
+        vehicleType:null
     },
     /**
      * @constructor

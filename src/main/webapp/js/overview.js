@@ -424,19 +424,23 @@ Ext.define("nl.b3p.kar.Overview",{
             for (var bKey in signalGroup){
                 var mv = signalGroup[bKey];
                 var mvNode = this.createMovementNode(mv,bKey);
-                bewegingen.push(mvNode);
+                if(mvNode !== null){
+                    bewegingen.push(mvNode);
+                }
             }
-            var label = this.getSignalgroupLabel(signalGroup);
-            var node = {
-                text :label,
-                id : Ext.id(),//"sign-" + key,
-                expanded : true,
-                iconCls : "noTreeIcon",
-                type : "signalGroup",
-                allowDrag:false,
-                children : bewegingen
-            };
-            store.root.children.push(node);
+            if(bewegingen.length > 0){
+                var label = this.getSignalgroupLabel(signalGroup);
+                var node = {
+                    text :label,
+                    id : Ext.id(),//"sign-" + key,
+                    expanded : true,
+                    iconCls : "noTreeIcon",
+                    type : "signalGroup",
+                    allowDrag:false,
+                    children : bewegingen
+                };
+                store.root.children.push(node);
+            }
         }
 
         return store;
@@ -478,19 +482,24 @@ Ext.define("nl.b3p.kar.Overview",{
             var pt = this.createPointNode(json.points[i],json.id);
             points.push(pt);
         }
-        var label = this.getBewegingLabel(this.editor.activeRseq.getMovementById(json.id));
-        var node = {
-            text : label,
-            id : Ext.id(),//"mvmt-" + json.id,
-            expanded : true,
-            icon : karTheme.richting,
-            movementId: key,
-            allowDrag:false,
-            iconCls : 'overviewTree',
-            type : "movement",
-            children : points
-        };
-        return node;
+        var movement = this.editor.activeRseq.getMovementById(json.id);
+        if (movement.getVehicleType() === this.editor.getCurrentVehicleType()) {
+            var label = this.getBewegingLabel(movement);
+            var node = {
+                text: label,
+                id: Ext.id(), //"mvmt-" + json.id,
+                expanded: true,
+                icon: karTheme.richting,
+                movementId: key,
+                allowDrag: false,
+                iconCls: 'overviewTree',
+                type: "movement",
+                children: points
+            };
+            return node;
+        } else {
+            return null;
+        }
 
     },
     createPointNode : function (point,movementId){
@@ -564,6 +573,7 @@ Ext.define("nl.b3p.kar.Overview",{
         if(label === 'Van  naar '){
             label = '';
         }
+        label += " (" + mvmnt.getVehicleType() + ")";
 
         return label;
     },

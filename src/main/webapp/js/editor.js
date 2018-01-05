@@ -66,16 +66,6 @@ Ext.define("Editor", {
      */
     constructor: function(domId, mapfilePath, ovInfo) {
         this.mixins.observable.constructor.call(this);
-        /*this.addEvents(
-            'activeRseqChanged',
-            'activeRseqUpdated',
-            'selectedObjectChanged',
-            'objectAdded',
-            'movementAdded',
-            'movementUpdated',
-            'currentEditActionChanged'
-        );*/
-
         this.domId = domId;
 
         this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
@@ -119,8 +109,8 @@ Ext.define("Editor", {
         east.on('expand', this.olc.resizeMap, this.olc);
 
         this.on('activeRseqChanged', function(){
-            var snapRoads = Ext.get("snapRoads");
-            if(snapRoads.dom.checked){
+            var snapRoads = Ext.getCmp("snapRoads");
+            if(snapRoads.getValue()){
                 this.loadRoads();
             }
             this.handleSurroundingPoints();
@@ -332,19 +322,12 @@ Ext.define("Editor", {
         var kv9valid = this.getFilterStatus('kv9',"valid");
         var kv9invalid = this.getFilterStatus('kv9',"invalid");
 
-        var layersOV = this.getFilterStatus('layer',"OV");
-        var layersHulpdiensten = this.getFilterStatus('layer',"Hulpdiensten");
 
         Ext.Array.each(this.allRseqs, function(rseq) {
-            var vehicleType = rseq.properties.vehicleType;
-            if(!vehicleType){
-                vehicleType = "Gemixt";
-            }
             // Check welke layer aan moet: OV of Hulpdienst. Wanneer een rseq beiden types bevat, heeft het het vehicleType "Gemixt" en staat het bij beide aan.
             // Alleen als een rseq van het type OV is, hebben de KV9 validaties zin (een ambulance rijdt niet op een bepaald traject, dus je kan geen uitmeldpunten defniëren).
-            if((( (layersOV && (vehicleType === "OV" || vehicleType === "Gemixt"))
-                        && ((kv9valid && rseq.properties.validationErrors === 0) || (kv9invalid && rseq.properties.validationErrors > 0))) ||
-                    (layersHulpdiensten && (vehicleType === "Hulpdiensten" || vehicleType === "Gemixt") ))) {
+            
+            if( ((kv9valid && rseq.properties.validationErrors === 0) || (kv9invalid && rseq.properties.validationErrors > 0)))  {
                 filtered.push(rseq);
             }
         });
@@ -1408,6 +1391,13 @@ Ext.define("Editor", {
         });
 
 
+    },
+    getCurrentVehicleType: function(){
+        if(Ext.getCmp("layerHulpdiensten").getValue()){
+            return "Hulpdiensten";
+        }else{
+            return "OV";
+        }
     }
 });
 
