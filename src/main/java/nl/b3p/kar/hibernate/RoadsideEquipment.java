@@ -955,7 +955,7 @@ public class RoadsideEquipment {
                     // F133 kan niet gecontroleerd worden vanwege SortedSet
                 }
 
-                String movementVehicleType = m.determineVehicleType(null);
+                String movementVehicleType = m.determineVehicleType();
 
                 if(movementVehicleType == null) {
                     errors.add(new KV9ValidationError(true, "F146", mXmlContext + "//karvehicletype", mContext + ", voertuigtype", null, "Niet ingevuld"));
@@ -1052,7 +1052,14 @@ public class RoadsideEquipment {
     public String determineType() {
         String typeRseq = null;
         for (Movement movement : movements) {
-            typeRseq =movement.determineVehicleType(typeRseq);
+            String tempType = movement.determineVehicleType();
+            if(typeRseq == null){
+                typeRseq = tempType;
+            }
+            
+            if(!typeRseq.equals(tempType)){
+                typeRseq = VehicleType.VEHICLE_TYPE_GEMIXT;
+            }
         }
         return typeRseq;
     }

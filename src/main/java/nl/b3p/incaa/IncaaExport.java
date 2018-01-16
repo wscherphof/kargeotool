@@ -69,12 +69,12 @@ public class IncaaExport {
 
     private void writeRseq(RoadsideEquipment rseq, PrintWriter pw) {
         for (Movement movement : rseq.getMovements()) {
-            String type = movement.determineVehicleType(null);
+            String type = movement.determineVehicleType();
             if(type == null || type.equals(VehicleType.VEHICLE_TYPE_OV)){
                 continue;
             }
             for (MovementActivationPoint map : movement.getPoints()) {
-                String vehicleType = map.determineVehicleType(null);
+                String vehicleType = map.determineVehicleType();
                 if(vehicleType == null || !vehicleType.equals(VehicleType.VEHICLE_TYPE_OV)){
                     
                     String line = "";

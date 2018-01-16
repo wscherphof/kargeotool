@@ -165,7 +165,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
 
     private void processRseq(RoadsideEquipment rseq, EntityManager em) throws Exception {
         for (Movement movement : rseq.getMovements()) {
-            String type = movement.determineVehicleType(null);
+            String type = movement.determineVehicleType();
             if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
   
                 Movement hd = movement.deepCopy(rseq, em);
@@ -188,7 +188,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         
         List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
         for (MovementActivationPoint map : movement.getPoints()) {
-            String t = map.determineVehicleType(null);
+            String t = map.determineVehicleType();
             if (t != null && t.equals(vehicleTypeToRemove)) {
                 em.remove(map);
                 

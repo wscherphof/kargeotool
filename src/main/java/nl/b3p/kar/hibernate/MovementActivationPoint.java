@@ -89,8 +89,8 @@ public class MovementActivationPoint {
     private ActivationPointSignal signal;
 
 
-    public String determineVehicleType(String previousType){
-        String typeMap = previousType;
+    public String determineVehicleType(){
+        String typeMap = null;
         if(this.getSignal() == null){
             return null;
         }

@@ -117,13 +117,22 @@ public class Movement implements Comparable {
         }
     }
 
-    public String determineVehicleType(String previousType){
-        String typeMovement = previousType;
+    public String determineVehicleType(){
+        String typeMovement = null;
         for (MovementActivationPoint map : this.getPoints()) {
             if (map.getSignal() == null) {
                 continue;
             }
-           typeMovement = map.determineVehicleType(typeMovement);
+            
+            String tempType = map.determineVehicleType();
+            if(typeMovement == null){
+                typeMovement = tempType;
+            }
+            
+            if(!typeMovement.equals(tempType)){
+                typeMovement = VehicleType.VEHICLE_TYPE_GEMIXT;
+            }
+            
         }
         this.vehicleType = typeMovement;
         return typeMovement;
@@ -284,7 +293,7 @@ public class Movement implements Comparable {
         JSONObject jm = new JSONObject();
         jm.put("id",getId());
         jm.put("nummer", getNummer());
-        jm.put("vehicleType", vehicleType != null ? vehicleType : determineVehicleType(null));
+        jm.put("vehicleType", vehicleType != null ? vehicleType : determineVehicleType());
 
         JSONArray maps = new JSONArray();
         jm.put("maps", maps);
