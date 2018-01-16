@@ -266,7 +266,7 @@ Ext.define("Editor", {
 
                         // Dit misschien in listener
                         editor.olc.removeAllFeatures();
-                        editor.olc.addFeatures(rseq.toGeoJSON());
+                        editor.olc.addFeatures(rseq);
                         me.setActiveRseq(rseq);
                         if(successFunction) {
                             successFunction(rseq);
@@ -392,7 +392,7 @@ Ext.define("Editor", {
 
                             // Dit misschien in listener
                             editor.olc.removeAllFeatures();
-                            editor.olc.addFeatures(rseq.toGeoJSON());
+                            editor.olc.addFeatures(rseq);
                             this.setActiveRseq(rseq);
                             if (msg.extraMessage) {
                                 Ext.Msg.alert('Opgeslagen, maar met fouten', msg.extraMessage);

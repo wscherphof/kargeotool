@@ -58,5 +58,5 @@
             <stripes:link href="/logout.jsp">Uitloggen</stripes:link>
         </div>
     </div>
-    <div id="headerTitle">Kar Geo Tool</div>
+    <div id="headerTitle">KAR Geo Tool</div>
 </div>

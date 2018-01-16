@@ -515,7 +515,7 @@ Ext.define('RSEQ', {
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
      */
-    toGeoJSON : function (onlyRSEQ){
+    toGeoJSON : function (onlyRSEQ, vehicleType){
         if(onlyRSEQ === null || onlyRSEQ === undefined){
             onlyRSEQ = false;
         }
@@ -541,15 +541,28 @@ Ext.define('RSEQ', {
             return rseq;
         }
         var points = new Array();
-        if(!onlyRSEQ){
-            if(this.getPoints()){
-                for (var i = 0 ; i < this.getPoints().length; i++){
-                    var point = this.getPoints()[i].toGeoJSON();
-                    points.push(point);
+        var pointsLookup = {};
+        if (this.getPoints()) {
+            for (var i = 0; i < this.getPoints().length; i++) {
+                var point = this.getPoints()[i];
+                pointsLookup[point.getId()] = point.toGeoJSON();
+            }
+        }
+        var mvmnts = this.getMovements();
+        if(mvmnts){
+            for(var i = 0 ; i < mvmnts.length ;i++){
+                var mvmnt = mvmnts[i];
+                if(mvmnt.getVehicleType() === vehicleType){
+                    var maps = mvmnt.getMaps();
+                    for(var j = 0 ; j < maps.length;j++){
+                        var map = maps[j];
+                        var point = pointsLookup[map.getPointId()];
+                        points.push(point);
+                    }
                 }
             }
         }
-
+         
         points.push(rseq);
         var json = {
             "type" : "FeatureCollection",

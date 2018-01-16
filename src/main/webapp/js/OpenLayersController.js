@@ -64,6 +64,7 @@ Ext.define("ol", {
 
         //this.addEvents('measureChanged');
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
+        this.editor.on('vehicleTypeChanged', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
     },
     /**
@@ -391,11 +392,12 @@ Ext.define("ol", {
      */
     updateVectorLayer : function(){
         this.removeAllFeatures();
-        var geoJson = this.editor.activeRseq.toGeoJSON();
-        this.addFeatures(geoJson);
+        var activeRseq = this.editor.activeRseq;
+        this.addFeatures(activeRseq);
         var selected = this.editor.selectedObject;
-        this.selectFeature(selected.getId(), selected.$className);
-
+        if(selected){
+            this.selectFeature(selected.getId(), selected.$className);
+        }
     },
     /**
      * Selecteert een feature.
@@ -657,10 +659,12 @@ Ext.define("ol", {
     },
     /**
      * Voeg 1 of meer features toe. Dit is een GeoJSON representatie van een RSEQ, bestaande dus uit een VRI, en 0 of meerdere activationpoints.
-     * @param features een object met feature(s) in GeoJSON formaat
+     * @param rseq een object met feature(s) in GeoJSON formaat
      */
-    addFeatures : function(features){
-        this.vectorLayer.addFeatures(this.geojson_format.read(features));
+    addFeatures : function(rseq){
+        var filtered = rseq.toGeoJSON(false, this.editor.getCurrentVehicleType());
+        
+        this.vectorLayer.addFeatures(this.geojson_format.read(filtered));
     },
     /**
      * Voeg 1 of meer road side equipment features toe
