@@ -420,7 +420,7 @@ Ext.define("ol", {
         var other= Ext.getCmp("showOtherVehicleType").getValue();
         if(other){
             var rseq = this.editor.activeRseq;
-            var points = rseq.toGeoJSON(false,vehicleType);
+            var points = rseq.toGeoJSON(false,true,vehicleType);
             this.otherVehicleTypeLayer.addFeatures(this.geojson_format.read(points));
         }
     },
@@ -688,7 +688,7 @@ Ext.define("ol", {
      * @param rseq een object met feature(s) in GeoJSON formaat
      */
     addFeatures : function(rseq){
-        var filtered = rseq.toGeoJSON(false, this.editor.getCurrentVehicleType());
+        var filtered = rseq.toGeoJSON(false, false,this.editor.getCurrentVehicleType());
         
         this.vectorLayer.addFeatures(this.geojson_format.read(filtered));
     },

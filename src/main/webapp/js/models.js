@@ -515,7 +515,7 @@ Ext.define('RSEQ', {
      * Geeft een GeoJSON object terug dat deze RSEQ representeert
      * @return GeoJSON object
      */
-    toGeoJSON : function (onlyRSEQ, vehicleType){
+    toGeoJSON : function (onlyRSEQ, noRseq, vehicleType){
         if(onlyRSEQ === null || onlyRSEQ === undefined){
             onlyRSEQ = false;
         }
@@ -562,8 +562,9 @@ Ext.define('RSEQ', {
                 }
             }
         }
-         
-        points.push(rseq);
+        if(!noRseq){
+            points.push(rseq);
+        }
         var json = {
             "type" : "FeatureCollection",
             "features" :points
