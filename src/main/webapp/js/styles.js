@@ -1,4 +1,4 @@
-/* global karTheme */
+/* global karTheme, editor */
 
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -24,6 +24,48 @@
  */
 
 var styleContext = {
+    oposite:function (feature){
+        var show = false;
+        if(feature.renderIntent === "default"){
+            if(editor.olc.map.getResolution() < 2){
+                show = true;
+            }
+        } else if(feature.renderIntent === "select"){
+            show = true;
+        } else{
+            // Temporary
+            if(editor.olc.vectorLayer.selectedFeatures !== undefined && editor.olc.vectorLayer.selectedFeatures.length > 0 && editor.olc.vectorLayer.selectedFeatures[0].id === feature.id){
+                show = true;
+            }
+        }
+        
+        if(show){
+            return feature.attributes.label + " (" + editor.getOpositeVehicleType() + ")";
+        }else{
+            return "";
+        }
+    },
+    label:function (feature){
+        var show = false;
+        if(feature.renderIntent === "default"){
+            if(editor.olc.map.getResolution() < 4){
+                show = true;
+            }
+        } else if(feature.renderIntent === "select"){
+            show = true;
+        } else{
+            // Temporary
+            if(editor.olc.vectorLayer.selectedFeatures !== undefined && editor.olc.vectorLayer.selectedFeatures.length > 0 && editor.olc.vectorLayer.selectedFeatures[0].id === feature.id){
+                show = true;
+            }
+        }
+        
+        if(show){
+            return feature.attributes.label + " (" + editor.getCurrentVehicleType() + ")";
+        }else{
+            return "";
+        }
+    },
     getLabel:function (feature){
         var show = false;
         if(feature.renderIntent == "default"){
@@ -695,6 +737,19 @@ var surroundStyle = new OpenLayers.Style(
 );
 // </editor-fold>
 
+var otherVehicleStyle = surroundStyle.clone();
+
+otherVehicleStyle.setDefaultStyle({
+    graphicWidth: 28,
+    graphicHeight: 28,
+    graphicYOffset: -14,
+    labelYOffset: -15,
+    graphicOpacity: 0.5,
+    fontOpacity: 0.5,
+    labelOutlineColor :"#ffffff",
+    labelOutlineWidth :2,
+    label : "${oposite}"
+});
 
 var snap = new OpenLayers.Style(
 // the first argument is a base symbolizer

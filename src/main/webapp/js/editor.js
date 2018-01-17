@@ -1398,6 +1398,14 @@ Ext.define("Editor", {
         }else{
             return "OV";
         }
+    },
+    getOpositeVehicleType:function(){
+        var vehicleType = "Hulpdiensten";
+        // Get the opposite of the selected vehicleType
+        if (Ext.getCmp("layerHulpdiensten").getValue()) {
+            vehicleType = "OV";
+        }
+        return vehicleType;
     }
 });
 

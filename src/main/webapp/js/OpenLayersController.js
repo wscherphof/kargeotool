@@ -127,7 +127,7 @@ Ext.define("ol", {
         });
         this.otherVehicleTypeLayer = new OpenLayers.Layer.Vector("otherVehicleTypeLayer",{
             styleMap: new OpenLayers.StyleMap( {
-                "default": surroundStyle
+                "default": otherVehicleStyle
             })
         });
 
@@ -410,16 +410,12 @@ Ext.define("ol", {
     },
     
     updateOtherVehicleType: function(){
-        var vehicleType = "Hulpdiensten";
-        // Get the opposite of the selected vehicleType
-        if (Ext.getCmp("layerHulpdiensten").getValue()) {
-            vehicleType = "OV";
-        }
+        var vehicleType = this.editor.getOpositeVehicleType();
         this.otherVehicleTypeLayer.removeAllFeatures();
         
         var other= Ext.getCmp("showOtherVehicleType").getValue();
-        if(other){
-            var rseq = this.editor.activeRseq;
+        var rseq = this.editor.activeRseq;
+        if(other && rseq){
             var points = rseq.toGeoJSON(false,true,vehicleType);
             this.otherVehicleTypeLayer.addFeatures(this.geojson_format.read(points));
         }
