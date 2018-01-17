@@ -1057,7 +1057,7 @@ public class RoadsideEquipment {
                 typeRseq = tempType;
             }
             
-            if(!typeRseq.equals(tempType)){
+            if(tempType != null && typeRseq != null && !typeRseq.equals(tempType)){
                 typeRseq = VehicleType.VEHICLE_TYPE_GEMIXT;
             }
         }

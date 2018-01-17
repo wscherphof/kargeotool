@@ -129,7 +129,7 @@ public class Movement implements Comparable {
                 typeMovement = tempType;
             }
             
-            if(!typeMovement.equals(tempType)){
+            if(typeMovement != null && tempType != null && !typeMovement.equals(tempType)){
                 typeMovement = VehicleType.VEHICLE_TYPE_GEMIXT;
             }
             

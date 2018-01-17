@@ -8,6 +8,7 @@ package nl.b3p.kar.stripes;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -130,18 +131,19 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                 PrintWriter out = new PrintWriter(response.getWriter());
 
                 EntityManager em = Stripersist.getEntityManager();
-                List<RoadsideEquipment> rseqs = null;
+                List<Long> rseqs = null;
 
                 if (rseq != null) {
-                    rseqs = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment where id = :id").setParameter("id", rseq).getResultList();
+                    rseqs = Collections.singletonList(rseq);
                 } else {
-                    rseqs = (List<RoadsideEquipment>) em.createQuery("from RoadsideEquipment").getResultList();
+                    rseqs = (List<Long>) em.createQuery("Select id from RoadsideEquipment").getResultList();
                 }
-                for (RoadsideEquipment rseq : rseqs) {
+                for (Long id : rseqs) {
+                    RoadsideEquipment rseq = em.find(RoadsideEquipment.class, id);
                     out.println("******************************");
                     out.println("RSEQ: " + rseq.getDescription());
                     String type = rseq.determineType();
-                    if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+                    if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
                         try {
                             processRseq(rseq,em);
                         } catch (Exception ex) {
@@ -164,9 +166,14 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
     }
 
     private void processRseq(RoadsideEquipment rseq, EntityManager em) throws Exception {
-        for (Movement movement : rseq.getMovements()) {
+        List<Long> mids = new ArrayList<>();
+        for (Movement m : rseq.getMovements()) {
+            mids.add(m.getId());
+        }
+        for (Long mid : mids) {
+            Movement movement = em.find(Movement.class, mid);
             String type = movement.determineVehicleType();
-            if (type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+            if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
   
                 Movement hd = movement.deepCopy(rseq, em);
                 // maak van origineel OV

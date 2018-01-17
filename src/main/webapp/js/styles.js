@@ -24,7 +24,7 @@
  */
 
 var styleContext = {
-    oposite:function (feature){
+    opposite:function (feature){
         var show = false;
         if(feature.renderIntent === "default"){
             if(editor.olc.map.getResolution() < 2){
@@ -748,7 +748,7 @@ otherVehicleStyle.setDefaultStyle({
     fontOpacity: 0.5,
     labelOutlineColor :"#ffffff",
     labelOutlineWidth :2,
-    label : "${oposite}"
+    label : "${opposite}"
 });
 
 var snap = new OpenLayers.Style(
