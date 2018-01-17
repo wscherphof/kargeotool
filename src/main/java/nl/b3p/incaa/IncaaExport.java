@@ -71,7 +71,7 @@ public class IncaaExport {
         for (Movement movement : rseq.getMovements()) {
             String type = movement.determineVehicleType();
             if(type == null || type.equals(VehicleType.VEHICLE_TYPE_OV)){
-                continue;
+                continue; 
             }
             for (MovementActivationPoint map : movement.getPoints()) {
                 String vehicleType = map.determineVehicleType();

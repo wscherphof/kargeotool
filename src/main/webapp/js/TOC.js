@@ -115,7 +115,7 @@ Ext.define("TOC", {
                                 {
                                     scope: this,
                                     change: function (obj, newValue) {
-                                        //this.setFilter(newValue, 'kv9', 'valid');
+                                        editor.fireEvent("otherVehicleTypeChanged");
                                     }
                                 }
                             ]

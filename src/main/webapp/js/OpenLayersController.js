@@ -33,6 +33,7 @@ Ext.define("ol", {
     rseqVectorLayer: null,
     snapLayer:null,
     surroundingPointsLayer:null,
+    otherVehicleTypeLayer:null,
     snap:null,
 
     geojson_format : null,
@@ -66,6 +67,7 @@ Ext.define("ol", {
         this.editor.on('activeRseqUpdated', this.updateVectorLayer, this);
         this.editor.on('vehicleTypeChanged', this.updateVectorLayer, this);
         this.editor.on('selectedObjectChanged', this.toggleDragfeature, this);
+        this.editor.on('otherVehicleTypeChanged', this.updateOtherVehicleType, this);
     },
     /**
      *Maak een map
@@ -123,6 +125,11 @@ Ext.define("ol", {
                 "default": surroundStyle
             })
         });
+        this.otherVehicleTypeLayer = new OpenLayers.Layer.Vector("otherVehicleTypeLayer",{
+            styleMap: new OpenLayers.StyleMap( {
+                "default": surroundStyle
+            })
+        });
 
         this.markerLayer = new OpenLayers.Layer.Markers( "Markers" );
         this.map.addLayer(this.markerLayer);
@@ -132,6 +139,7 @@ Ext.define("ol", {
         this.map.addLayer(this.rseqVectorLayer);
         this.map.addLayer(this.snapLayer);
         this.map.addLayer(this.surroundingPointsLayer);
+        this.map.addLayer(this.otherVehicleTypeLayer);
         this.createControls(domId);
 
         OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
@@ -398,6 +406,23 @@ Ext.define("ol", {
         if(selected){
             this.selectFeature(selected.getId(), selected.$className);
         }
+        this.updateOtherVehicleType();
+    },
+    
+    updateOtherVehicleType: function(){
+        var vehicleType = "Hulpdiensten";
+        // Get the opposite of the selected vehicleType
+        if (Ext.getCmp("layerHulpdiensten").getValue()) {
+            vehicleType = "OV";
+        }
+        this.otherVehicleTypeLayer.removeAllFeatures();
+        
+        var other= Ext.getCmp("showOtherVehicleType").getValue();
+        if(other){
+            var rseq = this.editor.activeRseq;
+            var points = rseq.toGeoJSON(false,vehicleType);
+            this.otherVehicleTypeLayer.addFeatures(this.geojson_format.read(points));
+        }
     },
     /**
      * Selecteert een feature.
@@ -497,7 +522,8 @@ Ext.define("ol", {
             this.map.setLayerIndex(this.vectorLayer, this.map.getLayerIndex(layer)+2);
             this.map.setLayerIndex(this.rseqVectorLayer, this.map.getLayerIndex(layer)+3);
             this.map.setLayerIndex(this.surroundingPointsLayer, this.map.getLayerIndex(layer)+4);
-            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+5);
+            this.map.setLayerIndex(this.otherVehicleTypeLayer, this.map.getLayerIndex(layer)+5);
+            this.map.setLayerIndex(this.markerLayer, this.map.getLayerIndex(layer)+6);
         }
     },
     /**
