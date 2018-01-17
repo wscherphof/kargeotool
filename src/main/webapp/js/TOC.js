@@ -155,6 +155,39 @@ Ext.define("TOC", {
                         },
                         {
                             xtype: "label",
+                            text: "Grenzen",
+                            style: {
+                                fontWeight: "bold"
+                            }
+                        },
+                        {
+                            xtype: "checkbox",
+                            boxLabel: "Gemeentes",
+                            id: "gemeentes_visible",
+                            listeners: [
+                                {
+                                    scope: this,
+                                    change: function (obj, newValue) {
+                                        this.toggleBorderLayer("gemeentes", newValue);
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            xtype: "checkbox",
+                            boxLabel: "Provincies",
+                            id: "provincies_visible",
+                            listeners: [
+                                {
+                                    scope: this,
+                                    change: function (obj, newValue) {
+                                        this.toggleBorderLayer("provincies", newValue);
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            xtype: "label",
                             text: "Achtergrond",
                             style: {
                                 fontWeight: "bold"
@@ -229,7 +262,7 @@ Ext.define("TOC", {
     },
 
     restoreProfile: function () {
-        var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart'];
+        var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart', 'gemeentes', 'provincies'];
         Ext.Array.each(checkboxes, function (checkbox) {
             Ext.getCmp(checkbox + "_visible").setValue(editor.getLayerVisibility(checkbox));
         });
@@ -258,6 +291,18 @@ Ext.define("TOC", {
             editor.olc.setLayerVisible(layer + "_" + ov.schema, visible);
         });
         profile.state[layer + "_visible"] = visible;
+        saveProfile();
+    },
+    toggleBorderLayer:function(layer, visible){
+        profile.state[layer + "_visible"] = visible;
+        if(layer === "provincies"){
+            editor.olc.setLayerVisible('provincies_border', visible);
+            editor.olc.setLayerVisible('provincies_hasrseq', visible);
+            editor.olc.setLayerVisible('provincies_hasnorseq', visible);
+        }else{
+            editor.olc.setLayerVisible('gemeentes_hasrseq', visible);
+            editor.olc.setLayerVisible('gemeentes_hasnorseq', visible);
+        }
         saveProfile();
     },
     sliderChanged: function (slider, newValue) {

@@ -13,7 +13,7 @@
 
     <context-param>
         <param-name>mapserver-url</param-name>
-        <param-value>http://geo-ov.b3p.nl/cgi-bin/mapserv?map=/srv/maps/kv7netwerk.map</param-value>
+        <param-value>http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/kar/kv7netwerk.map</param-value>
     </context-param>
     <context-param>
         <param-name>debug_editoractionbean_view</param-name>

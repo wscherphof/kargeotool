@@ -76,6 +76,7 @@ Ext.define("Editor", {
 
         this.createOpenLayersController(mapfilePath);
         this.createOvInfoLayers(mapfilePath, ovInfo);
+        this.createBorderLayers(mapfilePath);
 
         this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         var haveCenterInHash = this.setCenterFromLocationHash();
@@ -155,10 +156,17 @@ Ext.define("Editor", {
     },
 
     createOvInfoLayers: function (mapfilePath, ovInfo) {
+        mapfilePath += "&schema={0}";
         this.olc.addLayer("WMS", "buslijnen_" + ovInfo.schema, Ext.String.format(mapfilePath, ovInfo.schema), 'buslijnen', this.getLayerVisibility('buslijnen'), null, 1, 13, null);
         this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', this.getLayerVisibility('bushaltes'),null, 1, 13, null);
     },
-
+    createBorderLayers: function (mapfilePath) {
+        this.olc.addLayer("WMS", "provincies_hasnorseq", mapfilePath, 'provincies_hasnorseq', this.getLayerVisibility('provincies'), null, 1, null, null);
+        this.olc.addLayer("WMS", "provincies_hasrseq", mapfilePath, 'provincies_hasrseq', this.getLayerVisibility('provincies'), null, 1, null, null);
+        this.olc.addLayer("WMS", "gemeentes_hasnorseq", mapfilePath, 'gemeentes_hasnorseq', this.getLayerVisibility('gemeentes'), null, 1, null, null);
+        this.olc.addLayer("WMS", "gemeentes_hasrseq", mapfilePath, 'gemeentes_hasrseq', this.getLayerVisibility('gemeentes'), null, 1, null, null);
+        this.olc.addLayer("WMS", "provincies_border", mapfilePath, 'provincies_border', this.getLayerVisibility('provincies'), null, 1, null, null);
+    },
     setLayerOpacity: function(layer, opacity) {
         this.olc.map.getLayersByName(layer)[0].setOpacity(opacity);
     },

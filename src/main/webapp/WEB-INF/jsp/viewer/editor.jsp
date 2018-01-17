@@ -109,7 +109,7 @@
 
 
             <script type="text/javascript">
-                var mapfilePath = "${initParam['mapserver-url']}&schema={0}";
+                var mapfilePath = "${initParam['mapserver-url']}";
 
                 var editorActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.EditorActionBean" />";
                 var searchActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.SearchActionBean"/>";

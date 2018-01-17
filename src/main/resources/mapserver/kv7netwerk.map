@@ -66,6 +66,210 @@ end
 
 
 layer
+  name gemeentes_hasrseq
+  metadata
+    "wms_title" "gemeentes"
+    "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
+    "wfs_featureid" "id"
+    'default_filtering' 'no'
+  end
+  type polygon
+  dump true
+  template bla  
+  status off
+
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=geo_ov port=5432 user=geo_ov"
+  data "geom from (select * from data.v_gemeente ) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  labelitem "gemeentena"
+  CLASSITEM "hasrseqs"
+
+  class 
+    EXPRESSION ('[hasrseqs]' = 't')
+    name "Gemeente met VRI"
+    STYLE      
+      color 255 0 0
+      opacity 15
+    END
+    STYLE      
+      OUTLINECOLOR 255 0 0
+      WIDTH 2
+    END
+   END
+   
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+
+
+layer
+  name gemeentes_hasnorseq
+  metadata
+    "wms_title" "gemeentes_hasnorseq"
+    "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
+    "wfs_featureid" "id"
+    'default_filtering' 'no'
+  end
+  type polygon
+  dump true
+  template bla  
+  status off
+
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=geo_ov port=5432 user=geo_ov"
+  data "geom from (select * from data.v_gemeente ) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  labelitem "gemeentena"
+  CLASSITEM "hasrseqs"
+
+  class 
+    EXPRESSION ('[hasrseqs]' = 'f')
+    name "Gemeente zonder VRI"
+    STYLE      
+      color 102 102 102
+      opacity 65
+    END
+    STYLE      
+      OUTLINECOLOR 102 102 102
+      WIDTH 2
+    END
+   END
+
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+layer
+  name provincies_hasrseq
+  metadata
+    "wms_title" "provincies"
+    "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
+    "wfs_featureid" "id"
+    'default_filtering' 'no'
+  end
+  type polygon
+  dump true
+  template bla  
+  status off
+
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=geo_ov port=5432 user=geo_ov"
+  data "geom from (select * from data.v_provincie ) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+      
+  CLASSITEM "hasrseqs"
+
+  CLASS
+    EXPRESSION ('[hasrseqs]' = 't')
+    name "Provincie met VRI"
+    STYLE      
+      color 0 0 255
+      opacity 55
+    END
+    STYLE      
+      OUTLINECOLOR 0 0 255
+      WIDTH 4
+    END
+  END
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+
+
+layer
+  name provincies_hasnorseq
+  metadata
+    "wms_title" "provincies"
+    "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
+    "wfs_featureid" "id"
+    'default_filtering' 'no'
+  end
+  type polygon
+  dump true
+  template bla  
+  status off
+
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=geo_ov port=5432 user=geo_ov"
+  data "geom from (select * from data.v_provincie ) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  #labelitem "gemeentena"
+      
+  CLASSITEM "hasrseqs"
+
+  CLASS 
+    EXPRESSION ('[hasrseqs]' = 'f')
+    NAME "Provincie zonder VRI"
+    STYLE      
+      color 102 102 102
+      opacity 35
+    END
+    STYLE      
+      OUTLINECOLOR 102 102 102
+      WIDTH 2
+    END
+  END
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+
+layer
+  name provincies_border
+  metadata
+    "wms_title" "provincies_border"
+    "gml_include_items" "all"
+    "ows_linepublicnumber_type" "Character" 
+    "wfs_featureid" "id"
+    'default_filtering' 'no'
+  end
+  type polygon
+  dump true
+  template bla  
+  status off
+
+  connectiontype postgis
+  connection "host=localhost dbname=geo_ov password=geo_ov port=5432 user=geo_ov"
+  data "geom from (select * from data.v_provincie ) as bla using srid=28992 using unique id"
+  projection
+    "init=epsg:28992"
+  end
+  #labelitem "gemeentena"
+      
+  CLASSITEM "hasrseqs"
+
+  CLASS
+    EXPRESSION ('[hasrseqs]' = 't')
+    name "Provincie met VRI"
+    STYLE      
+      OUTLINECOLOR 0 0 255
+      WIDTH 4
+    END
+  END
+  CLASS 
+    EXPRESSION ('[hasrseqs]' = 'f')
+    NAME "Provincie zonder VRI"
+    STYLE      
+      OUTLINECOLOR 102 102 102
+      WIDTH 2
+    END
+  END
+  processing "CLOSE_CONNECTION=DEFER"
+end
+
+
+layer
   name buslijnen
   metadata
     "wms_title" "buslijnen"
