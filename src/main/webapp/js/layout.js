@@ -1,4 +1,4 @@
-/* global Ext */
+/* global Ext, editor */
 
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -37,34 +37,6 @@ Ext.onReady(function() {
                 contentEl: 'header',
                 title: 'Header',
                 header: false
-            }, {
-                region: 'east',
-                stateId: 'east',
-                id:"east",
-                animCollapse: true,
-                collapsible: true,
-                split: true,
-                width: 175,
-                minWidth: 0,
-                contentEl: 'rightbar',
-                layout: {
-                    type: 'fit'
-                },
-                defaultType: 'panel',
-                defaults: {
-                    border: 0,
-                    width: '100%',
-                    flex: 1
-                },
-                items: [
-                    {
-                        title: 'Legend',
-                        header: false,
-                        contentEl: 'legend'
-                    }
-                ],
-                title: 'Legenda',
-                header: true
             },
             {
                 region: 'center',
@@ -123,7 +95,22 @@ Ext.onReady(function() {
             }
         ]
     });
-    
+    Ext.create('CollapsibleWindow', {
+        title: 'Legenda',
+        y: 360,
+        height: 300,
+        layout: 'fit',
+        id: 'legendaWindow',
+        items: [
+            {
+                xtype: 'container',
+                itemId: 'legend',
+                contentEl: 'legend',
+                padding: 5,
+                scrollable: true
+            }
+        ]
+    });
     Ext.create('TOC', {
         editor:editor
     });

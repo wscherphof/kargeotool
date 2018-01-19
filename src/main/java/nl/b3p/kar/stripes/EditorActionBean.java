@@ -286,7 +286,7 @@ public class EditorActionBean implements ActionBean {
         try {
 
             Point p = rseq.getLocation();
-            Polygon buffer = (Polygon) p.buffer(300, 1);
+            Polygon buffer = (Polygon) p.buffer(500, 1);
             buffer.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 

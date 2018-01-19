@@ -101,14 +101,6 @@ Ext.define("Editor", {
         }
         this.loadAllRseqs();
 
-        /* Indien de panelen die door layout.js zijn gemaakt worden geresized of
-         * worden weggeklapt, informeer OpenLayers over de veranderde grootte.
-         */
-        var east = Ext.getCmp("east");
-        east.on('resize', this.olc.resizeMap, this.olc);
-        east.on('collapse', this.olc.resizeMap, this.olc);
-        east.on('expand', this.olc.resizeMap, this.olc);
-
         this.on('activeRseqChanged', function(){
             var snapRoads = Ext.getCmp("snapRoads");
             if(snapRoads.getValue()){

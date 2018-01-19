@@ -250,7 +250,7 @@ Ext.define("TOC", {
                         {
                             xtype: "checkbox",
                             id: "snapRoads",
-                            boxLabel: "Wegen",
+                            boxLabel: "Snap op wegen",
                             listeners: {
                                 change: this.toggleRoad
                             }

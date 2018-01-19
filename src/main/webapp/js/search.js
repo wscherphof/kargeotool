@@ -191,8 +191,6 @@ Ext.define("nl.b3p.kar.Search", {
             }
             Ext.get(this.resultDom).dom.innerHTML = text;
             this.panel.collapse();
-        }else{
-            this.panel.expand();
         }
         this.panel.setLoading(false);
         this.fireEvent('searchFinished', numResults, this);
