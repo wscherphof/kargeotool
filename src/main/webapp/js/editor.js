@@ -68,7 +68,7 @@ Ext.define("Editor", {
         this.mixins.observable.constructor.call(this);
         this.domId = domId;
 
-        this.helpPanel = Ext.create(HelpPanel, "rseqInfoPanel", this);
+        this.helpPanel = Ext.create(HelpPanel, "help", this);
         this.editForms = Ext.create(EditForms, this);
         this.changeManager = Ext.create(ChangeManager,this);
 

@@ -83,6 +83,10 @@ Ext.onReady(function() {
         title: 'Overzicht verkeerssysteem',
         id: 'rseqInfoWindow',
         y: 350,
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
         items: [
             {
                 xtype: 'container',
@@ -91,11 +95,14 @@ Ext.onReady(function() {
             },
             {
                 xtype: 'container',
-                id:'overzicht'
+                flex: 1,
+                itemId: 'overzichtContainer',
+                layout: 'fit'
             },
             {
                 xtype: 'container',
-                contentEl: 'rseqOptions'
+                contentEl: 'rseqOptions',
+                margin: 5
             }
         ]
     });

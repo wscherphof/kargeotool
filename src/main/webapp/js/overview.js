@@ -39,11 +39,6 @@ Ext.define("nl.b3p.kar.Overview",{
         this.editor.on("activeRseqChanged", function(rseq) { this.updateOverview(rseq, false); },this);
         this.editor.on('selectedObjectChanged',this.updateSelection,this);
 
-        var panel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
-        panel.on('collapse',this.updateSize,this);
-        panel.on('expand',this.updateSize,this);
-        panel.on('resize',this.updateSize,this);
-
         this.editor.olc.highlight.events.register('featurehighlighted',this,function (evt){
             if (this.isPoint(evt.feature)){
                 this.highlight(evt.feature.data.id);
@@ -235,7 +230,7 @@ Ext.define("nl.b3p.kar.Overview",{
             }
         }
 
-        var overzicht = Ext.get("overzicht");
+        var overzicht = Ext.ComponentQuery.query("#overzichtContainer")[0];
         if (this.tree){
             this.tree.destroy();
         }
@@ -249,10 +244,8 @@ Ext.define("nl.b3p.kar.Overview",{
                 selModel : {
                     mode : "MULTI"
                 },
-                height : this.getRseqBodyHeight() - this.heightOffset,
                 store : store,
                 rootVisible : false,
-                renderTo: overzicht,
                 viewConfig: {
                     plugins:
                         [
@@ -370,6 +363,7 @@ Ext.define("nl.b3p.kar.Overview",{
                     }
                 }
             });
+            overzicht.add(this.tree);
         }
         Ext.getCmp( "reorderPoints").setChecked( false);
         this.editor.helpPanel.updateHelpPanel();
@@ -577,15 +571,6 @@ Ext.define("nl.b3p.kar.Overview",{
         label += " (" + mvmnt.getVehicleType() + ")";
 
         return label;
-    },
-    updateSize : function (){
-        if (this.tree !== null){
-            this.tree.setHeight(this.getRseqBodyHeight() - this.heightOffset);
-        }
-    },
-    getRseqBodyHeight: function() {
-        var rseqPanel = Ext.ComponentQuery.query("#rseqInfoWindow")[0];
-        return rseqPanel.body.getHeight();
     },
     nodeDragged : function(){
         var mapsPerMovements = {};
