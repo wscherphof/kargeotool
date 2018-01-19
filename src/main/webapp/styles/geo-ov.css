@@ -284,3 +284,40 @@ body.editor {
     border-bottom: 0 none;
     padding: 2px;
 }
+
+.flex-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-wrapper * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.flex {
+    flex: 1;
+}
+
+#kaart.flex {
+    height: auto;
+    margin: 0 10px;
+}
+
+#body form.flex-wrapper {
+    position: absolute;
+    top: 41px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#body form.flex-wrapper h1 {
+    margin: 0;
+    padding: 1em 10px 0 10px;
+}
+
+.add-padding {
+    padding: 10px;
+}

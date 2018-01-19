@@ -42,29 +42,31 @@
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
         <div id="body">
-            <c:choose>
-                <c:when test="${actionBean.deelgebied.id == null}">
-                    <h1>Nieuw deelgebied</h1>
-                </c:when>
-                <c:otherwise>
-                    <h1>Deelgebied bewerken</h1>
-                </c:otherwise>
-            </c:choose>
-
-            <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean">
-                
+            <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean" class="flex-wrapper">
                 <stripes:messages/>
                 <stripes:errors/>
                 <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />
                 <stripes:hidden name="geom" id="geom" value="${actionBean.deelgebied.geom}"/>
-                Naam: <stripes:text name="deelgebied.name"></stripes:text> <br/>
+                <c:choose>
+                    <c:when test="${actionBean.deelgebied.id == null}">
+                        <h1>Nieuw deelgebied</h1>
+                    </c:when>
+                    <c:otherwise>
+                        <h1>Deelgebied bewerken</h1>
+                    </c:otherwise>
+                </c:choose>
+                <div class="add-padding">
+                    Naam: <stripes:text name="deelgebied.name"></stripes:text> <br/>
                     Definieer een gebied:
-                    <div id="kaart" style="width:400px;height:400px;">
-                        <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
-                    </div>
+                </div>
+                <div id="kaart" class="flex">
+                    <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
+                </div>
+                <div id="map-buttons" class="add-padding">
                     <button onclick="drawArea();return false;">Teken deelgebied</button>
                     <button onclick="resetArea();return false;">Reset</button> <br/>
-                <stripes:submit name="saveDeelgebied">Opslaan</stripes:submit>
+                    <stripes:submit name="saveDeelgebied">Opslaan</stripes:submit>
+                </div>
             </stripes:form>
 
         </div>
