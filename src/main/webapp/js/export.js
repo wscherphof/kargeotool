@@ -229,6 +229,20 @@ Ext.onReady(function (){
                 layout : {
                     width : 150
                 },
+                listeners: {
+                    scope: this,
+                    select: function(combo, record) {
+                        var vehicleTypeCombo = Ext.ComponentQuery.query('#vehicleType')[0];
+                        if(record.get('type') === 'incaa') {
+                            vehicleTypeCombo.setValue('Hulpdiensten');
+                            vehicleTypeCombo.setDisabled(true);
+                        } else {
+                            vehicleTypeCombo.setValue('beide');
+                            vehicleTypeCombo.setDisabled(false);
+                        }
+                        reloadVRIs();
+                    }
+                },
                 name : 'exportType',
                 emptyText : "Selecteer"
             },{
@@ -280,6 +294,7 @@ Ext.onReady(function (){
                 },
                 name : 'vehicleType',
                 id : 'vehicleType',
+                itemId : 'vehicleType',
                 emptyText : "Selecteer",
                 listeners : {
                     select : {
