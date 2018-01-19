@@ -73,12 +73,14 @@ Ext.define("CollapsibleWindow", {
                 type: 'vbox',
                 align: 'stretch'
             },
+            onEsc: Ext.emptyFn,
             scrollable: true,
             listeners: {
                 scope: this,
                 beforecollapse: this.windowCollapse,
                 beforeexpand: this.windowExpand,
-                staterestore: this.stateRestored
+                staterestore: this.stateRestored,
+                beforeclose: function() { return false; }
             }
         };
         this.window = Ext.create('Ext.window.Window', config);
