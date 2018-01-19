@@ -82,6 +82,7 @@ Ext.onReady(function() {
     Ext.create('CollapsibleWindow', {
         title: 'Overzicht verkeerssysteem',
         id: 'rseqInfoWindow',
+        itemId: 'rseqInfoWindow',
         y: 350,
         layout: {
             type: 'vbox',

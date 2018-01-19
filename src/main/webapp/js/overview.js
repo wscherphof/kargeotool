@@ -364,6 +364,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 }
             });
             overzicht.add(this.tree);
+            Ext.ComponentQuery.query('#rseqInfoWindow')[0].updateLayout();
         }
         Ext.getCmp( "reorderPoints").setChecked( false);
         this.editor.helpPanel.updateHelpPanel();

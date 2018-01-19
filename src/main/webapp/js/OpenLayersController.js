@@ -211,7 +211,12 @@ Ext.define("ol", {
         });
         //voeg 'teken line' tool toe.
         this.line = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path, {
-            displayClass: 'olControlDrawFeaturePath'
+            displayClass: 'olControlDrawFeaturePath',
+            callbacks:{
+                modify : function(evt){
+                    me.featureModified(evt);
+                }
+            }
         });
         this.line.events.register('featureadded', me, me.drawFeature);
         //voeg 'versleep feature' tool toe.
@@ -635,6 +640,25 @@ Ext.define("ol", {
         this.measureTool.handler.createFeature(pixel);
         this.measureTool.handler.insertXY(x,y);
     },
+    featureModified : function (evt){
+        var geom = null;
+        if (evt.parent){
+            geom = evt.parent;
+        }
+        if(evt.feature){
+            geom = evt.feature.geometry;
+        }
+        if(geom){
+            var bestlengthtokens = this.measureTool.getBestLength(geom);
+            this.getMeasureTooltip().showMouseTooltip(evt, bestlengthtokens[0].toFixed(0), bestlengthtokens[1]);
+        }
+    },
+    getMeasureTooltip: function() {
+        if(!this.measureTooltip) {
+            this.measureTooltip = Ext.create('MeasureTooltip', this.measureTool);
+        }
+        return this.measureTooltip;
+    },
     /**
      * Verwijder alle features die getekend zijn op de vectorlayer     *
      */
@@ -670,6 +694,7 @@ Ext.define("ol", {
         this.measureTool.deactivate();
         this.editor.pointFinished(lastPoint);
         this.highlight.activate();
+        this.measureTooltip.hideMouseTooltip();
     // TODO fire event geometry updated
     },
     /**

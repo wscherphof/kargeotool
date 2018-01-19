@@ -68,6 +68,7 @@
         <script type="text/javascript" src="${contextPath}/js/ext/ext-all${param.debug == true ? '-debug' : ''}.js"></script>
         <script type="text/javascript" src="${contextPath}/js/models.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/styles.js" ></script>
+        <script type="text/javascript" src="${contextPath}/js/measureTooltip.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/measure.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/search.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/OpenLayersController.js" ></script>
