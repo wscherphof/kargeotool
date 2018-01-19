@@ -207,7 +207,8 @@ Ext.define("SettingsForm", {
                     multiSelect: true,
                     displayField: 'username',
                     valueField: 'id',
-                    xtype: "combo"
+                    xtype: "combo",
+                    anyMatch: true
                 },{
                     fieldLabel: 'Kies vervoerder(s) hulpdienst',
                     width: 400,
@@ -218,7 +219,8 @@ Ext.define("SettingsForm", {
                     multiSelect: true,
                     displayField: 'username',
                     valueField: 'id',
-                    xtype: "combo"
+                    xtype: "combo",
+                    anyMatch: true
                 },
                 {
                     id: "karAttrBtn",

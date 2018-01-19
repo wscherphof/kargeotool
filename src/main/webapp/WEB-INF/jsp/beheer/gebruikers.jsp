@@ -24,7 +24,7 @@
 
     <stripes:layout-component name="headerlinks" >
         <%@include file="/WEB-INF/jsp/commons/headerlinks.jsp" %>
-
+        <script type="text/javascript" src="<c:url value="/js/gebruikers.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/js/utils.js"/>"></script>
     </stripes:layout-component>
     <stripes:layout-component name="content">
@@ -207,70 +207,26 @@
                                             <tr>
                                                 <td>${dor.dataOwner.code}</td>
                                                 <td>${dor.dataOwner.omschrijving}</td>
-                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersReadable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
-                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersEditable" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
+                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersReadable" class="used-data-owner" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
+                                                <td style="text-align: center"><stripes:checkbox name="dataOwnersEditable" class="used-data-owner" value="${dor.dataOwner.code}" onclick="this.blur()" onchange="checkDORemove(event)"/></td>
                                             </tr>
                                         </c:forEach>
                                     </table>
                                 </div><br />
                                 Toevoegen wegbeheerder:<br />
-                                <select id="availableDataOwners" onchange="checkDOAdd()">
-                                    <option>Selecteer een wegbeheerder...
-                                </select>
+                                <div id="availableDataOwnersContainer"></div>
                             </div>
                         </td>
                     </tr>
                 </table>
             </div>
             <script type="text/javascript">
-                setOnload(initAvailableDataOwners);
                 setOnload(checkRole);
 
-                var dataOwners = ${actionBean.dataOwnersJson};
-                var usedDataOwners = {};
-
-                var codeNameSeparator = " - ";
-
-                function initAvailableDataOwners() {
-
-                    usedDataOwners = {};
-                    var editable = document.forms[0].dataOwnersEditable;
-                    var readable = document.forms[0].dataOwnersReadable;
-                    if(editable != undefined) {
-                        for(var i = 0; i < editable.length; i++) {
-                            var value = editable[i].value;
-                            if(editable[i].checked || readable[i].checked) {
-                                usedDataOwners[value] = true;
-                            }
-                        }
-                    }
-
-                    var availableDO = document.forms[0].availableDataOwners;
-                    for(var i = 0; i < dataOwners.length; i++) {
-                        var dao = dataOwners[i];
-                        var used = usedDataOwners[dao.id + ""] ? true : false;
-                        if(!used) {
-                            availableDO.options[availableDO.length] = new Option(dao.code + codeNameSeparator + dao.name, dao.id);
-                        }
-                    }
-                }
-
-                function checkDOAdd() {
-                    var availableDO = document.forms[0].availableDataOwners;
-                    var selectedIndex = availableDO.selectedIndex;
-                    if(selectedIndex > 0) {
-                        var value = availableDO.options[selectedIndex].value;
-                        var text = availableDO.options[selectedIndex].text;
-                        var code = text.substring(0, text.indexOf(codeNameSeparator)); /* XXX deze separator is hardcoded... */
-                        var name = text.substring(text.indexOf(codeNameSeparator) + codeNameSeparator.length, text.length);
-
-                        addDataOwner(value, code, name);
-
-                        availableDO.remove(selectedIndex);
-
-                        availableDO.selectedIndex = 0;
-                    }
-                }
+                var editUsers = Ext.create('EditUsers', {
+                    dataOwners: ${actionBean.dataOwnersJson},
+                    addDataOwner: addDataOwner
+                });
 
                 function checkDORemove(e) {
                     if(!e) e = window.event;
@@ -345,7 +301,6 @@
 
                 function removeDataOwner(id) {
                     var code, name;
-
                     var table = document.getElementById("roListTable");
                     for(var i = 0; i < table.rows.length; i++) {
                         var rowValue = table.rows[i].cells[2].firstChild.value;
@@ -356,18 +311,7 @@
                             break;
                         }
                     }
-
-                    /* zoek positie waarop select option geinsert moet worden */
-                    var availableDO = document.forms[0].availableDataOwners;
-                    var insertBefore = null;
-                    for(var i = 0; i < availableDO.options.length; i++) {
-                        if(parseInt(id) < parseInt(availableDO.options[i].value)) {
-                            insertBefore = availableDO.options[i];
-                            break;
-                        }
-                     }
-                    var option = new Option(code + codeNameSeparator + name, id);
-                    availableDO.add(option, insertBefore);
+                    editUsers.insertDataOwner(id, code, name);
                 }
 
             </script>
