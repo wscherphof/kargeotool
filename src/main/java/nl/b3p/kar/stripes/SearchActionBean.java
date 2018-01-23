@@ -24,9 +24,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +34,6 @@ import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.naming.directory.SearchResult;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import net.sourceforge.stripes.action.*;
@@ -59,7 +56,9 @@ import org.geotools.geometry.jts.WKTReader2;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
@@ -85,7 +84,8 @@ public class SearchActionBean implements ActionBean {
     private String dataOwner;
     private static final String KV7NETWERK_JNDI_NAME = "java:comp/env/jdbc/kv7netwerk";
 
-    private static final String CODE_SEARCH_PREFIX = ":";
+    private static final String EXACT_MATCH_PREFIX = ":";
+    private static final String WILDCARD = "*";
 
     @Validate
     private String vehicleType;
@@ -110,9 +110,9 @@ public class SearchActionBean implements ActionBean {
             if(term != null){
 
                 boolean validAddressSearch = false;
-                if(term.startsWith(CODE_SEARCH_PREFIX)) {
+                if(term.startsWith(EXACT_MATCH_PREFIX)) {
                     try {
-                        int karAddress = Integer.parseInt(term.substring(CODE_SEARCH_PREFIX.length()));
+                        int karAddress = Integer.parseInt(term.substring(EXACT_MATCH_PREFIX.length()));
                         criteria.add(Restrictions.eq("karAddress", karAddress));
                         validAddressSearch = true;
                     } catch(NumberFormatException e) {
@@ -120,18 +120,18 @@ public class SearchActionBean implements ActionBean {
                     }
                 }
                 if(!validAddressSearch) {
-                    Disjunction dis = Restrictions.disjunction();
-                    dis.add(Restrictions.ilike("description", term, MatchMode.ANYWHERE));
-
-                    try {
-                        int karAddress = Integer.parseInt(term);
-                        dis.add(Restrictions.eq("karAddress", karAddress));
-                    } catch (NumberFormatException e) {
+                    String[] terms = term.split(" ");
+                    Conjunction con = Restrictions.conjunction();
+                    for (String t : terms) {
+                        Disjunction dis = getRseqDisjunction(t,false);
+                        con.add(dis);
                     }
+                    
+                    Disjunction unsplitDisjunction = getRseqDisjunction(term, true);
+                    
+                    LogicalExpression or = Restrictions.or(unsplitDisjunction, con);
 
-                    dis.add(Restrictions.ilike("crossingCode", term, MatchMode.ANYWHERE));
-
-                    criteria.add(dis);
+                    criteria.add(or);
                 }
             }
             List<RoadsideEquipment> l = criteria.list();
@@ -153,6 +153,33 @@ public class SearchActionBean implements ActionBean {
         res.setCharacterEncoding("UTF-8");
         return res;
     }
+    
+    private Disjunction getRseqDisjunction(String t, boolean exact){
+        MatchMode mm = MatchMode.EXACT;
+
+        if (!exact && t.contains(WILDCARD)) {
+            if (t.startsWith(WILDCARD)) {
+                t = t.substring(WILDCARD.length());
+                mm = MatchMode.END;
+            }
+            if (t.endsWith(WILDCARD)) {
+                t = t.substring(0,t.indexOf(WILDCARD));
+                mm = mm.equals(MatchMode.END) ? MatchMode.ANYWHERE : MatchMode.START;
+            }
+        }
+
+        Disjunction dis = Restrictions.disjunction();
+        dis.add(Restrictions.ilike("description", t, mm));
+
+        try {
+            int karAddress = Integer.parseInt(t);
+            dis.add(Restrictions.eq("karAddress", karAddress));
+        } catch (NumberFormatException e) {
+        }
+
+        dis.add(Restrictions.ilike("crossingCode", t, mm));
+        return dis;
+    }
 
     /**
      *
@@ -168,12 +195,10 @@ public class SearchActionBean implements ActionBean {
 
             Session sess = (Session) em.getDelegate();
             String param;
-            if(term.startsWith(CODE_SEARCH_PREFIX)) {
-                param = term.substring(CODE_SEARCH_PREFIX.length());
-            } else {
-                param = "%" + term + "%";
-            }
-            Query q = sess.createSQLQuery("SELECT ref,name,astext(st_union(geometry)) FROM Road where ref ilike :ref group by ref,name");
+            
+            param = term.replaceAll("\\*", "%");
+            
+            Query q = sess.createSQLQuery("SELECT ref,name,st_astext(st_union(geometry)) FROM Road where ref ilike :ref group by ref,name");
             q.setParameter("ref", param);
 
             List<Object[]> l = (List<Object[]>) q.list();
@@ -274,11 +299,8 @@ public class SearchActionBean implements ActionBean {
                 s.put("schema", schema);
                 JSONArray matchedLines;
                 String param;
-                if(term.startsWith(CODE_SEARCH_PREFIX)) {
-                    param = term.substring(CODE_SEARCH_PREFIX.length());
-                } else {
-                    param = "%" + term + "%";
-                }
+                param = term.replaceAll("\\*", "%");
+                
                 if (dataOwner != null) {
                     matchedLines = new QueryRunner().query(c, sql, h, param, param, dataOwner);
                 } else {

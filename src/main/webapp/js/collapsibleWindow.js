@@ -126,8 +126,8 @@ Ext.define("CollapsibleWindow", {
         }
     },
     dockWindow: function(window, windowPosition) {
-        var xPos = 10;
-        var yPos = -46 * windowPosition; // Header height is aprox 36px + some margin
+        var xPos = (windowPosition * 10) + ((windowPosition - 1) * this.DEFAULT_DOCKED_WIDTH);
+        var yPos = -46; // Header height is aprox 36px + some margin
         var alignToPos = window.getAlignToXY("editorBody", "bl", [xPos, yPos]);
         window.animate({
             to: {

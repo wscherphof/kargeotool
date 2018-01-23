@@ -141,6 +141,19 @@ Ext.define("TOC", {
                             ]
                         },
                         {
+                            xtype: "button",
+                            text: "Stop filter",
+                            id:"buslijnen_filter",
+                            hidden:true,
+                            listeners:{
+                                scope:this,
+                                click: function(){
+                                    this.removeFilter();
+                                    Ext.getCmp("buslijnen_filter").setHidden(true);
+                                }
+                            }
+                        },
+                        {
                             xtype: "checkbox",
                             boxLabel: "Bushaltes",
                             id: "bushaltes_visible",
@@ -322,6 +335,16 @@ Ext.define("TOC", {
         } else {
             editor.removeRoads();
         }
+    },
+    removeFilter: function(){
+        Ext.Array.each(ovInfo, function (ov) {
+            var currentName = "buslijnen_" + ov.schema;
+            // Prevent old image from showing
+            editor.olc.setLayerVisible(currentName, false);
+            editor.olc.removeFilterFromKargis(currentName);
+            editor.olc.setLayerVisible(currentName, true);
+        });
+        Ext.getCmp("buslijnen_filter").setHidden(true);
     }
 
 });

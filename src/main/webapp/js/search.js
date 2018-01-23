@@ -467,12 +467,12 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             name: 'dataOwner',
             allowBlank: true,
             blankText: 'Selecteer een optie',
-            displayField: 'title',
+            displayField: 'omschrijving',
             editable:false,
-            valueField: 'data_owner_code',
+            valueField: 'code',
             store: Ext.create('Ext.data.Store', {
-                fields: ['title', 'schema', 'data_owner_code'],
-                data: ovInfo
+                fields: ['omschrijving','code', 'id'],
+                data: dataOwners
             }),
             listeners: {
                 buffer: 50,
@@ -485,7 +485,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                         };
                         me.on('searchFinished',f,me);
                         me.resultDom.innerHTML = "";
-                        var term = me.editor.search.getTerm();
+                        var term = editor.search.getTerm();
                         me.panel.setLoading("Zoeken..");
                         me.search(term);
                     }
@@ -567,8 +567,8 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                 });
 
                 editor.olc.addFilterToKargis(busline.publicnumber,layerName);
-                Ext.get("buslijnen_filter_a").setHtml('Verwijder filter \'' + busline.publicnumber + '\'');
-                Ext.get("buslijnen_filter").setDisplayed(true);
+                Ext.getCmp("buslijnen_filter").setText('Verwijder filter \'' + busline.publicnumber + '\'');
+                Ext.getCmp("buslijnen_filter").setHidden(false);
 
 
                 me.fireEvent("searchResultClicked",result );
