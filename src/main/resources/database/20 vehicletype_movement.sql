@@ -31,3 +31,42 @@ CREATE OR REPLACE VIEW v_gemeente AS
 
 ALTER TABLE v_gemeente
   OWNER TO geo_ov;
+
+
+-- Table: dxf
+
+-- DROP TABLE dxf;
+
+CREATE TABLE dxf
+(
+  id serial NOT NULL,
+  the_geom geometry(Geometry,28992),
+  layer character varying(255),
+  name character varying(255),
+  text character varying(255),
+  textposhorizontal character varying(255),
+  textposvertical character varying(255),
+  textheight double precision,
+  textrotation double precision,
+  color character varying(255),
+  linetype character varying(255),
+  thickness double precision,
+  visible integer,
+  linenumber integer,
+  error character varying(255),
+  data_owner bigint,
+  filename character varying(255),
+  uploaddate timestamp without time zone,
+  user_ integer,
+  description character varying(255),
+  rseq bigint,
+  CONSTRAINT prim_key_dxf_id PRIMARY KEY (id),
+  CONSTRAINT fk_data_owner FOREIGN KEY (data_owner)
+      REFERENCES data_owner (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE dxf
+  OWNER TO geo_ov;

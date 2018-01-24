@@ -115,6 +115,7 @@
                 var profileActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ProfileActionBean"/>";
                 var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>";
                 var usersActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.GebruikersActionBean"/>";
+                var dxfActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean"/>";
 
                 var contextPath = "${contextPath}";
                 var editor = null;

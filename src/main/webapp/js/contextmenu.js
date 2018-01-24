@@ -246,6 +246,11 @@ Ext.define("ContextMenu", {
                         id: 'selectUitmeldpuntAndereSignaalgroepRseq',
                         text: 'Selecteer uitmeldpunt van andere fasecyclus',
                         icon: contextPath + "/images/silk/cursor.png"
+                    },
+                    {
+                        id: 'uploadDxf',
+                        text: 'Upload DXF voor deze vri',
+                        icon: contextPath + "/images/silk/cursor.png"
                     }
                     ],
                     listeners: {
@@ -254,6 +259,10 @@ Ext.define("ContextMenu", {
                             switch (item.getId()) {
                                 case 'selectUitmeldpuntAndereSignaalgroepRseq':
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
+                                    break;
+                                case 'uploadDxf':
+                                    var url = dxfActionBeanUrl + "?rseq=" + this.editor.activeRseq.getId();
+                                    document.location.href = url;
                                     break;
                             }
                         },

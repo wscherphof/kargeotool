@@ -15,7 +15,7 @@
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <geotools.version>18.1</geotools.version>
+        <geotools.version>18.0</geotools.version>
         <hibernate.version>3.6.10.Final</hibernate.version>
         <postgresql.version>42.1.4</postgresql.version>
         <postgresql.postgis-jdbc.version>2.2.1</postgresql.postgis-jdbc.version>
@@ -24,6 +24,11 @@
     </properties>
 
     <dependencies>
+        <dependency>    
+            <groupId>nl.b3p</groupId>
+            <artifactId>b3p-gt2-dxf</artifactId>
+            <version>5.0.0-RC1</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
@@ -77,6 +82,27 @@
             <artifactId>gt-main</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+          <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-metadata</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-postgis</artifactId>
+            <version>${geotools.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
@@ -96,25 +122,40 @@
             <groupId>org.hibernatespatial</groupId>
             <artifactId>hibernate-spatial</artifactId>
             <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernatespatial</groupId>
             <artifactId>hibernate-spatial-postgis</artifactId>
             <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <!--
+                    when upgrading hibernate this should be removed
+                    -->
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
             <exclusions>
-                    <exclusion>
-                        <!--
-                        when upgrading hibernate this should be removed
-                        -->
-                        <groupId>javassist</groupId>
-                        <artifactId>javassist</artifactId>
-                    </exclusion>
-                </exclusions>
+                <exclusion>
+                    <!--
+                    when upgrading hibernate this should be removed
+                    -->
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- override the version provided by hibernate -->
