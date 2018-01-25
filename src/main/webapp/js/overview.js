@@ -204,9 +204,14 @@ Ext.define("nl.b3p.kar.Overview",{
                 scope:me
             }
         });
+        this.updateLayerLabel();
 
     },
     updateOverview : function (rseq, changed){
+        this.updateLayerLabel();
+        if(!rseq) {
+            return;
+        }
         Ext.get("context_vri").setHtml(rseq === null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
         if(rseq && rseq.getEditable()){
             Ext.get("rseqOptions").setVisible(true);
@@ -368,6 +373,17 @@ Ext.define("nl.b3p.kar.Overview",{
         }
         Ext.getCmp( "reorderPoints").setChecked( false);
         this.editor.helpPanel.updateHelpPanel();
+    },
+    updateLayerLabel: function() {
+        if(!this.layerLabel) {
+            this.layerLabel = document.createElement('div');
+            this.layerLabel.className = 'layerLabel';
+            var mapContainer = document.querySelector('.olMapViewport');
+            if(mapContainer) {
+                mapContainer.appendChild(this.layerLabel);
+            }
+        }
+        this.layerLabel.innerHTML = 'Voertuigtype: ' + this.editor.getCurrentVehicleType();
     },
     updateSelection : function (point){
         if (this.tree !== null){

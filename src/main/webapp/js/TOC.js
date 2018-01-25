@@ -295,9 +295,7 @@ Ext.define("TOC", {
         saveProfile();
     },
     changeVehicleType: function (vehicleType){
-        if(editor.activeRseq){
-            editor.fireEvent("vehicleTypeChanged", vehicleType);
-        }
+        editor.fireEvent("vehicleTypeChanged", vehicleType);
     },
     toggleOvInfoLayer: function (layer, visible) {
         Ext.Array.each(ovInfo, function (ov) {
