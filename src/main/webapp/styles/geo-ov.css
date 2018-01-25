@@ -253,8 +253,6 @@ body.editor {
 }
 
 .olMap .olControlPanel {
-    left: auto;
-    right: 5px;
     top: 300px;
     margin: 0;
     border: 0 none;
@@ -271,11 +269,6 @@ body.editor {
     margin: 5px;
     margin-bottom: 10px;
     position: static;
-}
-
-.olMap .olControlPanZoomBar {
-    right: 46px;
-    left: auto !important;
 }
 
 .olMap .olControlMousePosition {
@@ -320,4 +313,8 @@ body.editor {
 
 .add-padding {
     padding: 10px;
+}
+
+#editorBody {
+    overflow: hidden;
 }

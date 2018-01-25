@@ -39,6 +39,38 @@ Ext.onReady(function() {
                 header: false
             },
             {
+                region: 'west',
+                title: 'Overzicht verkeerssysteem',
+                id: 'rseqInfoWindow',
+                itemId: 'rseqInfoWindow',
+                split: true,
+                header: true,
+                collapsible: true,
+                width: 300,
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+                    {
+                        xtype: 'container',
+                        contentEl: 'overzichtTitel',
+                        margin: 5
+                    },
+                    {
+                        xtype: 'container',
+                        flex: 1,
+                        itemId: 'overzichtContainer',
+                        layout: 'fit'
+                    },
+                    {
+                        xtype: 'container',
+                        contentEl: 'rseqOptions',
+                        margin: 5
+                    }
+                ]
+            },
+            {
                 region: 'center',
                 contentEl: 'kaart',
                 title: 'Kaart',
@@ -50,34 +82,6 @@ Ext.onReady(function() {
         title: 'Zoeken',
         id: 'searchformWindow',
         height: 300
-    });
-    Ext.create('CollapsibleWindow', {
-        title: 'Overzicht verkeerssysteem',
-        id: 'rseqInfoWindow',
-        itemId: 'rseqInfoWindow',
-        y: 350,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [
-            {
-                xtype: 'container',
-                contentEl: 'overzichtTitel',
-                margin: 5
-            },
-            {
-                xtype: 'container',
-                flex: 1,
-                itemId: 'overzichtContainer',
-                layout: 'fit'
-            },
-            {
-                xtype: 'container',
-                contentEl: 'rseqOptions',
-                margin: 5
-            }
-        ]
     });
     Ext.create('CollapsibleWindow', {
         title: 'Help',
