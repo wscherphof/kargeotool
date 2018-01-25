@@ -276,6 +276,8 @@ body.editor {
     border: 1px solid #444;
     border-bottom: 0 none;
     padding: 2px;
+    right: auto;
+    left: 3px;
 }
 
 .flex-wrapper {
