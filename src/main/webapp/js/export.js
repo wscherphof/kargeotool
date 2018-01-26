@@ -55,7 +55,7 @@ Ext.onReady(function (){
         layout : 'anchor',
         defaults : {
             anchor : '100%',
-            labelWidth : '190px'
+            labelWidth : 190
         },
         // The fields
         defaultType : 'textfield',
@@ -89,7 +89,11 @@ Ext.onReady(function (){
                         name : 'filterType',
                         inputValue : 'deelgebied',
                         handler : function (checkbox,checked){
-                            Ext.getCmp('deelgebied').setDisabled(!checked);
+                            var field = Ext.getCmp('deelgebied');
+                            field.setDisabled(!checked);
+                            if(checked) {
+                                field.focus();
+                            }
                         }
                     },
                     {
@@ -97,7 +101,23 @@ Ext.onReady(function (){
                         name : 'filterType',
                         inputValue : 'dataowner',
                         handler : function (checkbox,checked){
-                            Ext.getCmp('dataowner').setDisabled(!checked);
+                            var field = Ext.getCmp('dataowner');
+                            field.setDisabled(!checked);
+                            if(checked) {
+                                field.focus();
+                            }
+                        }
+                    },
+                    {
+                        boxLabel : 'Enkel verkeerssysteem',
+                        name : 'filterType',
+                        inputValue : 'singleRseq',
+                        handler : function (checkbox,checked){
+                            var field = Ext.getCmp('singleRseq');
+                            field.setDisabled(!checked);
+                            if(checked) {
+                                field.focus();
+                            }
                         }
                     }]
             },
@@ -106,9 +126,10 @@ Ext.onReady(function (){
                 layout : {
                     type : 'hbox'
                 },
+                margin: '5 0',
                 items : [
                     {
-                        labelWidth: '190px', 
+                        labelWidth: 190,
                         id : 'deelgebied',
                         xtype : "combo",
                         fieldLabel : 'Kies een deelgebied',
@@ -158,9 +179,9 @@ Ext.onReady(function (){
                 ]
             },
             {
-                labelWidth: '190px',
+                labelWidth: 190,
                 id: 'dataowner',
-                xtype: "combo",
+                xtype: "tagfield",
                 fieldLabel: 'Kies een beheerder',
                 store: dataownerStore,
                 queryMode: 'local',
@@ -180,11 +201,48 @@ Ext.onReady(function (){
                 }
             },
             {
+                xtype : 'container',
+                layout : {
+                    type : 'hbox'
+                },
+                margin: '5 0',
+                items : [
+                    {
+                        labelWidth: 190,
+                        id : 'singleRseq',
+                        xtype : "textfield",
+                        fieldLabel : 'Zoek enkel verkeerssysteem',
+                        disabled : true,
+                        flex : 1
+                    },
+                    {
+                        xtype : "button",
+                        text : 'Zoeken',
+                        handler : function (){
+                            reloadVRIs();
+                        }
+                    }
+                ]
+            },
+            {
                 title : 'Geselecteerde verkeerssystemen',
                 xtype : "grid",
                 id : "grid",
                 store : store,
                 columns : [
+                    {
+                        xtype: 'checkcolumn',
+                        text: '',
+                        dataIndex: 'selected',
+                        width: 35,
+                        headerCheckbox: true,
+                        stopSelection: true,
+                        sortable: false,
+                        draggable: false,
+                        resizable: false,
+                        menuDisabled: true,
+                        hideable: false
+                    },
                     {
                         text : 'Omschrijving',
                         dataIndex : 'naam'
@@ -318,6 +376,7 @@ Ext.onReady(function (){
                 disabled: true,
                 handler: function () {
                     var form = this.up('form').getForm();
+                    addRseqIds();
                     if (form.isValid()) {
                         form.submit({
                             target: '_blank',
@@ -349,19 +408,26 @@ function reloadVRIs (){
     var params = {};
     var text = "";
     var filter = null;
-    if(filtertype === "deelgebied"){
+    if(filtertype === "deelgebied") {
         filter = Ext.getCmp("deelgebied").getValue();
         var deelgebiedText = Ext.getCmp("deelgebied").getValue();
         params ['rseqByDeelgebied'] = true;
         params['filter'] = filter;
         text = deelgebiedText;
-    }else if(filtertype === "dataowner"){
-        filter = Ext.getCmp("dataowner").getValue();
+    } else if(filtertype === "dataowner") {
+        filter = Ext.Array.map(Ext.getCmp("dataowner").getValueRecords(), function(record) {
+            return record.get('id');
+        });
         var dataownerText = Ext.getCmp("dataowner").getDisplayValue();
         params ['rseqByDataowner'] = true;
-        params['dataowner'] = filter;
+        params['dataowner'] = filter.join(',');
         text = dataownerText;
-    }else{
+    } else if(filtertype === "singleRseq") {
+        filter = Ext.getCmp("singleRseq").getValue();
+        params ['singleRseq'] = true;
+        params['searchRseq'] = filter;
+        text = filter;
+    } else {
         // Default all
         filter = "ALL";
         params['allRseqs'] = true;
@@ -418,15 +484,21 @@ function doRseqRequest (params,text){
     });
 }
 
-function rseqsReceived (rseqs,naam){
-    store.loadData(rseqs);
-    grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
-    var ids = '';
-    for (var i = 0;i < rseqs.length;i++){
-        if(ids.length > 0){
-            ids += ', ';
+function addRseqIds() {
+    var ids = [];
+    store.forEach(function(record) {
+        if(record.get('selected')) {
+            ids.push(record.get('id'));
         }
-        ids += rseqs[i].id;
+    });
+    Ext.getCmp("rseqs").setValue(ids.join(', '));
+}
+
+function rseqsReceived(rseqs,naam) {
+    for (var i = 0;i < rseqs.length;i++){
+        rseqs[i].selected = true;
+        store.add(rseqs[i]);
     }
-    Ext.getCmp("rseqs").setValue(ids);
+    grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
+
 }
