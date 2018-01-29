@@ -28,7 +28,7 @@ Ext.define("CollapsibleWindow", {
     config: {
         width: 275,
         height: 200,
-        x: 10,
+        x: -10,
         y: 40,
         items: [],
         title: "",
@@ -37,12 +37,15 @@ Ext.define("CollapsibleWindow", {
     },
     window: null,
     DEFAULT_DOCKED_WIDTH: 200,
+    STATE_VERSION: 1,
     constructor: function(config) {
         this.initConfig(config);
         CollapsibleWindow.superclass.constructor.call(this, config);
         var window = this.createWindow();
-        if(!Ext.state.Manager.get(this.config.id)) {
+        var state = Ext.state.Manager.get(this.config.id);
+        if(!state || (state._state_version || -1) < this.STATE_VERSION) {
             window.show();
+            window.alignTo("editorBody", "tr-tr", [ this.config.x, this.config.y ]);
         }
     },
     createWindow: function() {
@@ -58,7 +61,8 @@ Ext.define("CollapsibleWindow", {
                 x: true,
                 y: true,
                 collapsed: false,
-                _kar_position: true
+                _kar_position: true,
+                _state_version: true
             },
             constrain: true,
             stateId: this.config.id,
@@ -84,6 +88,7 @@ Ext.define("CollapsibleWindow", {
             }
         };
         this.window = Ext.create('Ext.window.Window', config);
+        this.window._state_version = this.STATE_VERSION;
         return this.window;
     },
     windowCollapse: function(window) {
@@ -126,9 +131,9 @@ Ext.define("CollapsibleWindow", {
         }
     },
     dockWindow: function(window, windowPosition) {
-        var xPos = (windowPosition * 10) + ((windowPosition - 1) * this.DEFAULT_DOCKED_WIDTH);
+        var xPos = -1 * ((windowPosition * 10) + (windowPosition * this.DEFAULT_DOCKED_WIDTH));
         var yPos = -46; // Header height is aprox 36px + some margin
-        var alignToPos = window.getAlignToXY("editorBody", "bl", [xPos, yPos]);
+        var alignToPos = window.getAlignToXY("editorBody", "br", [xPos, yPos]);
         window.animate({
             to: {
                 x: alignToPos[0],

@@ -85,7 +85,7 @@ Ext.define("EditForms", {
         var theType = rseq.getType() == "" ? "CROSSING" : rseq.getType(); // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
-            height: 430,
+            height: 440,
             width: 450,
             modal: true,
             icon: rseq.getType() == "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
@@ -264,17 +264,33 @@ Ext.define("EditForms", {
                         }
                     }]
                 }],
-                buttons: [{
-                    text: 'OK',
-                    handler: okFunction,
-                    id:"rseqOkButton",
-                    disabled: true
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.rseqEditWindow.destroy();
-                        me.rseqEditWindow = null;
-                    }
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    ui: 'footer',
+                    items: [
+                        {
+                            xtype: 'container',
+                            style: {
+                                fontWeight: 'bold'
+                            },
+                            flex: 1,
+                            html: 'Voertuigtype: ' + this.editor.getCurrentVehicleType()
+                        },
+                        {
+                            text: 'OK',
+                            handler: okFunction,
+                            id:"rseqOkButton",
+                            disabled: true
+                        },
+                        {
+                            text: 'Annuleren',
+                            handler: function() {
+                                me.rseqEditWindow.destroy();
+                                me.rseqEditWindow = null;
+                            }
+                        }
+                    ]
                 }]
             }
         }).show();
@@ -339,8 +355,8 @@ Ext.define("EditForms", {
         var label = point.getLabel() == null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + (point.getType() === null ? "ongebruikt punt " : (point.getType() === "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
-            height: 96,
-            width: 250,
+            height: 120,
+            width: 360,
             modal: true,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
             layout: 'fit',
@@ -381,22 +397,38 @@ Ext.define("EditForms", {
                     value: point.config.label,
                     id: 'labelEdit'
                 }],
-                buttons: [{
-                    text: 'OK',
-                    id: "nonActivationPointOkButton",
-                    disabled: true,
-                    handler: okFunction
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.pointEditWindow.destroy();
-                        me.pointEditWindow = null;
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    ui: 'footer',
+                    items: [
+                        {
+                            xtype: 'container',
+                            style: {
+                                fontWeight: 'bold'
+                            },
+                            flex: 1,
+                            html: 'Voertuigtype: ' + this.editor.getCurrentVehicleType()
+                        },
+                        {
+                            text: 'OK',
+                            id: "nonActivationPointOkButton",
+                            disabled: true,
+                            handler: okFunction
+                        },
+                        {
+                            text: 'Annuleren',
+                            handler: function() {
+                                me.pointEditWindow.destroy();
+                                me.pointEditWindow = null;
 
-                        if(cancelHandler) {
-                            cancelHandler();
+                                if(cancelHandler) {
+                                    cancelHandler();
+                                }
+                                me.editor.activeMovement = null;
+                            }
                         }
-                        me.editor.activeMovement = null;
-                    }
+                    ]
                 }]
             }
         }).show();
@@ -452,33 +484,38 @@ Ext.define("EditForms", {
         }
         var ov = [];
         var hulpdienst = [];
-        var vehicles = {root:{
-            text: 'Alle',
-            id: 'root',
-            iconCls: "noTreeIcon",
-            expanded: true,
-            checked: false,
-            children :[
-                {
-                    id: 'ov-node',
-                    text: 'OV',
-                    checked: false,
-                    iconCls: "noTreeIcon",
-                    expanded:false,
-                    leaf: false,
-                    children: ov
-                },
-                {
-                    id: 'hulpdienst-node',
-                    text: 'Hulpdiensten',
-                    checked: false,
-                    iconCls: "noTreeIcon",
-                    expanded:false,
-                    leaf: false,
-                    children: hulpdienst
-                }
-            ]
-        }};
+        var children = [];
+        if(this.editor.getCurrentVehicleType() === "OV") {
+            children.push({
+                id: 'ov-node',
+                text: 'OV',
+                checked: false,
+                iconCls: "noTreeIcon",
+                expanded:false,
+                leaf: false,
+                children: ov
+            });
+        } else {
+            children.push({
+                id: 'hulpdienst-node',
+                text: 'Hulpdiensten',
+                checked: false,
+                iconCls: "noTreeIcon",
+                expanded:false,
+                leaf: false,
+                children: hulpdienst
+            });
+        }
+        var vehicles = {
+            root: {
+                text: 'Alle',
+                id: 'root',
+                iconCls: "noTreeIcon",
+                expanded: true,
+                checked: false,
+                children: children
+            }
+        };
         var selectedVehicleTypes = [];
         if(!map.config.vehicleTypes){
             map.config.vehicleTypes = new Array();
@@ -529,6 +566,7 @@ Ext.define("EditForms", {
             xtype: 'treecombo',
             valueField: 'id',
             editable:false,
+            rootVisible: false,
             value:  selectedVehicleTypes.join(","),
             fieldLabel: 'Voertuigtypes',
             treeWidth:290,
@@ -693,7 +731,7 @@ Ext.define("EditForms", {
 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.config.commandType == 2 ? 310 : 247,
+            height: map.config.commandType == 2 ? 290 : 265,
             width: 490,
             modal: true,
             icon: karTheme[apName],
@@ -747,21 +785,37 @@ Ext.define("EditForms", {
                     maxLengthText: "Maximale lengte is 255 karakters",
                     id: 'labelEdit'
                 }],
-                buttons: [{
-                    text: 'OK',
-                    disabled: true,
-                    id: "activationPointOkButton",
-                    handler: okFunction
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.activationPointEditWindow.destroy();
-                        me.activationPointEditWindow = null;
-                        if(cancelHandler) {
-                            cancelHandler();
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    ui: 'footer',
+                    items: [
+                        {
+                            xtype: 'container',
+                            style: {
+                                fontWeight: 'bold'
+                            },
+                            flex: 1,
+                            html: 'Voertuigtype: ' + this.editor.getCurrentVehicleType()
+                        },
+                        {
+                            text: 'OK',
+                            disabled: true,
+                            id: "activationPointOkButton",
+                            handler: okFunction
+                        },
+                        {
+                            text: 'Annuleren',
+                            handler: function() {
+                                me.activationPointEditWindow.destroy();
+                                me.activationPointEditWindow = null;
+                                if(cancelHandler) {
+                                    cancelHandler();
+                                }
+                                me.editor.activeMovement = null;
+                            }
                         }
-                        me.editor.activeMovement = null;
-                    }
+                    ]
                 }]
             }
         }).show();
@@ -886,19 +940,35 @@ Ext.define("EditForms", {
                             }]
                     }
                     ],
-                buttons: [{
-                    text: 'OK',
-                    handler:okFunction
-                },{
-                    text: 'Annuleren',
-                    handler: function() {
-                        me.editCoords.destroy();
-                        me.editCoords = null;
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    ui: 'footer',
+                    items: [
+                        {
+                            xtype: 'container',
+                            style: {
+                                fontWeight: 'bold'
+                            },
+                            flex: 1,
+                            html: 'Voertuigtype: ' + this.editor.getCurrentVehicleType()
+                        },
+                        {
+                            text: 'OK',
+                            handler:okFunction
+                        },
+                        {
+                            text: 'Annuleren',
+                            handler: function() {
+                                me.editCoords.destroy();
+                                me.editCoords = null;
 
-                        if(cancelHandler) {
-                            cancelHandler();
+                                if(cancelHandler) {
+                                    cancelHandler();
+                                }
+                            }
                         }
-                    }
+                    ]
                 }]
             }
         }).show();

@@ -284,43 +284,43 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
  */
 Ext.define("nl.b3p.kar.SearchRSEQ", {
     extend: "nl.b3p.kar.Search",
-    vehicleType:null,
+    // vehicleType:null,
     category: "Verkeerssystemen",
     constructor: function(config) {
         this.callParent(arguments);
         var me = this;
-        this.vehicleType =  Ext.create(Ext.form.ComboBox,{
-            fieldLabel: 'Voertuigtype',
-            id:Ext.id(),
-            name: 'vehicleType',
-            allowBlank: true,
-            blankText: 'Selecteer een optie',
-            displayField: 'title',
-            editable:false,
-            valueField: 'vehicleType',
-            store: Ext.create('Ext.data.Store', {
-                fields: ['title', 'vehicleType'],
-                data:[{title:"Beide", vehicleType: "beide"},{title:"OV", vehicleType: "OV"},{title:"Hulpdiensten", vehicleType: "Hulpdiensten"}]
-            }),
-            listeners: {
-                buffer: 50,
-                change: function() {
-                    if(this.isValid()){
-                        var f = function(numResults, entity){
-                            me.panel.expand();
-                            me.panel.setLoading(false);
-                            me.un('searchFinished',f,me);
-                        };
-                        me.on('searchFinished',f,me);
-                        me.resultDom.innerHTML = "";
-                        var term = me.editor.search.getTerm();
-                        me.panel.setLoading("Zoeken..");
-                        me.search(term);
-                    }
-                }
-            }
-        });
-        this.panel.addDocked([this.vehicleType]);
+        // this.vehicleType =  Ext.create(Ext.form.ComboBox,{
+        //     fieldLabel: 'Voertuigtype',
+        //     id:Ext.id(),
+        //     name: 'vehicleType',
+        //     allowBlank: true,
+        //     blankText: 'Selecteer een optie',
+        //     displayField: 'title',
+        //     editable:false,
+        //     valueField: 'vehicleType',
+        //     store: Ext.create('Ext.data.Store', {
+        //         fields: ['title', 'vehicleType'],
+        //         data:[{title:"Beide", vehicleType: "beide"},{title:"OV", vehicleType: "OV"},{title:"Hulpdiensten", vehicleType: "Hulpdiensten"}]
+        //     }),
+        //     listeners: {
+        //         buffer: 50,
+        //         change: function() {
+        //             if(this.isValid()){
+        //                 var f = function(numResults, entity){
+        //                     me.panel.expand();
+        //                     me.panel.setLoading(false);
+        //                     me.un('searchFinished',f,me);
+        //                 };
+        //                 me.on('searchFinished',f,me);
+        //                 me.resultDom.innerHTML = "";
+        //                 var term = me.editor.search.getTerm();
+        //                 me.panel.setLoading("Zoeken..");
+        //                 me.search(term);
+        //             }
+        //         }
+        //     }
+        // });
+        // this.panel.addDocked([this.vehicleType]);
     },
     search: function(term){
         var me = this;
@@ -328,9 +328,9 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
             'rseq': true,
             term: term
         };
-        if(this.vehicleType.isValid()){
-            params.vehicleType = this.vehicleType.getValue();
-        }
+        // if(this.vehicleType.isValid()){
+        //     params.vehicleType = this.vehicleType.getValue();
+        // }
         Ext.Ajax.request({
             url: searchActionBeanUrl,
             params: params,

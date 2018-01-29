@@ -404,6 +404,9 @@ Ext.define("ol", {
      * Update de vector layer met de roadside equipment in de editor
      */
     updateVectorLayer : function(){
+        if(!this.editor.activeRseq) {
+            return;
+        }
         this.removeAllFeatures();
         var activeRseq = this.editor.activeRseq;
         this.addFeatures(activeRseq);
