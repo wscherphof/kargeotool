@@ -6,6 +6,7 @@ extent 12000 304000 280000 620000
 units meters
 imagecolor 255 255 255
 fontset "fonts.list"
+CONFIG "MS_ERRORFILE" "mapserver_error.log"
 
 
 web
@@ -54,15 +55,14 @@ symbol
   points 1 1 end
 end
 
-
-symbol
-  name "pijl"
-  type truetype
-  font "freesans"
-  character ">"
-  antialias true
-  #gap -50
-end
+#symbol
+#  name "pijl"
+#  type truetype
+#  font "freesans"
+#  character ">"
+#  antialias true
+#  gap -50
+#end
 
 
 layer
@@ -268,7 +268,6 @@ layer
   processing "CLOSE_CONNECTION=DEFER"
 end
 
-
 layer
   name buslijnen
   metadata
@@ -288,37 +287,19 @@ layer
   end
   
   connectiontype postgis
-  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
+  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=1732 user=geo_ov"
   data "the_geom from (select * from %schema%.map_line where validfrom <= current_date and (validto is null or validto >= current_date)) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
   end
   labelitem "linepublicnumber"
-  filter ("linepublicnumber" = '%filtering%' or 'no' = '%filtering%')
+  filter ([linepublicnumber] = '%filtering%' or 'no' = '%filtering%')
       
   class 
     name ""
- 
-    style
-      color 255 0 0 
-    end
-    STYLE
-      geomtransform vertices
-      COLOR 255 0 0
-      SYMBOL "pijl"
-      SIZE 15.0
-      ANGLE AUTO
-    END # STYLE
-    label
-        type truetype
-        font "freesans"
-        antialias true
-        size 8
-        color 2 2 2
-        outlinecolor 255 255 255
-        buffer 2
-        position auto
-    end  
+    style      
+    color 255 0 0
+  end
    END
    
   processing "CLOSE_CONNECTION=DEFER"
@@ -344,7 +325,7 @@ layer
     "schema"    "[a-z_]+"
   end  
   connectiontype postgis
-  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
+  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=1732 user=geo_ov"
   data "the_geom from (select * from %schema%.map_userstop) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
@@ -374,7 +355,7 @@ layer
     "schema"    "[a-z_]+"
   end  
   connectiontype postgis
-  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=5432 user=geo_ov"
+  connection "host=localhost dbname=kv7netwerk password=YYPlDvZMkrOyYFB94rZ port=1732 user=geo_ov"
   data "the_geom from (select * from %schema%.map_userstop) as bla using srid=28992 using unique id"
   projection
     "init=epsg:28992"
@@ -392,8 +373,8 @@ layer
         color 2 2 2
         outlinecolor 255 255 255
         buffer 2
-        #force true
-        position auto
+  force true
+  position auto
     end  
   end
   processing "CLOSE_CONNECTION=DEFER"

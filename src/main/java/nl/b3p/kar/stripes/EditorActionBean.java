@@ -76,7 +76,6 @@ public class EditorActionBean implements ActionBean {
     private static final String JSP = "/WEB-INF/jsp/viewer/editor.jsp";
     private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     private ActionBeanContext context;
-    private boolean magWalapparaatMaken;
     @Validate
     private RoadsideEquipment rseq;
     @Validate
@@ -84,6 +83,8 @@ public class EditorActionBean implements ActionBean {
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
     private JSONObject ovInfoJSON;
+    
+    private JSONArray dataownersForUser;
 
     @Validate
     private String extent;
@@ -132,14 +133,13 @@ public class EditorActionBean implements ActionBean {
         log.debug("view(): dataOwnersJSON");
         dataOwnersJSON = new JSONArray();
         Collection<DataOwner> dataOwners;
-        if(getGebruiker().isBeheerder()) {
+        Gebruiker g = getGebruiker();
+        if(g.isBeheerder()) {
             dataOwners = (List<DataOwner>) em.createQuery("from DataOwner order by omschrijving").getResultList();
         } else {
             // TODO: geen sortering op omschrijving
-            dataOwners = getGebruiker().getEditableDataOwners();
+            dataOwners = g.getEditableDataOwners();
         }
-        // TODO: variabele weg, check kan ook client-side
-        magWalapparaatMaken = !dataOwners.isEmpty();
 
         for (DataOwner dao : dataOwners) {
             JSONObject jdao = new JSONObject();
@@ -150,6 +150,9 @@ public class EditorActionBean implements ActionBean {
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
         }
+        
+        Set<DataOwner> da = g.getDataOwnerRights().keySet();
+        dataownersForUser = new JSONArray(da);
 
         log.debug("view(): ovInfoJSON");
         ovInfoJSON = makeOvInfoJSON();
@@ -750,22 +753,6 @@ public class EditorActionBean implements ActionBean {
 
     /**
      *
-     * @return magWalapparaatMaken magWalapparaatMaken
-     */
-    public boolean isMagWalapparaatMaken() {
-        return magWalapparaatMaken;
-    }
-
-    /**
-     *
-     * @param magWalapparaatMaken magWalapparaatMaken
-     */
-    public void setMagWalapparaatMaken(boolean magWalapparaatMaken) {
-        this.magWalapparaatMaken = magWalapparaatMaken;
-    }
-
-    /**
-     *
      * @return rseq rseq 
      */
     public RoadsideEquipment getRseq() {
@@ -850,6 +837,14 @@ public class EditorActionBean implements ActionBean {
 
     public void setUsersToInform(List<Gebruiker> usersToInform) {
         this.usersToInform = usersToInform;
+    }
+    
+    public JSONArray getDataownersForUser() {
+        return dataownersForUser;
+    }
+
+    public void setDataownersForUser(JSONArray dataownersForUser) {
+        this.dataownersForUser = dataownersForUser;
     }
     // </editor-fold>
 

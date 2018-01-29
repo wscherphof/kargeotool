@@ -162,6 +162,7 @@
                 var vehicleTypes = ${actionBean.vehicleTypesJSON};
                 var dataOwners = ${actionBean.dataOwnersJSON};
                 var ovInfo = ${actionBean.ovInfoJSON};
+                var dataownersForUser = ${actionBean.dataownersForUser};
 
             </script>
         </div>

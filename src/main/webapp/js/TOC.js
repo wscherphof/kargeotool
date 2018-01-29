@@ -201,6 +201,26 @@ Ext.define("TOC", {
                         },
                         {
                             xtype: "label",
+                            text: "DXF",
+                            style: {
+                                fontWeight: "bold"
+                            }
+                        },
+                        {
+                            xtype: "checkbox",
+                            boxLabel: "DXF",
+                            id: "dxf_visible",
+                            listeners: [
+                                {
+                                    scope: this,
+                                    change: function (obj, newValue) {
+                                        this.toggleDxf(newValue);
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            xtype: "label",
                             text: "Achtergrond",
                             style: {
                                 fontWeight: "bold"
@@ -305,6 +325,12 @@ Ext.define("TOC", {
         });
         profile.state[layer + "_visible"] = visible;
         saveProfile();
+    },
+    toggleDxf:function(visible){
+        var layer = "dxf";
+        profile.state[layer + "_visible"] = visible;
+        saveProfile();
+        editor.olc.setLayerVisible(layer, visible);
     },
     toggleBorderLayer:function(layer, visible){
         profile.state[layer + "_visible"] = visible;

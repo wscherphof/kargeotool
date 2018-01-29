@@ -784,8 +784,8 @@ Ext.define("EditForms", {
         var wgs = new Proj4js.Proj("EPSG:4236");
         var rd = new Proj4js.Proj("EPSG:28992");
         Proj4js.transform(rd, wgs, point);
-        var wgsX = point.config.x;
-        var wgsY = point.config.y;
+        var wgsX = point.x;
+        var wgsY = point.y;
 
         var okFunction = function() {
             var form = Ext.getCmp('coordinatesForm').getForm();

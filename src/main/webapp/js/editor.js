@@ -77,6 +77,7 @@ Ext.define("Editor", {
         this.createOpenLayersController(mapfilePath);
         this.createOvInfoLayers(mapfilePath, ovInfo);
         this.createBorderLayers(mapfilePath);
+        this.createDxfLayers(mapfilePath);
 
         this.overview = Ext.create(nl.b3p.kar.Overview,this, "rseqInfoPanel");
         var haveCenterInHash = this.setCenterFromLocationHash();
@@ -158,6 +159,9 @@ Ext.define("Editor", {
         this.olc.addLayer("WMS", "gemeentes_hasnorseq", mapfilePath, 'gemeentes_hasnorseq', this.getLayerVisibility('gemeentes'), null, 1, null, null);
         this.olc.addLayer("WMS", "gemeentes_hasrseq", mapfilePath, 'gemeentes_hasrseq', this.getLayerVisibility('gemeentes'), null, 1, null, null);
         this.olc.addLayer("WMS", "provincies_border", mapfilePath, 'provincies_border', this.getLayerVisibility('provincies'), null, 1, null, null);
+    },
+    createDxfLayers: function (mapfilePath) {
+        this.olc.addLayer("WMS", "dxf", mapfilePath, 'dxf', this.getLayerVisibility('dxf'), null, 1, null, null);
     },
     setLayerOpacity: function(layer, opacity) {
         this.olc.map.getLayersByName(layer)[0].setOpacity(opacity);
