@@ -5,13 +5,13 @@
     <groupId>nl.b3p</groupId>
     <artifactId>geo-ov</artifactId>
     <packaging>war</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0.0-rc3</version>
     <name>kargeotool</name>
     <scm>
         <connection>scm:git:git@github.com:B3Partners/geo-ov.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/geo-ov.git</developerConnection>
         <url>https://github.com/B3Partners/geo-ov.git</url>
-        <tag>HEAD</tag>
+        <tag>v3.0.0-rc3</tag>
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
