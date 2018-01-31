@@ -37,7 +37,29 @@ ALTER TABLE v_gemeente
 
 -- DROP TABLE dxf;
 
-CREATE TABLE dxf
+
+CREATE TABLE upload
+(
+  id serial NOT NULL,
+  data_owner bigint,
+  filename character varying(255),
+  uploaddate timestamp without time zone,
+  user_ integer,
+  description character varying(255),
+  rseq bigint,
+  CONSTRAINT prim_key_upload_id PRIMARY KEY (id),
+  CONSTRAINT fk_data_owner FOREIGN KEY (data_owner)
+      REFERENCES data_owner (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE upload
+  OWNER TO geo_ov;
+
+
+CREATE TABLE dxf_features
 (
   id serial NOT NULL,
   the_geom geometry(Geometry,28992),
@@ -54,19 +76,14 @@ CREATE TABLE dxf
   visible integer,
   linenumber integer,
   error character varying(255),
-  data_owner bigint,
-  filename character varying(255),
-  uploaddate timestamp without time zone,
-  user_ integer,
-  description character varying(255),
-  rseq bigint,
-  CONSTRAINT prim_key_dxf_id PRIMARY KEY (id),
-  CONSTRAINT fk_data_owner FOREIGN KEY (data_owner)
-      REFERENCES data_owner (id) MATCH SIMPLE
+  upload bigint,
+  CONSTRAINT prim_key_dxf_features_id PRIMARY KEY (id),
+  CONSTRAINT fk_upload FOREIGN KEY (upload)
+      REFERENCES upload (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE dxf
+ALTER TABLE dxf_features
   OWNER TO geo_ov;

@@ -29,7 +29,7 @@
             <a href="<stripes:url beanclass="nl.b3p.kar.stripes.RightsActionBean"/>">VRI-authorisatie</a>
         </div>
         <div class="headerlink">
-            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean"/>">DXF-Upload</a>
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean"/>">DXF</a>
         </div>
         <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">
             <div class="headerlink">
@@ -37,7 +37,7 @@
             </div>
         </c:if>
         <div class="headerlink">
-            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>">Exporteer</a>
+           <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>">Exporteer</a>
         </div>
         <div class="headerlink">
             <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ImportActionBean"/>">Importeer</a>

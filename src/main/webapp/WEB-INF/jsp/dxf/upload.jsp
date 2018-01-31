@@ -30,26 +30,24 @@
     <stripes:layout-component name="content">
 
        
-        <h1>Overzicht DXF-bestanden</h1>
+        <h1>Upload DXF</h1>
         <stripes:messages/>
         <stripes:errors/>
-            <div id="gebruikerScroller">
-        <table class="tableheader" style="width: 100%;">
-            <tr>
-                <th>Bestandsnaam</th><th>VRI</th><th>Gemaakt door</th><th>Wegbeheerder</th><th>Gemaakt op</th><th>Verwijder</th>
-            </tr>
-            <c:forEach items="${actionBean.uploads}" var="upload">
-                <tr>
-                    <td>${upload.filename}</td>
-                    <td>${upload.rseq.karAddress}: ${upload.rseq.description} (${upload.rseq.town})</td>
-                    <td>${upload.user_.fullname} (${upload.user_.username})</td>
-                    <td>${upload.dataOwner.omschrijving}</td>
-                    <td>${upload.uploaddate}</td>
-                    <td><stripes:link beanclass="nl.b3p.kar.stripes.UploadDXFActionBean" event="remove"> <stripes:param name="uploadFile" value="${upload.id}" />Verwijder</stripes:link></td>
-                    </tr>
-            </c:forEach>
-        </table>
-    </div>
         
+        <stripes:form beanclass="nl.b3p.kar.stripes.UploadDXFActionBean">
+            <stripes:hidden name="rseq"/>
+            <table>
+                <tr><td>Bestand</td><td><stripes:file name="bestand"/></td></tr>
+                <tr><td>Omschrijving</td><td><stripes:text name="description"/></td></tr>
+                <tr><td>VRI omschrijving</td><td><stripes:text name="rseq.description"/></td></tr>
+
+                <tr><td>Wegbeheerder</td><td><stripes:select name="dataowner">
+                    <stripes:option label="- Kies wegbeheerder -"/>
+                    <stripes:options-collection collection="${actionBean.dataowners}" label="omschrijving" value="id"/>
+                </stripes:select></td></tr>
+
+                <tr><td><stripes:submit name="upload" value="Upload" /></td></tr>
+            </table>
+        </stripes:form>
     </stripes:layout-component>
 </stripes:layout-render>

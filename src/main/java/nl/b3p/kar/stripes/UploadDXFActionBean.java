@@ -32,10 +32,12 @@ import java.util.NoSuchElementException;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.After;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.Validate;
@@ -43,6 +45,7 @@ import nl.b3p.geotools.data.dxf.DXFDataStore;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.Upload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,11 +78,12 @@ public class UploadDXFActionBean implements ActionBean {
     private SimpleFeatureBuilder featureBuilder;
 
     private final String JSP_VIEW = "/WEB-INF/jsp/dxf/view.jsp";
+    private final String JSP_UPLOAD = "/WEB-INF/jsp/dxf/upload.jsp";
     
     @Validate(required = true, on = "upload")
     private FileBean bestand;
     
-    @Validate(required = true)
+    @Validate(required = true, on = "upload")
     private RoadsideEquipment rseq;
     
     @Validate
@@ -91,6 +95,10 @@ public class UploadDXFActionBean implements ActionBean {
     private Gebruiker gebruiker = null;
     
     private List<DataOwner> dataowners;
+    private List<Upload> uploads;
+    
+    @Validate
+    private Upload uploadFile;
     
     // <editor-fold desc="Getters and setters" defaultstate="collapsed">
     public void setDataowners(List<DataOwner> dataowners) {
@@ -150,44 +158,91 @@ public class UploadDXFActionBean implements ActionBean {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public List<Upload> getUploads() {
+        return uploads;
+    }
+
+    public void setUploads(List<Upload> uploads) {
+        this.uploads = uploads;
+    }
+
+    public Upload getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(Upload uploadFile) {
+        this.uploadFile = uploadFile;
+    }
     
+
     // </editor-fold>
 
     @DefaultHandler
-    public Resolution view() {
-        EntityManager em = Stripersist.getEntityManager();
+    public Resolution view(){
         
-        dataowners = em.createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
         return new ForwardResolution(JSP_VIEW);
+    }
+    
+    public Resolution preupload() {
+        return new ForwardResolution(JSP_UPLOAD);
+    }
+    
+    public Resolution remove() {
+        EntityManager em = Stripersist.getEntityManager();
+        int numdeleted = em.createNativeQuery("DELETE FROM dxf_features WHERE upload = :upload").setParameter("upload", uploadFile.getId()).executeUpdate();
+        em.remove(uploadFile);
+        em.getTransaction().commit();
+        context.getMessages().add(new SimpleMessage("Upload en de bijbehorende " + numdeleted + " geometrien verwijderd."));
+        return view();
     }
 
     public Resolution upload() {
         try {
             gebruiker = (Gebruiker) context.getRequest().getUserPrincipal();
+            Upload upload = new Upload();
+            upload.setDataOwner(dataowner);
+            upload.setUser_(gebruiker);
+            upload.setRseq(rseq);
+            upload.setFilename(bestand.getFileName());
+            upload.setUploaddate(new Date());
+            upload.setDescription(description);
+            EntityManager em = Stripersist.getEntityManager();
+            em.persist(upload);
+            em.getTransaction().commit();
+            
             File f = File.createTempFile("dxfupload", "" + System.currentTimeMillis());
             FileUtils.copyInputStreamToFile(bestand.getInputStream(), f);
-            processFile(f, createDbDatastore());
+            processFile(f, createDbDatastore(), upload.getId());
         } catch (IOException ex) {
             log.error("Error reading dxf", ex);
         }
-        return view();
+        return new ForwardResolution(JSP_UPLOAD);
+    }
+    
+    @After
+    private void createLists(){
+        EntityManager em = Stripersist.getEntityManager();
+        
+        dataowners = em.createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
+        uploads = em.createQuery("from Upload order by filename,uploaddate").getResultList();
     }
 
-    private void processFile(File file, DataStore dataStore2Write) {
+    private void processFile(File file, DataStore dataStore2Write, Integer uploadId) {
         try {
             URL dxf_url = file.toURL();
             DXFDataStore dataStore2Read = new DXFDataStore(dxf_url, "EPSG:28992");
 
             String[] typeNames = dataStore2Read.getTypeNames();
             for (String typeName : typeNames) {
-                saveFeatures(dataStore2Read, dataStore2Write, "dxf", typeName);
+                saveFeatures(dataStore2Read, dataStore2Write, "dxf_features", typeName, uploadId);
             }
         } catch (Exception ex) {
             log.info(ex.getLocalizedMessage());
         }
     }
 
-    private void saveFeatures(DataStore source, DataStore dest, String destFeatureType, String sourceFeatureType) throws IOException, Exception {
+    private void saveFeatures(DataStore source, DataStore dest, String destFeatureType, String sourceFeatureType, Integer uploadId) throws IOException, Exception {
         // Generate the shapefile
         SimpleFeatureSource sfs = source.getFeatureSource(sourceFeatureType);
         SimpleFeatureType sft = (SimpleFeatureType) sfs.getSchema();
@@ -201,7 +256,7 @@ public class UploadDXFActionBean implements ActionBean {
         //maak een transactie
         Transaction transaction = new DefaultTransaction("create");
         destFs.setTransaction(transaction);
-
+        Date d = new Date();
         //schrijf de data
         try {
 
@@ -209,7 +264,7 @@ public class UploadDXFActionBean implements ActionBean {
             SimpleFeatureIterator it = sourceFc.features();
             while (it.hasNext()) {
                 SimpleFeature sourceFeature = it.next();
-                SimpleFeature destFeature = processFeature(sourceFeature, sft);
+                SimpleFeature destFeature = processFeature(sourceFeature, sft, uploadId);
                 features.add(destFeature);
             }
             SimpleFeatureCollection collection = DataUtilities.collection(features);
@@ -225,7 +280,7 @@ public class UploadDXFActionBean implements ActionBean {
         }
     }
 
-    private SimpleFeature processFeature(SimpleFeature source, SimpleFeatureType newFt) {
+    private SimpleFeature processFeature(SimpleFeature source, SimpleFeatureType newFt, Integer uploadId) {
         Object geom = source.getDefaultGeometry();
         if(geom == null){
             return null;
@@ -240,12 +295,7 @@ public class UploadDXFActionBean implements ActionBean {
             featureBuilder.set(attributeDescriptor.getName(), b);
         }
         
-        featureBuilder.set("data_owner", dataowner.getId());
-        featureBuilder.set("user_", gebruiker.getId());
-        featureBuilder.set("filename", bestand.getFileName());
-        featureBuilder.set("uploaddate", new Date());
-        featureBuilder.set("rseq", rseq.getId());
-        featureBuilder.set("description", description);
+        featureBuilder.set("upload", uploadId);
         SimpleFeature feature = featureBuilder.buildFeature(null);
         return feature;
     }
