@@ -143,7 +143,8 @@ Ext.define("nl.b3p.kar.Overview",{
                     {
                         id: 'addExtraUitmeldpuntOv',
                         text: 'Voeg nieuw uitmeldpunt toe',
-                        icon: karTheme.uitmeldPunt
+                        icon: karTheme.uitmeldPunt,
+                        iconCls : 'overviewTree'
                     },
                     {
                         id: 'selectUitmeldpuntAndereSignaalgroepOv',
@@ -153,7 +154,8 @@ Ext.define("nl.b3p.kar.Overview",{
                     {
                         id: 'addBeginpuntOv',
                         text: 'Voeg beginpunt toe',
-                        icon: karTheme.startPunt
+                        icon: karTheme.startPunt,
+                        iconCls : 'overviewTree'
                     }
                     ],
                     listeners: {
