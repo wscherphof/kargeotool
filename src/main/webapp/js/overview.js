@@ -110,7 +110,8 @@ Ext.define("nl.b3p.kar.Overview",{
             {
                 id: 'addEindpuntOv',
                 text: 'Voeg nieuw eindpunt toe',
-                icon: karTheme.eindPunt
+                icon: karTheme.eindPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'selectEindpuntOv',
@@ -121,7 +122,8 @@ Ext.define("nl.b3p.kar.Overview",{
                 id: 'addInmeldpuntOv',
                 text: 'Voeg nieuw inmeldpunt toe',
                 disabled:true,
-                icon: karTheme.inmeldPunt
+                icon: karTheme.inmeldPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'selectInmeldpuntOv',

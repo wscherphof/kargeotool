@@ -62,14 +62,16 @@ Ext.define("ContextMenu", {
             items: [
             {
                 id: 'addRseq',
-                text: 'Hier verkeerssysteem toevoegen',
-                icon: karTheme.crossing
+                text: 'Hwweier verkeerssysteem toevoegen',
+                icon: karTheme.crossing,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'cancelSelecting',
                 text: 'Annuleer selecteren bestaand punt',
                 icon: karTheme.cursor_delete,
-                hidden: true
+                hidden: true,
+                iconCls : 'overviewTree'
             }
             ],
             listeners: {
@@ -108,7 +110,8 @@ Ext.define("ContextMenu", {
             {
                 id: 'resetMeasure',
                 text: 'Meten vanaf vorig punt',
-                icon: contextPath + "/images/silk/ruler.png"
+                icon: contextPath + "/images/silk/ruler.png",
+                iconCls : 'overviewTree'
             }
             ],
             listeners: {
@@ -136,12 +139,14 @@ Ext.define("ContextMenu", {
             {
                 id: 'editRseq',
                 text: 'Bewerken...',
-                icon: contextPath + "/images/silk/table_edit.png"
+                icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'saveRseq',
                 text: 'Opslaan',
-                icon: contextPath + "/images/silk/table_save.png"
+                icon: contextPath + "/images/silk/table_save.png",
+                iconCls : 'overviewTree'
             },
             
             {
@@ -152,12 +157,14 @@ Ext.define("ContextMenu", {
                         {
                             id: 'exportXml',
                             text: 'Exporteer KV9 XML',
-                            icon: contextPath + "/images/silk/transmit_go.png"
+                            icon: contextPath + "/images/silk/transmit_go.png",
+                            iconCls : 'overviewTree'
                         },
                         {
                             id: 'exportPtx',
                             text: 'Exporteer Incaa PTX',
-                            icon: contextPath + "/images/silk/transmit_go.png"
+                            icon: contextPath + "/images/silk/transmit_go.png",
+                            iconCls : 'overviewTree'
                         }
                     ],
                     listeners: {
@@ -212,22 +219,26 @@ Ext.define("ContextMenu", {
             {
                 id: 'setCoordsRseq',
                 text: 'Voer coördinaten in',
-                icon: contextPath + "/images/icons/gps.png"
+                icon: contextPath + "/images/icons/gps.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'removeRseq',
                 text: 'Verwijderen',
-                icon: contextPath + "/images/silk/table_delete.png"
+                icon: contextPath + "/images/silk/table_delete.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: "addMemo",
                 text: "Memo...",
-                icon: contextPath + "/images/silk/attach.png"
+                icon: contextPath + "/images/silk/attach.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: "showMessages",
                 text: "Export informatie",
-                icon: contextPath + "/images/silk/email_open.png"
+                icon: contextPath + "/images/silk/email_open.png",
+                iconCls : 'overviewTree'
             },{
                 id: "uppervri",
                 xtype: 'menuseparator'
@@ -235,7 +246,8 @@ Ext.define("ContextMenu", {
             {
                 id: 'addUitmeldpunt',
                 text: 'Voeg uitmeldpunt toe',
-                icon: karTheme.uitmeldPunt
+                icon: karTheme.uitmeldPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'advancedRseq',
@@ -245,12 +257,14 @@ Ext.define("ContextMenu", {
                     {
                         id: 'selectUitmeldpuntAndereSignaalgroepRseq',
                         text: 'Selecteer uitmeldpunt van andere fasecyclus',
-                        icon: contextPath + "/images/silk/cursor.png"
+                        icon: contextPath + "/images/silk/cursor.png",
+                        iconCls : 'overviewTree'
                     },
                     {
                         id: 'uploadDxf',
                         text: 'Upload DXF voor deze vri',
-                        icon: contextPath + "/images/silk/cursor.png"
+                        icon: contextPath + "/images/silk/cursor.png",
+                        iconCls : 'overviewTree'
                     }
                     ],
                     listeners: {
@@ -315,7 +329,8 @@ Ext.define("ContextMenu", {
             {
                 id: 'removeOnbekend',
                 text: 'Verwijderen',
-                icon: contextPath + "/images/silk/table_delete.png"
+                icon: contextPath + "/images/silk/table_delete.png",
+                iconCls : 'overviewTree'
             }],
             listeners: {
                 click: function(menu,item,e, opts) {
@@ -346,17 +361,20 @@ Ext.define("ContextMenu", {
             {
                 id: 'editUitmeldpunt',
                 text: 'Bewerken...',
-                icon: contextPath + "/images/silk/table_edit.png"
+                icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'removeUitmeldpunt',
                 text: 'Verwijderen',
-                icon: contextPath + "/images/silk/table_delete.png"
+                icon: contextPath + "/images/silk/table_delete.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'setCoordsUitmeld',
                 text: 'Voer coördinaten in',
-                icon: contextPath + "/images/icons/gps.png"
+                icon: contextPath + "/images/icons/gps.png",
+                iconCls : 'overviewTree'
             },{
                 id: "uppercheckout",
                 xtype: 'menuseparator'
@@ -364,24 +382,28 @@ Ext.define("ContextMenu", {
             {
                 id: 'addEindpunt',
                 text: 'Voeg nieuw eindpunt toe',
-                icon: karTheme.eindPunt
+                icon: karTheme.eindPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'selectEindpunt',
                 text: 'Selecteer bestaand eindpunt',
-                icon: contextPath + "/images/silk/cursor.png"
+                icon: contextPath + "/images/silk/cursor.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'addInmeldpunt',
                 text: 'Voeg nieuw inmeldpunt toe',
                 disabled:true,
-                icon: karTheme.inmeldPunt
+                icon: karTheme.inmeldPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'selectInmeldpunt',
                 text: 'Selecteer bestaand inmeldpunt',
                 disabled:true,
-                icon: contextPath + "/images/silk/cursor.png"
+                icon: contextPath + "/images/silk/cursor.png",
+                iconCls : 'overviewTree'
             },
             {
                 id : "lowercheckout",
@@ -395,7 +417,8 @@ Ext.define("ContextMenu", {
                     {
                         id: 'addBeginpunt',
                         text: 'Voeg beginpunt toe',
-                        icon: karTheme.startPunt
+                        icon: karTheme.startPunt,
+                        iconCls : 'overviewTree'
                     }
                     ],
                     listeners: {
@@ -460,17 +483,20 @@ Ext.define("ContextMenu", {
             {
                 id: 'editInmeldpunt',
                 text: 'Bewerken...',
-                icon: contextPath + "/images/silk/table_edit.png"
+                icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'removeInmeldpunt',
                 text: 'Verwijderen...',
-                icon: contextPath + "/images/silk/table_delete.png"
+                icon: contextPath + "/images/silk/table_delete.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'setCoordsInmeld',
                 text: 'Voer coördinaten in',
-                icon: contextPath + "/images/icons/gps.png"
+                icon: contextPath + "/images/icons/gps.png",
+                iconCls : 'overviewTree'
             },{
                 id: "upperIncheckin",
                 xtype: 'menuseparator'
@@ -478,12 +504,14 @@ Ext.define("ContextMenu", {
             {
                 id: 'addVoorinmeldpunt',
                 text: 'Voeg nieuw voorinmeldpunt toe',
-                icon: karTheme.voorinmeldPunt
+                icon: karTheme.voorinmeldPunt,
+                iconCls : 'overviewTree'
             },
             {
                 id: 'selectVoorInmeldPunt',
                 text: 'Selecteer bestaand voorinmeldpunt',
-                icon: contextPath + "/images/silk/cursor.png"
+                icon: contextPath + "/images/silk/cursor.png",
+                iconCls : 'overviewTree'
             }/*
             {
                 id: 'voegBeginpuntToecheckin',
@@ -533,15 +561,18 @@ Ext.define("ContextMenu", {
             {
                 id: 'editNAPoint',
                 text: 'Bewerken...',
-                icon: contextPath + "/images/silk/table_edit.png"
+                icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
             },{
                 id: 'removeNAPoint',
                 text: 'Verwijderen',
-                icon: contextPath + "/images/silk/table_delete.png"
+                icon: contextPath + "/images/silk/table_delete.png",
+                iconCls : 'overviewTree'
             },{
                 id: 'setCoordsNon',
                 text: 'Voer coördinaten in',
-                icon: contextPath + "/images/icons/gps.png"
+                icon: contextPath + "/images/icons/gps.png",
+                iconCls : 'overviewTree'
             }
             ],
             listeners: {
