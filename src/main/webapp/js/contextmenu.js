@@ -62,8 +62,15 @@ Ext.define("ContextMenu", {
             items: [
             {
                 id: 'addRseq',
-                text: 'Hwweier verkeerssysteem toevoegen',
+                text: 'Hier verkeerssysteem toevoegen',
                 icon: karTheme.crossing,
+                iconCls : 'overviewTree'
+            },
+            {
+                id: 'exportAdmin',
+                text: 'Export beheerders',
+                icon: contextPath + "/images/silk/transmit_go.png",
+                hidden: !isBeheerder,
                 iconCls : 'overviewTree'
             },
             {
@@ -91,7 +98,10 @@ Ext.define("ContextMenu", {
                         case 'addRseq':
                             // Voeg op huidige positie nieuwe Rseq toe 
                             this.editor.addRseq(lonlat.lon, lonlat.lat);
-                            break;                            
+                            break;  
+                         case 'exportAdmin':
+                            this.editor.editForms.adminExportWindow();
+                            break; 
                     }
                 },
                 hide: {

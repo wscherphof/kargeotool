@@ -82,69 +82,72 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private static final String NIEUW_DEELGEBIED = "/WEB-INF/jsp/export/deelgebied.jsp";
     private final int SRID = 28992;
     private ActionBeanContext context;
+
     @Validate(required = true, on = {"exportPtx", "exportXml"})
     private RoadsideEquipment rseq;
+
     @Validate(converter = OneToManyTypeConverter.class, on = "export")
     private List<Long> rseqs;
     private List<RoadsideEquipment> roadsideEquipmentList;
     private List<Deelgebied> deelgebieden = new ArrayList();
+
     @Validate(converter = EntityTypeConverter.class, on = {"saveDeelgebied"})
     @ValidateNestedProperties({
         @Validate(field = "name")
     })
     private Deelgebied deelgebied;
+
     @Validate(converter = EntityTypeConverter.class, on = {"bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"})
     private Deelgebied filter;
 
-    @Validate (on = "export")
+    @Validate(on = "export")
     private DataOwner dataowner;
 
     @Validate(on = "saveDeelgebied", required = true)
     private String geom;
+
     @Validate(on = "export")
     private String exportType;
+
     @Validate
     private String filterType;
 
-    @Validate ( on={"rseqByDeelgebied", "allRseqs"})
+    @Validate(on = {"rseqByDeelgebied", "allRseqs"})
     private boolean onlyValid;
-    @Validate ( on={"rseqByDeelgebied", "allRseqs"})
+
+    @Validate(on = {"rseqByDeelgebied", "allRseqs"})
     private String vehicleType;
 
     @Validate
     private boolean onlyReady = true;
 
-    private List<DataOwner> dataowners = new ArrayList<DataOwner>();
+    private List<DataOwner> dataowners = new ArrayList<>();
+
+    @Validate(on = "adminExport")
+    private List<DataOwner> dos = new ArrayList<>();
 
     @DefaultHandler
     public Resolution overview() {
         return new ForwardResolution(OVERVIEW);
     }
 
-    @Before(stages = LifecycleStage.BindingAndValidation)
-    public void lists() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-        deelgebieden = em.createQuery("from Deelgebied where gebruiker = :geb order by id").setParameter("geb", getGebruiker()).getResultList();
-        dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
-    }
-
     public Resolution export() throws Exception {
         EntityManager em = Stripersist.getEntityManager();
         roadsideEquipmentList = new ArrayList();
-        List<RoadsideEquipment> notReadyForExport = new ArrayList<RoadsideEquipment>();
-        if(rseqs == null){
+        List<RoadsideEquipment> notReadyForExport = new ArrayList<>();
+        if (rseqs == null) {
             this.context.getValidationErrors().add("Verkeerssystemen", new SimpleError(("Selecteer een of meerdere verkeerssystemen")));
             return new ForwardResolution(OVERVIEW);
         }
         for (Long id : rseqs) {
             RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
-            if(r.isReadyForExport() || !onlyReady){
+            if (r.isReadyForExport() || !onlyReady) {
                 roadsideEquipmentList.add(r);
-            }else{
+            } else {
                 notReadyForExport.add(r);
             }
         }
-        if(!notReadyForExport.isEmpty()){
+        if (!notReadyForExport.isEmpty()) {
             String message = "Kan niet exporteren omdat er een of meerdere verkeerssytemen zijn die niet klaar voor export zijn. Pas de selectie aan. De volgende zijn nog niet klaar: ";
 
             for (RoadsideEquipment r : notReadyForExport) {
@@ -153,7 +156,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             message = message.substring(0, message.length() - 2);
             this.context.getValidationErrors().add("export", new SimpleError((message)));
             return new ForwardResolution(OVERVIEW);
-        }else if (exportType == null) {
+        } else if (exportType == null) {
             this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
         } else if (exportType.equals("incaa")) {
@@ -183,8 +186,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
         Date now = new Date();
         DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String prefix =  "geo-ov_";
-        if(roadsideEquipmentList.size() == 1){
+        String prefix = "geo-ov_";
+        if (roadsideEquipmentList.size() == 1) {
             prefix = "" + roadsideEquipmentList.get(0).getKarAddress();
         }
         String filename = prefix + "_kv9_" + sdf.format(now);
@@ -220,6 +223,41 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
     }
 
+    public Resolution adminExport() {
+        EntityManager em = Stripersist.getEntityManager();
+        JSONObject response = new JSONObject();
+        response.put("success", Boolean.FALSE);
+        if (context.getRequest().isUserInRole("beheerder")) {
+            JSONArray data = new JSONArray();
+            for (DataOwner dataOwner : dos) {
+
+                //fields : ['dataowner','totalvri','vriwithouterrors','vriwithouterrorsready'],
+                List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment Where dataOwner = :do", RoadsideEquipment.class).setParameter("do", dataOwner).getResultList();
+                JSONObject json = new JSONObject();
+                json.put("totalvri", rseqs.size());
+                json.put("dataowner", dataOwner.getOmschrijving());
+                Integer numberNoErrors = 0, numberReady = 0;
+                for (RoadsideEquipment r : rseqs) {
+                    if (r.getValidationErrors() == 0) {
+                        numberNoErrors++;
+                        if (r.isReadyForExport()) {
+                            numberReady++;
+                        }
+                    }
+                }
+                json.put("vriwithouterrors", numberNoErrors);
+                json.put("vriwithouterrorsready", numberReady);
+                data.put(json);
+            }
+            response.put("items", data);
+            response.put("success", Boolean.TRUE);
+        }else{
+            response.put("message","Geen beheerder dus geen rechten.");
+        }
+        return new StreamingResolution("application/json", new StringReader(response.toString(4)));
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="deelgebied spul">
     @DontBind
     @DontValidate
     public Resolution maakDeelgebied() {
@@ -259,6 +297,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return new ForwardResolution(OVERVIEW);
     }
 
+    // </editor-fold>
+    // <editor-fold desc="RSEQ resolutions" defaultstate="collapsed">
     public Resolution rseqByDeelgebied() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -270,8 +310,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             Polygon deelgebiedPoly = filter.getGeom();
 
-            String query ="from RoadsideEquipment where validation_errors = 0 AND intersects(location, ?) = true";
-            if(onlyReady){
+            String query = "from RoadsideEquipment where validation_errors = 0 AND intersects(location, ?) = true";
+            if (onlyReady) {
                 query += " and readyForExport = true";
             }
             Query q = sess.createQuery(query);
@@ -297,7 +337,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         info.put("success", Boolean.FALSE);
         try {
             String query = "from RoadsideEquipment where validation_errors = 0 AND dataOwner = :dataowner";
-            if(onlyReady){
+            if (onlyReady) {
                 query += " and readyForExport = true";
             }
             List<RoadsideEquipment> rseqs = em.createQuery(query).setParameter("dataowner", dataowner).getResultList();
@@ -314,13 +354,13 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     }
 
     public Resolution allRseqs() throws JSONException {
-         EntityManager em = Stripersist.getEntityManager();
+        EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
             String query = "from RoadsideEquipment where validation_errors = 0";
-            if(onlyReady){
+            if (onlyReady) {
                 query += " and readyForExport = true";
 
             }
@@ -336,22 +376,30 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
+    // </editor-fold>
+
+    @Before(stages = LifecycleStage.BindingAndValidation)
+    public void lists() throws Exception {
+        EntityManager em = Stripersist.getEntityManager();
+        deelgebieden = em.createQuery("from Deelgebied where gebruiker = :geb order by id").setParameter("geb", getGebruiker()).getResultList();
+        dataowners = em.createQuery("from DataOwner order by omschrijving").getResultList();
+    }
 
     private JSONArray makeRseqArray(List<RoadsideEquipment> rseqs) throws JSONException {
 
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
-            if(getGebruiker().canRead(rseqObj)) {
-                if(onlyValid && !rseqObj.isValid()){
+            if (getGebruiker().canRead(rseqObj)) {
+                if (onlyValid && !rseqObj.isValid()) {
                     continue;
                 }
-                if(vehicleType != null && ! rseqObj.hasSignalForVehicleType(vehicleType)){
+                if (vehicleType != null && !rseqObj.hasSignalForVehicleType(vehicleType)) {
                     continue;
                 }
                 JSONObject jRseq = new JSONObject();
                 jRseq.put("id", rseqObj.getId());
                 jRseq.put("naam", rseqObj.getDescription());
-                jRseq.put("karAddress",rseqObj.getKarAddress());
+                jRseq.put("karAddress", rseqObj.getKarAddress());
                 jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
                 String type = rseqObj.getType();
                 if (type.equalsIgnoreCase("CROSSING")) {
@@ -367,6 +415,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return rseqArray;
     }
 
+    @Override
     public Resolution handleValidationErrors(ValidationErrors errors) throws Exception {
         return null;
     }
@@ -495,6 +544,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setOnlyReady(boolean onlyReady) {
         this.onlyReady = onlyReady;
     }
-    // </editor-fold>
 
+    public List<DataOwner> getDos() {
+        return dos;
+    }
+
+    public void setDos(List<DataOwner> dos) {
+        this.dos = dos;
+    }
+
+    // </editor-fold>
 }

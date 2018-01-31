@@ -1,4 +1,4 @@
-/* global Ext */
+/* global Ext, dataOwners, profile, karTheme, RSEQ, Proj4js, editor, vehicleTypes, KarAttributesEditWindow, exportActionBeanUrl */
 
 /**
 * Geo-OV - applicatie voor het registreren van KAR meldpunten
@@ -34,6 +34,7 @@ Ext.define("EditForms", {
     editCoords:null,
     editDirectionWindow:null,
     carriersWindow:null,
+    adminExport:null,
 
     rseqType: {
         "": "nieuw verkeerssysteem",
@@ -56,7 +57,7 @@ Ext.define("EditForms", {
     editRseq: function(newRseq, okHandler) {
         var rseq = newRseq || editor.selectedObject;
 
-        if(this.rseqEditWindow != null) {
+        if(this.rseqEditWindow !== null) {
             this.rseqEditWindow.destroy();
             this.rseqEditWindow = null;
         }
@@ -65,7 +66,7 @@ Ext.define("EditForms", {
             var form = Ext.getCmp ("rseqForm").getForm();
 
             if(!form.isValid()) {
-                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
                 return;
             }
 
@@ -82,13 +83,13 @@ Ext.define("EditForms", {
         };
 
         var me = this;
-        var theType = rseq.getType() == "" ? "CROSSING" : rseq.getType(); // default voor nieuw
+        var theType = rseq.getType() === "" ? "CROSSING" : rseq.getType(); // default voor nieuw
         me.rseqEditWindow = Ext.create('Ext.window.Window', {
-            title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
+            title: 'Bewerken ' + me.rseqType[rseq.getType()] + (rseq.config.karAddress === null ? "" : " met KAR adres " + rseq.config.karAddress),
             height: 440,
             width: 450,
             modal: true,
-            icon: rseq.getType() == "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
+            icon: rseq.getType() === "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -127,17 +128,17 @@ Ext.define("EditForms", {
                     items: [{
                         name: 'type',
                         inputValue: 'CROSSING',
-                        checked: theType == 'CROSSING',
+                        checked: theType === 'CROSSING',
                         boxLabel: me.rseqType['CROSSING']
                     },{
                         name: 'type',
                         inputValue: 'GUARD',
-                        checked: theType == 'GUARD',
+                        checked: theType === 'GUARD',
                         boxLabel: me.rseqType['GUARD']
                     },{
                         name: 'type',
                         inputValue: 'BAR',
-                        checked: theType == 'BAR',
+                        checked: theType === 'BAR',
                         boxLabel: me.rseqType['BAR']
                     }]
                 },{
@@ -148,7 +149,7 @@ Ext.define("EditForms", {
                         var found = false;
                         for (var i = 0 ; i < list.length ;i++){
                             var entry = list[i];
-                            if(entry.omschrijving == value){
+                            if(entry.omschrijving === value){
                                 found = true;
                                 break;
                             }
@@ -300,14 +301,14 @@ Ext.define("EditForms", {
      * KAR attributen edit form voor een rseq.
      */
     editKarAttributes: function(rseq) {
-        if(this.karAttributesEditWindow != null) {
+        if(this.karAttributesEditWindow !== null) {
             this.karAttributesEditWindow.destroy();
             this.karAttributesEditWindow = null;
         }
 
         this.karAttributesEditWindow = Ext.create(KarAttributesEditWindow,
             "Bewerken KAR attributen voor " + this.rseqType[rseq.getType()] +
-                (rseq.config.karAddress == null ? "" : " met KAR adres " + rseq.config.karAddress),
+                (rseq.config.karAddress === null ? "" : " met KAR adres " + rseq.config.karAddress),
             "In dit scherm kan worden aangegeven welke KAR attributen in KAR " +
                 "berichten die aan dit verkeerssysteem worden verzonden moeten " +
                 "worden gevuld. Dit geldt voor alle soorten berichten " +
@@ -328,14 +329,14 @@ Ext.define("EditForms", {
         var rseq = this.editor.activeRseq;
         var point = newPoint || this.editor.selectedObject;
 
-        if(this.pointEditWindow != null) {
+        if(this.pointEditWindow !== null) {
             this.pointEditWindow.destroy();
             this.pointEditWindow = null;
         }
         var okFunction =function() {
             var form = Ext.getCmp("nonActivationForm").getForm();
             if(!form.isValid()) {
-                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
                 return;
             }
 
@@ -443,14 +444,14 @@ Ext.define("EditForms", {
         var rseq = this.editor.activeRseq;
         var point = newUitmeldpunt || this.editor.selectedObject;
 
-        if(this.activationPointEditWindow != null) {
+        if(this.activationPointEditWindow !== null) {
             this.activationPointEditWindow.destroy();
             this.activationPointEditWindow = null;
         }
 
         var me = this;
         var apType = point.getType().split("_")[1];
-        var apName = (apType == "1" ? "inmeld" : (apType == "2" ? "uitmeld" : "voorinmeld")) + "Punt";
+        var apName = (apType === "1" ? "inmeld" : (apType === "2" ? "uitmeld" : "voorinmeld")) + "Punt";
         var label = point.getLabel() == null ? "" : point.getLabel();
 
         var map = newMap;
@@ -521,18 +522,18 @@ Ext.define("EditForms", {
             map.config.vehicleTypes = new Array();
         }
         Ext.Array.each(vehicleTypes, function(vt) {
-            var selected = map.config.vehicleTypes.indexOf(vt.nummer) != -1;
+            var selected = map.config.vehicleTypes.indexOf(vt.nummer) !== -1;
             if(selected) {
                 selectedVehicleTypes.push(vt.nummer);
             }
-            if(selected || vt.omschrijving.indexOf('Gereserveerd') == -1) {
+            if(selected || vt.omschrijving.indexOf('Gereserveerd') === -1) {
                 var leaf = {
                         id: vt.nummer,
                         text: vt.omschrijving,
                         checked: false,
                         iconCls: "noTreeIcon",
                         leaf: true};
-                if(vt.groep == "OV"){
+                if(vt.groep === "OV"){
                     ov.push(leaf);
                 }else{
                     hulpdienst.push(leaf);
@@ -661,7 +662,7 @@ Ext.define("EditForms", {
         var okFunction = function() {
             var form = Ext.getCmp('activationForm').getForm();
             if(!form.isValid()) {
-                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.')
+                Ext.Msg.alert('Ongeldige gegevens', 'Controleer aub de geldigheid van de ingevulde gegevens.');
                 return;
             }
 
@@ -731,12 +732,12 @@ Ext.define("EditForms", {
 
         this.activationPointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + apName.toLowerCase() + " " + label,
-            height: map.config.commandType == 2 ? 290 : 265,
+            height: map.config.commandType === 2 ? 290 : 265,
             width: 490,
             modal: true,
             icon: karTheme[apName],
             layout: 'fit',
-             listeners: {
+            listeners: {
                 afterRender: function(thisForm, options){
                     this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
                         enter: okFunction,
@@ -1024,6 +1025,155 @@ Ext.define("EditForms", {
         this.carriersWindow.show();
     },
 
+    adminExportWindow: function () {
+        var me = this;
+        var dataownerStore = Ext.create('Ext.data.Store', {
+            fields: ['id', 'code', 'omschrijving'],
+            data: dataOwners
+        });
+        var overviewStore = Ext.create('Ext.data.Store',{
+            storeId : 'overviewStore',
+            fields : ['dataowner','totalvri','vriwithouterrors','vriwithouterrorsready'],
+            data : {
+                'items' : []
+            },
+            proxy : {
+                type : 'memory',
+                reader : {
+                    type : 'json',
+                    rootProperty : 'items'
+                }
+            }
+        });
+        this.adminExport = Ext.create('Ext.window.Window', {
+            defaults: {
+                anchor: '100%',
+                labelWidth: 190
+            },
+            title: 'Export beheerders',
+            height: 600,
+            width: 720,
+            items: [
+                {
+                    xtype: 'fieldcontainer',
+                    layout: 'hbox',
+                    
+                    items: [
+                        {
+                            labelWidth: 190,
+                            width: 300,
+                            id: 'dataowner',
+                            xtype: "tagfield",
+                            fieldLabel: 'Kies een beheerder',
+                            store: dataownerStore,
+                            queryMode: 'local',
+                            displayField: 'omschrijving',
+                            disabled: false,
+                            anyMatch: true,
+                            valueField: 'id',
+                            emptyText: "Selecteer",
+                            listeners:{
+                                scope:this,
+                                change: function(){
+                                    Ext.getCmp("makeExport").setDisabled(false);
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            margin:"0 0 0 10",
+                            disabled:true,
+                            id: 'makeExport',
+                            text: 'Maak overzicht',
+                            listeners: {
+                                scope: this,
+                                click: function () {
+                                    var grid = Ext.getCmp("grid");
+                                    overviewStore.removeAll();
+                                    grid.setLoading("data ophalen...");
+                                    var dos = Ext.getCmp("dataowner").getValue();
+                                    Ext.Ajax.request({
+                                        url : exportActionBeanUrl,
+                                        method : 'GET',
+                                        scope : me,
+                                        timeout: 120000,
+                                        params : {
+                                            "adminExport":true,
+                                            "dos": dos
+                                        },
+                                        success : function (response){
+                                            var grid = Ext.getCmp("grid");
+                                            var msg = Ext.JSON.decode(response.responseText);
+                                            if(msg.success){
+                                                overviewStore.add(msg.items);
+                                            } else{
+                                                Ext.MessageBox.show({
+                                                    title : "Fout",
+                                                    msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+msg.error,
+                                                    buttons : Ext.MessageBox.OK,
+                                                    icon : Ext.MessageBox.ERROR
+                                                });
+                                            }
+                                            grid.setDisabled(false);
+                                            grid.setLoading(false);
+                                        },
+                                        failure : function (response){
+                                            Ext.MessageBox.show({
+                                                title : "Ajax fout",
+                                                msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+response.responseText,
+                                                buttons : Ext.MessageBox.OK,
+                                                icon : Ext.MessageBox.ERROR
+                                            });
+                                            grid.setDisabled(false);
+                                            grid.setLoading(false);
+                                        }
+                                    });
+                                }
+                            }
+
+                        }]
+                },
+                {
+                    title: 'Overzicht',
+                    xtype: "grid",
+                    id: "grid",
+                    disabled:true,
+                    store: overviewStore,
+                    columns: [
+                        {
+                            text: 'Beheerder',
+                            dataIndex: 'dataowner',
+                            flex: 1
+                        },
+                        {
+                            text: 'Totaal VRI\'s',
+                            dataIndex: 'totalvri'
+                        },
+                        {
+                            text: 'VRI\'s zonder KV9 fouten',
+                            dataIndex: 'vriwithouterrors'
+                        },
+                        {
+                            text: 'VRI\'s zonder KV9 fouten en gereed voor export',
+                            dataIndex: 'vriwithouterrorsready'
+                        }
+                    ]
+                }],
+                bbar: [
+                    {xtype: 'button', text: 'Export', handler: function(){
+                            var ids = Ext.getCmp("carrierIds").getValue();
+                            me.adminExport.destroy();
+                            me.adminExport = null;
+                             // export with dataowner ids
+                    }},
+                    {xtype: 'button', text: 'Annuleren', handler: function(){
+                        me.adminExport.destroy();
+                        me.adminExport = null;
+                    }}
+                ]
+        });
+        this.adminExport.show();
+    },
+    
     hasOpenWindows : function(){
         var windows = new Array();
         windows.push(this.rseqEditWindow);

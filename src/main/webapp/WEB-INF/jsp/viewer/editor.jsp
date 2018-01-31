@@ -118,6 +118,7 @@
                 var dxfActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean" event="preupload"/>";
 
                 var contextPath = "${contextPath}";
+                var isBeheerder = ${f:isUserInRole(pageContext.request, 'beheerder')};
                 var editor = null;
                 var settingsForm = null;
                 var welcomeForm = null;
