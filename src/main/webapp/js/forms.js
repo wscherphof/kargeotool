@@ -1098,7 +1098,8 @@ Ext.define("EditForms", {
                                         timeout: 120000,
                                         params : {
                                             "adminExport":true,
-                                            "dos": dos
+                                            "dos": dos.toString(),
+                                            "exportType" :"JSON"
                                         },
                                         success : function (response){
                                             var grid = Ext.getCmp("grid");
@@ -1159,11 +1160,14 @@ Ext.define("EditForms", {
                     ]
                 }],
                 bbar: [
-                    {xtype: 'button', text: 'Export', handler: function(){
-                            var ids = Ext.getCmp("carrierIds").getValue();
-                            me.adminExport.destroy();
-                            me.adminExport = null;
-                             // export with dataowner ids
+                    {xtype: 'button', text: 'Export', handler: function () {
+                        var ids = Ext.getCmp("dataowner").getValue();
+                        var url = exportActionBeanUrl;
+                        url += exportActionBeanUrl.indexOf("?") !== -1 ? '&' : "?";
+                        url += "dos=" + ids + "&adminExport=" + true + "&exportType=CSV";
+                        document.location.href = url;
+                        me.adminExport.destroy();
+                        me.adminExport = null;
                     }},
                     {xtype: 'button', text: 'Annuleren', handler: function(){
                         me.adminExport.destroy();

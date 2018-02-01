@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import net.sourceforge.stripes.action.*;
@@ -54,6 +56,8 @@ import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
 import nl.b3p.kar.jaxb.TmiPush;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,7 +127,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     private List<DataOwner> dataowners = new ArrayList<>();
 
-    @Validate(on = "adminExport")
+    @Validate(converter = OneToManyTypeConverter.class, on = "adminExport")
     private List<DataOwner> dos = new ArrayList<>();
 
     @DefaultHandler
@@ -225,17 +229,15 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public Resolution adminExport() {
         EntityManager em = Stripersist.getEntityManager();
-        JSONObject response = new JSONObject();
-        response.put("success", Boolean.FALSE);
         if (context.getRequest().isUserInRole("beheerder")) {
-            JSONArray data = new JSONArray();
-            for (DataOwner dataOwner : dos) {
-
-                //fields : ['dataowner','totalvri','vriwithouterrors','vriwithouterrorsready'],
+            String[] headers = {"dataowner", "totalvri", "vriwithouterrors", "vriwithouterrorsready"};
+            List<List<String>> values = new ArrayList<>();
+            for
+                    (DataOwner dataOwner : dos) {
+                List<String> row = new ArrayList<>();
+                row.add(dataOwner.getOmschrijving());     
                 List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment Where dataOwner = :do", RoadsideEquipment.class).setParameter("do", dataOwner).getResultList();
-                JSONObject json = new JSONObject();
-                json.put("totalvri", rseqs.size());
-                json.put("dataowner", dataOwner.getOmschrijving());
+                row.add("" + rseqs.size());
                 Integer numberNoErrors = 0, numberReady = 0;
                 for (RoadsideEquipment r : rseqs) {
                     if (r.getValidationErrors() == 0) {
@@ -245,16 +247,55 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                         }
                     }
                 }
-                json.put("vriwithouterrors", numberNoErrors);
-                json.put("vriwithouterrorsready", numberReady);
-                data.put(json);
+                row.add("" + numberNoErrors);
+                row.add("" + numberReady);
+                values.add(row);
             }
-            response.put("items", data);
-            response.put("success", Boolean.TRUE);
-        }else{
-            response.put("message","Geen beheerder dus geen rechten.");
+            Resolution response = null;
+            if (exportType == null) {
+                return new ErrorResolution(405, "Verkeerde exporttype meegegeven.");
+            }else if (exportType.endsWith("JSON")) {
+                response = adminExportJSON(values, headers);
+            } else if (exportType.endsWith("CSV")) {
+                response = adminExportCSV(values, headers);
+            } else {
+                return new ErrorResolution(405, "Verkeerde exporttype meegegeven.");
+            }
+            return response;
+        } else {
+            return new ErrorResolution(403, "Alleen beheerders mogen deze export maken.");
         }
+    }
+    
+    private Resolution adminExportJSON(List<List<String>> values, String[] headers) {
+        JSONObject response = new JSONObject();
+        response.put("success", Boolean.FALSE);
+        JSONArray data = new JSONArray();
+        for (List<String> row : values) {
+            JSONObject j = new JSONObject();
+            for (int i = 0; i < row.size(); i++) {
+                String value = row.get(i);
+                String key = headers[i];
+                j.put(key, value);
+            }
+            data.put(j);
+        }
+        response.put("items", data);
+        response.put("success", Boolean.TRUE);
         return new StreamingResolution("application/json", new StringReader(response.toString(4)));
+    }
+    
+    private Resolution adminExportCSV(final List<List<String>> values, final Object[] headers) {
+         return new StreamingResolution("text/plain") {
+
+            @Override
+            public void stream(HttpServletResponse response) throws Exception {
+                PrintWriter out = new PrintWriter(response.getWriter());
+                CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
+                csv.printRecord(new Object[]{"Beheerder","Totaal VRI\'s","VRI's zonder KV9-fouten", "VRI's zonder KV9-fouten en gereed voor export"});
+                csv.printRecords(values);
+            }
+        }.setAttachment(true).setFilename("export.csv");
     }
 
     // <editor-fold defaultstate="collapsed" desc="deelgebied spul">
@@ -298,6 +339,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     }
 
     // </editor-fold>
+   
     // <editor-fold desc="RSEQ resolutions" defaultstate="collapsed">
     public Resolution rseqByDeelgebied() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
@@ -386,7 +428,6 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     }
 
     private JSONArray makeRseqArray(List<RoadsideEquipment> rseqs) throws JSONException {
-
         JSONArray rseqArray = new JSONArray();
         for (RoadsideEquipment rseqObj : rseqs) {
             if (getGebruiker().canRead(rseqObj)) {
