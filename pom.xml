@@ -8,9 +8,9 @@
     <version>3.0.0-SNAPSHOT</version>
     <name>kargeotool</name>
     <scm>
-        <connection>scm:git:git@github.com:B3Partners/geo-ov.git</connection>
-        <developerConnection>scm:git:git@github.com:B3Partners/geo-ov.git</developerConnection>
-        <url>https://github.com/B3Partners/geo-ov.git</url>
+        <connection>scm:git:git@github.com:B3Partners/kargeotool.git</connection>
+        <developerConnection>scm:git:git@github.com:B3Partners/kargeotool.git</developerConnection>
+        <url>https://github.com/B3Partners/kargeotool.git</url>
         <tag>HEAD</tag>
     </scm>
     <properties>
@@ -400,7 +400,7 @@
             <distribution>repo</distribution>
             <name>GNU Affero General Public License v3.0</name>
             <comments>For any parts of the Flamingo codebase</comments>
-            <url>https://raw.githubusercontent.com/B3Partners/geo-ov/master/LICENSE</url>
+            <url>https://raw.githubusercontent.com/B3Partners/kargeotool/master/LICENSE</url>
         </license>
     </licenses>
 </project>

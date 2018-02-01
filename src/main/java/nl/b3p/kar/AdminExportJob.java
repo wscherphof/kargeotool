@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.b3p.kar.inform;
+package nl.b3p.kar;
 
+import nl.b3p.kar.inform.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -40,32 +41,23 @@ import org.stripesstuff.stripersist.Stripersist;
  *
  * @author Meine Toonen
  */
-public class CarrierInformer implements Job {
+public class AdminExportJob implements Job {
 
-    private static final Log log = LogFactory.getLog(CarrierInformer.class);
+    private static final Log log = LogFactory.getLog(AdminExportJob.class);
 
     public void execute(JobExecutionContext jec) throws JobExecutionException {
 
-        String url = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_APPLICATION_URL);
-        String host = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_HOST);
-        String fromAddress = jec.getJobDetail().getJobDataMap().getString(CarrierInformerListener.PARAM_INFORM_CARRIERS_FROMADDRESS);
-        run(url,host, fromAddress);
+        String host = jec.getJobDetail().getJobDataMap().getString(CronInitialiser.PARAM_INFORM_ADMINS_HOST);
+        String fromAddress = jec.getJobDetail().getJobDataMap().getString(CronInitialiser.PARAM_INFORM_ADMINS_FROMADDRESS);
+        run(host, fromAddress);
     }
 
-    public void run(String url, String host, String fromAddress) {
+    public void run(String host, String fromAddress) {
         try {
-            Stripersist.requestInit();
-            EntityManager em = Stripersist.getEntityManager();
-            List<InformMessage> messages = em.createQuery("From InformMessage where mailSent = false", InformMessage.class).getResultList();
-            for (InformMessage message : messages) {
-                createMessage(message, url,host, fromAddress);
-                em.persist(message);
-            }
-            em.getTransaction().commit();
+     
         } catch(Exception ex){
             log.error("Cannot create messages: ",ex);
         } finally {
-            Stripersist.requestComplete();
         }
     }
 

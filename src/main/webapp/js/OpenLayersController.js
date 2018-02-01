@@ -1,7 +1,7 @@
 /* global style, selectstyle, tempstyle, surroundStyle, Ext, Measure */
 
 /**
-* Geo-OV - applicatie voor het registreren van KAR meldpunten
+* KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
 *
 * Copyright (C) 2009-2013 B3Partners B.V.
 *
