@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/kar">
   <ResourceLink global="jdbc/kv7netwerk" name="jdbc/kv7netwerk" type="javax.sql.DataSource"/>
+  <Parameter name="mapserver-url" override="false" value="http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/kar/kv7netwerk.map"/>
+  <Parameter name="debug_editoractionbean_saveorupdate" override="false" value="false"/>
+  <Parameter name="debug_editoractionbean_view" override="false" value="false"/>
+  <Parameter name="application-url" override="false" value="http://localhost:8084/geo-ov"/>
+  <!--Configure at which interval in minutes the carriers informer job should be run.
+            Comment out this parameter or set to -1 to disable.-->
+  <Parameter name="inform.carriers.schedule" override="false" value="0 28 * * * ?"/>
+  <Parameter name="inform.carriers.host" override="false" value="kmail.b3p.nl"/>
+  <Parameter name="inform.carriers.fromAddress" override="false" value="support@b3partners.nl"/>
 </Context>

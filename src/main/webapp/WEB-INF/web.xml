@@ -10,45 +10,6 @@
         <param-name>javax.servlet.jsp.jstl.fmt.locale</param-name>
         <param-value>nl</param-value>
     </context-param>
-
-    <context-param>
-        <param-name>mapserver-url</param-name>
-        <param-value>http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/kar/kv7netwerk.map</param-value>
-    </context-param>
-    <context-param>
-        <param-name>debug_editoractionbean_view</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>debug_editoractionbean_saveorupdate</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>application-url</param-name>
-        <param-value>http://localhost:8084/geo-ov</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Configure at which interval in minutes the carriers informer job should be run.
-            Comment out this parameter or set to -1 to disable.
-        </description>
-        <param-name>inform.carriers.schedule</param-name>
-        <param-value>0 28 * * * ?</param-value>
-    </context-param>
-       <context-param>
-        <description>
-            SMTP host sent mails from
-        </description>
-        <param-name>inform.carriers.host</param-name>
-        <param-value>kmail.b3p.nl</param-value>
-    </context-param>
-       <context-param>
-        <description>
-            Mail address to sent mails from
-        </description>
-        <param-name>inform.carriers.fromAddress</param-name>
-        <param-value>support@b3partners.nl</param-value>
-    </context-param>
     <listener>
         <description>The class which initializes (and if configured sets up) the informer listener.</description>
         <listener-class>nl.b3p.kar.inform.CarrierInformerListener</listener-class>
@@ -85,14 +46,14 @@
         <filter-name>No URL rewriting filter</filter-name>
         <filter-class>nl.b3p.commons.services.NoUrlRewritingFilter</filter-class>
     </filter>
-	<filter>
-		<display-name>Stripes Filter</display-name>
-		<filter-name>StripesFilter</filter-name>
-		<filter-class>net.sourceforge.stripes.controller.StripesFilter</filter-class>
-		<init-param>
-			<param-name>ActionResolver.Packages</param-name>
-			<param-value>nl.b3p.kar.stripes</param-value>
-		</init-param>
+    <filter>
+        <display-name>Stripes Filter</display-name>
+        <filter-name>StripesFilter</filter-name>
+        <filter-class>net.sourceforge.stripes.controller.StripesFilter</filter-class>
+        <init-param>
+            <param-name>ActionResolver.Packages</param-name>
+            <param-value>nl.b3p.kar.stripes</param-value>
+        </init-param>
 
         <init-param>
             <param-name>Extension.Packages</param-name>
@@ -130,7 +91,7 @@
             <param-name>SecurityManager.Class</param-name>
             <param-value>org.stripesstuff.plugin.security.J2EESecurityManager</param-value>
         </init-param>
- 	</filter>
+    </filter>
     <filter-mapping>
         <filter-name>No URL rewriting filter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -148,27 +109,27 @@
         <filter-name>Security Filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-	<filter-mapping>
-		<filter-name>StripesFilter</filter-name>
-		<url-pattern>*.jsp</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>StripesFilter</filter-name>
-		<servlet-name>StripesDispatcher</servlet-name>
-		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>StripesFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>StripesFilter</filter-name>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
 
-	<servlet>
-		<servlet-name>StripesDispatcher</servlet-name>
-		<servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
+    <servlet>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-	<servlet-mapping>
-		<servlet-name>StripesDispatcher</servlet-name>
-		<url-pattern>*.action</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>*.action</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/action/*</url-pattern>

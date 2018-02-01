@@ -1186,6 +1186,7 @@ Ext.define("EditForms", {
         windows.push(this.activationPointEditWindow);
         windows.push(this.editCoords);
         windows.push(this.editDirectionWindow);
+        windows.push(this.adminExport);
 
         for( var i = 0 ; i < windows.length; i++){
             var window = windows[i];
