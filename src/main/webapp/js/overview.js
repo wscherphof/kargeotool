@@ -140,23 +140,42 @@ Ext.define("nl.b3p.kar.Overview",{
                 text: 'Geavanceerd',
                 menu: {
                     items:[
-                    {
-                        id: 'addExtraUitmeldpuntOv',
-                        text: 'Voeg nieuw uitmeldpunt toe',
-                        icon: karTheme.uitmeldPunt,
-                        iconCls : 'overviewTree'
-                    },
-                    {
-                        id: 'selectUitmeldpuntAndereSignaalgroepOv',
-                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
-                        icon: contextPath + "/images/silk/cursor.png"
-                    },
-                    {
-                        id: 'addBeginpuntOv',
-                        text: 'Voeg beginpunt toe',
-                        icon: karTheme.startPunt,
-                        iconCls : 'overviewTree'
-                    }
+                        {
+                            id: 'addExtraUitmeldpuntOv',
+                            text: 'Voeg nieuw uitmeldpunt toe',
+                            icon: karTheme.uitmeldPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'selectUitmeldpuntAndereSignaalgroepOv',
+                            text: 'Selecteer uitmeldpunt van andere fasecyclus',
+                            icon: contextPath + "/images/silk/cursor.png"
+                        },
+                        {
+                            id: 'addBeginpuntOv',
+                            text: 'Voeg beginpunt toe',
+                            icon: karTheme.startPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addBeginpuntOvCoordinates',
+                            text: 'Voeg nieuw beginpunt toe op basis van coördinaten',
+                            icon: karTheme.eindPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addEindpuntOvCoordinates',
+                            text: 'Voeg nieuw eindpunt toe op basis van coördinaten',
+                            icon: karTheme.eindPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addInmeldpuntOvCoordinates',
+                            text: 'Voeg nieuw inmeldpunt toe op basis van coördinaten',
+                            disabled:true,
+                            icon: karTheme.inmeldPunt,
+                            iconCls : 'overviewTree'
+                        }
                     ],
                     listeners: {
                         click:
@@ -170,6 +189,15 @@ Ext.define("nl.b3p.kar.Overview",{
                                     break;
                                 case 'selectUitmeldpuntAndereSignaalgroepOv':
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
+                                    break;
+                                case 'addBeginpuntOvCoordinates':
+                                    editor.addByCoordinates('beginpunt');
+                                    break;
+                                case 'addEindpuntOvCoordinates':
+                                    editor.addByCoordinates('eindpunt');
+                                    break;
+                                case 'addInmeldpuntOvCoordinates':
+                                    editor.addByCoordinates('inmeldpunt');
                                     break;
                             }
                         },
@@ -202,7 +230,7 @@ Ext.define("nl.b3p.kar.Overview",{
                             break;
                         case 'setCoordsUitmeldOv':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
-                            break
+                            break;
                     }
                 },
                 scope:me
@@ -359,6 +387,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         if(point && point.getType() === "ACTIVATION_2"){
                             var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
+                            Ext.getCmp("addInmeldpuntOvCoordinates").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
                             this.uitmeldpuntMenu.showAt(event.clientX,event.clientY);
                         }else if((type === "signalGroup" || type === "movement") && this.editor.activeRseq.getEditable()){

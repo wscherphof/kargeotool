@@ -523,9 +523,6 @@ Ext.define("EditForms", {
         }
         Ext.Array.each(vehicleTypes, function(vt) {
             var selected = map.config.vehicleTypes.indexOf(vt.nummer) !== -1;
-            if(selected) {
-                selectedVehicleTypes.push(vt.nummer);
-            }
             if(selected || vt.omschrijving.indexOf('Gereserveerd') === -1) {
                 var leaf = {
                         id: vt.nummer,
@@ -533,13 +530,19 @@ Ext.define("EditForms", {
                         checked: false,
                         iconCls: "noTreeIcon",
                         leaf: true};
-                if(vt.groep === "OV"){
+                if(vt.groep === "OV") {
                     ov.push(leaf);
+                    if(selected && this.editor.getCurrentVehicleType() === "OV") {
+                        selectedVehicleTypes.push(vt.nummer);
+                    }
                 }else{
                     hulpdienst.push(leaf);
+                    if(selected && this.editor.getCurrentVehicleType() === "Hulpdiensten") {
+                        selectedVehicleTypes.push(vt.nummer);
+                    }
                 }
             }
-        });
+        }, this);
 
         var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
 
@@ -568,6 +571,7 @@ Ext.define("EditForms", {
             valueField: 'id',
             editable:false,
             rootVisible: false,
+            allowBlank: false,
             value:  selectedVehicleTypes.join(","),
             fieldLabel: 'Voertuigtypes',
             treeWidth:290,
@@ -824,24 +828,29 @@ Ext.define("EditForms", {
         Ext.getCmp("labelEdit").focus(false, 100);
     },
 
-    editCoordinates : function (pointObject,okHandler,cancelHandler){
+    editCoordinates : function (pointObject, okHandler, cancelHandler, extraLabel){
         var me = this;
-        var coords = "";
+        var coords = [];
         if(pointObject instanceof RSEQ){
             coords = pointObject.getLocation().coordinates;
-        }else{
+        } else if(pointObject) {
             coords = pointObject.getGeometry().coordinates;
         }
-        var rdX = coords[0];
-        var rdY = coords[1];
-        var point = new Proj4js.Point(rdX, rdY);
+        var rdX = "";
+        var rdY = "";
+        var wgsX = "";
+        var wgsY = "";
+        if(coords.length > 0) {
+            rdX = coords[0];
+            rdY = coords[1];
+            var point = new Proj4js.Point(rdX, rdY);
 
-        var wgs = new Proj4js.Proj("EPSG:4236");
-        var rd = new Proj4js.Proj("EPSG:28992");
-        Proj4js.transform(rd, wgs, point);
-        var wgsX = point.x;
-        var wgsY = point.y;
-
+            var wgs = new Proj4js.Proj("EPSG:4236");
+            var rd = new Proj4js.Proj("EPSG:28992");
+            Proj4js.transform(rd, wgs, point);
+            wgsX = point.x;
+            wgsY = point.y;
+        }
         var okFunction = function() {
             var form = Ext.getCmp('coordinatesForm').getForm();
             if(!form.isValid()) {
@@ -850,36 +859,37 @@ Ext.define("EditForms", {
             }
 
             var formValues= form.getValues();
-            if(rdX == formValues.rdX && rdY == formValues.rdY){
-                if(wgsX != formValues.wgsX && wgsY == formValues.wgsY){
+            if(rdX == formValues.rdX && rdY == formValues.rdY) {
+                if(wgsX != formValues.wgsX || wgsY != formValues.wgsY){
                     // converteer nieuwe wgs naar rd en sla ze op
                     var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
                     Proj4js.transform(wgs, rd, point);
                     rdX = point.config.x;
                     rdY = point.config.y;
                 }
-            }else{
+            } else {
                 rdX = formValues.rdX;
                 rdY = formValues.rdY;
             }
 
             var coordObj = {coordinates:[parseFloat(rdX),parseFloat(rdY)], type: 'Point'};
-            if(pointObject instanceof RSEQ){
-                pointObject.setLocation(coordObj);
-            }else{
-                pointObject.setGeometry(coordObj);
+            if(pointObject) {
+                if (pointObject instanceof RSEQ) {
+                    pointObject.setLocation(coordObj);
+                } else {
+                    pointObject.setGeometry(coordObj);
+                }
+                me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
             }
-
-            me.editor.fireEvent("activeRseqUpdated", me.editor.activeRseq);
             me.editCoords.destroy();
             me.editCoords = null;
 
             if(okHandler) {
-                okHandler(point);
+                okHandler(coordObj);
             }
         };
         this.editCoords = Ext.create('Ext.window.Window', {
-            title: 'Voer coördinaten',
+            title: 'Voer coördinaten in' + (extraLabel || ""),
             height: 240,
             width: 400,
             modal: true,

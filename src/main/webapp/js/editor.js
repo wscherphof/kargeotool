@@ -893,6 +893,40 @@ Ext.define("Editor", {
         this.fireEvent("currentEditActionChanged", action);
     },
 
+    addByCoordinates: function(type, movementId) {
+        var types = {
+            uitmeldpunt: { label: "uitmeldpunt", editAction: "ACTIVATION_2" },
+            inmeldpunt: { label: "inmeldpunt", editAction: "ACTIVATION_1" },
+            beginpunt: { label: "beginpunt", editAction: "BEGIN" },
+            eindpunt: { label: "eindpunt", editAction: "END" },
+            voorinmeldpunt: { label: "voorinmeldpunt", editAction: "ACTIVATION_3" }
+        };
+        if(!types.hasOwnProperty(type)) {
+            return;
+        }
+        var me = this;
+        this.changeCurrentEditAction(types[type].editAction);
+        this.editForms.editCoordinates(null, function(location) {
+            switch (type) {
+                case "uitmeldpunt":
+                    me.addUitmeldpuntForLocation(movementId, location);
+                    break;
+                case "inmeldpunt":
+                    me.addInmeldpuntForLocation(location);
+                    break;
+                case "beginpunt":
+                    me.addBeginpuntForLocation(location);
+                    break;
+                case "eindpunt":
+                    me.addEindpuntForLocation(location);
+                    break;
+                case "voorinmeldpunt":
+                    me.addVoorinmeldpuntByLocation(location);
+                    break;
+            }
+        }, null, ' voor nieuw ' + types[type].label);
+    },
+
     /**
      * Ga naar de modus dat een gebruiker een uitmeldpunt kan toevoegen aan de
      * huidige rseq.
@@ -900,43 +934,48 @@ Ext.define("Editor", {
      */
     addUitmeldpunt: function(movementId) {
         this.changeCurrentEditAction("ACTIVATION_2");
-
         var me = this;
         this.pointFinishedHandler = function(location) {
-
-            var uitmeldpunt = Ext.create(Point, {
-                type: "ACTIVATION_2",
-                geometry: location
-            });
-            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-            if(!distance){
-                distance = new Array();
-                distance[0] = 0;
-            }
-            var map = Ext.create(MovementActivationPoint, {
-                beginEndOrActivation: "ACTIVATION",
-                commandType: 2,
-                pointId: uitmeldpunt.getId(),
-                distanceTillStopLine: distance[0].toFixed(0),
-                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
-            });
-
-            me.editForms.editActivationPoint(uitmeldpunt, map, function() {
-
-                if(movementId){
-                    var currentUitmeldpunt = me.selectedObject.getId();
-                    me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
-                }else{
-                    me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
-                }
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-            });
+            me.addUitmeldpuntForLocation(movementId, location);
         };
-
         this.addPoint(true);
+    },
+
+    addUitmeldpuntForLocation: function(movementId, location) {
+        var me = this;
+        var uitmeldpunt = Ext.create(Point, {
+            type: "ACTIVATION_2",
+            geometry: location
+        });
+        var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+        if(!distance){
+            distance = new Array();
+            distance[0] = 0;
+        }
+        var map = Ext.create(MovementActivationPoint, {
+            beginEndOrActivation: "ACTIVATION",
+            commandType: 2,
+            pointId: uitmeldpunt.getId(),
+            distanceTillStopLine: distance[0].toFixed(0),
+            vehicleTypes: profile.vehicleTypes || (
+                this.getCurrentVehicleType() === "OV"
+                    ? [1,2,6,7,71]
+                    : [3,4,5,69,70]
+            )
+        });
+
+        me.editForms.editActivationPoint(uitmeldpunt, map, function() {
+            if(movementId) {
+                var currentUitmeldpunt = me.selectedObject.getId();
+                me.activeRseq.addUitmeldpuntToMovement(uitmeldpunt, map,movementId,currentUitmeldpunt);
+            }else{
+                me.activeRseq.addUitmeldpunt(uitmeldpunt, map);
+            }
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+
+        }, function() {
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+        });
     },
 
     selectExistingUitmeldpunt : function (movementId){
@@ -962,7 +1001,11 @@ Ext.define("Editor", {
                         commandType: 2,
                         pointId: uitmeldpunt.getId(),
                         distanceTillStopLine: map.getDistanceTillStopLine(),
-                        vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
+                        vehicleTypes: profile.vehicleTypes || (
+                this.getCurrentVehicleType() === "OV"
+                    ? [1,2,6,7,71]
+                    : [3,4,5,69,70]
+            )
                     });
 
                     this.activeRseq.addUitmeldpunt(uitmeldpunt,map,true);
@@ -978,26 +1021,28 @@ Ext.define("Editor", {
     addEindpunt: function() {
         this.changeCurrentEditAction("END");
         var me = this;
-
-        var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
-
-            var eindpunt = Ext.create(Point, {
-                type: "END",
-                geometry: location
-            });
-
-            me.editForms.editNonActivationPoint(eindpunt, function() {
-
-                me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false, me.activeMovement);
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-                me.activeMovement = null;
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-                me.activeMovement = null;
-            });
+            me.addEindpuntForLocation(location);
         };
         this.addPoint(true);
+    },
+
+    addEindpuntForLocation: function(location) {
+        var me = this;
+        var uitmeldpunt = this.selectedObject;
+        var eindpunt = Ext.create(Point, {
+            type: "END",
+            geometry: location
+        });
+        me.editForms.editNonActivationPoint(eindpunt, function() {
+
+            me.activeRseq.addEindpunt(uitmeldpunt, eindpunt, false, me.activeMovement);
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+            me.activeMovement = null;
+        }, function() {
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+            me.activeMovement = null;
+        });
     },
 
     /**
@@ -1054,41 +1099,46 @@ Ext.define("Editor", {
      */
     addInmeldpunt: function() {
         this.changeCurrentEditAction("ACTIVATION_1");
-
         var me = this;
-        var uitmeldpunt = this.selectedObject;
         this.pointFinishedHandler = function(location) {
-
-            var inmeldpunt = Ext.create(Point, {
-                type: "ACTIVATION_1",
-                geometry: location
-            });
-            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-            if(!distance){
-                distance = 0;
-            }else{
-                distance = parseInt(distance[0].toFixed(0));
-            }
-            var map = Ext.create(MovementActivationPoint, {
-                beginEndOrActivation: "ACTIVATION",
-                commandType: 1,
-                distanceTillStopLine:distance,
-                pointId: inmeldpunt.getId(),
-                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
-            });
-
-            me.editForms.editActivationPoint(inmeldpunt, map, function() {
-
-                me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false,false,me.activeMovement);
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-                me.activeMovement = null;
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-                me.activeMovement = null;
-            });
+            me.addInmeldpuntForLocation(location);
         };
-
         this.addPoint(true);
+    },
+    addInmeldpuntForLocation: function(location) {
+        var uitmeldpunt = this.selectedObject;
+        var me = this;
+        var inmeldpunt = Ext.create(Point, {
+            type: "ACTIVATION_1",
+            geometry: location
+        });
+        var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+        if(!distance){
+            distance = 0;
+        }else{
+            distance = parseInt(distance[0].toFixed(0));
+        }
+        var map = Ext.create(MovementActivationPoint, {
+            beginEndOrActivation: "ACTIVATION",
+            commandType: 1,
+            distanceTillStopLine:distance,
+            pointId: inmeldpunt.getId(),
+            vehicleTypes: profile.vehicleTypes || (
+                this.getCurrentVehicleType() === "OV"
+                    ? [1,2,6,7,71]
+                    : [3,4,5,69,70]
+            )
+        });
+
+        me.editForms.editActivationPoint(inmeldpunt, map, function() {
+
+            me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt, map, false,false,me.activeMovement);
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+            me.activeMovement = null;
+        }, function() {
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+            me.activeMovement = null;
+        });
     },
     selectVoorInmeldpunt: function(movementId){
         this.changeCurrentEditAction("SELECT_VOORINMELDPUNT");
@@ -1204,51 +1254,55 @@ Ext.define("Editor", {
      */
     addVoorinmeldpunt: function() {
         this.changeCurrentEditAction("ACTIVATION_3");
-
         var me = this;
-
-        var inmeldpunt = this.selectedObject; // kan ook voorinmeldpunt zijn
-
         this.pointFinishedHandler = function(location) {
-
-            var voorinmeldpunt = Ext.create(Point, {
-                type: "ACTIVATION_3",
-                geometry: location
-            });
-            var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
-            var inmeldMap = mvmts[0].map;
-            var distanceMap = inmeldMap.distanceTillStopLine;
-            var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-            if(!distance){
-                distance = 0;
-            }else{
-                distance = parseInt(distance[0].toFixed(0));
-            }
-            if(!distanceMap){
-                distanceMap =0;
-            }else{
-                distanceMap = parseInt(distanceMap);
-            }
-            distance += distanceMap;
-            var map = Ext.create(MovementActivationPoint, {
-                beginEndOrActivation: "ACTIVATION",
-                commandType: 3,
-                pointId: voorinmeldpunt.getId(),
-                distanceTillStopLine: distance,
-                vehicleTypes: profile.vehicleTypes || [1,2,6,7,71]
-            });
-
-            me.editForms.editActivationPoint(voorinmeldpunt, map, function() {
-
-                me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt, map, false, true);
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-            });
+            me.addVoorinmeldpuntByLocation(location);
         };
-
         this.addPoint(true);
+    },
+
+    addVoorinmeldpuntByLocation: function(location) {
+        var me = this;
+        var inmeldpunt = this.selectedObject; // kan ook voorinmeldpunt zijn
+        var voorinmeldpunt = Ext.create(Point, {
+            type: "ACTIVATION_3",
+            geometry: location
+        });
+        var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
+        var inmeldMap = mvmts[0].map;
+        var distanceMap = inmeldMap.distanceTillStopLine;
+        var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
+        if(!distance){
+            distance = 0;
+        }else{
+            distance = parseInt(distance[0].toFixed(0));
+        }
+        if(!distanceMap){
+            distanceMap =0;
+        }else{
+            distanceMap = parseInt(distanceMap);
+        }
+        distance += distanceMap;
+        var map = Ext.create(MovementActivationPoint, {
+            beginEndOrActivation: "ACTIVATION",
+            commandType: 3,
+            pointId: voorinmeldpunt.getId(),
+            distanceTillStopLine: distance,
+            vehicleTypes: profile.vehicleTypes || (
+                this.getCurrentVehicleType() === "OV"
+                    ? [1,2,6,7,71]
+                    : [3,4,5,69,70]
+            )
+        });
+
+        me.editForms.editActivationPoint(voorinmeldpunt, map, function() {
+
+            me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt, map, false, true);
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+
+        }, function() {
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+        });
     },
 
     /**
@@ -1257,29 +1311,28 @@ Ext.define("Editor", {
      */
     addBeginpunt: function() {
         this.changeCurrentEditAction("BEGIN");
-
         var me = this;
-
-        var uitmeldpunt = this.selectedObject;
-
         this.pointFinishedHandler = function(location) {
-
-            var beginpunt = Ext.create(Point, {
-                type: "BEGIN",
-                geometry: location
-            });
-
-            me.editForms.editNonActivationPoint(beginpunt, function() {
-
-                me.activeRseq.addBeginpunt(uitmeldpunt, beginpunt, false);
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-
-            }, function() {
-                me.fireEvent("activeRseqUpdated", me.activeRseq);
-            });
+            me.addBeginpuntForLocation(location);
         };
-
         this.addPoint(true);
+    },
+
+    addBeginpuntForLocation: function(location) {
+        var me = this;
+        var uitmeldpunt = this.selectedObject;
+        var beginpunt = Ext.create(Point, {
+            type: "BEGIN",
+            geometry: location
+        });
+        me.editForms.editNonActivationPoint(beginpunt, function() {
+
+            me.activeRseq.addBeginpunt(uitmeldpunt, beginpunt, false);
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+
+        }, function() {
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+        });
     },
 
     /**

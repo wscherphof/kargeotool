@@ -264,18 +264,24 @@ Ext.define("ContextMenu", {
                 text: 'Geavanceerd',
                 menu: {
                     items:[
-                    {
-                        id: 'selectUitmeldpuntAndereSignaalgroepRseq',
-                        text: 'Selecteer uitmeldpunt van andere fasecyclus',
-                        icon: contextPath + "/images/silk/cursor.png",
-                        iconCls : 'overviewTree'
-                    },
-                    {
-                        id: 'uploadDxf',
-                        text: 'Upload DXF voor deze vri',
-                        icon: contextPath + "/images/silk/cursor.png",
-                        iconCls : 'overviewTree'
-                    }
+                        {
+                            id: 'selectUitmeldpuntAndereSignaalgroepRseq',
+                            text: 'Selecteer uitmeldpunt van andere fasecyclus',
+                            icon: contextPath + "/images/silk/cursor.png",
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'uploadDxf',
+                            text: 'Upload DXF voor deze vri',
+                            icon: contextPath + "/images/silk/cursor.png",
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addUitmeldpuntCoordinates',
+                            text: 'Voeg uitmeldpunt toe op basis van coördinaten',
+                            icon: karTheme.uitmeldPunt,
+                            iconCls : 'overviewTree'
+                        }
                     ],
                     listeners: {
                         click:
@@ -287,6 +293,9 @@ Ext.define("ContextMenu", {
                                 case 'uploadDxf':
                                     var url = dxfActionBeanUrl + "?rseq=" + this.editor.activeRseq.getId();
                                     document.location.href = url;
+                                    break;
+                                case 'addUitmeldpuntCoordinates':
+                                    this.editor.addByCoordinates('uitmeldpunt');
                                     break;
                             }
                         },
@@ -317,7 +326,7 @@ Ext.define("ContextMenu", {
                             break;
                         case 'setCoordsRseq':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
-                            break
+                            break;
                         case 'showMessages':
                             Ext.create("MessagesOverview").show(this.editor.selectedObject.id);
                             break;
@@ -424,19 +433,48 @@ Ext.define("ContextMenu", {
                 text: 'Geavanceerd',
                 menu: {
                     items:[
-                    {
-                        id: 'addBeginpunt',
-                        text: 'Voeg beginpunt toe',
-                        icon: karTheme.startPunt,
-                        iconCls : 'overviewTree'
-                    }
+                        {
+                            id: 'addBeginpunt',
+                            text: 'Voeg beginpunt toe',
+                            icon: karTheme.startPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addEindpuntCoord',
+                            text: 'Voeg nieuw eindpunt toe op basis van coördinaten',
+                            icon: karTheme.eindPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addInmeldpuntCoord',
+                            text: 'Voeg nieuw inmeldpunt toe op basis van coördinaten',
+                            disabled:true,
+                            icon: karTheme.inmeldPunt,
+                            iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'addBeginpuntCoord',
+                            text: 'Voeg beginpunt toe op basis van coördinaten',
+                            icon: karTheme.startPunt,
+                            iconCls : 'overviewTree'
+                        }
                     ],
                     listeners: {
                         click:
-                        function(menu,item,e, opts) {
+                        function(menu, item, e, opts) {
+                            if(!item) return;
                             switch (item.getId()) {
                                 case 'addBeginpunt':
                                     this.editor.addBeginpunt();
+                                    break;
+                                case 'addEindpuntCoord':
+                                    this.editor.addByCoordinates('eindpunt');
+                                    break;
+                                case 'addInmeldpuntCoord':
+                                    this.editor.addByCoordinates('inmeldpunt');
+                                    break;
+                                case 'addBeginpuntCoord':
+                                    this.editor.addByCoordinates('beginpunt');
                                     break;
                             }
                         },
@@ -452,6 +490,7 @@ Ext.define("ContextMenu", {
                         y: menu.y
                     };
                     var lonlat = editor.olc.map.getLonLatFromPixel(pos);
+                    if(!item) return;
                     switch (item.getId()) {
                         case 'editUitmeldpunt':
                             this.editor.editSelectedObject();
@@ -522,6 +561,32 @@ Ext.define("ContextMenu", {
                 text: 'Selecteer bestaand voorinmeldpunt',
                 icon: contextPath + "/images/silk/cursor.png",
                 iconCls : 'overviewTree'
+            },
+            {
+                id: 'advancedCheckin',
+                text: 'Geavanceerd',
+                menu: {
+                    items:[
+                        {
+                            id: 'addVoorinmeldpuntCoord',
+                            text: 'Voeg nieuw voorinmeldpunt toe op basis van coördinaten',
+                            icon: karTheme.voorinmeldPunt,
+                            iconCls : 'overviewTree'
+                        }
+                    ],
+                    listeners: {
+                        click:
+                            function(menu, item, e, opts) {
+                                if(!item) return;
+                                switch (item.getId()) {
+                                    case 'addVoorinmeldpuntCoord':
+                                        this.editor.addByCoordinates('voorinmeldpunt');
+                                        break;
+                                }
+                            },
+                        scope: me
+                    }
+                }
             }/*
             {
                 id: 'voegBeginpuntToecheckin',
@@ -531,6 +596,7 @@ Ext.define("ContextMenu", {
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
+                    if(!item) return;
                     var pos = {
                         x: menu.x - Ext.get(editor.domId).getX(),
                         y: menu.y
@@ -587,6 +653,7 @@ Ext.define("ContextMenu", {
             ],
             listeners: {
                 click: function(menu,item,e, opts) {
+                    if(!item) return;
                     switch (item.getId()) {
                         case 'editNAPoint':
                             editor.editSelectedObject();
@@ -688,6 +755,7 @@ Ext.define("ContextMenu", {
                 
                 var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
+                Ext.getCmp("addInmeldpuntCoord").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
             }else if (type === "CROSSING") {
                 Ext.getCmp("saveRseq").setDisabled(!editor.activeRseq.getEditable());
