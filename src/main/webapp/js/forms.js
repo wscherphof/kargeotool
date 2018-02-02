@@ -1046,97 +1046,99 @@ Ext.define("EditForms", {
             }
         });
         this.adminExport = Ext.create('Ext.window.Window', {
-            defaults: {
-                anchor: '100%',
-                labelWidth: 190
-            },
             title: 'Export beheerders',
             height: 600,
             width: 720,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
             items: [
                 {
                     xtype: 'fieldcontainer',
                     layout: 'hbox',
-                    
-                    items: [
-                        {
-                            labelWidth: 190,
-                            width: 300,
-                            id: 'dataowner',
-                            xtype: "tagfield",
-                            fieldLabel: 'Kies een beheerder',
-                            store: dataownerStore,
-                            queryMode: 'local',
-                            displayField: 'omschrijving',
-                            disabled: false,
-                            anyMatch: true,
-                            valueField: 'id',
-                            emptyText: "Selecteer",
-                            listeners:{
-                                scope:this,
-                                change: function(){
-                                    Ext.getCmp("makeExport").setDisabled(false);
-                                }
+                    defaults: {
+                        anchor: '100%',
+                        labelWidth: 100
+                    },
+                    margin: 10,
+                    items: [{
+                        flex: 1,
+                        id: 'dataowner',
+                        xtype: "tagfield",
+                        fieldLabel: 'Kies beheerder(s)',
+                        store: dataownerStore,
+                        queryMode: 'local',
+                        displayField: 'omschrijving',
+                        disabled: false,
+                        anyMatch: true,
+                        valueField: 'id',
+                        emptyText: "Selecteer",
+                        listeners:{
+                            scope:this,
+                            change: function(){
+                                Ext.getCmp("makeExport").setDisabled(false);
                             }
-                        }, {
-                            xtype: 'button',
-                            margin:"0 0 0 10",
-                            disabled:true,
-                            id: 'makeExport',
-                            text: 'Maak overzicht',
-                            listeners: {
-                                scope: this,
-                                click: function () {
-                                    var grid = Ext.getCmp("grid");
-                                    overviewStore.removeAll();
-                                    grid.setLoading("data ophalen...");
-                                    var dos = Ext.getCmp("dataowner").getValue();
-                                    Ext.Ajax.request({
-                                        url : exportActionBeanUrl,
-                                        method : 'GET',
-                                        scope : me,
-                                        timeout: 120000,
-                                        params : {
-                                            "adminExport":true,
-                                            "dos": dos.toString(),
-                                            "exportType" :"JSON"
-                                        },
-                                        success : function (response){
-                                            var grid = Ext.getCmp("grid");
-                                            var msg = Ext.JSON.decode(response.responseText);
-                                            if(msg.success){
-                                                overviewStore.add(msg.items);
-                                            } else{
-                                                Ext.MessageBox.show({
-                                                    title : "Fout",
-                                                    msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+msg.error,
-                                                    buttons : Ext.MessageBox.OK,
-                                                    icon : Ext.MessageBox.ERROR
-                                                });
-                                            }
-                                            grid.setDisabled(false);
-                                            grid.setLoading(false);
-                                        },
-                                        failure : function (response){
+                        }
+                    }, {
+                        xtype: 'button',
+                        margin: "0 0 0 10",
+                        disabled:true,
+                        id: 'makeExport',
+                        text: 'Maak overzicht',
+                        listeners: {
+                            scope: this,
+                            click: function () {
+                                var grid = Ext.getCmp("grid");
+                                overviewStore.removeAll();
+                                grid.setLoading("data ophalen...");
+                                var dos = Ext.getCmp("dataowner").getValue();
+                                Ext.Ajax.request({
+                                    url : exportActionBeanUrl,
+                                    method : 'GET',
+                                    scope : me,
+                                    timeout: 120000,
+                                    params : {
+                                        "adminExport":true,
+                                        "dos": dos.toString(),
+                                        "exportType" :"JSON"
+                                    },
+                                    success : function (response){
+                                        var grid = Ext.getCmp("grid");
+                                        var msg = Ext.JSON.decode(response.responseText);
+                                        if(msg.success){
+                                            overviewStore.add(msg.items);
+                                        } else{
                                             Ext.MessageBox.show({
-                                                title : "Ajax fout",
-                                                msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+response.responseText,
+                                                title : "Fout",
+                                                msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+msg.error,
                                                 buttons : Ext.MessageBox.OK,
                                                 icon : Ext.MessageBox.ERROR
                                             });
-                                            grid.setDisabled(false);
-                                            grid.setLoading(false);
                                         }
-                                    });
-                                }
+                                        grid.setDisabled(false);
+                                        grid.setLoading(false);
+                                    },
+                                    failure : function (response){
+                                        Ext.MessageBox.show({
+                                            title : "Ajax fout",
+                                            msg : "Kan data niet ophalen. Probeer het opnieuw of neem contact op met de applicatie beheerder."+response.responseText,
+                                            buttons : Ext.MessageBox.OK,
+                                            icon : Ext.MessageBox.ERROR
+                                        });
+                                        grid.setDisabled(false);
+                                        grid.setLoading(false);
+                                    }
+                                });
                             }
-
-                        }]
+                        }
+                    }]
                 },
                 {
                     title: 'Overzicht',
                     xtype: "grid",
                     id: "grid",
+                    flex: 1,
                     disabled:true,
                     store: overviewStore,
                     columns: [
