@@ -14,6 +14,10 @@
         <description>The class which initializes (and if configured sets up) the informer listener.</description>
         <listener-class>nl.b3p.kar.inform.CarrierInformerListener</listener-class>
     </listener>
+    <listener>
+        <description>The class which initializes (and if configured sets up) the informer listener.</description>
+        <listener-class>nl.b3p.kar.CronInitialiser</listener-class>
+    </listener>
     <filter>
         <filter-name>Security Filter</filter-name>
         <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>

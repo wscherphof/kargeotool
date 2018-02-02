@@ -16,7 +16,6 @@
  */
 package nl.b3p.kar;
 
-import nl.b3p.kar.inform.*;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -39,26 +38,30 @@ import org.quartz.impl.StdSchedulerFactory;
 public class CronInitialiser implements ServletContextListener {
 
     private static final String PARAM_INFORM_ADMINS_INTERVAL = "inform.admins.schedule";
-    public static final String PARAM_INFORM_ADMINS_HOST = "inform.admins.host";
     public static final String PARAM_INFORM_ADMINS_FROMADDRESS = "inform.admins.fromAddress";
+    public static final String PARAM_INFORM_ADMINS_TOADDRESS = "inform.admins.toAddress";
     
     private static final Log log = LogFactory.getLog(CronInitialiser.class);
     private ServletContext context;
     private Scheduler scheduler;
     private String interval;
-    private String host;
     private String fromAddress;
+    private String toAddress;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
         init(sce);
-        if (interval.equalsIgnoreCase("-1") || interval == null) {
+        initAdminExport();
+    }
+    
+    private void initAdminExport(){
+         if (interval.equalsIgnoreCase("-1") || interval == null) {
             return;
         }
 
         Properties props = new Properties();
-        props.put("org.quartz.scheduler.instanceName", "MonitoringScheduler");
+        props.put("org.quartz.scheduler.instanceName", "CronInitialiser");
         props.put("org.quartz.threadPool.threadCount", "1");
         props.put("org.quartz.scheduler.interruptJobsOnShutdownWithWait", "true");
         // Job store for monitoring does not need to be persistent
@@ -72,8 +75,8 @@ public class CronInitialiser implements ServletContextListener {
                     .withIdentity("AdminExportJob", "AdminExportgroup")
                     .build();
 
-            job.getJobDataMap().put(PARAM_INFORM_ADMINS_HOST, host);
             job.getJobDataMap().put(PARAM_INFORM_ADMINS_FROMADDRESS, fromAddress);
+            job.getJobDataMap().put(PARAM_INFORM_ADMINS_TOADDRESS, toAddress);
             log.info("Scheduling indexing job for expression " + interval + " minutes");
 
             CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(interval);
@@ -104,8 +107,8 @@ public class CronInitialiser implements ServletContextListener {
         this.context = sce.getServletContext();
 
         interval = context.getInitParameter(PARAM_INFORM_ADMINS_INTERVAL);
-        host = context.getInitParameter(PARAM_INFORM_ADMINS_HOST);
         fromAddress = context.getInitParameter(PARAM_INFORM_ADMINS_FROMADDRESS);
+        toAddress = context.getInitParameter(PARAM_INFORM_ADMINS_TOADDRESS);
 
     }
 }

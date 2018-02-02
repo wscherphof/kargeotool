@@ -16,20 +16,16 @@
  */
 package nl.b3p.kar;
 
-import nl.b3p.kar.inform.*;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
-import javax.mail.Message;
+import java.util.Locale;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
-import nl.b3p.kar.hibernate.InformMessage;
-import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.DataOwner;
+import nl.b3p.kar.stripes.ExportActionBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
@@ -45,82 +41,56 @@ public class AdminExportJob implements Job {
 
     private static final Log log = LogFactory.getLog(AdminExportJob.class);
 
+    @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
 
-        String host = jec.getJobDetail().getJobDataMap().getString(CronInitialiser.PARAM_INFORM_ADMINS_HOST);
         String fromAddress = jec.getJobDetail().getJobDataMap().getString(CronInitialiser.PARAM_INFORM_ADMINS_FROMADDRESS);
-        run(host, fromAddress);
+        String toAddress = jec.getJobDetail().getJobDataMap().getString(CronInitialiser.PARAM_INFORM_ADMINS_TOADDRESS);
+        run(fromAddress, toAddress);
     }
 
-    public void run(String host, String fromAddress) {
+    public void run(String fromAddress,String toAddress) {
         try {
-     
+            createMessage(fromAddress, toAddress);
         } catch(Exception ex){
             log.error("Cannot create messages: ",ex);
         } finally {
         }
     }
 
-    private void createMessage(InformMessage inform, String appUrl, String host, String fromAddress) {
+    private void createMessage(String fromAddress, String toAddress) {
+        File f = null;
         try {
-            Properties props = System.getProperties();
-            // -- Attaching to default Session, or we could start a new one --
-            props.put("mail.smtp.host", host);
-            Session session = Session.getDefaultInstance(props, null);
-            // -- Create a new message --
-            MimeMessage msg = new MimeMessage(session);
-            // -- Set the FROM and TO fields --
-            msg.setFrom(new InternetAddress(fromAddress));
-            if (inform.getVervoerder().getEmail() != null) {
-                msg.setRecipients(Message.RecipientType.TO,
-                        InternetAddress.parse(inform.getVervoerder().getEmail(), false));
-
-                msg.setSubject("[kargeotool] Nieuwe KAR-gegevens");
-                String body = getBody(inform, appUrl);
-                msg.setText(body, "utf-8", "html");
-
-                msg.setSentDate(new Date());
-                Transport.send(msg);
-                inform.setMailSent(true);
-                inform.setSentAt(new Date());
-            } else {
-                log.error("Vervoerder heeft geen mailadres ingevuld. Bericht niet verzonden aan: " + inform.getVervoerder().getFullname() + " - " + inform.getVervoerder().getUsername());
-            }
+            Stripersist.requestInit();
+            EntityManager em = Stripersist.getEntityManager();
+            List<DataOwner> dos = em.createQuery("from DataOwner order by omschrijving").getResultList();
+            String body = getBody();
+            Date d = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy",Locale.forLanguageTag("NL"));
+            
+            List<List<String>> values = ExportActionBean.getExportValues(dos, em);
+            f = ExportActionBean.getAdminExport(values);
+            Mailer.sendMail("KAR Geo Tool", fromAddress, toAddress, "[KAR Geo Tool] Nieuw beheerders overzicht voor " + sdf.format(d), body,f, "Beheerdersoverzicht " + sdf.format(d) +".csv");
         } catch (AddressException ex) {
             log.error("Cannot send inform message:", ex);
         } catch (MessagingException ex) {
             log.error("Cannot send inform message:", ex);
+        } catch (Exception ex) {
+            log.error("Cannot send inform message:", ex);
+        }finally{
+            Stripersist.requestComplete();
+            if(f != null){
+                f.delete();
+            }
         }
     }
-/**
-Beste xxxxx, 
-
-De KAR gegevens van het kruispunt {xxxxxxxx} met KAR-adres {xx}, van {dataowner} zijn gewijzigd.
-Een KV9 export kunt u, als u bent ingelogd, downloaden via {link} 
-
-Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, hier
-
-Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze link ……..
-
-
-Met vriendelijke groet, 
-
-
-xxxxx (naam gebruiker)
-
-*/
-    private String getBody(InformMessage inform, String appUrl) {
-        RoadsideEquipment rseq = inform.getRseq();
-        String name = inform.getVervoerder().getFullname() != null ? inform.getVervoerder().getFullname()  : "vervoeder";
+    
+    private String getBody() {
         String body = "";
-        body += "Beste " + name + ", <br/>";
+        body += "Beste, <br/>";
         body += "<br/>";
-        body += "De KAR gegevens van het kruispunt " + rseq.getDescription() + " | " + rseq.getCrossingCode() + "met KAR-adres " + rseq.getKarAddress() + ", van "+ rseq.getDataOwner().getOmschrijving() +" zijn gewijzigd.<br/>";
-        body += "Een KV9 export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
-        body += "Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, <a href=\"" + appUrl + "/action/editor?view=true#&rseq=" + rseq.getId() + "&x="+rseq.getLocation().getX() +"&y="+rseq.getLocation().getY()+"&zoom=12\">hier</a>.<br/><br/>";
-        body += "Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze <a href=\"" + appUrl + "/action/overview?carrier=true\">link</a>.<br/><br/>";
-        body += "Met vriendelijke groet, <br/>";
-        body += inform.getAfzender().getFullname() != null ?inform.getAfzender().getFullname()  : inform.getAfzender().getUsername();
+        body += "Hierbij het beheerdersoverzicht van alle beheerders. <br/>";
+        body += "Met vriendelijke groet <br/>";
         
         return body;
     }

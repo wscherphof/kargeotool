@@ -27,6 +27,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.text.DateFormat;
@@ -58,6 +61,7 @@ import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
 import nl.b3p.kar.jaxb.TmiPush;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -231,33 +235,19 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         EntityManager em = Stripersist.getEntityManager();
         if (context.getRequest().isUserInRole("beheerder")) {
             String[] headers = {"dataowner", "totalvri", "vriwithouterrors", "vriwithouterrorsready"};
-            List<List<String>> values = new ArrayList<>();
-            for
-                    (DataOwner dataOwner : dos) {
-                List<String> row = new ArrayList<>();
-                row.add(dataOwner.getOmschrijving());     
-                List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment Where dataOwner = :do", RoadsideEquipment.class).setParameter("do", dataOwner).getResultList();
-                row.add("" + rseqs.size());
-                Integer numberNoErrors = 0, numberReady = 0;
-                for (RoadsideEquipment r : rseqs) {
-                    if (r.getValidationErrors() == 0) {
-                        numberNoErrors++;
-                        if (r.isReadyForExport()) {
-                            numberReady++;
-                        }
-                    }
-                }
-                row.add("" + numberNoErrors);
-                row.add("" + numberReady);
-                values.add(row);
-            }
-            Resolution response = null;
+            List<List<String>> values = getExportValues(dos, em);
+            Resolution response;
             if (exportType == null) {
                 return new ErrorResolution(405, "Verkeerde exporttype meegegeven.");
             }else if (exportType.endsWith("JSON")) {
                 response = adminExportJSON(values, headers);
             } else if (exportType.endsWith("CSV")) {
-                response = adminExportCSV(values, headers);
+                try {
+                    response = adminExportCSV(values, headers);
+                } catch (IOException ex) {
+                    log.error("Cannot read/write csv file", ex);
+                    response = null;
+                }
             } else {
                 return new ErrorResolution(405, "Verkeerde exporttype meegegeven.");
             }
@@ -265,6 +255,29 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         } else {
             return new ErrorResolution(403, "Alleen beheerders mogen deze export maken.");
         }
+    }
+    
+    public static  List<List<String>> getExportValues(List<DataOwner> dos, EntityManager em){
+        List<List<String>> values = new ArrayList<>();
+        for (DataOwner dataOwner : dos) {
+            List<String> row = new ArrayList<>();
+            row.add(dataOwner.getOmschrijving());
+            List<RoadsideEquipment> rseqs = em.createQuery("FROM RoadsideEquipment Where dataOwner = :do", RoadsideEquipment.class).setParameter("do", dataOwner).getResultList();
+            row.add("" + rseqs.size());
+            Integer numberNoErrors = 0, numberReady = 0;
+            for (RoadsideEquipment r : rseqs) {
+                if (r.getValidationErrors() == 0) {
+                    numberNoErrors++;
+                    if (r.isReadyForExport()) {
+                        numberReady++;
+                    }
+                }
+            }
+            row.add("" + numberNoErrors);
+            row.add("" + numberReady);
+            values.add(row);
+        }
+        return values;
     }
     
     private Resolution adminExportJSON(List<List<String>> values, String[] headers) {
@@ -285,17 +298,36 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return new StreamingResolution("application/json", new StringReader(response.toString(4)));
     }
     
-    private Resolution adminExportCSV(final List<List<String>> values, final Object[] headers) {
+    private Resolution adminExportCSV(List<List<String>> values, Object[] headers) throws IOException {
+        final File f = getAdminExport(values);
          return new StreamingResolution("text/plain") {
 
             @Override
             public void stream(HttpServletResponse response) throws Exception {
-                PrintWriter out = new PrintWriter(response.getWriter());
-                CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
-                csv.printRecord(new Object[]{"Beheerder","Totaal VRI\'s","VRI's zonder KV9-fouten", "VRI's zonder KV9-fouten en gereed voor export"});
-                csv.printRecords(values);
+                FileInputStream fis = new FileInputStream(f);
+                OutputStream out = response.getOutputStream();
+                try{
+                    IOUtils.copy(fis,out);
+                    out.flush();
+                }finally{                
+                    fis.close();
+                    out.close();
+                    f.delete();
+                }
             }
         }.setAttachment(true).setFilename("export.csv");
+    }
+    
+    public static File getAdminExport(List<List<String>> values) throws IOException{
+        File f = File.createTempFile("tmp", "adminExport");
+        FileWriter fw = new FileWriter(f);
+        PrintWriter out = new PrintWriter(fw);
+        CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
+        csv.printRecord(new Object[]{"Beheerder", "Totaal VRI\'s", "VRI's zonder KV9-fouten", "VRI's zonder KV9-fouten en gereed voor export"});
+        csv.printRecords(values);
+        csv.flush();
+        csv.close();
+        return f;
     }
 
     // <editor-fold defaultstate="collapsed" desc="deelgebied spul">
