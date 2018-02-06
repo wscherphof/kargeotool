@@ -109,11 +109,11 @@ Ext.onReady(function (){
                         }
                     },
                     {
-                        boxLabel : 'Enkel verkeerssysteem',
+                        boxLabel : 'Karadres',
                         name : 'filterType',
-                        inputValue : 'singleRseq',
+                        inputValue : 'rseqByKarAddress',
                         handler : function (checkbox,checked){
-                            var field = Ext.getCmp('singleRseq');
+                            var field = Ext.getCmp('rseqByKarAddress');
                             field.setDisabled(!checked);
                             if(checked) {
                                 field.focus();
@@ -209,9 +209,9 @@ Ext.onReady(function (){
                 items : [
                     {
                         labelWidth: 190,
-                        id : 'singleRseq',
+                        id : 'rseqByKarAddress',
                         xtype : "textfield",
-                        fieldLabel : 'Zoek enkel verkeerssysteem',
+                        fieldLabel : 'Zoek op karadres',
                         disabled : true,
                         flex : 1
                     },
@@ -400,6 +400,7 @@ Ext.onReady(function (){
 });
 
 function reloadVRIs (){
+    store.removeAll();
     var filtertypeCombo = Ext.getCmp("filterType").getValue();
     var filtertype = filtertypeCombo.filterType;
     if(Ext.isArray(filtertypeCombo.filterType)){
@@ -422,10 +423,10 @@ function reloadVRIs (){
         params ['rseqByDataowner'] = true;
         params['dataowner'] = filter.join(',');
         text = dataownerText;
-    } else if(filtertype === "singleRseq") {
-        filter = Ext.getCmp("singleRseq").getValue();
-        params ['singleRseq'] = true;
-        params['searchRseq'] = filter;
+    } else if(filtertype === "rseqByKarAddress") {
+        filter = Ext.getCmp("rseqByKarAddress").getValue();
+        params ['rseqByKarAddress'] = true;
+        params['karAddress'] = filter;
         text = filter;
     } else {
         // Default all
@@ -486,7 +487,7 @@ function doRseqRequest (params,text){
 
 function addRseqIds() {
     var ids = [];
-    store.forEach(function(record) {
+    store.each(function(record) {
         if(record.get('selected')) {
             ids.push(record.get('id'));
         }

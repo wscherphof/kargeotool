@@ -110,6 +110,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     @Validate(on = "export")
     private DataOwner dataowner;
+    
+    @Validate
+    private Integer karAddress;
 
     @Validate(on = "saveDeelgebied", required = true)
     private String geom;
@@ -403,6 +406,28 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
+    
+    public Resolution rseqByKarAddress() throws JSONException {
+        EntityManager em = Stripersist.getEntityManager();
+
+        JSONObject info = new JSONObject();
+        info.put("success", Boolean.FALSE);
+        try {
+            String query = "from RoadsideEquipment where validation_errors = 0 AND karAddress = :karAddress";
+            if (onlyReady) {
+                query += " and readyForExport = true";
+            }
+            List<RoadsideEquipment> r = em.createQuery(query).setParameter("karAddress", karAddress).getResultList();
+
+            JSONArray rseqArray = makeRseqArray(r);
+            info.put("rseqs", rseqArray);
+            info.put("success", Boolean.TRUE);
+        } catch (JSONException e) {
+            log.error("search rseq exception", e);
+            info.put("error", ExceptionUtils.getMessage(e));
+        }
+        return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
 
     public Resolution rseqByDataowner() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
@@ -625,6 +650,13 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setDos(List<DataOwner> dos) {
         this.dos = dos;
     }
+    
+    public Integer getKarAddress() {
+        return karAddress;
+    }
 
+    public void setKarAddress(Integer karAddress) {
+        this.karAddress = karAddress;
+    }
     // </editor-fold>
 }
