@@ -47,7 +47,7 @@ Ext.onReady(function (){
     var form = Ext.create(Ext.form.Panel,{
         title : 'Exporteer verkeerssystemen',
         bodyPadding : 5,
-        width : 650,
+        width : 950,
         // The form will submit an AJAX request to this URL when submitted
         url : exportActionBeanUrl + '?export',
         standardSubmit : true,
@@ -245,7 +245,8 @@ Ext.onReady(function (){
                     },
                     {
                         text : 'Omschrijving',
-                        dataIndex : 'naam'
+                        dataIndex : 'naam',
+                        flex : 2
                     },
                     {
                         text : 'KAR Adres',
@@ -262,7 +263,7 @@ Ext.onReady(function (){
                     }
                 ],
                 height : 200,
-                width : 400
+                width : 800
             },
             {
                 xtype : "combo",
