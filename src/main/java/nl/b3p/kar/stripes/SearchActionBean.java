@@ -110,6 +110,10 @@ public class SearchActionBean implements ActionBean {
             if(term != null){
 
                 boolean validAddressSearch = false;
+                if(term.equals("*MIJN_VRI*")){
+                    validAddressSearch = true;
+                    info.put("MIJN_VRI", true);
+                }
                 if(term.startsWith(EXACT_MATCH_PREFIX)) {
                     try {
                         int karAddress = Integer.parseInt(term.substring(EXACT_MATCH_PREFIX.length()));
@@ -136,13 +140,22 @@ public class SearchActionBean implements ActionBean {
             }
             List<RoadsideEquipment> l = criteria.list();
             JSONArray rseqs = new JSONArray();
+            Envelope e = new Envelope();
             for (RoadsideEquipment roadsideEquipment : l) {
                 if(getGebruiker().canRead(roadsideEquipment)) {
                     if(vehicleType == null || roadsideEquipment.hasSignalForVehicleType(vehicleType) ){
                         rseqs.put(roadsideEquipment.getRseqGeoJSON());
+                        e.expandToInclude(roadsideEquipment.getLocation().getCoordinate());
                     }
                 }
             }
+            
+            JSONObject bbox = new JSONObject();
+            bbox.put("minx", e.getMinX());
+            bbox.put("miny", e.getMinY());
+            bbox.put("maxx", e.getMaxX());
+            bbox.put("maxy", e.getMaxY());
+            info.put("bbox", bbox);
             info.put("rseqs", rseqs);
             info.put("success", Boolean.TRUE);
         } catch (Exception e) {

@@ -89,6 +89,19 @@ Ext.define("SearchManager", {
 
                     }
                 }
+            },
+            {
+                xtype: 'button',
+                text: "Mijn VRI's" ,
+                listeners:{
+                    click:{
+                        fn: function(){
+                           this.search("*MIJN_VRI*");
+                        },
+                        scope: this
+
+                    }
+                }
             }
             ]
         });
@@ -266,7 +279,7 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         var link = Ext.get(addresslink);
         var me = this;
         var bounds = new OpenLayers.Bounds([feature.location.minx, feature.location.miny, feature.location.maxx, feature.location.maxy]);
-                var location = bounds.getCenterLonLat();
+        var location = bounds.getCenterLonLat();
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
                 bounds:bounds,
@@ -289,38 +302,6 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
     constructor: function(config) {
         this.callParent(arguments);
         var me = this;
-        // this.vehicleType =  Ext.create(Ext.form.ComboBox,{
-        //     fieldLabel: 'Voertuigtype',
-        //     id:Ext.id(),
-        //     name: 'vehicleType',
-        //     allowBlank: true,
-        //     blankText: 'Selecteer een optie',
-        //     displayField: 'title',
-        //     editable:false,
-        //     valueField: 'vehicleType',
-        //     store: Ext.create('Ext.data.Store', {
-        //         fields: ['title', 'vehicleType'],
-        //         data:[{title:"Beide", vehicleType: "beide"},{title:"OV", vehicleType: "OV"},{title:"Hulpdiensten", vehicleType: "Hulpdiensten"}]
-        //     }),
-        //     listeners: {
-        //         buffer: 50,
-        //         change: function() {
-        //             if(this.isValid()){
-        //                 var f = function(numResults, entity){
-        //                     me.panel.expand();
-        //                     me.panel.setLoading(false);
-        //                     me.un('searchFinished',f,me);
-        //                 };
-        //                 me.on('searchFinished',f,me);
-        //                 me.resultDom.innerHTML = "";
-        //                 var term = me.editor.search.getTerm();
-        //                 me.panel.setLoading("Zoeken..");
-        //                 me.search(term);
-        //             }
-        //         }
-        //     }
-        // });
-        // this.panel.addDocked([this.vehicleType]);
     },
     search: function(term){
         var me = this;
@@ -344,6 +325,11 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                         for ( var i = 0 ; i < rseqs.length ; i++){
                             this.createResult(rseqs[i]);
                         }
+                    }
+                    if(msg.MIJN_VRI){
+                        var bbox = msg.bbox;
+                        var bounds = new OpenLayers.Bounds([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy]);
+                        editor.olc.map.zoomToExtent(bounds.toArray());
                     }
                     this.searchFinished(rseqs.length);
                 }else{
