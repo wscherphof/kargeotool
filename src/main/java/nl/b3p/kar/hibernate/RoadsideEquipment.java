@@ -25,6 +25,7 @@ import nl.b3p.kar.jaxb.Namespace;
 import nl.b3p.kar.jaxb.TmiDateAdapter;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import nl.b3p.geojson.GeoJSON;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.XmlB3pRseq;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -675,6 +674,29 @@ public class RoadsideEquipment {
         }
 
         return j;
+    }
+  
+    public void print(PrintWriter out){
+        for (Movement movement : movements) {
+            out.println("Beweging: " + movement.getNummer() + ": " + movement.getVehicleType());
+            for (MovementActivationPoint point : movement.getPoints()) {
+                out.print(point.getPoint().getLabel() + " ");
+                if (point.getSignal() != null) {
+                    switch(point.getSignal().getKarCommandType()){case 1: out.print("Inmeldpunt");break; case 2: out.print("Uitmeldpunt"); break; case 3: out.println("voorinmeldpunt");break;}
+                    out.print(" : ");
+                    out.print( point.getSignal().getSignalGroupNumber() + " :");
+                    for (VehicleType vh : point.getSignal().getVehicleTypes()) {
+                        out.print(vh.getOmschrijving() + ",");
+                    }
+                }else{
+                    out.print(" eindpunt");
+                }
+                out.println();
+            }
+            out.println("----------------");
+        }
+        out.println();
+        out.flush();
     }
 
     /**

@@ -287,9 +287,9 @@ public class ActivationPoint implements Comparable {
     public ActivationPoint deepCopy(RoadsideEquipment rseq) throws Exception{
         ActivationPoint copy = (ActivationPoint)BeanUtils.cloneBean(this);
         copy.setId(null);
+        rseq.getPoints().add(copy);
         copy.setNummer(rseq.getPoints().size() +1 );
         copy.setRoadsideEquipment(rseq);
-        rseq.getPoints().add(copy);
         return copy;
     }
 }

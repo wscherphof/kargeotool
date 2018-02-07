@@ -109,14 +109,12 @@ public class MovementActivationPoint {
         MovementActivationPoint copy = (MovementActivationPoint)BeanUtils.cloneBean(this);
         copy.setId(null);
         copy.setMovement(m);
-        if(signal ==null){
-            copy.setPoint(point);
-        }else{
+        if (signal != null) {
             copy.setSignal(signal.deepCopy(em));
-            ActivationPoint ap = point.deepCopy(rseq);
-            em.persist(ap);
-            copy.setPoint(ap);
         }
+        ActivationPoint ap = point.deepCopy(rseq);
+        em.persist(ap);
+        copy.setPoint(ap);
         return copy;
     }
     

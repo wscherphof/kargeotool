@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.ActionBean;
@@ -140,7 +140,9 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                 }
                 for (Long id : rseqs) {
                     RoadsideEquipment rseq = em.find(RoadsideEquipment.class, id);
+                    
                     out.println("******************************");
+                    rseq.print(out);
                     out.println("RSEQ: " + rseq.getDescription());
                     String type = rseq.determineType();
                     if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
@@ -154,6 +156,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                     out.println("\t " + type);
                     rseq.setVehicleType(type);
                     em.persist(rseq);
+                    rseq.print(out);
                 }
                 if (commit) {
                     em.getTransaction().commit();
@@ -188,6 +191,21 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                 movement.setVehicleType(type);
             }
         }
+        
+        Set<ActivationPoint> usedAps = new HashSet<>();
+        for (Movement movement : rseq.getMovements()) {
+            for (MovementActivationPoint point : movement.getPoints()) {
+                usedAps.add(point.getPoint());
+            }
+        }
+        Set<ActivationPoint> apsToRemove = new HashSet<>(rseq.getPoints());
+        
+        apsToRemove.removeAll(usedAps);
+        for (ActivationPoint activationPoint : apsToRemove) {
+            em.remove(activationPoint);
+            rseq.getPoints().remove(activationPoint);
+            
+        }
         em.persist(rseq);
     }
 
@@ -203,10 +221,17 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
             } else {
                 if (t != null && t.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
                     filterVehicleTypes(defaultVehicleTypes, map.getSignal());
+                    // check of er nog voertuigtypes zijn. zo nee, verwijderen
+                    if(map.getSignal().getVehicleTypes().isEmpty()){
+                        em.remove(map);
+                        mapsToRemove.add(map);
+                    }
                 }
             }
         }
+        
         movement.getPoints().removeAll(mapsToRemove);
+        // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
         processLabelsAPs(movement, vehicleTypeToRemove.equals(VehicleType.VEHICLE_TYPE_OV) ? "H" : "");
     }
 
