@@ -228,7 +228,8 @@ Ext.define('RSEQ', {
         this.addMovement(Ext.create(Movement, {
             id: Ext.id(),
             nummer: null,
-            maps: [map]
+            maps: [map],
+            vehicleType: editor.getCurrentVehicleType()
         }));
     },
     addUitmeldpuntToMovement : function (point,map, movementId,after){
@@ -305,7 +306,8 @@ Ext.define('RSEQ', {
              var newMovement = Ext.create(Movement, {
                 id: Ext.id(),
                 nummer: null,
-                maps: []
+                maps: [],
+                vehicleType: editor.getCurrentVehicleType()
             });
 
             var newMap;
@@ -557,7 +559,7 @@ Ext.define('RSEQ', {
                     for(var j = 0 ; j < maps.length;j++){
                         var map = maps[j];
                         var point = pointsLookup[map.getPointId()];
-                        points.push(point);
+			points.push(point);
                     }
                 }
             }
