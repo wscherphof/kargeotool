@@ -94,7 +94,6 @@
                 </div>
                 <div id="triggerpunten" class="legendseparator">
                     <b>Punten</b><br/>
-                    <img src="<c:url value="/images/"/>/icons/radio_zwart.png" alt="Onbekend" class="legendimg" /> Onbekend<br />
                     <img src="<c:url value="/images/"/>/icons/radio_groen.png" alt="Inmeldpunt" class="legendimg" /> Inmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_rood.png" alt="Uitmeldpunt" class="legendimg" /> Uitmeldpunt<br />
                     <img src="<c:url value="/images/"/>/icons/radio_blauw.png" alt="Voorinmeldpunt" class="legendimg" /> Voorinmeldpunt<br />
