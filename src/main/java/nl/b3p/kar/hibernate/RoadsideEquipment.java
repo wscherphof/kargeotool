@@ -35,9 +35,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -221,8 +223,21 @@ public class RoadsideEquipment {
 
     @XmlTransient
     private boolean readyForExport;
+    
+    @XmlTransient
+    @Transient
+    private String vehicleTypeToExport;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+
+    public String getVehicleTypeToExport() {
+        return vehicleTypeToExport;
+    }
+
+    public void setVehicleTypeToExport(String vehicleTypeToExport) {
+        this.vehicleTypeToExport = vehicleTypeToExport;
+    }
+
     /**
      *
      * @return id id
@@ -714,6 +729,24 @@ public class RoadsideEquipment {
         GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
         GeometryCollection gc = new GeometryCollection(ps.toArray(new Point[ps.size()]), gf);
         this.location = gc.getCentroid();
+
+    }
+    
+    public void beforeMarshal(Marshaller marshaller) {
+        if (!vehicleTypeToExport.equals("Gemixt")) {
+            SortedSet<Movement> ms = new TreeSet<>();
+            SortedSet<ActivationPoint> ps = new TreeSet<>();
+            for (Movement movement : movements) {
+                if (movement.getVehicleType().equals(vehicleTypeToExport)) {
+                    ms.add(movement);
+                    for (MovementActivationPoint map : movement.getPoints()) {
+                        ps.add(map.getPoint());
+                    }
+                }
+            }
+            movements = ms;
+            points = ps;
+        }
     }
 
     /**

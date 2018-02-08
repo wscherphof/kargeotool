@@ -153,6 +153,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         for (Long id : rseqs) {
             RoadsideEquipment r = em.find(RoadsideEquipment.class, id);
             if (r.isReadyForExport() || !onlyReady) {
+                r.setVehicleTypeToExport(vehicleType);
                 roadsideEquipmentList.add(r);
             } else {
                 notReadyForExport.add(r);
