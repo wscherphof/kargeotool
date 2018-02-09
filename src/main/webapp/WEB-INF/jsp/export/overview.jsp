@@ -33,6 +33,7 @@
         <script type="text/javascript">
 
             var exportActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean" />";
+            var deelgebiedActionBeanUrl = "<stripes:url beanclass="nl.b3p.kar.stripes.DeelgebiedActionBean" />";
             var profile = {
             };
 

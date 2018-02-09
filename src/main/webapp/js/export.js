@@ -1,4 +1,4 @@
-/* global Ext, deelgebieden, dataowners, exportActionBeanUrl */
+/* global Ext, deelgebieden, dataowners, exportActionBeanUrl, deelgebiedActionBeanUrl */
 
 /**
  * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
@@ -154,7 +154,7 @@ Ext.onReady(function (){
                         xtype : "button",
                         text : 'Nieuw',
                         handler : function (){
-                            var url = exportActionBeanUrl + "?maakDeelgebied=true";
+                            var url = deelgebiedActionBeanUrl + "?maakDeelgebied=true";
                             document.location.href = url;
                         }
                     },
@@ -163,7 +163,7 @@ Ext.onReady(function (){
                         text : 'Bewerk',
                         handler : function (){
                             var dgId = Ext.getCmp("deelgebied").getValue();
-                            var url = exportActionBeanUrl + "?bewerkDeelgebied=true&filter=" + dgId;
+                            var url = deelgebiedActionBeanUrl + "?bewerkDeelgebied=true&filter=" + dgId;
                             document.location.href = url;
                         }
                     },
@@ -172,7 +172,7 @@ Ext.onReady(function (){
                         text : 'Verwijder',
                         handler : function (){
                             var dgId = Ext.getCmp("deelgebied").getValue();
-                            var url = exportActionBeanUrl + "?removeDeelgebied=true&filter=" + dgId;
+                            var url = deelgebiedActionBeanUrl + "?removeDeelgebied=true&filter=" + dgId;
                             document.location.href = url;
                         }
                     }

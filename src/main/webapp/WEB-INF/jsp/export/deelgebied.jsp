@@ -42,7 +42,7 @@
         <script type="text/javascript" src="${contextPath}/js/profilestate.js"></script>
         <script type="text/javascript" src="${contextPath}/js/settings.js"></script>
         <div id="body">
-            <stripes:form beanclass="nl.b3p.kar.stripes.ExportActionBean" class="flex-wrapper">
+            <stripes:form beanclass="nl.b3p.kar.stripes.DeelgebiedActionBean" class="flex-wrapper">
                 <stripes:messages/>
                 <stripes:errors/>
                 <stripes:hidden name="deelgebied" value="${actionBean.deelgebied.id}" />

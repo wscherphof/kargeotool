@@ -1,7 +1,7 @@
 /**
  * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
  *
- * Copyright (C) 2009-2013 B3Partners B.V.
+ * Copyright (C) 2009-2018 B3Partners B.V.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,11 +18,7 @@
  */
 package nl.b3p.kar.stripes;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,7 +44,6 @@ import net.sourceforge.stripes.tag.BeanFirstPopulationStrategy;
 import net.sourceforge.stripes.validation.OneToManyTypeConverter;
 import net.sourceforge.stripes.validation.SimpleError;
 import net.sourceforge.stripes.validation.Validate;
-import net.sourceforge.stripes.validation.ValidateNestedProperties;
 import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
 import nl.b3p.commons.stripes.CustomPopulationStrategy;
@@ -87,8 +82,6 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     private static final Log log = LogFactory.getLog(ExportActionBean.class);
     private static final String OVERVIEW = "/WEB-INF/jsp/export/overview.jsp";
-    private static final String NIEUW_DEELGEBIED = "/WEB-INF/jsp/export/deelgebied.jsp";
-    private final int SRID = 28992;
     private ActionBeanContext context;
 
     @Validate(required = true, on = {"exportPtx", "exportXml"})
@@ -99,13 +92,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     private List<RoadsideEquipment> roadsideEquipmentList;
     private List<Deelgebied> deelgebieden = new ArrayList();
 
-    @Validate(converter = EntityTypeConverter.class, on = {"saveDeelgebied"})
-    @ValidateNestedProperties({
-        @Validate(field = "name")
-    })
-    private Deelgebied deelgebied;
-
-    @Validate(converter = EntityTypeConverter.class, on = {"bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"})
+    @Validate(converter = EntityTypeConverter.class, on = {"rseqByDeelgebied"})
     private Deelgebied filter;
 
     @Validate(converter = OneToManyTypeConverter.class, on = "export")
@@ -113,9 +100,6 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     
     @Validate
     private Integer karAddress;
-
-    @Validate(on = "saveDeelgebied", required = true)
-    private String geom;
 
     @Validate(on = "export")
     private String exportType;
@@ -334,48 +318,6 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return f;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="deelgebied spul">
-    @DontBind
-    @DontValidate
-    public Resolution maakDeelgebied() {
-        deelgebied = new Deelgebied();
-        return new ForwardResolution(NIEUW_DEELGEBIED);
-    }
-
-    public Resolution bewerkDeelgebied() {
-        deelgebied = filter;
-        return new ForwardResolution(NIEUW_DEELGEBIED);
-    }
-
-    public Resolution removeDeelgebied() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-        deelgebied = filter;
-        em.remove(deelgebied);
-        em.getTransaction().commit();
-        lists();
-        return new ForwardResolution(OVERVIEW);
-    }
-
-    public Resolution saveDeelgebied() throws Exception {
-        EntityManager em = Stripersist.getEntityManager();
-        GeometryFactory gf = new GeometryFactory(new PrecisionModel(), SRID);
-        WKTReader reader = new WKTReader(gf);
-        try {
-            Polygon geometrie = (Polygon) reader.read(geom);
-            deelgebied.setGeom(geometrie);
-            deelgebied.setGebruiker(getGebruiker());
-            em.persist(deelgebied);
-            em.getTransaction().commit();
-            filter = deelgebied;
-        } catch (ParseException ex) {
-            log.error(ex);
-        }
-        lists();
-        return new ForwardResolution(OVERVIEW);
-    }
-
-    // </editor-fold>
-   
     // <editor-fold desc="RSEQ resolutions" defaultstate="collapsed">
     public Resolution rseqByDeelgebied() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
@@ -548,22 +490,6 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setDeelgebieden(List<Deelgebied> deelgebieden) {
         this.deelgebieden = deelgebieden;
-    }
-
-    public Deelgebied getDeelgebied() {
-        return deelgebied;
-    }
-
-    public void setDeelgebied(Deelgebied deelgebied) {
-        this.deelgebied = deelgebied;
-    }
-
-    public String getGeom() {
-        return geom;
-    }
-
-    public void setGeom(String geom) {
-        this.geom = geom;
     }
 
     public String getExportType() {
