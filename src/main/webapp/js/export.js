@@ -296,7 +296,7 @@ Ext.onReady(function (){
                             vehicleTypeCombo.setValue('Hulpdiensten');
                             vehicleTypeCombo.setDisabled(true);
                         } else {
-                            vehicleTypeCombo.setValue('beide');
+                            vehicleTypeCombo.setValue('gemixt');
                             vehicleTypeCombo.setDisabled(false);
                         }
                         reloadVRIs();
@@ -332,7 +332,7 @@ Ext.onReady(function (){
                     fields : ['type','label'],
                     data : [
                         {
-                            "type" : "beide",
+                            "type" : "gemixt",
                             "label" : "Beide"
                         },
                         {

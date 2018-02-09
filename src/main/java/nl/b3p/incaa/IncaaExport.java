@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
@@ -43,9 +44,7 @@ public class IncaaExport {
     }
 
     public File convert(RoadsideEquipment rseq) {
-        List<RoadsideEquipment> list = new ArrayList<RoadsideEquipment>();
-        list.add(rseq);
-        return convert(list);
+        return convert(Collections.singletonList(rseq));
     }
 
     public File convert(List<RoadsideEquipment>rseqs) {

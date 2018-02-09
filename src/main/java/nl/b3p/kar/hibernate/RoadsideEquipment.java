@@ -542,11 +542,11 @@ public class RoadsideEquipment {
 
     /**
      * Checkt of dit rseq signaalgroepen voor het opgegeven @param vehicleType heeft.
-     * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Beide/null (geeft altijd true)
+     * @param vehicleType Mogelijk waardes: OV, Hulpdiensten, Gemixt/null (geeft altijd true)
      * @return true/false
      */
     public boolean hasSignalForVehicleType(String vehicleType){
-        if(vehicleType == null || vehicleType.equalsIgnoreCase("beide")){
+        if(vehicleType == null || vehicleType.equalsIgnoreCase("Gemixt")){
             return true;
         }
         for (Movement movement : movements) {
@@ -733,11 +733,11 @@ public class RoadsideEquipment {
     }
     
     public void beforeMarshal(Marshaller marshaller) {
-        if (!vehicleTypeToExport.equals("Gemixt")) {
+        if (!vehicleTypeToExport.equalsIgnoreCase("Gemixt")) {
             SortedSet<Movement> ms = new TreeSet<>();
             SortedSet<ActivationPoint> ps = new TreeSet<>();
             for (Movement movement : movements) {
-                if (movement.getVehicleType().equals(vehicleTypeToExport)) {
+                if (movement.determineVehicleType().equals(vehicleTypeToExport)) {
                     ms.add(movement);
                     for (MovementActivationPoint map : movement.getPoints()) {
                         ps.add(map.getPoint());
