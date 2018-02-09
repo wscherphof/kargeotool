@@ -108,8 +108,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     @Validate(converter = EntityTypeConverter.class, on = {"bewerkDeelgebied", "removeDeelgebied", "rseqByDeelgebied"})
     private Deelgebied filter;
 
-    @Validate(on = "export")
-    private DataOwner dataowner;
+    @Validate(converter = OneToManyTypeConverter.class, on = "export")
+    private List<DataOwner> dataowner;
     
     @Validate
     private Integer karAddress;
@@ -436,7 +436,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment where validation_errors = 0 AND dataOwner = :dataowner";
+            String query = "from RoadsideEquipment where validation_errors = 0 AND dataOwner in :dataowner";
             if (onlyReady) {
                 query += " and readyForExport = true";
             }
@@ -532,10 +532,12 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return g;
     }
 
+    @Override
     public ActionBeanContext getContext() {
         return context;
     }
 
+    @Override
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
@@ -628,11 +630,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         this.dataowners = dataowners;
     }
 
-    public DataOwner getDataowner() {
+    public List<DataOwner> getDataowner() {
         return dataowner;
     }
 
-    public void setDataowner(DataOwner dataowner) {
+    public void setDataowner(List<DataOwner> dataowner) {
         this.dataowner = dataowner;
     }
 
