@@ -18,8 +18,8 @@
  */
 package nl.b3p.kar.hibernate;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,9 +33,9 @@ import javax.persistence.ManyToOne;
  */
 
 @Entity
-public class Deelgebied {
+public class Gemeente {
     
-    public Deelgebied(){
+    public Gemeente(){
         
     }
     
@@ -43,15 +43,14 @@ public class Deelgebied {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
     
-    private String name;
+    private String gemeentena;
+    
+    private String code;
     
     @Basic(optional=false)
     @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
-    private GeometryCollection geom;
+    private MultiPolygon geom;
     
-    
-    @ManyToOne(optional=false) 
-    private Gebruiker gebruiker;
 
     public Integer getId() {
         return id;
@@ -61,27 +60,27 @@ public class Deelgebied {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getGemeentena() {
+        return gemeentena;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGemeentena(String gemeentena) {
+        this.gemeentena = gemeentena;
     }
 
-    public Gebruiker getGebruiker() {
-        return gebruiker;
+    public String getCode() {
+        return code;
     }
 
-    public void setGebruiker(Gebruiker gebruiker) {
-        this.gebruiker = gebruiker;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public GeometryCollection getGeom() {
+    public MultiPolygon getGeom() {
         return geom;
     }
 
-    public void setGeom(GeometryCollection geom) {
+    public void setGeom(MultiPolygon geom) {
         this.geom = geom;
     }
 }

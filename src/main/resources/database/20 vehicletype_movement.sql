@@ -87,3 +87,15 @@ WITH (
 );
 ALTER TABLE dxf_features
   OWNER TO geo_ov;
+
+
+alter table gemeente add column
+
+  geom_simplified geometry(MultiPolygon,28992);
+
+update gemeente set geom_simplified = st_multi(ST_SimplifyPreserveTopology(geom, 100));
+
+CREATE INDEX gemeente_geom_simplified_idx
+  ON gemeente
+  USING gist
+  (geom_simplified);

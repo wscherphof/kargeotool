@@ -18,7 +18,7 @@
  */
 package nl.b3p.kar.stripes;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -328,7 +328,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             Session sess = (Session) em.getDelegate();
 
-            Polygon deelgebiedPoly = filter.getGeom();
+            GeometryCollection deelgebiedPoly = filter.getGeom();
 
             String query = "from RoadsideEquipment where validation_errors = 0 AND intersects(location, ?) = true";
             if (onlyReady) {
