@@ -79,7 +79,7 @@ import org.stripesstuff.stripersist.Stripersist;
         }
 )
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RoadsideEquipment {
+public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
 
     private static final int RIJKSDRIEHOEKSTELSEL = 28992;
     /**
@@ -1157,4 +1157,21 @@ public class RoadsideEquipment {
        
         return copy;
     }*/
+
+    @Override
+    public int compareTo(RoadsideEquipment o) {
+        if(this.getId().equals(o.getId())){
+            return 0;
+        }
+        if( (this.getDataOwner().getId().equals(o.getDataOwner().getId()) && this.getKarAddress().equals(o.getKarAddress()))){
+            return 0;
+        }
+        
+        if( this.getDataOwner().getId().equals(o.getDataOwner().getId())){
+            
+            return this.getKarAddress().compareTo(o.getKarAddress());
+        }else{
+            return this.getDataOwner().getOmschrijving().compareTo(o.getDataOwner().getOmschrijving());
+        }
+    }
 }
