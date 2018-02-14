@@ -35,7 +35,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -50,10 +53,14 @@ import net.sourceforge.stripes.validation.ValidationErrorHandler;
 import net.sourceforge.stripes.validation.ValidationErrors;
 import nl.b3p.commons.stripes.CustomPopulationStrategy;
 import nl.b3p.incaa.IncaaExport;
+import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Deelgebied;
 import nl.b3p.kar.hibernate.Gebruiker;
+import nl.b3p.kar.hibernate.Movement;
+import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
 import nl.b3p.kar.jaxb.TmiPush;
 import org.apache.commons.csv.CSVFormat;
@@ -99,7 +106,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     @Validate(converter = OneToManyTypeConverter.class, on = "export")
     private List<DataOwner> dataowner;
-    
+
     @Validate
     private Integer karAddress;
 
@@ -163,9 +170,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             return exportXml();
         } else if (exportType.equals("csvsimple")) {
             return exportCSVSimple();
-        }else if (exportType.equals("csvextended")) {
+        } else if (exportType.equals("csvextended")) {
             return exportCSVExtended();
-        }{
+        }else{
             this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
             return new ForwardResolution(OVERVIEW);
         }
@@ -222,8 +229,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             throw new Exception("Could not find roadsideequipments");
         }
     }
-    
-    public Resolution exportCSVSimple(){
+
+    public Resolution exportCSVSimple() {
         try {
             Collections.sort(roadsideEquipmentList);
             DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
@@ -231,13 +238,13 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             FileWriter fw = new FileWriter(f);
             PrintWriter out = new PrintWriter(fw);
             try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT)) {
-                csv.printRecord(new Object[]{"Soort verkeerssysteem","Beheerder","Beheerdersaanduiding","Plaats","Locatie","Geldig vanaf","Geldig tot","KAR-adres",
-                    "RD-X","RD-Y","Bevat OV-punten","Bevat HD-punten","KV9-validatie","Gereed voor export"});
+                csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
+                    "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
                 for (RoadsideEquipment r : roadsideEquipmentList) {
                     String hasHD = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
                     String hasOV = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
                     String type;
-                    switch(r.getType()){
+                    switch (r.getType()) {
                         case RoadsideEquipment.TYPE_BAR:
                             type = "Afsluitsysteem";
                             break;
@@ -251,35 +258,37 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                             type = "VRI";
                             break;
                     }
-                    Object [] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
-                        r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "" ,
-                        r.getKarAddress(), r.getLocation().getCoordinate().x,r.getLocation().getCoordinate().y,hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
+                    Object[] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
+                        r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "",
+                        r.getKarAddress(), r.getLocation().getCoordinate().x, r.getLocation().getCoordinate().y, hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
                         r.isReadyForExport() ? "Ja" : "Nee"};
                     csv.printRecord(values);
                 }
-                
+
                 csv.flush();
             }
-          
+
             return fileResolution(f);
         } catch (IOException ex) {
             log.error("Cannot read/write csv file", ex);
             return new ErrorResolution(500, "Exporteerproblemen. Raadpleeg CROW-NDOV.");
         }
     }
-    
-        public Resolution exportCSVExtended() {
+
+    public Resolution exportCSVExtended() {
         try {
             DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
             File f = File.createTempFile("tmp", "csvsimple.csv");
             FileWriter fw = new FileWriter(f);
             PrintWriter out = new PrintWriter(fw);
             CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
-            csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
-                "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
+
+            Collections.sort(roadsideEquipmentList);
+            csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot",
+                "KAR-adres", "Signaalgroep", "Richtingen", "Beweging", "Volgnummer beweging", "KAR-punt", "Type melding", "Triggertype", "RD-X", "RD-Y",
+                "Afstand", "Bus", "Tram", "CVV", "Taxi", "HOV", "Politie", "Brandweer", "Ambulance", "Politie niet in uniform", "Marechaussee",
+                "Virtual local loop-number",});
             for (RoadsideEquipment r : roadsideEquipmentList) {
-                String hasHD = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
-                String hasOV = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
                 String type;
                 switch (r.getType()) {
                     case RoadsideEquipment.TYPE_BAR:
@@ -295,11 +304,60 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                         type = "VRI";
                         break;
                 }
-                Object[] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
-                    r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "",
-                    r.getKarAddress(), r.getLocation().getCoordinate().x, r.getLocation().getCoordinate().y, hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
-                    r.isReadyForExport() ? "Ja" : "Nee"};
-                csv.printRecord(values);
+                SortedSet<Movement> mset = r.getMovements();
+                List<Movement> ms = new ArrayList<>(mset);
+                Collections.sort(ms);
+                for (Movement m : ms) {
+                    List<MovementActivationPoint> maps = m.getPoints();
+                    String movementLabel = getLabel(m);
+                    for (MovementActivationPoint map : maps) {
+                        String triggerType = "";
+                        if (map.getSignal() != null) {
+                            String tt = map.getSignal().getTriggerType();
+                            switch (tt) {
+                                case ActivationPointSignal.TRIGGER_FORCED:
+                                    triggerType = "automatisch";
+                                    break;
+                                case ActivationPointSignal.TRIGGER_MANUAL:
+                                    triggerType = "handmatig";
+                                    break;
+                                case ActivationPointSignal.TRIGGER_STANDARD:
+                                    triggerType = "standaard";
+                                    break;
+                                default:
+                                    triggerType = "";
+                                    break;
+                            }
+                        }
+                        Map<String, String> vhts = getVehicleTypes(map);
+                        Object[] values = {
+                            type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(), 
+                            r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "",
+                            r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "", r.getKarAddress(), 
+                            map.getSignal() != null ? map.getSignal().getSignalGroupNumber() : "", 
+                            map.getSignal() != null ?  map.getSignal().getDirection(): "", 
+                            movementLabel, 
+                            m.getNummer(),
+                            map.getPoint().getLabel(),
+                            map.getBeginEndOrActivation().equals("END") ? "eind" :  map.getBeginEndOrActivation().equals("BEGIN") ? "begin": map.getSignal().getKarCommandType() == 1 ? "in" :  map.getSignal().getKarCommandType() == 2 ? "uit" : "voor",
+                            triggerType,
+                            map.getPoint().getLocation().getX(),
+                            map.getPoint().getLocation().getX(),
+                            map.getSignal() != null ?  map.getSignal().getDistanceTillStopLine(): "", 
+                            vhts.getOrDefault("Bus", ""),
+                            vhts.getOrDefault("Tram", ""),
+                            vhts.getOrDefault("CVV", ""),
+                            vhts.getOrDefault("Taxi", ""),
+                            vhts.getOrDefault("Hoogwaardig Openbaar Vervoer (HOV) bus", ""),
+                            vhts.getOrDefault("Politie", ""),
+                            vhts.getOrDefault("Brandweer", ""),
+                            vhts.getOrDefault("Ambulance", ""),
+                            vhts.getOrDefault("Politie niet in uniform", ""),
+                            vhts.getOrDefault("Marechaussee", ""),
+                            map.getSignal() != null ? map.getSignal().getVirtualLocalLoopNumber() : ""};
+                        csv.printRecord(values);
+                    }
+                }
             }
 
             csv.flush();
@@ -309,21 +367,43 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             log.error("Cannot read/write csv file", ex);
             return new ErrorResolution(500, "Exporteerproblemen. Raadpleeg CROW-NDOV.");
         }
-
     }
     
-    private Resolution fileResolution(File f) throws FileNotFoundException{
-         FileInputStream fis = new FileInputStream(f);
-            
-            String filename = "KAR_Geo_Tool_CSV_";
-            Date now = new Date();
-            DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            filename += sdf.format(now);
-            return new StreamingResolution("text/plain", fis)
-                    .setAttachment(true)
-                    .setFilename(filename + ".csv")
-                    .setLength(f.length());
-      
+    private Map<String, String> getVehicleTypes(MovementActivationPoint map){
+        Map<String, String> mapVhs = new HashMap<>();
+        if (map.getSignal() != null) {
+            List<VehicleType> vts = map.getSignal().getVehicleTypes();
+            for (VehicleType vt : vts) {
+                mapVhs.put(vt.getOmschrijving(), "x");
+            }
+        }
+        return mapVhs;
+    }
+    
+    private String getLabel(Movement m){
+        List<MovementActivationPoint> maps = m.getPoints();
+        String l ="";
+        if(maps.size() > 0){
+            l = maps.get(0).getPoint().getLabel();
+            if(maps.size() > 1){
+                l += " - " + maps.get(maps.size()-1).getPoint().getLabel();
+            }
+        }
+        return l;
+    }
+    
+    private Resolution fileResolution(File f) throws FileNotFoundException {
+        FileInputStream fis = new FileInputStream(f);
+
+        String filename = "KAR_Geo_Tool_CSV_";
+        Date now = new Date();
+        DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        filename += sdf.format(now);
+        return new StreamingResolution("text/plain", fis)
+                .setAttachment(true)
+                .setFilename(filename + ".csv")
+                .setLength(f.length());
+
     }
 
     public Resolution adminExport() {
@@ -334,7 +414,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             Resolution response;
             if (exportType == null) {
                 return new ErrorResolution(405, "Verkeerde exporttype meegegeven.");
-            }else if (exportType.endsWith("JSON")) {
+            } else if (exportType.endsWith("JSON")) {
                 response = exportAdminJSON(values, headers);
             } else if (exportType.endsWith("CSV")) {
                 try {
@@ -351,8 +431,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             return new ErrorResolution(403, "Alleen beheerders mogen deze export maken.");
         }
     }
-    
-    public static  List<List<String>> getExportValues(List<DataOwner> dos, EntityManager em){
+
+    public static List<List<String>> getExportValues(List<DataOwner> dos, EntityManager em) {
         List<List<String>> values = new ArrayList<>();
         for (DataOwner dataOwner : dos) {
             List<String> row = new ArrayList<>();
@@ -374,7 +454,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
         return values;
     }
-    
+
     private Resolution exportAdminJSON(List<List<String>> values, String[] headers) {
         JSONObject response = new JSONObject();
         response.put("success", Boolean.FALSE);
@@ -392,19 +472,19 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         response.put("success", Boolean.TRUE);
         return new StreamingResolution("application/json", new StringReader(response.toString(4)));
     }
-    
+
     private Resolution exportAdminCSV(List<List<String>> values, Object[] headers) throws IOException {
         final File f = getAdminExport(values);
-         return new StreamingResolution("text/plain") {
+        return new StreamingResolution("text/plain") {
 
             @Override
             public void stream(HttpServletResponse response) throws Exception {
                 FileInputStream fis = new FileInputStream(f);
                 OutputStream out = response.getOutputStream();
-                try{
-                    IOUtils.copy(fis,out);
+                try {
+                    IOUtils.copy(fis, out);
                     out.flush();
-                }finally{                
+                } finally {
                     fis.close();
                     out.close();
                     f.delete();
@@ -412,8 +492,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             }
         }.setAttachment(true).setFilename("export.csv");
     }
-    
-    public static File getAdminExport(List<List<String>> values) throws IOException{
+
+    public static File getAdminExport(List<List<String>> values) throws IOException {
         File f = File.createTempFile("tmp", "adminExport");
         FileWriter fw = new FileWriter(f);
         PrintWriter out = new PrintWriter(fw);
@@ -456,7 +536,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
     }
-    
+
     public Resolution rseqByKarAddress() throws JSONException {
         EntityManager em = Stripersist.getEntityManager();
 
@@ -686,7 +766,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     public void setDos(List<DataOwner> dos) {
         this.dos = dos;
     }
-    
+
     public Integer getKarAddress() {
         return karAddress;
     }

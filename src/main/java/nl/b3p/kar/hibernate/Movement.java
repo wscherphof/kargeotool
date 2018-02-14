@@ -52,7 +52,7 @@ import org.stripesstuff.stripersist.Stripersist;
 )
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class Movement implements Comparable {
+public class Movement implements Comparable<Movement> {
 
     /**
      * Automatisch gegenereerde unieke sleutel volgens een sequence. Niet
@@ -166,7 +166,6 @@ public class Movement implements Comparable {
                         // eerdere activation met zelfde punt nummer gevonden,
                         // vehicleType toegevoegd - geen nieuwe ActivationPointSignal
                         // maken
-                        continue;
                     }
                 }
                 
@@ -278,8 +277,11 @@ public class Movement implements Comparable {
     //</editor-fold>
 
     @Override
-    public int compareTo(Object t) {
-        Movement rhs = (Movement)t;
+    public int compareTo(Movement t) {
+        Movement rhs = t;
+        if(!vehicleType.equals(t.getVehicleType())){
+            return -1 * vehicleType.compareTo(t.getVehicleType());
+        }
         if(nummer == null) {
             return rhs.nummer == null ? 0 : -1;
         }
