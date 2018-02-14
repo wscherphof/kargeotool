@@ -279,6 +279,14 @@ Ext.onReady(function (){
                         {
                             "type" : "kv9",
                             "label" : "KV9 XML"
+                        },
+                        {
+                            "type" : "csvsimple",
+                            "label" : "CSV - simpel"
+                        },
+                        {
+                            "type" : "csvextended",
+                            "label" : "CSV - uitgebreid"
                         }
                     ]
                 }),
