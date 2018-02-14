@@ -40,6 +40,7 @@ import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.imp.CSVImporter;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
 import nl.b3p.kar.jaxb.RseqDefs;
@@ -236,8 +237,6 @@ public class ImportActionBean implements ActionBean {
     }
 
     public Resolution importXmlSelectedRseqs() {
-
-
         TmiPush push = (TmiPush)getContext().getRequest().getSession().getAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
 
         if(push == null) {
@@ -351,6 +350,26 @@ public class ImportActionBean implements ActionBean {
 
         } catch (Exception e) {
             log.error("Fout importeren PTX",e);
+            this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
+        } finally {
+            try {
+                bestand.delete();
+            } catch (IOException ex) {
+                log.error(ex);
+            }
+        }
+        return new ForwardResolution(OVERVIEW);
+    }
+
+    public Resolution importCsv() {
+        final FileBean zipFile = bestand;
+        
+        try {
+            CSVImporter importer = new CSVImporter();
+            List<RoadsideEquipment> rseqs = importer.process(zipFile.getReader());//, getGebruiker(),this.context);
+
+        } catch (Exception e) {
+            log.error("Fout importeren CSV",e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
         } finally {
             try {

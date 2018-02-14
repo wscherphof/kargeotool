@@ -1,17 +1,18 @@
+/* global importActionBeanUrl, Ext, imported, allRseqErrors */
+
 function createForms (){
     Ext.create('Ext.tab.Panel',{
         width : 400,
         height : 400,
         renderTo : 'body',
         items : [{
-                title : 'INCAA .ptx',
+                title : 'CSV (uitgebreid)',
                 items : [
                     {
-                        id : "incaaForm",
                         xtype : "form",
                         bodyPadding : 5,
                         // The form will submit an AJAX request to this URL when submitted
-                        url : importActionBeanUrl + '?importPtx',
+                        url : importActionBeanUrl + '?importCSV',
                         standardSubmit : true,
                         // Fields will be arranged vertically, stretched to full width
                         layout : 'anchor',
@@ -24,13 +25,12 @@ function createForms (){
                         items : [
                             {
                                 xtype : "filefield",
-                                fieldLabel : 'INCAA .ptx bestand',
+                                fieldLabel : 'CSV bestand',
                                 name : 'bestand',
                                 allowBlank : false,
                                 msgTarget : 'side',
                                 anchor : '100%',
-                                buttonText : 'Bladeren',
-                                id : 'bestand'
+                                buttonText : 'Bladeren'
                             }
                         ],
                         // Reset and Submit buttons
@@ -90,7 +90,56 @@ function createForms (){
                                     this.up('form').getForm().reset();
                                 }
                             },{
-                                text : 'Importeren...',
+                                text : 'Importeer',
+                                formBind : true,//only enabled once the form is valid
+                                disabled : true,
+                                handler : function (){
+                                    var form = this.up('form').getForm();
+                                    form.submit();
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },{
+                title : 'INCAA .ptx',
+                items : [
+                    {
+                        id : "incaaForm",
+                        xtype : "form",
+                        bodyPadding : 5,
+                        // The form will submit an AJAX request to this URL when submitted
+                        url : importActionBeanUrl + '?importPtx',
+                        standardSubmit : true,
+                        // Fields will be arranged vertically, stretched to full width
+                        layout : 'anchor',
+                        defaults : {
+                            anchor : '100%',
+                            labelWidth : '120px'
+                        },
+                        // The fields
+                        defaultType : 'textfield',
+                        items : [
+                            {
+                                xtype : "filefield",
+                                fieldLabel : 'INCAA .ptx bestand',
+                                name : 'bestand',
+                                allowBlank : false,
+                                msgTarget : 'side',
+                                anchor : '100%',
+                                buttonText : 'Bladeren',
+                                id : 'bestand'
+                            }
+                        ],
+                        // Reset and Submit buttons
+                        buttons : [{
+                                text : 'Reset',
+                                handler : function (){
+                                    this.up('form').getForm().reset();
+                                }
+                            },{
+                                text : 'Importeer',
                                 formBind : true,//only enabled once the form is valid
                                 disabled : true,
                                 handler : function (){
@@ -111,7 +160,7 @@ var store = null;
 var grid = null;
 
 function loadGrid() {
-    if(imported.length == 0) {
+    if(imported.length === 0) {
         return;
     }
     store = Ext.create('Ext.data.Store',{
@@ -192,7 +241,7 @@ function createValidationResultsGrid() {
                 var selectedPositions = "";
                 Ext.Array.each(allRseqErrors, function(r) {
                     if(r.checked) {
-                        selectedPositions += (selectedPositions == "" ? "" : ",") + r.position;
+                        selectedPositions += (selectedPositions === "" ? "" : ",") + r.position;
                     }
                 });
                 document.forms[0].selectedRseqPositions.value = selectedPositions;
@@ -280,7 +329,7 @@ function createValidationResultsGrid() {
                     
                     var rseqDetails = allRseqErrors[index];
                     
-                    if(rseqDetails.errorCount == 0) {
+                    if(rseqDetails.errorCount === 0) {
                         detailsPanel.update("Geen meldingen over dit verkeerssysteem");
                     } else {
                         detailsPanel.update("Aantal meldingen: " + rseqDetails.errorCount);
