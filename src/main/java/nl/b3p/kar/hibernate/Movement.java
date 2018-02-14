@@ -279,7 +279,7 @@ public class Movement implements Comparable<Movement> {
     @Override
     public int compareTo(Movement t) {
         Movement rhs = t;
-        if(!vehicleType.equals(t.getVehicleType())){
+        if(vehicleType != null && !vehicleType.equals(t.getVehicleType())){
             return -1 * vehicleType.compareTo(t.getVehicleType());
         }
         if(nummer == null) {
