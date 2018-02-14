@@ -329,13 +329,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                                     break;
                             }
                         }
+                        
                         Map<String, String> vhts = getVehicleTypes(map);
                         Object[] values = {
                             type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(), 
                             r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "",
                             r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "", r.getKarAddress(), 
                             map.getSignal() != null ? map.getSignal().getSignalGroupNumber() : "", 
-                            map.getSignal() != null ?  map.getSignal().getDirection(): "", 
+                            getDirectionLabel(map), 
                             movementLabel, 
                             m.getNummer(),
                             map.getPoint().getLabel(),
@@ -378,6 +379,30 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             }
         }
         return mapVhs;
+    }
+    
+    private String getDirectionLabel(MovementActivationPoint map){
+        String label = "";
+        if(map.getSignal() != null){
+            String direction = map.getSignal().getDirection();
+            String[] dirs = direction.split(",");
+            for (String dir : dirs) {
+                switch(dir){
+                    case "1":
+                        label += "la-";
+                        break;
+                    case "2":
+                        label += "ra-";
+                        break;
+                    case "3":
+                        label += "rd-";
+                        break;
+                }
+                
+            }
+            label = label.substring(0, label.length() - 1);
+        }
+        return label;
     }
     
     private String getLabel(Movement m){
