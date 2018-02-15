@@ -29,6 +29,14 @@ import javax.persistence.*;
  */
 @Entity
 public class VehicleType {
+
+    public VehicleType(int nummer, String omschrijving) {
+        this.nummer = nummer;
+        this.omschrijving = omschrijving;
+    }
+
+    public VehicleType() {
+    }
     
     /**
      * Waarde voor in Kv9 XML; KARb1 bericht attribuut 2.

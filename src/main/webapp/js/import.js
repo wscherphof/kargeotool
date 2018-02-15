@@ -12,7 +12,7 @@ function createForms (){
                         xtype : "form",
                         bodyPadding : 5,
                         // The form will submit an AJAX request to this URL when submitted
-                        url : importActionBeanUrl + '?importCSV',
+                        url : importActionBeanUrl + '?importCsv=true',
                         standardSubmit : true,
                         // Fields will be arranged vertically, stretched to full width
                         layout : 'anchor',

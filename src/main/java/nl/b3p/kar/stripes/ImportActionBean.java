@@ -40,6 +40,7 @@ import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import nl.b3p.kar.imp.CSVImporter;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
@@ -271,6 +272,7 @@ public class ImportActionBean implements ActionBean {
 
                     List<KV9ValidationError> kvErrors = new ArrayList();
                     int validationErrors = roadsideEquipment.validateKV9(kvErrors);
+                    roadsideEquipment.setValidationErrors(validationErrors);
                     boolean importFatal = false;
                     for(KV9ValidationError kvError: kvErrors) {
                         if(kvError.isFatal()) {
@@ -288,27 +290,9 @@ public class ImportActionBean implements ActionBean {
                             date,
                             getGebruiker().getFullname()
                     ));
-                    roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
-                    roadsideEquipment.setValidationErrors(validationErrors);
-
-                    SortedSet<Movement> movements = roadsideEquipment.getMovements();
-
-                    // First, save a rseq with no movement to prevent nullchecks on not-yet persisted ActivationPoints (or, not yet persisted rseqs when persisting the activationpoint first)
-                    roadsideEquipment.setMovements(new TreeSet<Movement>());
-                    em.persist(roadsideEquipment);
-
-                    SortedSet<ActivationPoint>points = roadsideEquipment.getPoints();
-                    // Now, persist each activationpoint from the movement.movementactivationpoint. Also add it to the set in the roadsideEquipment.
-                    for (Movement movement : movements) {
-                        for (MovementActivationPoint p : movement.getPoints()) {
-                            ActivationPoint point = p.getPoint();
-                            points.add(point);
-                            em.persist(point);
-                        }
-                        em.persist(movement);
-                    }
-                    em.persist(roadsideEquipment);
-
+                    
+                    saveRseq(roadsideEquipment, em);
+                    
                     if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
                         this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + roadsideEquipment.getKarAddress() + ", " + roadsideEquipment.getDescription()));
                     }
@@ -316,11 +300,33 @@ public class ImportActionBean implements ActionBean {
             }
         }
 
-        Stripersist.getEntityManager().getTransaction().commit();
+        em.getTransaction().commit();
 
         getContext().getRequest().getSession().removeAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
 
         return new ForwardResolution(OVERVIEW);
+    }
+    
+    private void saveRseq(RoadsideEquipment roadsideEquipment, EntityManager em){
+        roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
+
+        SortedSet<Movement> movements = roadsideEquipment.getMovements();
+
+        // First, save a rseq with no movement to prevent nullchecks on not-yet persisted ActivationPoints (or, not yet persisted rseqs when persisting the activationpoint first)
+        roadsideEquipment.setMovements(new TreeSet<Movement>());
+        em.persist(roadsideEquipment);
+
+        SortedSet<ActivationPoint> points = roadsideEquipment.getPoints();
+        // Now, persist each activationpoint from the movement.movementactivationpoint. Also add it to the set in the roadsideEquipment.
+        for (Movement movement : movements) {
+            for (MovementActivationPoint p : movement.getPoints()) {
+                ActivationPoint point = p.getPoint();
+                points.add(point);
+                em.persist(point);
+            }
+            em.persist(movement);
+        }
+        em.persist(roadsideEquipment);
     }
 
     private void addImportedRseq(RoadsideEquipment rseq) throws JSONException {
@@ -367,8 +373,17 @@ public class ImportActionBean implements ActionBean {
         try {
             EntityManager em = Stripersist.getEntityManager();
             List<DataOwner> dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
-            CSVImporter importer = new CSVImporter(zipFile.getReader(), dataowners);
+            List<VehicleType> vhts =  em.createQuery("from VehicleType order by nummer").getResultList();
+            CSVImporter importer = new CSVImporter(zipFile.getReader(), dataowners, vhts);
             List<RoadsideEquipment> rseqs = importer.process();//, getGebruiker(),this.context);
+            
+            for (RoadsideEquipment rseq : rseqs) {
+                List<KV9ValidationError> errors = new ArrayList<>();
+                int num = rseq.validateKV9(errors);
+                rseq.setValidationErrors(num);
+                saveRseq(rseq, em);
+            }
+            em.getTransaction().commit();
 
         } catch (Exception e) {
             log.error("Fout importeren CSV",e);

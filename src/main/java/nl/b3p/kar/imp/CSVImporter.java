@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -39,6 +41,7 @@ public class CSVImporter {
 
     private final Log log = LogFactory.getLog(this.getClass());
     
+    // <editor-fold desc="CSV Constants" defaultstate="collapsed">
     private final int CSV_COL_RSEQTYPE = 0;
     private final int CSV_COL_DATAOWNER = 1;
     private final int CSV_COL_CROSSINGCODE = 2;
@@ -65,20 +68,25 @@ public class CSVImporter {
     private final int CSV_COL_BRANDWEER = 24;
     private final int CSV_COL_AMBULANCE = 25;
     private final int CSV_COL_POLITIENIETINUNIFORM = 26;
-    private final int CSV_COL_MARECHUASSEE = 27;
+    private final int CSV_COL_MARECHAUSSEE = 27;
     private final int CSV_COL_VIRTUALLOCALLOOPNUMBER = 28;
-
+    // </editor-fold>
+    
     private Reader fr;
     
     private CSVParser p;
 
     private List<DataOwner> dataowners;
+    private List<VehicleType> vehiclestypes;
+    private Map<Integer, VehicleType> vehicleMap = new HashMap<>();
+    
     private final int RIJKSDRIEHOEKSTELSEL = 28992;
     private GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
     
-    public CSVImporter(Reader fr, List<DataOwner> dataowners) {
+    public CSVImporter(Reader fr, List<DataOwner> dataowners, List<VehicleType> vehiclestypes) {
         this.fr = fr;
         this.dataowners = dataowners;
+        this.vehiclestypes = vehiclestypes;
          // verzamel zakje karpunten per rseq
         // per rseq: groepeer movements
         // per movement movementactivationpoints maken
@@ -91,13 +99,29 @@ public class CSVImporter {
         if (!validateHeader(header)) {
             throw new IllegalArgumentException("Init failed: header invalid");
         }
+        
+        Map<Integer, VehicleType> vtByNummer = new HashMap<>();
+        for (VehicleType vt : vehiclestypes) {
+            vtByNummer.put(vt.getNummer(), vt);
+        }
+        
+        vehicleMap.put(18,vtByNummer.get(1));
+        vehicleMap.put(19,vtByNummer.get(2));
+        vehicleMap.put(20,vtByNummer.get(6));
+        vehicleMap.put(21,vtByNummer.get(7));
+        vehicleMap.put(22,vtByNummer.get(71));
+        vehicleMap.put(23,vtByNummer.get(3));
+        vehicleMap.put(24,vtByNummer.get(4));
+        vehicleMap.put(25,vtByNummer.get(5));
+        vehicleMap.put(26,vtByNummer.get(69));
+        vehicleMap.put(27,vtByNummer.get(70));
     }
 
     public List<RoadsideEquipment> process() throws FileNotFoundException, ParseException {
         List<RoadsideEquipment> rseqs = new ArrayList<>();
         try {
             init();
-            List<List<CSVRecord>> rseqsList = pointsPerRseq();
+            List<List<CSVRecord>> rseqsList = groupByRoadsideEquipment();
             for (List<CSVRecord> r : rseqsList) {
                 RoadsideEquipment rseq = processRseq(r);
                 rseqs.add(rseq);
@@ -113,7 +137,7 @@ public class CSVImporter {
         
         Map<String, ActivationPoint> aps = new HashMap<>();
         
-        List<List<CSVRecord>> movementsRecords = recordsByMovement(records);
+        List<List<CSVRecord>> movementsRecords = groupByMovement(records);
         List<Movement> movements = new ArrayList<>();
         
         for (List<CSVRecord> movementRecords : movementsRecords) {
@@ -122,6 +146,16 @@ public class CSVImporter {
         }
         
         rseq.getMovements().addAll(movements);
+        
+        Set<ActivationPoint> points = rseq.getPoints();
+        double x = 0, y = 0;
+        for (ActivationPoint point : points) {
+            x += point.getLocation().getX();
+            y += point.getLocation().getY();
+        }
+        x = x / points.size();
+        y = y / points.size();
+        rseq.setLocation(gf.createPoint(new Coordinate(x, y)));
         return rseq;
     }
     
@@ -129,15 +163,15 @@ public class CSVImporter {
         Movement m = parseMovement(records, aps, rseq);
         
         for (CSVRecord record : records) {
-            MovementActivationPoint map = createMAP(record, aps, rseq, m);
-            m.getPoints().add(map);
-            rseq.getPoints().add(map.getPoint());
+            MovementActivationPoint map = createMovementActivationPoint(record, aps, rseq, m);
+           // m.getPoints().add(map);
+            //rseq.getPoints().add(map.getPoint());
         }
         
         return m;
     }
     
-    MovementActivationPoint createMAP(CSVRecord record, Map<String, ActivationPoint> aps, RoadsideEquipment rseq, Movement m){
+    MovementActivationPoint createMovementActivationPoint(CSVRecord record, Map<String, ActivationPoint> aps, RoadsideEquipment rseq, Movement m){
         MovementActivationPoint map = new MovementActivationPoint();
         
         String id = getActivationPointIdentifier(record);
@@ -145,6 +179,7 @@ public class CSVImporter {
             aps.put(id, parseActivationPoint(record, rseq));
         }
         ActivationPoint ap = aps.get(id);
+        rseq.getPoints().add(ap);
         
         String t = record.get(CSV_COL_KARTYPE);
         String beginEndOrActivation;
@@ -164,6 +199,8 @@ public class CSVImporter {
         map.setPoint(ap);
         map.setMovement(m);
         map.setBeginEndOrActivation(beginEndOrActivation);
+        
+        m.getPoints().add(map);
         
         return map;
     }
@@ -198,6 +235,7 @@ public class CSVImporter {
         Integer virtualLocalLoopNumber = vlln != null && !vlln.isEmpty() ? Integer.parseInt(vlln) : null;
         String tt = r.get(CSV_COL_TRIGGERTYPE);
         String ct = r.get(CSV_COL_KARTYPE);
+        List<VehicleType> vhts = getVehicleTypes(r);
         
         String triggertype = null;
         switch(tt){
@@ -231,6 +269,7 @@ public class CSVImporter {
         aps.setTriggerType(triggertype);
         aps.setKarCommandType(commandtype);
         aps.setVirtualLocalLoopNumber(virtualLocalLoopNumber);
+        aps.setVehicleTypes(vhts);
         
         return aps;
     }
@@ -285,7 +324,7 @@ public class CSVImporter {
     // </editor-fold>
     
     // <editor-fold desc="Grouping functions" defaultstate="collapsed">    
-    List<List<CSVRecord>> recordsByMovement(List<CSVRecord> records) throws IOException {
+    List<List<CSVRecord>> groupByMovement(List<CSVRecord> records) throws IOException {
         Map<Integer, List<CSVRecord>> pointsByMovement = new HashMap<>();
         for (CSVRecord record : records) {
             Integer volgnummer = Integer.parseInt(record.get(CSV_COL_MOVEMENTNUMBER));
@@ -298,7 +337,7 @@ public class CSVImporter {
         return new ArrayList(pointsByMovement.values());
     }
 
-    List<List<CSVRecord>> pointsPerRseq() throws IOException {
+    List<List<CSVRecord>> groupByRoadsideEquipment() throws IOException {
         Map<String, List<CSVRecord>> pointsByRseq = new HashMap<>();
         List<CSVRecord> records = p.getRecords();
         for (CSVRecord record : records) {
@@ -333,6 +372,17 @@ public class CSVImporter {
         String rdy = c.get(CSV_COL_RDY);
         
         return signaalgroep + kartype + rdx + rdy;
+    }
+    
+    List<VehicleType> getVehicleTypes(CSVRecord r){
+        List<VehicleType> vhts = new ArrayList<>();
+        for (int i = CSV_COL_BUS; i <= CSV_COL_MARECHAUSSEE; i++) {
+            String hasVT = r.get(i);
+            if(hasVT != null && hasVT.equalsIgnoreCase("x")){
+                vhts.add(vehicleMap.get(i));
+            }
+        }
+        return vhts;
     }
     
     DataOwner findDataOwner(String omschrijving){

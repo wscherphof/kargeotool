@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
+import nl.b3p.kar.hibernate.VehicleType;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -41,8 +42,21 @@ public class CSVImporterTest {
         da.setOmschrijving("B3Partners");
         da.setId(666);
         das.add(da);
-                
-        instance = new CSVImporter(reader,das);
+        List<VehicleType> vts = new ArrayList<>();
+        
+        vts.add(new VehicleType(1, "Bus"));
+        vts.add(new VehicleType(2, "Tram"));
+        vts.add(new VehicleType(3, "Politie"));
+        vts.add(new VehicleType(4, "Brandweer"));
+        vts.add(new VehicleType(5, "Ambulance"));
+        vts.add(new VehicleType(6, "CVV"));
+        vts.add(new VehicleType(7, "Taxi"));
+        vts.add(new VehicleType(69, "Politie niet in uniform"));
+        vts.add(new VehicleType(70, "Marechaussee"));
+        vts.add(new VehicleType(71, "Hoogwaardig Openbaar Vervoer (HOV) bus"));
+
+        
+        instance = new CSVImporter(reader,das, vts);
         instance.init();
     }
     
@@ -61,7 +75,7 @@ public class CSVImporterTest {
 
     @Test
     public void testProcessRseq() throws Exception {
-        List<List<CSVRecord>> recordsPerRseq = instance.pointsPerRseq();
+        List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         for (List<CSVRecord> r : recordsPerRseq) {
             RoadsideEquipment rseq = instance.processRseq(r);
             assertEquals(2, rseq.getMovements().size());
@@ -75,7 +89,7 @@ public class CSVImporterTest {
     
     @Test
     public void testCreateRseq() throws IOException, ParseException{
-        List<List<CSVRecord>> recordsPerRseq = instance.pointsPerRseq();
+        List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         List<CSVRecord> rseqRecord = recordsPerRseq.get(0);
         RoadsideEquipment r = instance.parseRseq(rseqRecord);
         assertEquals(RoadsideEquipment.TYPE_GUARD,r.getType());
@@ -92,9 +106,9 @@ public class CSVImporterTest {
 
     @Test
     public void testPointsByMovement() throws Exception {
-        List<List<CSVRecord>> recordsPerRseq = instance.pointsPerRseq();
+        List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         for (List<CSVRecord> list : recordsPerRseq) {
-            List<List<CSVRecord>> movements = instance.recordsByMovement(list);
+            List<List<CSVRecord>> movements = instance.groupByMovement(list);
             assertEquals(2, movements.size());
             for (List<CSVRecord> movement : movements) {
                 assertEquals(5, movement.size());
@@ -104,7 +118,7 @@ public class CSVImporterTest {
 
     @Test
     public void testPointsPerRseq() throws Exception {
-        List<List<CSVRecord>> rs = instance.pointsPerRseq();
+        List<List<CSVRecord>> rs = instance.groupByRoadsideEquipment();
         assertEquals(1, rs.size());
     }
 

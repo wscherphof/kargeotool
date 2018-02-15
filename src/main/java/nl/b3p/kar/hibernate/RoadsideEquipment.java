@@ -733,7 +733,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     }
     
     public void beforeMarshal(Marshaller marshaller) {
-        if (!vehicleTypeToExport.equalsIgnoreCase("Gemixt")) {
+        if (vehicleTypeToExport != null && !vehicleTypeToExport.equalsIgnoreCase("Gemixt")) {
             SortedSet<Movement> ms = new TreeSet<>();
             SortedSet<ActivationPoint> ps = new TreeSet<>();
             for (Movement movement : movements) {

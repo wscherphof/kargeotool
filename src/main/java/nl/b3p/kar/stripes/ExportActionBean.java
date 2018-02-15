@@ -343,7 +343,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                             map.getBeginEndOrActivation().equals("END") ? "eind" :  map.getBeginEndOrActivation().equals("BEGIN") ? "begin": map.getSignal().getKarCommandType() == 1 ? "in" :  map.getSignal().getKarCommandType() == 2 ? "uit" : "voor",
                             triggerType,
                             map.getPoint().getLocation().getX(),
-                            map.getPoint().getLocation().getX(),
+                            map.getPoint().getLocation().getY(),
                             map.getSignal() != null ?  map.getSignal().getDistanceTillStopLine(): "", 
                             vhts.getOrDefault("Bus", ""),
                             vhts.getOrDefault("Tram", ""),
@@ -385,6 +385,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         String label = "";
         if(map.getSignal() != null){
             String direction = map.getSignal().getDirection();
+            if(direction == null){
+                return label;
+            }
             String[] dirs = direction.split(",");
             for (String dir : dirs) {
                 switch(dir){
