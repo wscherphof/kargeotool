@@ -1,0 +1,11 @@
+Soort verkeerssysteem,Beheerder,Beheerdersaanduiding,Plaats,Locatie,Geldig vanaf,Geldig tot,KAR-adres,Signaalgroep,Richtingen,Beweging,Volgnummer beweging,KAR-punt,Type melding,Triggertype,RD-X,RD-Y,Afstand,Bus,Tram,CVV,Taxi,HOV,Politie,Brandweer,Ambulance,Politie niet in uniform,Marechaussee,Virtual local loop-number
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,,,BI2 - E2,2,BI2,begin,,117349.76,117349.76,,,,,,,,,,,,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,2,la-ra-rd,BI2 - E2,2,VI2,voor,standaard,116086.4,116086.4,2234,x,x,x,x,x,,,,,,123
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,2,la-ra-rd,BI2 - E2,2,I2,in,standaard,114181.76,114181.76,2076,x,x,x,x,x,,,,,,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,2,la-ra-rd,BI2 - E2,2,I2,uit,standaard,112448.0,112448.0,1707,x,x,x,x,x,,,,,,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,,,BI2 - E2,2,E2,eind,,110687.36,110687.36,,,,,,,,,,,,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,,,BI1 - HE1,1,BI1,begin,,118586.24,118586.24,,,,,,,,,,,,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,1,la-ra,BI1 - HE1,1,VI1,voor,standaard,115387.52,115387.52,2568,,,,,,x,x,x,x,x,42
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,1,la-ra,BI1 - HE1,1,HI,in,standaard,112904.96,112904.96,1870,,,,,,x,x,x,x,x,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,1,la-ra,BI1 - HE1,1,HU1,uit,standaard,111147.36,111147.36,710,,,,,,x,x,x,x,x,
+Bewakingssysteem,B3Partners,Gemengd,Gouda,werwer,08-02-2018,,666,,,BI1 - HE1,1,HE1,eind,,109208.96,109208.96,,,,,,,,,,,,

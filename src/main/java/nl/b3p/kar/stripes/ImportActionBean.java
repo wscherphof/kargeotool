@@ -365,8 +365,10 @@ public class ImportActionBean implements ActionBean {
         final FileBean zipFile = bestand;
         
         try {
-            CSVImporter importer = new CSVImporter();
-            List<RoadsideEquipment> rseqs = importer.process(zipFile.getReader());//, getGebruiker(),this.context);
+            EntityManager em = Stripersist.getEntityManager();
+            List<DataOwner> dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
+            CSVImporter importer = new CSVImporter(zipFile.getReader(), dataowners);
+            List<RoadsideEquipment> rseqs = importer.process();//, getGebruiker(),this.context);
 
         } catch (Exception e) {
             log.error("Fout importeren CSV",e);
