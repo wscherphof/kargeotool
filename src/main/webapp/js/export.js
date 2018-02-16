@@ -163,17 +163,25 @@ Ext.onReady(function (){
                         text : 'Bewerk',
                         handler : function (){
                             var dgId = Ext.getCmp("deelgebied").getValue();
-                            var url = deelgebiedActionBeanUrl + "?bewerkDeelgebied=true&filter=" + dgId;
-                            document.location.href = url;
+                            if(dgId){
+                                var url = deelgebiedActionBeanUrl + "?bewerkDeelgebied=true&filter=" + dgId;
+                                document.location.href = url;
+                            }else{
+                                Ext.getCmp("deelgebied").setActiveError(true);
+                            }
                         }
                     },
                     {
                         xtype : "button",
                         text : 'Verwijder',
-                        handler : function (){
+                        handler: function () {
                             var dgId = Ext.getCmp("deelgebied").getValue();
-                            var url = deelgebiedActionBeanUrl + "?removeDeelgebied=true&filter=" + dgId;
-                            document.location.href = url;
+                            if (dgId) {
+                                var url = deelgebiedActionBeanUrl + "?removeDeelgebied=true&filter=" + dgId;
+                                document.location.href = url;
+                            } else {
+                                Ext.getCmp("deelgebied").setActiveError(true);
+                            }
                         }
                     }
                 ]
