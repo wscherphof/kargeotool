@@ -375,16 +375,22 @@ public class ImportActionBean implements ActionBean {
             List<DataOwner> dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
             List<VehicleType> vhts =  em.createQuery("from VehicleType order by nummer").getResultList();
             CSVImporter importer = new CSVImporter(zipFile.getReader(), dataowners, vhts);
-            List<RoadsideEquipment> rseqs = importer.process();//, getGebruiker(),this.context);
-            
-            for (RoadsideEquipment rseq : rseqs) {
+            List<RoadsideEquipment> rseqs;
+            try{
+                rseqs = importer.process();//, getGebruiker(),this.context);
+                for (RoadsideEquipment rseq : rseqs) {
                 List<KV9ValidationError> errors = new ArrayList<>();
                 int num = rseq.validateKV9(errors);
                 rseq.setValidationErrors(num);
                 saveRseq(rseq, em);
+                this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + rseq.getKarAddress() + ", " + rseq.getDescription()));
             }
             em.getTransaction().commit();
-
+            }catch(IllegalArgumentException e){
+                this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van de csv: \n" + ExceptionUtils.getMessage(e)));
+                em.getTransaction().rollback();
+            }
+            
         } catch (Exception e) {
             log.error("Fout importeren CSV",e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));

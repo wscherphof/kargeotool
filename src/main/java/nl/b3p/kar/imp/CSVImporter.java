@@ -175,16 +175,18 @@ public class CSVImporter {
 
         Set<ActivationPoint> points = rseq.getPoints();
         double x = 0, y = 0;
+        int count = 0;
         for (Movement m : movements) {
             for (MovementActivationPoint point : m.getPoints()) {
                 if(point.getSignal() != null && point.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_UITMELDPUNT){
                     x += point.getPoint().getLocation().getX();
                     y += point.getPoint().getLocation().getY();
+                    count++;
                 }
             }
         }
-        x = x / points.size() + 5;
-        y = y / points.size();
+        x =( x / count) + 5;
+        y = y / count;
         rseq.setLocation(gf.createPoint(new Coordinate(x, y)));
         return rseq;
     }
