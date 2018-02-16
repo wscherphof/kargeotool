@@ -19,6 +19,7 @@
 
 package nl.b3p.kar.hibernate;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -28,7 +29,7 @@ import javax.persistence.*;
  * @author Matthijs Laan
  */
 @Entity
-public class VehicleType {
+public class VehicleType implements Comparable<VehicleType>, Serializable{
 
     public VehicleType(int nummer, String omschrijving, String groep) {
         this.nummer = nummer;
@@ -43,7 +44,7 @@ public class VehicleType {
      * Waarde voor in Kv9 XML; KARb1 bericht attribuut 2.
      */
     @Id
-    private int nummer;
+    private Integer nummer;
     
     /**
      * Omschrijving van het soort voertuig.
@@ -60,7 +61,7 @@ public class VehicleType {
      *
      * @return nummer
      */
-    public int getNummer() {
+    public Integer getNummer() {
         return nummer;
     }
 
@@ -68,7 +69,7 @@ public class VehicleType {
      *
      * @param nummer nummer
      */
-    public void setNummer(int nummer) {
+    public void setNummer(Integer nummer) {
         this.nummer = nummer;
     }
 
@@ -95,7 +96,9 @@ public class VehicleType {
     public void setGroep(String groep) {
         this.groep = groep;
     }
-    
-    
-    
+
+    @Override
+    public int compareTo(VehicleType o) {
+        return this.getNummer().compareTo(o.getNummer());
+    }
 }

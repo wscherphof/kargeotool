@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,6 +82,8 @@ public class CSVImporter {
     private final List<DataOwner> dataowners;
     private final List<VehicleType> vehiclestypes;
     private final Map<Integer, VehicleType> vehicleMap = new HashMap<>();
+    private Map<String, String> movementWithVehicleType;
+    private List<CSVRecord> records;
 
     private final int RIJKSDRIEHOEKSTELSEL = 28992;
     private final GeometryFactory gf = new GeometryFactory(new PrecisionModel(), RIJKSDRIEHOEKSTELSEL);
@@ -91,8 +94,6 @@ public class CSVImporter {
         this.vehiclestypes = vehiclestypes;
         /*
         TODO:
-            * vehicletype check: geen hd/ov in 1 beweging
-            * activationpoints niet laten delen over hd/ov laag
             * rdx/rdy binnen werkgebied liggen
             * validaties
          */
@@ -121,6 +122,8 @@ public class CSVImporter {
         vehicleMap.put(25, vtByNummer.get(5));
         vehicleMap.put(26, vtByNummer.get(69));
         vehicleMap.put(27, vtByNummer.get(70));
+        records = p.getRecords();
+        groupMovementByVehicleType();
     }
 
     public List<RoadsideEquipment> process() throws FileNotFoundException, ParseException {
@@ -166,7 +169,7 @@ public class CSVImporter {
     }
 
     Movement processMovement(List<CSVRecord> records, Map<String, ActivationPoint> aps, RoadsideEquipment rseq) {
-        Movement m = parseMovement(records, aps, rseq);
+        Movement m = parseMovement(records, rseq);
 
         List<MovementActivationPoint> maps = new ArrayList<>();
         MovementActivationPoint uit = null;
@@ -181,7 +184,7 @@ public class CSVImporter {
         if(uit == null){
             throw new IllegalArgumentException("Beweging zonder uitmeldpunt gevonden. Beweging van regel " + records.get(0).getRecordNumber() + " tot " + records.get(records.size() -1).getRecordNumber());
         }
-
+        m.determineVehicleType();
         for (MovementActivationPoint map : maps) {
             String l = getActivationPointLabel(map, m, uit.getSignal().getSignalGroupNumber());
             map.getPoint().setLabel(l);
@@ -230,7 +233,7 @@ public class CSVImporter {
         return r;
     }
 
-    Movement parseMovement(List<CSVRecord> records, Map<String, ActivationPoint> aps, RoadsideEquipment rseq) {
+    Movement parseMovement(List<CSVRecord> records, RoadsideEquipment rseq) {
         Movement m = new Movement();
         CSVRecord r = records.get(0);
         String movementnumber = r.get(CSV_COL_MOVEMENTNUMBER);
@@ -340,7 +343,33 @@ public class CSVImporter {
     }
     // </editor-fold>
 
-    // <editor-fold desc="Grouping functions" defaultstate="collapsed">    
+    // <editor-fold desc="Grouping functions" defaultstate="collapsed">
+    void groupMovementByVehicleType (){
+        movementWithVehicleType = new HashMap<>();
+        Map<String, Set<VehicleType>> ms = new HashMap<>();
+        for (CSVRecord r : records) {
+            List<VehicleType> vhts = getVehicleTypes(r);
+            String movementnumber = r.get(CSV_COL_MOVEMENTNUMBER);
+            if(!ms.containsKey(movementnumber)){
+                ms.put(movementnumber, new HashSet<VehicleType>());
+            }
+            Set<VehicleType> v = ms.get(movementnumber);
+            v.addAll(vhts);
+        }
+        for (String movementNumber : ms.keySet()) {
+            Set<VehicleType> vh = ms.get(movementNumber);
+            String vehicleType = null;
+            for (VehicleType vt : vh) {
+                if (vehicleType == null) {
+                    vehicleType = vt.getGroep();
+                } else if (!vehicleType.equals(vt.getGroep())) {
+                    throw new IllegalArgumentException("Beweging met zowel hulpdiensten als ov gedetecteerd.");
+                }
+            }
+            movementWithVehicleType.put(movementNumber, vehicleType);
+        }
+    }
+    
     List<List<CSVRecord>> groupByMovement(List<CSVRecord> records) throws IOException {
         Map<Integer, List<CSVRecord>> pointsByMovement = new HashMap<>();
         for (CSVRecord record : records) {
@@ -356,7 +385,6 @@ public class CSVImporter {
 
     List<List<CSVRecord>> groupByRoadsideEquipment() throws IOException {
         Map<String, List<CSVRecord>> pointsByRseq = new HashMap<>();
-        List<CSVRecord> records = p.getRecords();
         for (CSVRecord record : records) {
             String id = getRseqIdentifier(record);
 
@@ -375,7 +403,7 @@ public class CSVImporter {
     String getActivationPointLabel(MovementActivationPoint map, Movement m, int sg) {
         String label = map.getPoint().getLabel();
         if (label.isEmpty()) {
-            String vt = m.determineVehicleType();
+            String vt = m.getVehicleType();
             String ct;
             if (map.getBeginEndOrActivation().equals(MovementActivationPoint.ACTIVATION)) {
                 switch (map.getSignal().getKarCommandType()) {
@@ -417,8 +445,10 @@ public class CSVImporter {
         String kartype = c.get(CSV_COL_KARTYPE);
         String rdx = c.get(CSV_COL_RDX);
         String rdy = c.get(CSV_COL_RDY);
+        String movementnumber = c.get(CSV_COL_MOVEMENTNUMBER);
+        String vehicleType = movementWithVehicleType.get(movementnumber);
 
-        return signaalgroep + kartype + rdx + rdy;
+        return vehicleType + signaalgroep + kartype + rdx + rdy;
     }
 
     List<VehicleType> getVehicleTypes(CSVRecord r) {

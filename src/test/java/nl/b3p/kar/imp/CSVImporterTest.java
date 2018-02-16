@@ -46,10 +46,10 @@ public class CSVImporterTest {
 
         vts.add(new VehicleType(1, "Bus", "OV"));
         vts.add(new VehicleType(2, "Tram", "OV"));
-        vts.add(new VehicleType(4, "Brandweer", "OV"));
         vts.add(new VehicleType(7, "Taxi", "OV"));
         vts.add(new VehicleType(6, "CVV", "OV"));
         vts.add(new VehicleType(71, "Hoogwaardig Openbaar Vervoer (HOV) bus", "OV"));
+        vts.add(new VehicleType(4, "Brandweer", "Hulpdiensten"));
         vts.add(new VehicleType(5, "Ambulance", "Hulpdiensten"));
         vts.add(new VehicleType(3, "Politie", "Hulpdiensten"));
         vts.add(new VehicleType(69, "Politie niet in uniform", "Hulpdiensten"));
