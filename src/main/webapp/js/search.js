@@ -223,8 +223,8 @@ Ext.define("nl.b3p.kar.SearchResult", {
     },
     constructor: function(config) {
         this.initConfig(config);
-        if(this.x !== null && this.y !== null){
-            this.location = new OpenLayers.LonLat(this.x, this.y);
+        if(this.getX() !== null && this.getY() !== null){
+            this.setLocation(new OpenLayers.LonLat(this.getX(), this.getY()));
         }
     }
 });
@@ -353,6 +353,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
         var link = Ext.get(addresslink);
         var me = this;
         link.on('click', function() {
+            
             var result = Ext.create(nl.b3p.kar.SearchResult,{
                 x:rseq.geometry.coordinates[0],
                 y:rseq.geometry.coordinates[1],
