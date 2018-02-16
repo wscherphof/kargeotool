@@ -649,23 +649,24 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 if (onlyValid && !rseqObj.isValid()) {
                     continue;
                 }
-                if (vehicleType != null && !rseqObj.hasSignalForVehicleType(vehicleType)) {
-                    continue;
-                }
+                
+                if(vehicleType == null || vehicleType.equals(VehicleType.VEHICLE_TYPE_GEMIXT) || rseqObj.getVehicleType().equalsIgnoreCase(vehicleType)){
+                
                 JSONObject jRseq = new JSONObject();
-                jRseq.put("id", rseqObj.getId());
-                jRseq.put("naam", rseqObj.getDescription());
-                jRseq.put("karAddress", rseqObj.getKarAddress());
-                jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
-                String type = rseqObj.getType();
-                if (type.equalsIgnoreCase("CROSSING")) {
-                    jRseq.put("type", "VRI");
-                } else if (type.equalsIgnoreCase("BAR")) {
-                    jRseq.put("type", "Afsluitingssysteem");
-                } else if (type.equalsIgnoreCase("GUARD")) {
-                    jRseq.put("type", "Waarschuwingssyteem");
+                    jRseq.put("id", rseqObj.getId());
+                    jRseq.put("naam", rseqObj.getDescription());
+                    jRseq.put("karAddress", rseqObj.getKarAddress());
+                    jRseq.put("dataowner", rseqObj.getDataOwner().getOmschrijving());
+                    String type = rseqObj.getType();
+                    if (type.equalsIgnoreCase("CROSSING")) {
+                        jRseq.put("type", "VRI");
+                    } else if (type.equalsIgnoreCase("BAR")) {
+                        jRseq.put("type", "Afsluitingssysteem");
+                    } else if (type.equalsIgnoreCase("GUARD")) {
+                        jRseq.put("type", "Waarschuwingssyteem");
+                    }
+                    rseqArray.put(jRseq);
                 }
-                rseqArray.put(jRseq);
             }
         }
         return rseqArray;
