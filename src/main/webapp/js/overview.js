@@ -337,33 +337,63 @@ Ext.define("nl.b3p.kar.Overview",{
                             }
                         }
                     },
-                    itemmouseenter : function (tree,record){
-                        if (record.raw.type === "point"){
+                    itemmouseenter: function (tree, record) {
+                        var vectorLayer = this.editor.olc.vectorLayer;
+                        var features = [];
+                        if (record.raw.type === "point") {
                             var id = record.raw.pointId;
-                            var vectorLayer = this.editor.olc.vectorLayer;
-                            var features = vectorLayer.getFeaturesByAttribute("id",id);
-                            if (features !== null && features.length > 0){
-                                var feat = features[0];
-                                if (feat.renderIntent !== "select"){
+                            var features = vectorLayer.getFeaturesByAttribute("id", id);
+
+                        } else if (record.raw.type === "movement") {
+                            var nummer = record.raw.movementNumber;
+                            var fs = vectorLayer.features;
+                            for (var i = 0 ; i < fs.length; i++){
+                                var feat = fs[i];
+                                if(feat.attributes.movementNumbers && feat.attributes.movementNumbers.indexOf(nummer) !== -1){
+                                    features.push(feat);
+                                }
+                            }
+                            
+                        }
+                        if (features !== null ) {
+                            for (var i = 0; i < features.length; i++) {
+                                var feat = features[i];
+                                if (feat.renderIntent !== "select") {
                                     feat.renderIntent = "temporary";
-                                    vectorLayer.redraw();
+                                }
+                            }
+                            vectorLayer.redraw();
+                        
+                        }
+                    },
+                    itemmouseleave: function (tree, record) {
+                        var features = [];
+                        var vectorLayer = this.editor.olc.vectorLayer;
+                        if (record.raw.type === "point") {
+                            var id = record.raw.pointId;
+                            var currentSelectedObject = this.editor.selectedObject;
+                            if (currentSelectedObject === null || currentSelectedObject.getId() !== id) {
+                                features = vectorLayer.getFeaturesByAttribute("id", id);
+                            }
+                        } else if (record.raw.type === "movement") {
+                            var nummer = record.raw.movementNumber;
+                            var fs = vectorLayer.features;
+                            for (var i = 0; i < fs.length; i++) {
+                                var feat = fs[i];
+                                if (feat.attributes.movementNumbers && feat.attributes.movementNumbers.indexOf(nummer) !== -1) {
+                                    features.push(feat);
                                 }
                             }
                         }
-                    },
-                    itemmouseleave : function (tree,record){
-                        if (record.raw.type === "point"){
-                            var id = record.raw.pointId;
-                            var currentSelectedObject = this.editor.selectedObject;
-                            if (currentSelectedObject === null || currentSelectedObject.getId() !== id){
-                                var vectorLayer = this.editor.olc.vectorLayer;
-                                var features = vectorLayer.getFeaturesByAttribute("id",id);
-                                if (features !== null && features.length > 0){
-                                    var feat = features[0];
+
+                        if (features !== null) {
+                            for (var i = 0; i < features.length; i++) {
+                                var feat = features[i];
+                                if (feat.renderIntent !== "select") {
                                     feat.renderIntent = "default";
-                                    vectorLayer.redraw();
                                 }
                             }
+                            vectorLayer.redraw();
                         }
                     },
                     itemcontextmenu : function (view,record,item,index,event,eOpts){
@@ -536,6 +566,7 @@ Ext.define("nl.b3p.kar.Overview",{
                 expanded: true,
                 icon: karTheme.richting,
                 movementId: key,
+                movementNumber: movement.getNummer(),
                 allowDrag: false,
                 iconCls: 'overviewTree',
                 type: "movement",

@@ -666,7 +666,11 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
             SortedSet<Integer> movementNumbers = new TreeSet();
 
             JSONArray mns = new JSONArray();
-            for(Integer i: movementNumbers) { mns.put(i); };
+            List<MovementActivationPoint> maps = mapsByAp2.get(ap2);
+            for (MovementActivationPoint map : maps) {
+                mns.put(map.getMovement().getNummer());
+            }
+            
             pj.put("movementNumbers", mns);
 
             jpoints.add(pj);
