@@ -1,7 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
+ *
+ * Copyright (C) 2018B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package nl.b3p.kar.imp;
 
@@ -92,11 +105,6 @@ public class CSVImporter {
         this.fr = fr;
         this.dataowners = dataowners;
         this.vehiclestypes = vehiclestypes;
-        /*
-        TODO:
-            * rdx/rdy binnen werkgebied liggen
-            * validaties
-         */
     }
 
     void init() throws IOException {
@@ -123,6 +131,15 @@ public class CSVImporter {
         vehicleMap.put(26, vtByNummer.get(69));
         vehicleMap.put(27, vtByNummer.get(70));
         records = p.getRecords();
+        Map<Long, Integer> errors = validate();
+        if(!errors.isEmpty()){
+            String errorString = "";
+            for (Long row : errors.keySet()) {
+                errorString += row + " x " + errors.get(row) + ", ";
+            }
+            errorString = errorString.substring(0, errorString.length() - 2);
+            throw new IllegalArgumentException("Er missen waardes in het CSV bestand. Deze staan op regel x kolom: \n" + errorString);
+        }
         groupMovementByVehicleType();
     }
 
@@ -158,11 +175,15 @@ public class CSVImporter {
 
         Set<ActivationPoint> points = rseq.getPoints();
         double x = 0, y = 0;
-        for (ActivationPoint point : points) {
-            x += point.getLocation().getX();
-            y += point.getLocation().getY();
+        for (Movement m : movements) {
+            for (MovementActivationPoint point : m.getPoints()) {
+                if(point.getSignal() != null && point.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_UITMELDPUNT){
+                    x += point.getPoint().getLocation().getX();
+                    y += point.getPoint().getLocation().getY();
+                }
+            }
         }
-        x = x / points.size();
+        x = x / points.size() + 5;
         y = y / points.size();
         rseq.setLocation(gf.createPoint(new Coordinate(x, y)));
         return rseq;
@@ -209,7 +230,6 @@ public class CSVImporter {
         DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
         String t;
         switch (type) {
-            default:
             case "VRI":
                 t = RoadsideEquipment.TYPE_CROSSING;
                 break;
@@ -219,6 +239,8 @@ public class CSVImporter {
             case "Afsluitsysteem":
                 t = RoadsideEquipment.TYPE_BAR;
                 break;
+            default:
+                throw new IllegalArgumentException ("Type verkeerssysteem verkeerd: " + type);
         }
 
         RoadsideEquipment r = new RoadsideEquipment();
@@ -282,6 +304,10 @@ public class CSVImporter {
         String rdy = record.get(CSV_COL_RDY);
         Double x = Double.parseDouble(rdx);
         Double y = Double.parseDouble(rdy);
+
+        if (!(x > 0 && x < 300000 && y > 290000 && y < 630000)) {
+            throw new IllegalArgumentException("Coordinaten liggen buiten Nederland.");
+        }
         Point point = gf.createPoint(new Coordinate(x, y));
 
         ap.setNummer(rseq.getPoints().size() + 1);
@@ -297,14 +323,34 @@ public class CSVImporter {
         String direction = r.get(CSV_COL_DIRECTION);
         direction = direction != null && !direction.isEmpty() ? direction.replaceAll("-", ",") : null;
         String distance = r.get(CSV_COL_DISTANCE);
-        Integer dist = distance != null && !distance.isEmpty() ? Integer.parseInt(distance) : null;
-        Integer signaalgroep = Integer.parseInt(r.get(CSV_COL_SIGNALGROUP));
+        String sg = r.get(CSV_COL_SIGNALGROUP);
         String vlln = r.get(CSV_COL_VIRTUALLOCALLOOPNUMBER);
         Integer virtualLocalLoopNumber = vlln != null && !vlln.isEmpty() ? Integer.parseInt(vlln) : null;
         String tt = r.get(CSV_COL_TRIGGERTYPE);
         String ct = r.get(CSV_COL_KARTYPE);
+        
         List<VehicleType> vhts = getVehicleTypes(r);
+        
+        if(distance == null || distance.isEmpty()){
+            throw new IllegalArgumentException("Afstand mist op rij " + r.getRecordNumber());
+        }
+        
+        if(sg == null || sg.isEmpty()){
+            throw new IllegalArgumentException("Signaalgroep mist op rij " + r.getRecordNumber());
+        }
+        
+        if(tt == null || tt.isEmpty()){
+            throw new IllegalArgumentException("Triggertype mist op rij " + r.getRecordNumber());
+        }
+        
+        if(vhts.isEmpty()){
+            throw new IllegalArgumentException("Geen modaliteit ingevuld op regel " + r.getRecordNumber());
+        }
 
+        Integer dist = Integer.parseInt(distance);
+        Integer signaalgroep = Integer.parseInt(sg);
+        
+      
         String triggertype = null;
         switch (tt) {
             case "standaard":
@@ -330,7 +376,6 @@ public class CSVImporter {
                 commandtype = ActivationPointSignal.COMMAND_UITMELDPUNT;
                 break;
         }
-
         aps.setDirection(direction);
         aps.setDistanceTillStopLine(dist);
         aps.setSignalGroupNumber(signaalgroep);
@@ -400,6 +445,19 @@ public class CSVImporter {
     // </editor-fold>
     
     // <editor-fold desc="Helper functions" defaultstate="collapsed">
+    Map<Long, Integer> validate(){
+        Map<Long, Integer> m = new HashMap<>();
+        int [] nonEmptyColumns = {0,1,2,3,7,11,13,15,16};
+        for (CSVRecord record : records) {
+            for (int nonEmptyColumn : nonEmptyColumns) {
+                if(record.get(nonEmptyColumn).isEmpty()){
+                    m.put(record.getRecordNumber(), nonEmptyColumn);
+                }
+            }
+        }
+        return m;
+    }
+    
     String getActivationPointLabel(MovementActivationPoint map, Movement m, int sg) {
         String label = map.getPoint().getLabel();
         if (label.isEmpty()) {
@@ -440,7 +498,6 @@ public class CSVImporter {
     }
 
     String getActivationPointIdentifier(CSVRecord c) {
-        //én signaalgroep én type melding én RD-X én RD-y overeenkomen
         String signaalgroep = c.get(CSV_COL_SIGNALGROUP);
         String kartype = c.get(CSV_COL_KARTYPE);
         String rdx = c.get(CSV_COL_RDX);
@@ -468,7 +525,7 @@ public class CSVImporter {
                 return dataowner;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Dataowner niet gevonden: " + omschrijving);
     }
 
     boolean validateHeader(Map<String, Integer> header) {
