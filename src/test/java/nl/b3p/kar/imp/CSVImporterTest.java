@@ -43,20 +43,19 @@ public class CSVImporterTest {
         da.setId(666);
         das.add(da);
         List<VehicleType> vts = new ArrayList<>();
-        
-        vts.add(new VehicleType(1, "Bus"));
-        vts.add(new VehicleType(2, "Tram"));
-        vts.add(new VehicleType(3, "Politie"));
-        vts.add(new VehicleType(4, "Brandweer"));
-        vts.add(new VehicleType(5, "Ambulance"));
-        vts.add(new VehicleType(6, "CVV"));
-        vts.add(new VehicleType(7, "Taxi"));
-        vts.add(new VehicleType(69, "Politie niet in uniform"));
-        vts.add(new VehicleType(70, "Marechaussee"));
-        vts.add(new VehicleType(71, "Hoogwaardig Openbaar Vervoer (HOV) bus"));
 
-        
-        instance = new CSVImporter(reader,das, vts);
+        vts.add(new VehicleType(1, "Bus", "OV"));
+        vts.add(new VehicleType(2, "Tram", "OV"));
+        vts.add(new VehicleType(4, "Brandweer", "OV"));
+        vts.add(new VehicleType(7, "Taxi", "OV"));
+        vts.add(new VehicleType(6, "CVV", "OV"));
+        vts.add(new VehicleType(71, "Hoogwaardig Openbaar Vervoer (HOV) bus", "OV"));
+        vts.add(new VehicleType(5, "Ambulance", "Hulpdiensten"));
+        vts.add(new VehicleType(3, "Politie", "Hulpdiensten"));
+        vts.add(new VehicleType(69, "Politie niet in uniform", "Hulpdiensten"));
+        vts.add(new VehicleType(70, "Marechaussee", "Hulpdiensten"));
+
+        instance = new CSVImporter(reader, das, vts);
         instance.init();
     }
     

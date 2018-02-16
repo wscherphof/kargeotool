@@ -30,9 +30,10 @@ import javax.persistence.*;
 @Entity
 public class VehicleType {
 
-    public VehicleType(int nummer, String omschrijving) {
+    public VehicleType(int nummer, String omschrijving, String groep) {
         this.nummer = nummer;
         this.omschrijving = omschrijving;
+        this.groep = groep;
     }
 
     public VehicleType() {
