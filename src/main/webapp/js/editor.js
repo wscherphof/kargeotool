@@ -404,14 +404,35 @@ Ext.define("Editor", {
                                 if (onSaved) {
                                     onSaved();
                                 } else {
-                                    if (rseq.validationErrors === 0) {
+                                    if(rseq.getReadyForExport()){
+                                        if (rseq.getValidationErrors() === 0) {
+                                            Ext.Msg.show({
+                                                title: "Informeren vervoerders",
+                                                msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
+                                                fn: function (button) {
+                                                    if (button === 'yes') {
+                                                        this.showCarriers();
+                                                    }
+                                                },
+                                                scope: this,
+                                                buttons: Ext.Msg.YESNO,
+                                                buttonText: {
+                                                    no: "Nee",
+                                                    yes: "Ja"
+                                                },
+                                                icon: Ext.Msg.QUESTION
+                                            });
+                                        } else {
+                                            Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
+                                        }
+                                    } else {
                                         Ext.Msg.show({
-                                            title: "Informeren vervoerders",
-                                            msg: "Moeten vervoerders geïnformeerd worden over dit kruispunt?",
+                                            title: "Klaar voor export",
+                                            msg: "Is dit kruispunt klaar om te exporteren?",
                                             fn: function (button) {
                                                 if (button === 'yes') {
-                                                    me.activeRseq.readyForExport = true;
-                                                    this.showCarriers();
+                                                    this.activeRseq.setReadyForExport(true);
+                                                    this.saveOrUpdate();
                                                 }
                                             },
                                             scope: this,
@@ -422,8 +443,6 @@ Ext.define("Editor", {
                                             },
                                             icon: Ext.Msg.QUESTION
                                         });
-                                    } else {
-                                        Ext.Msg.alert('Opgeslagen', 'Het verkeerssysteem is opgeslagen.');
                                     }
                                 }
                             }

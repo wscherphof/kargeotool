@@ -42,7 +42,7 @@ Ext.define("ChangeManager",{
         this.changeDetected = true;
         this.editTitle();
         if(!this.editor.activeRseq.readyIsSet){
-            this.editor.activeRseq.readyForExport = false;
+            this.editor.activeRseq.setReadyForExport(false);
         }
     },
     rseqSaved : function (){
