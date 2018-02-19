@@ -40,13 +40,25 @@ public class CronInitialiser implements ServletContextListener {
     private static final String PARAM_INFORM_ADMINS_INTERVAL = "inform.admins.schedule";
     public static final String PARAM_INFORM_ADMINS_FROMADDRESS = "inform.admins.fromAddress";
     public static final String PARAM_INFORM_ADMINS_TOADDRESS = "inform.admins.toAddress";
+
+    private static final String PARAM_INFORM_KV7CHECKER_INTERVAL = "inform.kv7checker.schedule";
+    public static final String PARAM_INFORM_KV7CHECKER_FROMADDRESS = "inform.kv7checker.fromAddress";
+    public static final String PARAM_INFORM_KV7CHECKER_TOADDRESS1 = "inform.kv7checker.toAddress1";
+    public static final String PARAM_INFORM_KV7CHECKER_TOADDRESS2 = "inform.kv7checker.toAddress2";
     
     private static final Log log = LogFactory.getLog(CronInitialiser.class);
     private ServletContext context;
+    
     private Scheduler scheduler;
-    private String interval;
-    private String fromAddress;
-    private String toAddress;
+    
+    private String informinterval;
+    private String informfromAddress;
+    private String informtoAddress;
+    
+    private String kv7checkerinterval;
+    private String kv7checkerfromAddress;
+    private String kv7checkertoAddress1;
+    private String kv7checkertoAddress2;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -56,9 +68,6 @@ public class CronInitialiser implements ServletContextListener {
     }
     
     private void initAdminExport(){
-         if (interval.equalsIgnoreCase("-1") || interval == null) {
-            return;
-        }
 
         Properties props = new Properties();
         props.put("org.quartz.scheduler.instanceName", "CronInitialiser");
@@ -71,22 +80,44 @@ public class CronInitialiser implements ServletContextListener {
 
             scheduler.startDelayed(60);
 
-            JobDetail job = JobBuilder.newJob(AdminExportJob.class)
-                    .withIdentity("AdminExportJob", "AdminExportgroup")
-                    .build();
+            log.info("Scheduling indexing job for expression " + informinterval + " minutes");
 
-            job.getJobDataMap().put(PARAM_INFORM_ADMINS_FROMADDRESS, fromAddress);
-            job.getJobDataMap().put(PARAM_INFORM_ADMINS_TOADDRESS, toAddress);
-            log.info("Scheduling indexing job for expression " + interval + " minutes");
+            if (!informinterval.equals("-1")) {
+                JobDetail job = JobBuilder.newJob(AdminExportJob.class)
+                        .withIdentity("AdminExportJob", "AdminExportgroup")
+                        .build();
 
-            CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(interval);
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity("informcarriersjob", "informcarriersgroup")
-                    .startNow()
-                    .withSchedule(cronSchedule)
-                    .build();
+                job.getJobDataMap().put(PARAM_INFORM_ADMINS_FROMADDRESS, informfromAddress);
+                job.getJobDataMap().put(PARAM_INFORM_ADMINS_TOADDRESS, informtoAddress);
+                CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(informinterval);
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity("informcarriersjob", "informcarriersgroup")
+                        .startNow()
+                        .withSchedule(cronSchedule)
+                        .build();
 
-            scheduler.scheduleJob(job, trigger);
+                scheduler.scheduleJob(job, trigger);
+            }
+            
+            if (!kv7checkerinterval.equals("-1")) {
+                
+                JobDetail job = JobBuilder.newJob(AdminExportJob.class)
+                        .withIdentity("kv7checkerJob", "kv7checkergroup")
+                        .build();
+
+                job.getJobDataMap().put(PARAM_INFORM_KV7CHECKER_FROMADDRESS, kv7checkerfromAddress);
+                job.getJobDataMap().put(PARAM_INFORM_KV7CHECKER_TOADDRESS1, kv7checkertoAddress1);
+                job.getJobDataMap().put(PARAM_INFORM_KV7CHECKER_TOADDRESS2, kv7checkertoAddress2);
+
+                CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(kv7checkerinterval);
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity("kv7checkerintervaljob", "kv7checkerintervalgroup")
+                        .startNow()
+                        .withSchedule(cronSchedule)
+                        .build();
+
+                scheduler.scheduleJob(job, trigger);
+            }
         } catch (SchedulerException ex) {
             log.error("Cannot create scheduler. ", ex);
         }
@@ -106,9 +137,13 @@ public class CronInitialiser implements ServletContextListener {
     private void init(ServletContextEvent sce) {
         this.context = sce.getServletContext();
 
-        interval = context.getInitParameter(PARAM_INFORM_ADMINS_INTERVAL);
-        fromAddress = context.getInitParameter(PARAM_INFORM_ADMINS_FROMADDRESS);
-        toAddress = context.getInitParameter(PARAM_INFORM_ADMINS_TOADDRESS);
+        informinterval = context.getInitParameter(PARAM_INFORM_ADMINS_INTERVAL);
+        informfromAddress = context.getInitParameter(PARAM_INFORM_ADMINS_FROMADDRESS);
+        informtoAddress = context.getInitParameter(PARAM_INFORM_ADMINS_TOADDRESS);
 
+        kv7checkerinterval = context.getInitParameter(PARAM_INFORM_KV7CHECKER_INTERVAL);
+        kv7checkerfromAddress = context.getInitParameter(PARAM_INFORM_KV7CHECKER_FROMADDRESS);
+        kv7checkertoAddress1 = context.getInitParameter(PARAM_INFORM_KV7CHECKER_TOADDRESS1);
+        kv7checkertoAddress2 = context.getInitParameter(PARAM_INFORM_KV7CHECKER_TOADDRESS2);
     }
 }
