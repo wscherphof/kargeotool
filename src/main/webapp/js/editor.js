@@ -1184,10 +1184,14 @@ Ext.define("Editor", {
                     msg:'Wilt u voorinmeldpunt ' + voorinmeldpunt.getLabel() + " selecteren voor bewegingen naar inmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
                         if(buttonId === "yes") {
+                            var mvmts = this.activeRseq.findMovementsForPoint( voorinmeldpunt );
+                            var voorinmeldMap = mvmts[0].map;
+                          
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
-                                pointId: voorinmeldpunt.getId()
+                                pointId: voorinmeldpunt.getId(),
+                                distanceTillStopLine: voorinmeldMap.getDistanceTillStopLine()
                             });
                             me.activeRseq.addInmeldpunt(inmeldpunt, voorinmeldpunt,map, true,true, movementId);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
@@ -1239,10 +1243,14 @@ Ext.define("Editor", {
                     msg:'Wilt u inmeldpunt ' + inmeldpunt.getLabel() + " selecteren voor bewegingen naar uitmeldpunt " + this.selectedObject.getLabel() + "?",
                     fn: function(buttonId) {
                         if(buttonId === "yes") {
+                            
+                            var mvmts = this.activeRseq.findMovementsForPoint( inmeldpunt );
+                            var inmeldMap = mvmts[0].map;
                             var map = Ext.create(MovementActivationPoint, {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
-                                pointId: inmeldpunt.getId()
+                                pointId: inmeldpunt.getId(),
+                                distanceTillStopLine: inmeldMap.getDistanceTillStopLine()
                             });
                             me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true,false, this.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
