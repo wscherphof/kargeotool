@@ -82,6 +82,7 @@ public class EditorActionBean implements ActionBean {
     private String json;
     private JSONArray vehicleTypesJSON;
     private JSONArray dataOwnersJSON;
+    private JSONArray dataOwnersVervoerders;
     private JSONObject ovInfoJSON;
     
     private JSONArray dataownersForUser;
@@ -132,6 +133,8 @@ public class EditorActionBean implements ActionBean {
 
         log.debug("view(): dataOwnersJSON");
         dataOwnersJSON = new JSONArray();
+        dataOwnersVervoerders = new JSONArray();
+        
         Collection<DataOwner> dataOwners;
         Gebruiker g = getGebruiker();
         if(g.isBeheerder()) {
@@ -149,6 +152,9 @@ public class EditorActionBean implements ActionBean {
             jdao.put("companyNumber", dao.getCompanyNumber());
             jdao.put("omschrijving", dao.getOmschrijving());
             dataOwnersJSON.put(jdao);
+            if(dao.getClassificatie().equals(DataOwner.CLASSIFICATIE_VERVOERDER)){
+                dataOwnersVervoerders.put(jdao);
+            }
         }
         
         Set<DataOwner> da = g.getDataOwnerRights().keySet();
@@ -845,6 +851,14 @@ public class EditorActionBean implements ActionBean {
 
     public void setDataownersForUser(JSONArray dataownersForUser) {
         this.dataownersForUser = dataownersForUser;
+    }
+    
+    public JSONArray getDataOwnersVervoerders() {
+        return dataOwnersVervoerders;
+    }
+
+    public void setDataOwnersVervoerders(JSONArray dataOwnersVervoerders) {
+        this.dataOwnersVervoerders = dataOwnersVervoerders;
     }
     // </editor-fold>
 

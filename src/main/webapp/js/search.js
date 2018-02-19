@@ -449,7 +449,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
         this.callParent(arguments);
         var me = this;
         this.beheerder = Ext.create(Ext.form.ComboBox,{
-            fieldLabel: 'Beheerder',
+            fieldLabel: 'Vervoerder',
             id:Ext.id(),
             name: 'dataOwner',
             allowBlank: true,
@@ -459,7 +459,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             valueField: 'code',
             store: Ext.create('Ext.data.Store', {
                 fields: ['omschrijving','code', 'id'],
-                data: dataOwners
+                data: dataOwnersVervoerders
             }),
             listeners: {
                 buffer: 50,

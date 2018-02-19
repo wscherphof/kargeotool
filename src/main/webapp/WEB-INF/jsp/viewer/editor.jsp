@@ -161,6 +161,7 @@
 
                 var vehicleTypes = ${actionBean.vehicleTypesJSON};
                 var dataOwners = ${actionBean.dataOwnersJSON};
+                var dataOwnersVervoerders = ${actionBean.dataOwnersVervoerders};
                 var ovInfo = ${actionBean.ovInfoJSON};
                 var dataownersForUser = ${actionBean.dataownersForUser};
 
