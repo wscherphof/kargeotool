@@ -59,6 +59,8 @@ Ext.define("Editor", {
     endpointCreator:null,
 
     unedittedRseq :null,
+    
+    distancelineWasReset:null,
     // === Initialisatie ===
 
     /**
@@ -123,6 +125,7 @@ Ext.define("Editor", {
         this.search = Ext.create(SearchManager,{searchField:'searchField',dom:'searchform',editor:this});
         this.search.on('searchResultClicked',this.searchResultClicked,this);
         this.endpointCreator = Ext.create(EndPointCreator,this);
+        this.distancelineWasReset = false;
     },
 
     // <editor-fold desc="Openlayers stuff" defaultstate="collapsed">
@@ -883,6 +886,7 @@ Ext.define("Editor", {
      * Reset het meten. Meet vanaf vorige punt
      */
     resetMeasure : function (){
+        this.distancelineWasReset = true;
         var lastPoint = this.olc.measureTool.handler.line.geometry.getVertices()[this.olc.measureTool.handler.line.geometry.getVertices().length-3];
         this.olc.line.deactivate();
         this.olc.drawLineFromPoint(lastPoint.x, lastPoint.y);
@@ -1024,7 +1028,7 @@ Ext.define("Editor", {
             geometry: location
         });
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-        if(!distance){
+        if(!distance || !this.distancelineWasReset){
             distance = new Array();
             distance[0] = 0;
         }
@@ -1189,7 +1193,7 @@ Ext.define("Editor", {
             geometry: location
         });
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-        if(!distance){
+        if(!distance || !this.distancelineWasReset){
             distance = 0;
         }else{
             distance = parseInt(distance[0].toFixed(0));
@@ -1356,7 +1360,7 @@ Ext.define("Editor", {
         var inmeldMap = mvmts[0].map;
         var distanceMap = inmeldMap.distanceTillStopLine;
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-        if(!distance){
+        if(!distance || !this.distancelineWasReset){
             distance = 0;
         }else{
             distance = parseInt(distance[0].toFixed(0));
@@ -1436,6 +1440,7 @@ Ext.define("Editor", {
                 startX = this.selectedObject.getGeometry().coordinates[0];
                 startY = this.selectedObject.getGeometry().coordinates[1];
             }
+            this.distancelineWasReset = false;
             this.olc.drawLineFromPoint(startX,startY);
         }else{
             this.pointFinished(point);
