@@ -125,6 +125,7 @@ Ext.define("Editor", {
         this.endpointCreator = Ext.create(EndPointCreator,this);
     },
 
+    // <editor-fold desc="Openlayers stuff" defaultstate="collapsed">
     /**
      * Initialiseer de openlayers viewer.
      */
@@ -182,6 +183,61 @@ Ext.define("Editor", {
         });
     },
 
+    getFilterStatus: function (prefix, type) {
+        return Ext.getCmp(prefix + type).getValue();
+    },
+
+    getFilteredRseqs: function () {
+        var filtered = [];
+
+        var kv9valid = this.getFilterStatus('kv9',"valid");
+        var kv9invalid = this.getFilterStatus('kv9',"invalid");
+
+
+        Ext.Array.each(this.allRseqs, function(rseq) {
+            // Check welke layer aan moet: OV of Hulpdienst. Wanneer een rseq beiden types bevat, heeft het het vehicleType "Gemixt" en staat het bij beide aan.
+            // Alleen als een rseq van het type OV is, hebben de KV9 validaties zin (een ambulance rijdt niet op een bepaald traject, dus je kan geen uitmeldpunten defniëren).
+            
+            if( ((kv9valid && rseq.properties.validationErrors === 0) || (kv9invalid && rseq.properties.validationErrors > 0)))  {
+                filtered.push(rseq);
+            }
+        });
+        return filtered;
+    },
+
+    updateFilteredRseqs: function() {
+
+        var filteredRseqs = this.getFilteredRseqs();
+        var me = this;
+        if(this.activeRseq !== null) {
+            var activeRseqIndex = -1;
+            Ext.Array.each(filteredRseqs, function(rseq, index) {
+                if(rseq.properties.id === me.activeRseq.getId()) {
+                    activeRseqIndex = index;
+                    return false;
+                }
+                return true;
+            });
+            if(activeRseqIndex !== -1) {
+                // active rseq is moved from rseq to vector layer, do not add
+                // it to rseq layer
+                Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
+            } else {
+                // active rseq now filtered out, keep it on the map
+            }
+        }
+
+        this.olc.removeAllRseqs();
+        var featureCollection = {
+            type: "FeatureCollection",
+            features: filteredRseqs
+        };
+        this.olc.addRseqs(featureCollection);
+    },
+    // </editor-fold>
+     
+    // <editor-fold desc="Viewer init and functions" defaultstate="collapsed">
+    
     // === Opstarten viewer ===
 
     /**
@@ -243,6 +299,10 @@ Ext.define("Editor", {
 
         }
     },
+    
+    // </editor-fold>
+    
+    // <editor-fold desc="AJAX calls" defaultstate="collapsed">
     // === Ajax calls ===
 
     /**
@@ -314,58 +374,6 @@ Ext.define("Editor", {
                 Ext.MessageBox.show({title: "Ajax fout", msg: "Kan de VRI's niet laden. Probeer het opnieuw of neem contact op met de applicatie beheerder." + response.responseText, buttons: Ext.MessageBox.OK, icon: Ext.MessageBox.ERROR});
             }
         });
-    },
-    
-    getFilterStatus: function (prefix, type) {
-        return Ext.getCmp(prefix + type).getValue();
-    },
-
-    getFilteredRseqs: function () {
-        var filtered = [];
-
-        var kv9valid = this.getFilterStatus('kv9',"valid");
-        var kv9invalid = this.getFilterStatus('kv9',"invalid");
-
-
-        Ext.Array.each(this.allRseqs, function(rseq) {
-            // Check welke layer aan moet: OV of Hulpdienst. Wanneer een rseq beiden types bevat, heeft het het vehicleType "Gemixt" en staat het bij beide aan.
-            // Alleen als een rseq van het type OV is, hebben de KV9 validaties zin (een ambulance rijdt niet op een bepaald traject, dus je kan geen uitmeldpunten defniëren).
-            
-            if( ((kv9valid && rseq.properties.validationErrors === 0) || (kv9invalid && rseq.properties.validationErrors > 0)))  {
-                filtered.push(rseq);
-            }
-        });
-        return filtered;
-    },
-
-    updateFilteredRseqs: function() {
-
-        var filteredRseqs = this.getFilteredRseqs();
-        var me = this;
-        if(this.activeRseq !== null) {
-            var activeRseqIndex = -1;
-            Ext.Array.each(filteredRseqs, function(rseq, index) {
-                if(rseq.properties.id === me.activeRseq.getId()) {
-                    activeRseqIndex = index;
-                    return false;
-                }
-                return true;
-            });
-            if(activeRseqIndex !== -1) {
-                // active rseq is moved from rseq to vector layer, do not add
-                // it to rseq layer
-                Ext.Array.splice(filteredRseqs, activeRseqIndex, 1);
-            } else {
-                // active rseq now filtered out, keep it on the map
-            }
-        }
-
-        this.olc.removeAllRseqs();
-        var featureCollection = {
-            type: "FeatureCollection",
-            features: filteredRseqs
-        };
-        this.olc.addRseqs(featureCollection);
     },
 
     /**
@@ -598,21 +606,6 @@ Ext.define("Editor", {
         }
     },
 
-    removeCheckoutPoint: function(movement){
-        this.activeRseq.removeCheckoutPoint(this.selectedObject, movement);
-        this.fireEvent("activeRseqUpdated", this.activeRseq);
-    },
-
-    removeSingleCheckoutPoint: function(){
-        this.activeRseq.removeSingleCheckoutPoint(this.selectedObject, this.activeMovement);
-        this.fireEvent("activeRseqUpdated", this.activeRseq);
-    },
-
-    removeOtherPoint : function(movement){
-        this.activeRseq.removePoint(this.selectedObject,movement);
-        this.fireEvent("activeRseqUpdated", this.activeRseq);
-    },
-
     /**
      * Laad de wegen rondom de actieve rseq. Wordt gebruikt om de lijn bij het toevoegen van punten aan te snappen.
      */
@@ -707,8 +700,72 @@ Ext.define("Editor", {
              }
         }
     },
+    
+    // ==== KV9 Validation results ====
+    showValidationResults: function() {
+        if(this.activeRseq === null) {
+            return;
+        }
+
+        var me = this;
+        var validationResultsWindow;
+
+        Ext.Ajax.request({
+            url: editorActionBeanUrl + "?rseq=" + me.activeRseq.getId() + "&getValidationErrors=1",
+            method: 'GET',
+            scope: this,
+            success: function (response){
+                var r = Ext.JSON.decode(response.responseText);
+
+                validationResultsWindow = Ext.create('Ext.window.Window', {
+                    title: 'KV9 validatieresultaten',
+                    width: 575,
+                    height: 625,
+                    modal: true,
+                    icon: contextPath + '/images/silk/information.png',
+                    layout: 'fit',
+                    items: [{
+                        xtype: 'panel',
+                        autoScroll: true,
+                        html: '<div id="validationMessages"></div>'
+                    }],
+                    buttons: [{
+                        text: 'Sluiten',
+                        handler: function() {
+
+                            validationResultsWindow.destroy();
+                            validationResultsWindow = null;
+                        }
+                    }]
+                }).show();
+
+                var t = new Ext.Template([
+                    "<div class=\"kv9error\"><table>",
+                        "<tr><td class=\"wnb\">Code:</td><td class=\"code\">{code}</td></tr>",
+                        "<tr><td class=\"wnb\">Context:</td><td class=\"context\">{context}</td></tr>",
+                        "<tr><td class=\"wnb\">Waarde:</td><td class=\"value\">{value}</td></tr>",
+                        "<tr><td class=\"wnb\">Melding:</td><td class=\"message\">{message}</td></tr>",
+                        "<tr><td class=\"wnb\">Context in XML:</td><td class=\"xmlcontext\">{xmlContext}</td></tr>",
+                    "</table></div>"]).compile();
+
+                Ext.Array.each(r.errors, function(error) {
+                    t.append(Ext.getDom("validationMessages"), error);
+                });
+
+            }
+        });
+
+
+    },
+    // </editor-fold>
+    
+    // <editor-fold desc="Edit functions" defaultstate="collapsed">
     // === Edit functies ===
 
+    cancelSelection:function(){
+        this.un('selectedObjectChanged',this.actionToCancel,this);
+        this.changeCurrentEditAction(null);
+    },
     /**
      * Laat de map zoomen naar de geactiveerde RoadSideEquipment.
      */
@@ -1402,6 +1459,23 @@ Ext.define("Editor", {
         }
         this.olc.clearMarkers();
     },
+    
+    removeCheckoutPoint: function(movement){
+        this.activeRseq.removeCheckoutPoint(this.selectedObject, movement);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+
+    removeSingleCheckoutPoint: function(){
+        this.activeRseq.removeSingleCheckoutPoint(this.selectedObject, this.activeMovement);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+
+    removeOtherPoint : function(movement){
+        this.activeRseq.removePoint(this.selectedObject,movement);
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+
+    // </editor-fold>
 
     // ==== Search ==== ///
     searchResultClicked : function(searchResult){
@@ -1415,67 +1489,7 @@ Ext.define("Editor", {
             this.olc.addMarker(searchResult.getLocation());
         }
     },
-    cancelSelection:function(){
-        this.un('selectedObjectChanged',this.actionToCancel,this);
-        this.changeCurrentEditAction(null);
-    },
 
-    // ==== KV9 Validation results ====
-    showValidationResults: function() {
-        if(this.activeRseq === null) {
-            return;
-        }
-
-        var me = this;
-        var validationResultsWindow;
-
-        Ext.Ajax.request({
-            url: editorActionBeanUrl + "?rseq=" + me.activeRseq.getId() + "&getValidationErrors=1",
-            method: 'GET',
-            scope: this,
-            success: function (response){
-                var r = Ext.JSON.decode(response.responseText);
-
-                validationResultsWindow = Ext.create('Ext.window.Window', {
-                    title: 'KV9 validatieresultaten',
-                    width: 575,
-                    height: 625,
-                    modal: true,
-                    icon: contextPath + '/images/silk/information.png',
-                    layout: 'fit',
-                    items: [{
-                        xtype: 'panel',
-                        autoScroll: true,
-                        html: '<div id="validationMessages"></div>'
-                    }],
-                    buttons: [{
-                        text: 'Sluiten',
-                        handler: function() {
-
-                            validationResultsWindow.destroy();
-                            validationResultsWindow = null;
-                        }
-                    }]
-                }).show();
-
-                var t = new Ext.Template([
-                    "<div class=\"kv9error\"><table>",
-                        "<tr><td class=\"wnb\">Code:</td><td class=\"code\">{code}</td></tr>",
-                        "<tr><td class=\"wnb\">Context:</td><td class=\"context\">{context}</td></tr>",
-                        "<tr><td class=\"wnb\">Waarde:</td><td class=\"value\">{value}</td></tr>",
-                        "<tr><td class=\"wnb\">Melding:</td><td class=\"message\">{message}</td></tr>",
-                        "<tr><td class=\"wnb\">Context in XML:</td><td class=\"xmlcontext\">{xmlContext}</td></tr>",
-                    "</table></div>"]).compile();
-
-                Ext.Array.each(r.errors, function(error) {
-                    t.append(Ext.getDom("validationMessages"), error);
-                });
-
-            }
-        });
-
-
-    },
     getCurrentVehicleType: function(){
         if(Ext.getCmp("layerHulpdiensten").getValue()){
             return "Hulpdiensten";
@@ -1493,6 +1507,7 @@ Ext.define("Editor", {
     }
 });
 
+// <editor-fold desc="Endpoint creator" defaultstate="collapsed">
 /**
  * Control for easy adding and selecting of endpoints. Especially usefull for the imported VRI's which by definition have no endpoint.
  * Usage:
@@ -1601,7 +1616,9 @@ Ext.define("EndPointCreator",{
     }
 
 });
+// </editor-fold>
 
+// <editor-fold desc="Help" defaultstate="collapsed">
 Ext.define("HelpPanel", {
     domId: null,
     editor: null,
@@ -1694,8 +1711,10 @@ Ext.define("HelpPanel", {
 
         Ext.ComponentQuery.query("#help")[0].getEl().dom.innerHTML = txt;
     }
-
 });
+
+// </editor-fold>
+
  function cloneObject(obj) {
     if (obj === null || typeof obj !== 'object') {
         return obj;
