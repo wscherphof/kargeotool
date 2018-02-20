@@ -1622,8 +1622,8 @@ Ext.define("HelpPanel", {
             for (var i = 0 ; i < mvmnts.length ; i++){
                 var mvmObj = mvmnts[i];
                 if(mvmObj){
-                    var movement = mvmObj.movement;
-                    var signalGroupNumber = movement.nummer;
+                    var map = mvmObj.map;
+                    var signalGroupNumber = map.getSignalGroupNumber();
                     var alreadyPresent = signalGroupNumbers.indexOf (signalGroupNumber) !== -1;
                     if(signalGroupNumbers.length > 0 && !alreadyPresent){
                         signalGroupNumbers += ', ';
