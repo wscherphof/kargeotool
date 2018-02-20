@@ -1082,10 +1082,10 @@ Ext.define("Editor", {
                         pointId: uitmeldpunt.getId(),
                         distanceTillStopLine: map.getDistanceTillStopLine(),
                         vehicleTypes: profile.vehicleTypes || (
-                this.getCurrentVehicleType() === "OV"
-                    ? [1,2,6,7,71]
-                    : [3,4,5,69,70]
-            )
+                            this.getCurrentVehicleType() === "OV"
+                                ? [1,2,6,7,71]
+                                : [3,4,5,69,70]
+                        )
                     });
 
                     this.activeRseq.addUitmeldpunt(uitmeldpunt,map,true);
@@ -1193,7 +1193,7 @@ Ext.define("Editor", {
             geometry: location
         });
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-        if(!distance || !this.distancelineWasReset){
+        if(!distance){
             distance = 0;
         }else{
             distance = parseInt(distance[0].toFixed(0));
@@ -1360,7 +1360,7 @@ Ext.define("Editor", {
         var inmeldMap = mvmts[0].map;
         var distanceMap = inmeldMap.distanceTillStopLine;
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
-        if(!distance || !this.distancelineWasReset){
+        if(!distance){
             distance = 0;
         }else{
             distance = parseInt(distance[0].toFixed(0));
