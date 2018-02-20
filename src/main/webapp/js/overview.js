@@ -175,6 +175,12 @@ Ext.define("nl.b3p.kar.Overview",{
                             disabled:true,
                             icon: karTheme.inmeldPunt,
                             iconCls : 'overviewTree'
+                        },
+                        {
+                            id: 'copyMovement',
+                            text: 'Kopieer beweging (uit- en eindpunt)',
+                            icon: karTheme.copy_movment,
+                            iconCls : 'overviewTree'
                         }
                     ],
                     listeners: {
@@ -198,6 +204,9 @@ Ext.define("nl.b3p.kar.Overview",{
                                     break;
                                 case 'addInmeldpuntOvCoordinates':
                                     editor.addByCoordinates('inmeldpunt');
+                                    break;
+                                case 'copyMovement':
+                                    editor.copyMovement(this.selectedMovement);
                                     break;
                             }
                         },

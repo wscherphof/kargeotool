@@ -1,4 +1,4 @@
-/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile, SearchManager, EditForms, ChangeManager, nl, RSEQ, contextPath, karTheme */
+/* global exportActionBeanUrl, Ext, editorActionBeanUrl, editor, Point, MovementActivationPoint, profile, SearchManager, EditForms, ChangeManager, nl, RSEQ, contextPath, karTheme, Movement */
 
 /**
 * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
@@ -1474,7 +1474,31 @@ Ext.define("Editor", {
         this.activeRseq.removePoint(this.selectedObject,movement);
         this.fireEvent("activeRseqUpdated", this.activeRseq);
     },
-
+    
+    copyMovement: function(movementId){
+        var oldMovement = this.activeRseq.getMovementById(movementId);
+        var newMaps = [];
+        for(var i = 0 ; i < oldMovement.getMaps().length;i++){
+            var oldMap = oldMovement.getMaps()[i];
+            var t = oldMap.getBeginEndOrActivation();
+            if(t === "END" || (t === "ACTIVATION" && oldMap.getCommandType() === 2)){
+                var oldConfig = oldMap.getConfig();
+                oldConfig.id = Ext.id();
+                var newMap = Ext.create(MovementActivationPoint, oldConfig);
+                newMaps.push(newMap);
+            }
+        }
+        
+        var newMovement = Ext.create(Movement, {
+            id: Ext.id(),
+            nummer: this.activeRseq.getMovements().length +1,
+            maps: newMaps,
+            vehicleType: oldMovement.getVehicleType()
+        });
+        this.activeRseq.addMovement(newMovement);
+        
+        this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
     // </editor-fold>
 
     // ==== Search ==== ///

@@ -35,7 +35,7 @@
                 crossing_selected:              imgPath + 'icons/vri_selected.png',
                 crossing_selected_attachment:   imgPath + 'icons/vri_selected_attachment.png',
                 guard:                          imgPath + 'icons/wri.png',
-                guard_attachment:                          imgPath + 'icons/wri_attachment.png',
+                guard_attachment:               imgPath + 'icons/wri_attachment.png',
                 guard_selected:                 imgPath + 'icons/wri_selected.png',
                 guard_selected_attachment:      imgPath + 'icons/wri_selected_attachment.png',
                 bar:                            imgPath + 'icons/afsluitingssysteem.png',
@@ -61,6 +61,7 @@
                 cluster:                        imgPath + '/icons/cluster.png',
                 
                 richting:                       imgPath + '/icons/richting.png',
+                copy_movment:                   imgPath + '/silk/table_multiple.png',
                 gps:                            imgPath + '/icons/gps.png'
             };
         </script>
