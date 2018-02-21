@@ -1018,7 +1018,7 @@ Ext.define("Editor", {
         this.pointFinishedHandler = function(location) {
             me.addUitmeldpuntForLocation(movementId, location);
         };
-        this.addPoint(true);
+        this.addPoint();
     },
 
     addUitmeldpuntForLocation: function(movementId, location) {
@@ -1104,7 +1104,7 @@ Ext.define("Editor", {
         this.pointFinishedHandler = function(location) {
             me.addEindpuntForLocation(location);
         };
-        this.addPoint(true);
+        this.addPoint();
     },
 
     addEindpuntForLocation: function(location) {
@@ -1183,7 +1183,7 @@ Ext.define("Editor", {
         this.pointFinishedHandler = function(location) {
             me.addInmeldpuntForLocation(location);
         };
-        this.addPoint(true);
+        this.addPoint();
     },
     addInmeldpuntForLocation: function(location) {
         var uitmeldpunt = this.selectedObject;
@@ -1346,7 +1346,7 @@ Ext.define("Editor", {
         this.pointFinishedHandler = function(location) {
             me.addVoorinmeldpuntByLocation(location);
         };
-        this.addPoint(true);
+        this.addPoint();
     },
 
     addVoorinmeldpuntByLocation: function(location) {
@@ -1403,7 +1403,7 @@ Ext.define("Editor", {
         this.pointFinishedHandler = function(location) {
             me.addBeginpuntForLocation(location);
         };
-        this.addPoint(true);
+        this.addPoint();
     },
 
     addBeginpuntForLocation: function(location) {
@@ -1425,26 +1425,24 @@ Ext.define("Editor", {
 
     /**
       * Ga naar punttoevoegen modus, optioneel met een lijn vanaf het gegeven punt.
-      * @param withLine of vanaf het gegeven punt een lijn (met tussenpunten) moet worden getekend
-      * @param piont punt van waar de lijn moet worden getekend indien withLine true is
+      * @param point punt van waar de lijn moet worden getekend. Indien point null/undefined is, wordt het geselecteerde object gepakt.
       */
-    addPoint: function(withLine, point) {
-        if(withLine ){
-            var isRseq = this.selectedObject instanceof RSEQ;// ? "location" : "geometry";
-            var startX, startY;
-            
-            if (isRseq) {
-                startX = this.selectedObject.getLocation().coordinates[0];
-                startY = this.selectedObject.getLocation().coordinates[1];
-            }else{
-                startX = this.selectedObject.getGeometry().coordinates[0];
-                startY = this.selectedObject.getGeometry().coordinates[1];
-            }
-            this.distancelineWasReset = false;
-            this.olc.drawLineFromPoint(startX,startY);
-        }else{
-            this.pointFinished(point);
+    addPoint: function( point) {
+        if(!point){
+            point =  this.selectedObject;
         }
+        var isRseq = point instanceof RSEQ;// ? "location" : "geometry";
+        var startX, startY;
+
+        if (isRseq) {
+            startX = point.getLocation().coordinates[0];
+            startY = point.getLocation().coordinates[1];
+        }else{
+            startX = point.getGeometry().coordinates[0];
+            startY = point.getGeometry().coordinates[1];
+        }
+        this.distancelineWasReset = false;
+        this.olc.drawLineFromPoint(startX,startY);
     },
 
     /**
@@ -1503,6 +1501,18 @@ Ext.define("Editor", {
         this.activeRseq.addMovement(newMovement);
         
         this.fireEvent("activeRseqUpdated", this.activeRseq);
+    },
+    
+    movePoint: function(point){
+        var movements = this.activeRseq.findMovementsForPoint(point.getId());
+        
+        for(var i = 0 ; i < movements.getMaps().length;i++){
+            var map = movements.getMaps()[i];
+            var t = map.getBeginEndOrActivation();
+            if(t === "END" || (t === "ACTIVATION" && oldMap.getCommandType() === 2)){
+                
+            }
+        }
     },
     // </editor-fold>
 

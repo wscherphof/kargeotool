@@ -382,6 +382,11 @@ Ext.define("ContextMenu", {
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png",
                 iconCls : 'overviewTree'
+            },{
+                id: 'moveCheckoutPoint',
+                text: 'Verplaats',
+                icon: contextPath + "/images/silk/table_go.png",
+                iconCls : 'overviewTree'
             },
             {
                 id: 'removeUitmeldpunt',
@@ -512,6 +517,9 @@ Ext.define("ContextMenu", {
                             break;              
                         case 'setCoordsUitmeld':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
+                            break              
+                        case 'moveCheckoutPoint':
+                            this.editor.movePoint(this.editor.selectedObject);
                             break              
                     }
                 },
