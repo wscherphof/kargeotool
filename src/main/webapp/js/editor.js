@@ -385,12 +385,13 @@ Ext.define("Editor", {
     saveOrUpdate: function(onSaved) {
         var rseq = this.activeRseq;
         if (rseq !== null) {
-              var saveFunction = function(){
-                this.setLoading(true, "Bezig met opslaan...");
+            var me = this;
+            var saveFunction = function(){
+                me.setLoading(true, "Bezig met opslaan...");
                 Ext.Ajax.request({
                     url: editorActionBeanUrl,
                     method: 'POST',
-                    scope: this,
+                    scope: me,
                     params: {
                         'saveOrUpdateRseq': true,
                         'json': Ext.JSON.encode(editor.activeRseq.toJSON())
@@ -467,28 +468,61 @@ Ext.define("Editor", {
                     }
                 });
             };
-            var hasMixedVehicletypesInMovement = rseq.areVehicletypesConsistent();
-            var me = this;
-            if (!hasMixedVehicletypesInMovement) {
-                Ext.Msg.show({
-                    title: "Gemengde beweging(en)",
-                    msg: "Binnen een beweging zijn er in- en uitmeldpunten met verschillende voertuigtypes. Was dit de bedoeling? Klik op 'ja' als dit de bedoeling was en om op te slaan, klik op 'nee' om niet op te slaan.",
-                    fn: function (button) {
-                        if (button === 'yes') {
-                            saveFunction.call(me);
-                        }
-                    },
-                    scope: this,
-                    buttons: Ext.Msg.YESNO,
-                    buttonText: {
-                        no: "Nee",
-                        yes: "Ja"
-                    },
-                    icon: Ext.Msg.QUESTION
-                });
-            } else {
-                saveFunction.call(me);
-            }
+            
+            
+            var mixedMovements = function(okFunction){
+                var hasMixedVehicletypesInMovement = rseq.areVehicletypesConsistent();
+                var me = this;
+                if (!hasMixedVehicletypesInMovement) {
+                    Ext.Msg.show({
+                        title: "Gemengde beweging(en)",
+                        msg: "Binnen een beweging zijn er in- en uitmeldpunten met verschillende voertuigtypes. Was dit de bedoeling? Klik op 'ja' als dit de bedoeling was en om op te slaan, klik op 'nee' om niet op te slaan.",
+                        fn: function (button) {
+                            if(button === 'yes'){
+                                okFunction();
+                            }
+                        },
+                        scope: this,
+                        buttons: Ext.Msg.YESNO,
+                        buttonText: {
+                            no: "Nee",
+                            yes: "Ja"
+                        },
+                        icon: Ext.Msg.QUESTION
+                    });
+                } else {
+                    okFunction();
+                }
+            };
+            
+            var endPointCheck = function(){
+                var threshold = 50;
+                var hasEndpointsNearCheckouts = rseq.hasEndpointsNearCheckoutPoints(threshold);
+                var me = this;
+                if (hasEndpointsNearCheckouts) {
+                    Ext.Msg.show({
+                        title: "Eindpunten dichtbij uitmeldpunten",
+                        msg: "Er bevinden zich eindpunten op minder dan " + threshold + "meter van uitmeldpunten. Aanbevolen wordt om het eindpunt ten minste 50 meter voorbij het midden van het kruispunt te leggen. Toch opslaan?",
+                        fn: function (button) {
+                            if (button === 'yes') {
+                                saveFunction();
+                            }
+                        },
+                        scope: this,
+                        buttons: Ext.Msg.YESNO,
+                        buttonText: {
+                            no: "Nee",
+                            yes: "Ja"
+                        },
+                        icon: Ext.Msg.QUESTION
+                    });
+                } else {
+                    saveFunction()();
+                }
+            };
+            
+            mixedMovements(endPointCheck);
+            
         }
     },
 

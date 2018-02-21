@@ -653,7 +653,41 @@ Ext.define('RSEQ', {
             }
         }
         return true;
+    },
+    hasEndpointsNearCheckoutPoints: function(threshold){
+        for(var i = 0 ; i < this.getMovements().length; i++){
+            var m = this.getMovements()[i];
+            if(m.getVehicleType() !== "OV"){
+                continue;
+            }
+            var end, checkout;
+            for(var j = 0 ; j < m.getMaps().length ;j ++){
+                var map = m.getMaps()[j];
+                if(map.getCommandType() === 2){
+                    checkout = map;
+                }
+                if(map.getBeginEndOrActivation() === "END"){
+                    end = map;
+                }
+                
+            }
+            
+            if(end && checkout){
+                var endPoint = this.getPointById(end.getPointId());
+                var checkoutPoint = this.getPointById(checkout.getPointId());
+                var dist = this.distance(endPoint.getGeometry().coordinates, checkoutPoint.getGeometry().coordinates);
+                if(dist < threshold){
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+    distance: function(c1,c2){
+        var distance = Math.sqrt(Math.pow(c1[0] - c2[0], 2) + Math.pow(c1[1] - c2[1], 2));
+        return distance;
     }
+    
 });
 
 /**
