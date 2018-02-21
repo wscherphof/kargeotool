@@ -517,10 +517,10 @@ Ext.define("ContextMenu", {
                             break;              
                         case 'setCoordsUitmeld':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
-                            break              
+                            break;
                         case 'moveCheckoutPoint':
                             this.editor.movePoint(this.editor.selectedObject);
-                            break              
+                            break;
                     }
                 },
                 hide: {
@@ -541,6 +541,11 @@ Ext.define("ContextMenu", {
                 id: 'editInmeldpunt',
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
+            },{
+                id: 'moveCheckinPoint',
+                text: 'Verplaats',
+                icon: contextPath + "/images/silk/table_go.png",
                 iconCls : 'overviewTree'
             },
             {
@@ -622,10 +627,13 @@ Ext.define("ContextMenu", {
                             break;
                         case 'setCoordsInmeld':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
-                            break
+                            break;
                         case 'selectVoorInmeldPunt':
                             this.editor.selectVoorInmeldpunt(this.editor.activeMovement);
-                            break
+                            break;
+                        case 'moveCheckinPoint':
+                            this.editor.movePoint(this.editor.selectedObject);
+                            break;
                     }
                 },
                 hide: {
@@ -646,6 +654,11 @@ Ext.define("ContextMenu", {
                 id: 'editNAPoint',
                 text: 'Bewerken...',
                 icon: contextPath + "/images/silk/table_edit.png",
+                iconCls : 'overviewTree'
+            },{
+                id: 'movePrecheckinPoint',
+                text: 'Verplaats',
+                icon: contextPath + "/images/silk/table_go.png",
                 iconCls : 'overviewTree'
             },{
                 id: 'removeNAPoint',
@@ -672,6 +685,9 @@ Ext.define("ContextMenu", {
                         case 'setCoordsNon':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
                             break
+                        case 'movePrecheckinPoint':
+                            this.editor.movePoint(this.editor.selectedObject);
+                            break;
                     }
                 },
                 hide: {

@@ -1510,31 +1510,63 @@ Ext.define("Editor", {
         
         var mustBeReset = false;
         var mvntmaps = this.activeRseq.findMovementsForPoint(point);
-        for(var i = 0 ; i < mvntmaps.length;i++){
-            var map = mvntmaps[i].map;
-            var t = map.getBeginEndOrActivation();
-            
-            if(t === "ACTIVATION" && map.getCommandType() === 2){
+        var m = mvntmaps[0].movement;
+        
+        // Distance from connecting points (ie. for checking this is the distance from the checkout point, and for precheckin points the distance from the checkin point)
+        var extraDistance = 0;
+        for (var i = 0; i < m.getMaps().length; i++) {
+            var map = m.getMaps()[i];
+
+            if (point.getType() === "ACTIVATION_2" && point.getId() === map.getPointId()) {
                 anchorpoint = this.activeRseq.getLocation().coordinates;
                 mustBeReset = true;
                 firstmap = map;
                 break;
             }
+            if (point.getType() === "ACTIVATION_1") {
+                if (point.getId() === map.getPointId()) {
+                    mustBeReset = false;
+                    firstmap = map;
+                }
+
+                if (map.getCommandType() === 2) {
+                    extraDistance = map.getDistanceTillStopLine();
+                    anchorpoint = this.activeRseq.getPointById(map.getPointId()).getGeometry().coordinates;
+                }
+            }
+            
+            if (point.getType() === "ACTIVATION_3") {
+                if (point.getId() === map.getPointId()) {
+                    mustBeReset = false;
+                    firstmap = map;
+                }
+
+                if (map.getCommandType() === 1) {
+                    extraDistance = map.getDistanceTillStopLine();
+                    anchorpoint = this.activeRseq.getPointById(map.getPointId()).getGeometry().coordinates;
+                }
+            }
+            
         }
         
         var previousCoordinates = point.getGeometry();
         var previousDistance = map.getDistanceTillStopLine();
         
         this.pointFinishedHandler = function(feat){
-            point.setGeometry(feat);
-            //editActivationPoint: function(newUitmeldpunt, newMap, okHandler, cancelHandler) {
-            
+            point.setGeometry(feat); 
             var distance = this.olc.measureTool.getBestLength(this.olc.vectorLayer.features[this.olc.vectorLayer.features.length - 1].geometry);
-            if (!distance || (!this.distancelineWasReset && mustBeReset) ){
+            
+            if (!distance){
                 distance = new Array();
                 distance[0] = 0;
             }
-            var dist = parseInt(distance[0], 10);
+            var dist = parseInt(distance[0] + 0.5, 10);
+            if(!this.distancelineWasReset && mustBeReset){
+                dist = 0;
+            }else{
+                dist += parseInt(extraDistance);
+            }
+            
             firstmap.setDistanceTillStopLine(dist);
             me.fireEvent("activeRseqUpdated", me.activeRseq);
             
