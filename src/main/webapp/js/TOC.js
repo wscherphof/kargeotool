@@ -86,7 +86,7 @@ Ext.define("TOC", {
                                 {
                                     scope: this,
                                     change: function (obj, newValue) {
-                                        this.changeVehicleType('OV');
+                                        this.changeVehicleType('OV', newValue);
                                     }
                                 }
                             ]
@@ -101,8 +101,8 @@ Ext.define("TOC", {
                             listeners: [
                                 {
                                     scope: this,
-                                    change: function () {
-                                        this.changeVehicleType('Hulpdiensten');
+                                    change: function (obj, newValue) {
+                                        this.changeVehicleType('Hulpdiensten', newValue);
                                     }
                                 }
                             ]
@@ -314,8 +314,10 @@ Ext.define("TOC", {
         profile.state[prefix + type] = checked;
         saveProfile();
     },
-    changeVehicleType: function (vehicleType){
+    changeVehicleType: function (vehicleType, newValue){
+        profile.state["layer" + vehicleType ] = newValue;
         editor.fireEvent("vehicleTypeChanged", vehicleType);
+        saveProfile();
     },
     toggleOvInfoLayer: function (layer, visible) {
         Ext.Array.each(ovInfo, function (ov) {
