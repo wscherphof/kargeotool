@@ -552,7 +552,7 @@ Ext.define("EditForms", {
             xtype: 'numberfield',
             fieldLabel: 'Afstand tot stopstreep',
             name: 'distanceTillStopLine',
-            value: map.config.distanceTillStopLine
+            value: map.getDistanceTillStopLine()
         },
         {
             xtype: 'numberfield',
@@ -565,7 +565,7 @@ Ext.define("EditForms", {
             },
             fieldLabel: 'Virtual local loop number',
             name: 'virtualLocalLoopNumber',
-            value: map.config.virtualLocalLoopNumber
+            value: map.getVirtualLocalLoopNumber()
         },{
             xtype: 'treecombo',
             valueField: 'id',
@@ -662,6 +662,15 @@ Ext.define("EditForms", {
             }
         ]);
         }
+        
+        var cancelFunction = function() {
+            me.activationPointEditWindow.destroy();
+            me.activationPointEditWindow = null;
+            if(cancelHandler) {
+                cancelHandler();
+            }
+            me.editor.activeMovement = null;
+        };
 
         var okFunction = function() {
             var form = Ext.getCmp('activationForm').getForm();
@@ -758,6 +767,7 @@ Ext.define("EditForms", {
                 },
                 close:function(){
                     editor.activeMovement = null;
+                    cancelFunction();
                 }
             },
             items: {
@@ -811,14 +821,7 @@ Ext.define("EditForms", {
                         },
                         {
                             text: 'Annuleren',
-                            handler: function() {
-                                me.activationPointEditWindow.destroy();
-                                me.activationPointEditWindow = null;
-                                if(cancelHandler) {
-                                    cancelHandler();
-                                }
-                                me.editor.activeMovement = null;
-                            }
+                            handler: cancelFunction
                         }
                     ]
                 }]

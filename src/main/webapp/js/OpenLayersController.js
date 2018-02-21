@@ -418,7 +418,7 @@ Ext.define("ol", {
     },
     
     updateOtherVehicleType: function(){
-        var vehicleType = this.editor.getOpositeVehicleType();
+        var vehicleType = this.editor.getOppositeVehicleType();
         this.otherVehicleTypeLayer.removeAllFeatures();
         
         var other= Ext.getCmp("showOtherVehicleType").getValue();

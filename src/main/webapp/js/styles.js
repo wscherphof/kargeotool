@@ -40,7 +40,7 @@ var styleContext = {
         }
         
         if(show){
-            return feature.attributes.label + " (" + editor.getOpositeVehicleType() + ")";
+            return feature.attributes.label + " (" + editor.getOppositeVehicleType() + ")";
         }else{
             return "";
         }

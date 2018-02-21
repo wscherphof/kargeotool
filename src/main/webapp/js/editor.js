@@ -1504,15 +1504,52 @@ Ext.define("Editor", {
     },
     
     movePoint: function(point){
-        var movements = this.activeRseq.findMovementsForPoint(point.getId());
+        var me = this;
+        var anchorpoint = null;
+        var firstmap = null;
         
-        for(var i = 0 ; i < movements.getMaps().length;i++){
-            var map = movements.getMaps()[i];
+        var mustBeReset = false;
+        var mvntmaps = this.activeRseq.findMovementsForPoint(point);
+        for(var i = 0 ; i < mvntmaps.length;i++){
+            var map = mvntmaps[i].map;
             var t = map.getBeginEndOrActivation();
-            if(t === "END" || (t === "ACTIVATION" && oldMap.getCommandType() === 2)){
-                
+            
+            if(t === "ACTIVATION" && map.getCommandType() === 2){
+                anchorpoint = this.activeRseq.getLocation().coordinates;
+                mustBeReset = true;
+                firstmap = map;
+                break;
             }
         }
+        
+        var previousCoordinates = point.getGeometry();
+        var previousDistance = map.getDistanceTillStopLine();
+        
+        this.pointFinishedHandler = function(feat){
+            point.setGeometry(feat);
+            //editActivationPoint: function(newUitmeldpunt, newMap, okHandler, cancelHandler) {
+            
+            var distance = this.olc.measureTool.getBestLength(this.olc.vectorLayer.features[this.olc.vectorLayer.features.length - 1].geometry);
+            if (!distance || (!this.distancelineWasReset && mustBeReset) ){
+                distance = new Array();
+                distance[0] = 0;
+            }
+            var dist = parseInt(distance[0], 10);
+            firstmap.setDistanceTillStopLine(dist);
+            me.fireEvent("activeRseqUpdated", me.activeRseq);
+            
+            me.editForms.editActivationPoint(point, firstmap, function(){
+                me.fireEvent("activeRseqUpdated", me.activeRseq);
+            }, function (){
+                point.setGeometry(previousCoordinates);
+                firstmap.setDistanceTillStopLine(previousDistance);
+                me.fireEvent("activeRseqUpdated", me.activeRseq);
+            });
+            var button = Ext.getCmp("activationPointOkButton");
+            button.setDisabled(false);
+        };
+        
+        this.olc.drawLineFromPoint(anchorpoint[0],anchorpoint[1]);
     },
     // </editor-fold>
 
@@ -1536,7 +1573,7 @@ Ext.define("Editor", {
             return "OV";
         }
     },
-    getOpositeVehicleType:function(){
+    getOppositeVehicleType:function(){
         var vehicleType = "Hulpdiensten";
         // Get the opposite of the selected vehicleType
         if (Ext.getCmp("layerHulpdiensten").getValue()) {
