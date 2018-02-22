@@ -80,8 +80,14 @@ public class CarrierInformer implements Job {
             // -- Set the FROM and TO fields --
             msg.setFrom(new InternetAddress(fromAddress));
             if (inform.getVervoerder().getEmail() != null) {
-                msg.setRecipients(Message.RecipientType.TO,
-                        InternetAddress.parse(inform.getVervoerder().getEmail(), false));
+                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(inform.getVervoerder().getEmail(), false));
+                if (inform.getAfzender().getEmail() != null) {
+                    try {
+                        msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(inform.getAfzender().getEmail(), false));
+                    } catch (MessagingException e) {
+                        log.debug("No emailaddres for sender: "+inform.getAfzender().getUsername());
+                    }
+                }
 
                 msg.setSubject("[kargeotool] Nieuwe KAR-gegevens");
                 String body = getBody(inform, appUrl);
