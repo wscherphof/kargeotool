@@ -124,7 +124,13 @@ xxxxx (naam gebruiker)
         body += "Beste " + name + ", <br/>";
         body += "<br/>";
         body += "De KAR gegevens van het kruispunt " + rseq.getDescription() + " | " + rseq.getCrossingCode() + "met KAR-adres " + rseq.getKarAddress() + ", van "+ rseq.getDataOwner().getOmschrijving() +" zijn gewijzigd.<br/>";
-        body += "Een KV9 export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
+        
+        if(inform.getVervoerder().getUsername().equalsIgnoreCase("INCAA Priodeck")){
+            body += "Een INCAA export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportPtx=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
+        }else{
+            body += "Een KV9 export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportXml=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
+        }
+        
         body += "Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, <a href=\"" + appUrl + "/action/editor?view=true#&rseq=" + rseq.getId() + "&x="+rseq.getLocation().getX() +"&y="+rseq.getLocation().getY()+"&zoom=12\">hier</a>.<br/><br/>";
         body += "Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze <a href=\"" + appUrl + "/action/overview?carrier=true\">link</a>.<br/><br/>";
         body += "Met vriendelijke groet, <br/>";

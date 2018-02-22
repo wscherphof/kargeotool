@@ -4,7 +4,7 @@
     <persistence-unit name="karGisPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5433/geo_ov" />
+            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/geo_ov" />
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
             <property name="hibernate.connection.username" value="geo_ov"/>
             <property name="hibernate.connection.password" value="geo_ov"/>
