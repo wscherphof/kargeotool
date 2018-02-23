@@ -517,7 +517,7 @@ Ext.define("Editor", {
                         icon: Ext.Msg.QUESTION
                     });
                 } else {
-                    saveFunction()();
+                    saveFunction();
                 }
             };
             
