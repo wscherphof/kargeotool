@@ -569,7 +569,7 @@ Ext.define("Editor", {
                 this.setLoading(false);
                 var msg = Ext.JSON.decode(response.responseText);
                 if (msg.success) {
-
+                    Ext.Msg.alert('Gelukt', 'De vervoerder(s) word(en) geïnformeerd.');
                 } else {
                     Ext.Msg.alert('Fout', 'Er is een fout opgetreden. Vervoerders kunnen niet opgehaald worden. Probeer het opnieuw of neem contact op met de applicatie beheerder.' + msg.error);
                 }
