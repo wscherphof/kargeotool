@@ -90,6 +90,7 @@ Ext.define("EditForms", {
             width: 450,
             modal: true,
             icon: rseq.getType() === "" ? karTheme.crossing : karTheme[rseq.getType().toLowerCase()],
+            iconCls : "overviewTree",
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -363,6 +364,7 @@ Ext.define("EditForms", {
             width: 360,
             modal: true,
             icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
+            iconCls : "overviewTree",
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -787,6 +789,7 @@ Ext.define("EditForms", {
             width: 490,
             modal: true,
             icon: karTheme[apName],
+            iconCls: "overviewTree",
             layout: 'fit',
             listeners: {
                 afterRender: function(thisForm, options){
@@ -935,6 +938,7 @@ Ext.define("EditForms", {
             width: 400,
             modal: true,
             icon: karTheme.gps,
+            iconCls : "overviewTree",
             listeners: {
                 afterRender: function(thisForm, options){
                     this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
