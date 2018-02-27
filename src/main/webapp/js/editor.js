@@ -115,6 +115,7 @@ Ext.define("Editor", {
         this.olc.map.events.register('moveend',this, function(){
             this.handleSurroundingPoints();
         });
+        this.on('vehicleTypeChanged',this.handleSurroundingPoints,this);
         this.olc.on('measureChanged', function( length, unit){
             var measureIntField = Ext.get("measureInt");
             if(measureIntField ){
@@ -704,7 +705,8 @@ Ext.define("Editor", {
                    params:  {
                        'surroundingPoints' : true,
                        rseq: this.activeRseq.getId(),
-                       extent: extent
+                       extent: extent,
+                       vehicleType: this.getCurrentVehicleType()
                    },
                    success: function (response){
                        var msg = Ext.JSON.decode(response.responseText);

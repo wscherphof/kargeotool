@@ -91,6 +91,9 @@ public class EditorActionBean implements ActionBean {
 
     @Validate(converter = OneToManyTypeConverter.class)
     private List<Gebruiker> usersToInform;
+    
+    @Validate
+    private String vehicleType;
 
     public Gebruiker getGebruiker() {
         final String attribute = this.getClass().getName() + "_GEBRUIKER";
@@ -359,8 +362,16 @@ public class EditorActionBean implements ActionBean {
 
             JSONArray rs = new JSONArray();
             for (ActivationPoint r : points) {
-
-                rs.put(r.getGeoJSON());
+                RoadsideEquipment rseq = r.getRoadsideEquipment();
+                Set<Movement> ms = rseq.getMovements();
+                for (Movement m : ms) {
+                    if (m.getVehicleType().equalsIgnoreCase(vehicleType)) {
+                        if (movementHasActivationPoint(m, r.getId())) {
+                            rs.put(r.getGeoJSON());
+                            break;
+                        }
+                    }
+                }
             }
             info.put("points", rs);
 
@@ -370,6 +381,16 @@ public class EditorActionBean implements ActionBean {
             info.put("error", ExceptionUtils.getMessage(e));
         }
         return new StreamingResolution("application/json", new StringReader(info.toString(4)));
+    }
+    
+    private boolean movementHasActivationPoint(Movement m, Long apId){
+        List<MovementActivationPoint> maps = m.getPoints();
+        for (MovementActivationPoint map : maps) {
+            if (map.getPoint().getId().equals(apId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -858,6 +879,14 @@ public class EditorActionBean implements ActionBean {
 
     public void setDataOwnersVervoerders(JSONArray dataOwnersVervoerders) {
         this.dataOwnersVervoerders = dataOwnersVervoerders;
+    }
+    
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
     // </editor-fold>
 
