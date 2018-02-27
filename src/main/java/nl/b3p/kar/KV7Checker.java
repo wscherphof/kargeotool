@@ -72,8 +72,8 @@ public class KV7Checker implements Job {
                     String body1 = getBody(days, d, "Graag controleren wat de oorzaak is.");
                     String body2 = getBody(days, d, "Een ticket aanmaken en assignen aan Badr.");
 
-                    Mailer.sendMail("KAR Geo Tool", fromAddress, toAddress1, "[KAR Geo Tool] KV7 deze maand niet ontvangen", body1);
-                    Mailer.sendMail("KAR Geo Tool", fromAddress, toAddress2, "[KAR Geo Tool] KV7 deze maand niet ontvangen", body2);
+                    Mailer.sendMail("KAR Geo Tool", fromAddress, "[KAR Geo Tool] KV7 deze maand niet ontvangen", body1, toAddress1);
+                    Mailer.sendMail("KAR Geo Tool", fromAddress, "[KAR Geo Tool] KV7 deze maand niet ontvangen", body2, toAddress2);
                 }
             }else{
                 log.error("Geen kv7netwerk datasource geconfigureerd");

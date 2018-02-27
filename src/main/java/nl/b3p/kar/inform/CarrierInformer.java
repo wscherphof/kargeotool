@@ -18,15 +18,8 @@ package nl.b3p.kar.inform;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
+import nl.b3p.kar.Mailer;
 import nl.b3p.kar.hibernate.InformMessage;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import org.apache.commons.logging.Log;
@@ -70,59 +63,27 @@ public class CarrierInformer implements Job {
     }
 
     private void createMessage(InformMessage inform, String appUrl, String host, String fromAddress) {
-        try {
-            Properties props = System.getProperties();
-            // -- Attaching to default Session, or we could start a new one --
-            props.put("mail.smtp.host", host);
-            Session session = Session.getDefaultInstance(props, null);
-            // -- Create a new message --
-            MimeMessage msg = new MimeMessage(session);
-            // -- Set the FROM and TO fields --
-            msg.setFrom(new InternetAddress(fromAddress));
-            if (inform.getVervoerder().getEmail() != null) {
-                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(inform.getVervoerder().getEmail(), false));
-                if (inform.getAfzender().getEmail() != null) {
-                    try {
-                        msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(inform.getAfzender().getEmail(), false));
-                    } catch (MessagingException e) {
-                        log.debug("No emailaddres for sender: "+inform.getAfzender().getUsername());
-                    }
+
+        if (inform.getVervoerder().getEmail() != null) {
+                String to = inform.getAfzender().getEmail();
+                String subject = "[Kar Geo Tool] Nieuwe KAR-gegevens";
+                String body = getBody(inform, appUrl);
+                String informerMail = inform.getAfzender().getEmail() != null ? inform.getAfzender().getEmail() : null;
+                try {
+                    Mailer.sendMail("KAR Geo Tool", fromAddress, subject, body, to,informerMail);
+                    inform.setMailSent(true);
+                } catch (Exception ex) {
+                    log.error("Cannot send inform message:", ex);
+                    inform.setMailSent(false);
                 }
 
-                msg.setSubject("[kargeotool] Nieuwe KAR-gegevens");
-                String body = getBody(inform, appUrl);
-                msg.setText(body, "utf-8", "html");
-
-                msg.setSentDate(new Date());
-                Transport.send(msg);
-                inform.setMailSent(true);
                 inform.setSentAt(new Date());
-            } else {
-                log.error("Vervoerder heeft geen mailadres ingevuld. Bericht niet verzonden aan: " + inform.getVervoerder().getFullname() + " - " + inform.getVervoerder().getUsername());
-            }
-        } catch (AddressException ex) {
-            log.error("Cannot send inform message:", ex);
-        } catch (MessagingException ex) {
-            log.error("Cannot send inform message:", ex);
+            
+        } else {
+            log.error("Vervoerder heeft geen mailadres ingevuld. Bericht niet verzonden aan: " + inform.getVervoerder().getFullname() + " - " + inform.getVervoerder().getUsername());
         }
     }
-/**
-Beste xxxxx, 
-
-De KAR gegevens van het kruispunt {xxxxxxxx} met KAR-adres {xx}, van {dataowner} zijn gewijzigd.
-Een KV9 export kunt u, als u bent ingelogd, downloaden via {link} 
-
-Een overzicht van de VRI op de kaart vindt u, als u bent ingelogd, hier
-
-Wij verzoeken u nadat u de KAR-gegevens hebt verwerkt dit aan te geven op de overzichtspagina.  Deze kunt u bereiken via deze link ……..
-
-
-Met vriendelijke groet, 
-
-
-xxxxx (naam gebruiker)
-
-*/
+    
     private String getBody(InformMessage inform, String appUrl) {
         RoadsideEquipment rseq = inform.getRseq();
         String name = inform.getVervoerder().getFullname() != null ? inform.getVervoerder().getFullname()  : "vervoeder";

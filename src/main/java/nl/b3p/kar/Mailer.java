@@ -44,12 +44,16 @@ public class Mailer {
         return session;
     }
     
-    public static void sendMail(String fromName, String fromEmail, String email, String subject, String mailContent) throws Exception {
+    public static void sendMail(String fromName, String fromEmail, String subject, String mailContent, String... email) throws Exception {
         
         Address from = new InternetAddress(fromEmail, fromName);
         MimeMessage msg = new MimeMessage(getMailSession());
         msg.setFrom(from);
-        msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        for (String addr : email) {
+            if(addr != null && !addr.isEmpty()){
+                msg.addRecipient(Message.RecipientType.TO, new InternetAddress(addr));
+            }
+        }
         msg.setSubject(subject);
         msg.setSentDate(new Date());
         msg.setContent(mailContent, "text/plain");
