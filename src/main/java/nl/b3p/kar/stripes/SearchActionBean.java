@@ -61,6 +61,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -168,6 +169,7 @@ public class SearchActionBean implements ActionBean {
     }
     
     private Disjunction getRseqDisjunction(String t, boolean exact){
+        String oldTerm = t;
         MatchMode mm = MatchMode.EXACT;
 
         if (!exact && t.contains(WILDCARD)) {
@@ -185,8 +187,13 @@ public class SearchActionBean implements ActionBean {
         dis.add(Restrictions.ilike("description", t, mm));
 
         try {
-            int karAddress = Integer.parseInt(t);
-            dis.add(Restrictions.eq("karAddress", karAddress));
+            if (exact) {
+                int karAddress = Integer.parseInt(t);
+                dis.add(Restrictions.eq("karAddress", karAddress));
+            } else {
+                String r = oldTerm.replaceAll("\\*", "%");
+                dis.add(Restrictions.sqlRestriction("kar_address::text like ?", r, StringType.INSTANCE));
+            }
         } catch (NumberFormatException e) {
         }
 
