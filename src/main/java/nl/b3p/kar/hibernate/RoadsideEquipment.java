@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
@@ -60,6 +59,7 @@ import org.stripesstuff.stripersist.Stripersist;
  * @author Matthijs Laan
  */
 @Entity
+@Table(name = "roadside_equipment")
 @XmlRootElement(name="RSEQDEF")
 @XmlType(name="RSEQDEFType",
         propOrder={
@@ -113,11 +113,11 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     private Long id;
 
     @ManyToOne(optional=false)
+    @JoinColumn(name = "data_owner")
     @XmlElement(name="dataownercode")
     @XmlJavaTypeAdapter(DataOwner.class)
     private DataOwner dataOwner;
 
-    @org.hibernate.annotations.Type(type="org.hibernatespatial.GeometryUserType")
     @XmlTransient
     private Point location;
 
@@ -125,6 +125,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
      * Het KAR adres (SID) van het verkeerssysteem. Verplicht voor Kv9.
      */
     @XmlElement(name="karaddress")
+    @Column(name="kar_address")
     private Integer karAddress;
 
     /**
@@ -134,6 +135,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validfrom")
     @XmlJavaTypeAdapter(TmiDateAdapter.class)
+    @Column(name="valid_from")
     private Date validFrom;
 
     /**
@@ -142,6 +144,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     @Temporal(TemporalType.DATE)
     @XmlElement(name="validuntil")
     @XmlJavaTypeAdapter(TmiDateAdapter.class)
+    @Column(name="valid_until")
     private Date validUntil;
 
     /**
@@ -156,6 +159,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
      * (wegbeheerder). Verplicht voor Kv9.
      */
     @XmlElement(name="crossingcode")
+    @Column(name="crossing_code")
     private String crossingCode;
 
     /**
@@ -176,7 +180,10 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
      * Voor service en command types te versturen KAR attributen.
      */
     @ElementCollection
-    //@JoinTable(inverseJoinColumns=@JoinColumn(name="roadside_equipment"))
+    @JoinTable(name = "roadside_equipment_kar_attributes",
+            joinColumns={
+                @JoinColumn(name="roadside_equipment")
+            })
     @OrderColumn(name="list_index")
     @XmlElement(name="KARATTRIBUTES")
     private List<KarAttributes> karAttributes = new ArrayList<KarAttributes>();
@@ -196,32 +203,19 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     private String memo;
 
     @XmlTransient
+    @Column(name="validation_errors")
     private Integer validationErrors;
-
-    /**
-     *
-     * @return extra xml
-     */
-    @XmlElement(name="b3pextra")
-    public XmlB3pRseq getExtraXml() {
-
-        XmlB3pRseq extra = new XmlB3pRseq(this);
-
-        if(extra.isEmpty()) {
-            return null;
-        } else {
-            return extra;
-        }
-    }
 
     @Transient
     @XmlElement(namespace=Namespace.NS_BISON_TMI8_KV9_CORE)
     private String delimiter = "";
 
     @XmlTransient
+    @Column(name="vehicle_type")
     private String vehicleType;
 
     @XmlTransient
+    @Column(name="ready_for_export")
     private boolean readyForExport;
     
     @XmlTransient
@@ -668,6 +662,9 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
 
             JSONArray mns = new JSONArray();
             List<MovementActivationPoint> maps = mapsByAp2.get(ap2);
+            if(maps == null){
+                continue;
+            }
             for (MovementActivationPoint map : maps) {
                 mns.put(map.getMovement().getNummer());
             }
@@ -835,6 +832,22 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
         } catch(JSONException e) {
         }
         return karAttributes;
+    }
+
+    /**
+     *
+     * @return extra xml
+     */
+    @XmlElement(name="b3pextra")
+    public XmlB3pRseq getExtraXml() {
+
+        XmlB3pRseq extra = new XmlB3pRseq(this);
+
+        if(extra.isEmpty()) {
+            return null;
+        } else {
+            return extra;
+        }
     }
 
     /**
@@ -1070,11 +1083,29 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
                                 errors.add(new KV9ValidationError(false, "F139", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", null, "Afwezig"));
                                 s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
                             } else {
-                                if(!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType())
-                                && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
-                                && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
-                                    errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
-                                    s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
+                                if(m.getVehicleType().equals(VehicleType.VEHICLE_TYPE_HULPDIENSTEN)){
+                                    String tt = s.getTriggerType();
+                                    if( StringUtils.isNumeric(tt)){
+                                        Integer t = Integer.parseInt(tt);
+                                        if(t < 0 || t > 255){
+                                            errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig voor hulpdiensten (< 0 of > 255)"));
+                                            s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
+                                        }
+                                    } else {
+                                        if (!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType())
+                                                && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
+                                                && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
+                                            errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
+                                            s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
+                                        }
+                                    }
+                                } else {
+                                    if (!ActivationPointSignal.TRIGGER_FORCED.equals(s.getTriggerType())
+                                            && !ActivationPointSignal.TRIGGER_MANUAL.equals(s.getTriggerType())
+                                            && !ActivationPointSignal.TRIGGER_STANDARD.equals(s.getTriggerType())) {
+                                        errors.add(new KV9ValidationError(false, "F140", sXmlContext + "/triggertype", sContext + ", triggersoort van melding", s.getTriggerType() + "", "Ongeldig (niet 'STANDARD', 'FORCED' of 'MANUAL')"));
+                                        s.setTriggerType(ActivationPointSignal.TRIGGER_STANDARD);
+                                    }
                                 }
                             }
 
