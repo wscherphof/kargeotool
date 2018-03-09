@@ -1393,7 +1393,7 @@ Ext.define("Editor", {
         });
         var mvmts = this.activeRseq.findMovementsForPoint( this.selectedObject);
         var inmeldMap = mvmts[0].map;
-        var distanceMap = inmeldMap.distanceTillStopLine;
+        var distanceMap = inmeldMap.getDistanceTillStopLine();
         var distance = this.olc.measureTool.getBestLength( this.olc.vectorLayer.features[this.olc.vectorLayer.features.length-1].geometry);
         if(!distance){
             distance = 0;
