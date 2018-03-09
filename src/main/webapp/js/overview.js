@@ -250,7 +250,12 @@ Ext.define("nl.b3p.kar.Overview",{
     },
     updateOverview : function (rseq, changed){
         this.updateLayerLabel();
+        if (this.tree){
+            this.tree.destroy();
+        }
         if(!rseq) {
+            Ext.get("context_vri").setHtml("");
+            Ext.get("validationResults").setHtml("");
             return;
         }
         Ext.get("context_vri").setHtml(rseq === null ? "" : (rseq.getDescription()) + " (" + rseq.getKarAddress() + ")");
@@ -277,9 +282,6 @@ Ext.define("nl.b3p.kar.Overview",{
         }
 
         var overzicht = Ext.ComponentQuery.query("#overzichtContainer")[0];
-        if (this.tree){
-            this.tree.destroy();
-        }
         if(rseq){
             var root = this.createRootNode(rseq.getOverviewJSON());
             var store = Ext.create('Ext.data.TreeStore',root);
