@@ -1015,8 +1015,14 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
         } else {
             // positie in XML niet beschikbaar, SortedSet op basis van nummer
             for(Movement m: movements) {
-                String mXmlContext = eXmlContext + "[movementnumber=" + m.getNummer() + "]";
-                String mContext = context + ", beweging nummer " + m.getNummer();
+                Integer signaalgroepNummer = null;
+                for (MovementActivationPoint point : m.getPoints()) {
+                    if (point.getSignal() != null) {
+                        signaalgroepNummer = point.getSignal().getSignalGroupNumber();
+                    }
+                }
+                String mXmlContext = eXmlContext + "[signalnumber=" + signaalgroepNummer + "]";
+                String mContext = context + ", signaalgroep nummer " + signaalgroepNummer;
 
                 if(m.getNummer() == null) {
                     errors.add(new KV9ValidationError(true, "F131", mXmlContext + "/movementnumber", mContext + ", nummer", null, "Niet ingevuld"));

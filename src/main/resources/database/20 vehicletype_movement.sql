@@ -38,6 +38,7 @@ ALTER TABLE v_gemeente
 -- DROP TABLE dxf;
 
 
+set session authorization geo_ov;
 CREATE TABLE upload
 (
   id serial NOT NULL,
@@ -62,7 +63,6 @@ ALTER TABLE upload
 CREATE TABLE dxf_features
 (
   id serial NOT NULL,
-  the_geom geometry(Geometry,28992),
   layer character varying(255),
   name character varying(255),
   text character varying(255),
@@ -89,9 +89,10 @@ ALTER TABLE dxf_features
   OWNER TO geo_ov;
 
 
-alter table gemeente add column
 
-  geom_simplified geometry(MultiPolygon,28992);
+select addgeometrycolumn('data','gemeente', 'geom_simplified', 28992, 'MULTIPOLYGON',2)
+
+select addgeometrycolumn('data','dxf_features', 'the_geom', 28992, 'GEOMETRY',2)
 
 update gemeente set geom_simplified = st_multi(ST_SimplifyPreserveTopology(geom, 100));
 
@@ -99,3 +100,6 @@ CREATE INDEX gemeente_geom_simplified_idx
   ON gemeente
   USING gist
   (geom_simplified);
+
+
+   update deelgebied set geom = st_multi(geom)
