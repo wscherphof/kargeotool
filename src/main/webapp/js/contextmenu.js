@@ -784,9 +784,11 @@ Ext.define("ContextMenu", {
             if(type === "ACTIVATION_2") {
                 // Voor een uitmeldpunt kan alleen een inmeldpunt worden toegevoegd
                 // indien voor dat uitmeldpunt in een movement een eindpunt aanwezig 
-                // is
+                // is, behalve als het voertuigtype HD is, die hebben geen eindpunt nodig.
                 
-                var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject);
+                var vehicleType = this.editor.getCurrentVehicleType();
+                var heeftEindpunt = editor.activeRseq.heeftUitmeldpuntEindpunt(editor.selectedObject) || vehicleType === "Hulpdiensten";
+                
                 Ext.getCmp("addInmeldpunt").setDisabled(!heeftEindpunt);
                 Ext.getCmp("addInmeldpuntCoord").setDisabled(!heeftEindpunt);
                 Ext.getCmp("selectInmeldpunt").setDisabled(!heeftEindpunt);
