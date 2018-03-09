@@ -536,7 +536,7 @@ Ext.define("EditForms", {
                 text: 'OV',
                 checked: false,
                 iconCls: "noTreeIcon",
-                expanded:false,
+                expanded:true,
                 leaf: false,
                 children: ov
             });
@@ -546,7 +546,7 @@ Ext.define("EditForms", {
                 text: 'Hulpdiensten',
                 checked: false,
                 iconCls: "noTreeIcon",
-                expanded:false,
+                expanded:true,
                 leaf: false,
                 children: hulpdienst
             });
