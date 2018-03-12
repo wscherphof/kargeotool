@@ -461,6 +461,7 @@ Ext.define("EditForms", {
 
         var map = newMap;
         var movements = null;
+        var oldSignalGroupNumber;
         if(!map) {
             if(this.editor.activeMovement){
                 var mvmnt = this.editor.activeRseq.getMovementById(this.editor.activeMovement);
@@ -482,8 +483,14 @@ Ext.define("EditForms", {
                 }
                 map = movements[0].map;
             }
+            oldSignalGroupNumber = map.getSignalGroupNumber();
+        }else{
+            var pointMovements = rseq.findMovementsForPoint(this.editor.selectedObject);
+            if(pointMovements){
+                var relMap = pointMovements[0].map;
+                oldSignalGroupNumber = relMap.getSignalGroupNumber();
+            }
         }
-        var oldSignalGroupNumber = map.getSignalGroupNumber();
 
         if(apType === "1"){
             label += " (Signaalgroep " + oldSignalGroupNumber + ")";
