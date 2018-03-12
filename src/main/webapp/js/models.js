@@ -184,7 +184,7 @@ Ext.define('RSEQ', {
 
     findMapForPoint : function(movementId,pointId){
         var movement = this.getMovementById(movementId);
-        var m = null
+        var m = null;
         Ext.Array.each(movement.getMaps(), function(map) {
             if(map.getPointId() === pointId) {
                 m = map;

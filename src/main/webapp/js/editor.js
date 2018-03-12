@@ -1239,12 +1239,20 @@ Ext.define("Editor", {
         }else{
             distance = parseInt(distance[0].toFixed(0));
         }
+        var mvmntsAndMap = this.activeRseq.findMovementsForPoint(uitmeldpunt);
+        var vehicleTypes = null;
+        for(var i = 0 ; i < mvmntsAndMap.length ;i++){
+            var mm = mvmntsAndMap[i];
+            if(mm.movement.getVehicleType() === this.getCurrentVehicleType()){
+                vehicleTypes = mm.map.getVehicleTypes();
+            }
+        }
         var map = Ext.create(MovementActivationPoint, {
             beginEndOrActivation: "ACTIVATION",
             commandType: 1,
             distanceTillStopLine:distance,
             pointId: inmeldpunt.getId(),
-            vehicleTypes: profile.vehicleTypes || (
+            vehicleTypes: vehicleTypes || profile.vehicleTypes ||  (
                 this.getCurrentVehicleType() === "OV"
                     ? [1,2,6,7,71]
                     : [3,4,5,69,70]

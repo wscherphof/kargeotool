@@ -569,11 +569,11 @@ Ext.define("EditForms", {
             }
         };
         var selectedVehicleTypes = [];
-        if(!map.config.vehicleTypes){
-            map.config.vehicleTypes = new Array();
+        if(!map.getVehicleTypes()){
+            map.setVehicleTypes(new Array());
         }
         Ext.Array.each(vehicleTypes, function(vt) {
-            var selected = map.config.vehicleTypes.indexOf(vt.nummer) !== -1;
+            var selected = map.getVehicleTypes().indexOf(vt.nummer) !== -1;
             if(selected || vt.omschrijving.indexOf('Gereserveerd') === -1) {
                 var leaf = {
                         id: vt.nummer,
