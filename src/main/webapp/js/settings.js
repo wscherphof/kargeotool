@@ -101,7 +101,7 @@ Ext.define("SettingsForm", {
                 },
                 {
                     id: 'hulpdienst-node',
-                    text: 'Hulpdiensten',
+                    text: 'HD',
                     checked: false,
                     iconCls: "noTreeIcon",
                     expanded:false,
@@ -210,7 +210,7 @@ Ext.define("SettingsForm", {
                     xtype: "combo",
                     anyMatch: true
                 },{
-                    fieldLabel: 'Kies vervoerder(s) hulpdienst',
+                    fieldLabel: 'Kies vervoerder(s) HD',
                     width: 400,
                     store: carrierStore,
                     queryMode: 'local',

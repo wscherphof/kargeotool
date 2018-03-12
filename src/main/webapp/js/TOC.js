@@ -94,7 +94,7 @@ Ext.define("TOC", {
                         {
                             xtype: "radio",
                             name: "vehicleType",
-                            boxLabel: "Hulpdiensten",
+                            boxLabel: "HD",
                             inputValue: "Hulpdiensten",
                             value: false,
                             id: 'layerHulpdiensten',

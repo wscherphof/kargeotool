@@ -202,8 +202,8 @@ Ext.define('KarAttributesEditWindow', {
                     columns: [
                         {header: "Nr", dataIndex: "n", menuDisabled: true, draggable: false, sortable: false, width: 30 },
                         {header: "Attribuut", dataIndex: "label", menuDisabled: true, draggable: false, sortable: false, flex: 1},
-                        {header: "Openbaar vervoer", dataIndex: "PT", menuDisabled: true, draggable: false, sortable: false, width: 100, renderer: checkboxRenderer },
-                        {header: "Hulpdiensten", dataIndex: "ES", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
+                        {header: "OV", dataIndex: "PT", menuDisabled: true, draggable: false, sortable: false, width: 100, renderer: checkboxRenderer },
+                        {header: "HD", dataIndex: "ES", menuDisabled: true, draggable: false, sortable: false, width: 75, renderer: checkboxRenderer },
                         {header: "Overig", dataIndex: "OT", menuDisabled: true, draggable: false, sortable: false, width: 60, renderer: checkboxRenderer }
                     ],
                     flex: 1,

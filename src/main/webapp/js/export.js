@@ -353,7 +353,7 @@ Ext.onReady(function (){
                         },
                         {
                             "type" : "Hulpdiensten",
-                            "label" : "Hulpdiensten"
+                            "label" : "HD"
                         },
                         {
                             "type" : "OV",
