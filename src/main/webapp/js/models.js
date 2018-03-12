@@ -657,6 +657,7 @@ Ext.define('RSEQ', {
         return true;
     },
     hasEndpointsNearCheckoutPoints: function(threshold){
+        var faultyPoints = [];
         for(var i = 0 ; i < this.getMovements().length; i++){
             var m = this.getMovements()[i];
             if(m.getVehicleType() !== "OV"){
@@ -679,11 +680,13 @@ Ext.define('RSEQ', {
                 var checkoutPoint = this.getPointById(checkout.getPointId());
                 var dist = this.distance(endPoint.getGeometry().coordinates, checkoutPoint.getGeometry().coordinates);
                 if(dist < threshold){
-                    return true;
+                    faultyPoints.push({
+                        checkout: checkoutPoint
+                    });
                 }
             }
         }
-        return false;
+        return faultyPoints;
     },
     distance: function(c1,c2){
         var distance = Math.sqrt(Math.pow(c1[0] - c2[0], 2) + Math.pow(c1[1] - c2[1], 2));

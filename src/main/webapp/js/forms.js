@@ -483,7 +483,7 @@ Ext.define("EditForms", {
                 map = movements[0].map;
             }
         }
-        var oldSignalGroupNumber = map.config.signalGroupNumber;
+        var oldSignalGroupNumber = map.getSignalGroupNumber();
 
         if(apType === "1"){
             label += " (Signaalgroep " + oldSignalGroupNumber + ")";

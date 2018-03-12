@@ -498,12 +498,18 @@ Ext.define("Editor", {
             
             var endPointCheck = function(){
                 var threshold = 50;
-                var hasEndpointsNearCheckouts = rseq.hasEndpointsNearCheckoutPoints(threshold);
+                var faultyPoints = rseq.hasEndpointsNearCheckoutPoints(threshold);
                 var me = this;
-                if (hasEndpointsNearCheckouts) {
+                if (faultyPoints.length > 0) {
+                    var pts = "<ul>";
+                    for(var i = 0 ; i < faultyPoints.length ; i++){
+                        pts += "<li>" + faultyPoints[i].checkout.getLabel() + "</li>";
+                    }
+                    pts += "</ul>"
                     Ext.Msg.show({
                         title: "Eindpunten dichtbij uitmeldpunten",
-                        msg: "Er bevinden zich eindpunten op minder dan " + threshold + "meter van uitmeldpunten. Aanbevolen wordt om het eindpunt ten minste 50 meter voorbij het midden van het kruispunt te leggen. Toch opslaan?",
+                        msg: "Er bevinden zich eindpunten op minder dan " + threshold + "meter van uitmeldpunten. " +
+                                "Het gaat om de punten: <br/>" + pts + "Aanbevolen wordt om het eindpunt ten minste 50 meter voorbij het midden van het kruispunt te leggen.Toch opslaan?",
                         fn: function (button) {
                             if (button === 'yes') {
                                 saveFunction();
