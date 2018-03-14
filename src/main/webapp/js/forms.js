@@ -486,7 +486,7 @@ Ext.define("EditForms", {
             oldSignalGroupNumber = map.getSignalGroupNumber();
         }else{
             var pointMovements = rseq.findMovementsForPoint(this.editor.selectedObject);
-            if(pointMovements){
+            if(pointMovements && pointMovements.length > 0){
                 var relMap = pointMovements[0].map;
                 oldSignalGroupNumber = relMap.getSignalGroupNumber();
             }
