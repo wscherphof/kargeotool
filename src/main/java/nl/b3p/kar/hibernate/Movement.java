@@ -267,8 +267,15 @@ public class Movement implements Comparable<Movement> {
     public void setPoints(List<MovementActivationPoint> points) {
         this.points = points;
     }
-
+    
     public String getVehicleType() {
+        return getVehicleType(false);
+    }
+
+    public String getVehicleType(boolean computeIfNull) {
+        if(vehicleType == null && computeIfNull){
+            determineVehicleType();
+        }
         return vehicleType;
     }
 

@@ -1647,9 +1647,13 @@ Ext.define("Editor", {
         }
     },
 
-    getCurrentVehicleType: function(){
+    getCurrentVehicleType: function(abbreviated){
         if(Ext.getCmp("layerHulpdiensten").getValue()){
-            return "Hulpdiensten";
+            if(abbreviated){
+                return "HD";
+            }else{
+                return "Hulpdiensten";
+            }
         }else{
             return "OV";
         }

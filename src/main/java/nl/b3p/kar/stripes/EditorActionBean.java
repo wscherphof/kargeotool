@@ -340,9 +340,9 @@ public class EditorActionBean implements ActionBean {
             if(getGebruiker().isBeheerder() || getGebruiker().isVervoerder()) {
                 points = session.createQuery(
                         "from ActivationPoint "
-                      + "where intersects(location, :pos) = true "
+                      + "where intersects(location, ?) = true "
                       + "and roadsideEquipment <> :this")
-                        .setParameter("pos", p)
+                        .setParameter(0, p)
                         .setParameter("this", rseq)
                         .list();
             } else if(dos.isEmpty()) {
@@ -365,7 +365,7 @@ public class EditorActionBean implements ActionBean {
                 RoadsideEquipment rseq = r.getRoadsideEquipment();
                 Set<Movement> ms = rseq.getMovements();
                 for (Movement m : ms) {
-                    if (m.getVehicleType().equalsIgnoreCase(vehicleType)) {
+                    if (m.getVehicleType(true).equalsIgnoreCase(vehicleType)) {
                         if (movementHasActivationPoint(m, r.getId())) {
                             rs.put(r.getGeoJSON());
                             break;

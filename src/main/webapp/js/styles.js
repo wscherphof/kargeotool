@@ -61,7 +61,7 @@ var styleContext = {
         }
         
         if(show){
-            return feature.attributes.label + " (" + editor.getCurrentVehicleType() + ")";
+            return feature.attributes.label + " (" + editor.getCurrentVehicleType(true) + ")";
         }else{
             return "";
         }
