@@ -1,4 +1,4 @@
-/* global Ext */
+/* global Ext, editor */
 
 /**
 * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
@@ -272,7 +272,7 @@ Ext.define('RSEQ', {
             var movement = mvmtAndMap.movement;
             var hasEnd = false;
             var currentPoints =[];
-            Ext.Array.each(movement.maps, function(map) {
+            Ext.Array.each(movement.getMaps(), function(map) {
                 if(map.getBeginEndOrActivation() === "END") {
                     hasEnd = true;
                 }
@@ -312,7 +312,7 @@ Ext.define('RSEQ', {
 
             var newMap;
 
-            Ext.Array.each(mvmtAndMap.movement.maps, function (map) {
+            Ext.Array.each(mvmtAndMap.movement.getMaps(), function (map) {
                 if (map.getBeginEndOrActivation() != "END") {
 
                     var config = {
@@ -320,7 +320,7 @@ Ext.define('RSEQ', {
                         beginEndOrActivation: map.getBeginEndOrActivation(),
                         pointId: map.getPointId()
                     };
-                    if (map.beginEndOrActivation == "ACTIVATION") {
+                    if (map.getBeginEndOrActivation() === "ACTIVATION") {
                         Ext.Object.merge(config, {
                             commandType: map.getCommandType(),
                             distanceTillStopLine: map.getDistanceTillStopLine(),
@@ -331,7 +331,7 @@ Ext.define('RSEQ', {
                         });
                     }
                     newMap = Ext.create(MovementActivationPoint, config);
-                    newMovement.maps.push(newMap);
+                    newMovement.getMaps().push(newMap);
                 }
             });
 
@@ -342,7 +342,7 @@ Ext.define('RSEQ', {
                 pointId: eindpunt.getId()
             });
 
-            newMovement.maps.push(newMap);
+            newMovement.getMaps().push(newMap);
 
             this.addMovement(newMovement);
         }
