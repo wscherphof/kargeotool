@@ -185,6 +185,7 @@ public class SearchActionBean implements ActionBean {
 
         Disjunction dis = Restrictions.disjunction();
         dis.add(Restrictions.ilike("description", t, mm));
+        dis.add(Restrictions.ilike("town", t, mm));
 
         try {
             if (exact) {
