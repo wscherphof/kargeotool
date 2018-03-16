@@ -21,6 +21,7 @@
 /**
  * Als het document klaar is met laden, zet de layout goed.
  */
+var searchWindow =null;
 Ext.onReady(function() {
     Ext.create('Ext.Viewport', {
         layout: 'border',
@@ -68,7 +69,24 @@ Ext.onReady(function() {
                         contentEl: 'rseqOptions',
                         margin: 5
                     }
-                ]
+                ],
+                listeners: {
+                    resize: function () {
+                        if (editor) {
+                            editor.resize();
+                        }
+                    },
+                    collapse: function () {
+                        if (editor) {
+                            editor.resize();
+                        }
+                    },
+                    expand: function () {
+                        if (editor) {
+                            editor.resize();
+                        }
+                    }
+                }
             },
             {
                 region: 'center',
@@ -78,7 +96,7 @@ Ext.onReady(function() {
             }
         ]
     });
-    Ext.create('CollapsibleWindow', {
+    searchWindow = Ext.create('CollapsibleWindow', {
         title: 'Zoeken',
         id: 'searchformWindow',
         height: 300

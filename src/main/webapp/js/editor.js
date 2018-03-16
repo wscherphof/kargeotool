@@ -127,6 +127,10 @@ Ext.define("Editor", {
         this.search.on('searchResultClicked',this.searchResultClicked,this);
         this.endpointCreator = Ext.create(EndPointCreator,this);
         this.distancelineWasReset = false;
+        var me = this;
+        window.addEventListener("resize", function(){
+            setTimeout(me.resize.bind(me),1000);
+        });
     },
 
     // <editor-fold desc="Openlayers stuff" defaultstate="collapsed">
@@ -304,6 +308,14 @@ Ext.define("Editor", {
         }
     },
     
+    resize: function(){
+        if(this.olc){
+            this.olc.resizeMap();
+        }
+        if(searchWindow){
+            searchWindow.resize();
+        }
+    },
     // </editor-fold>
     
     // <editor-fold desc="AJAX calls" defaultstate="collapsed">

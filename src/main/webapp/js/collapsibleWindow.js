@@ -126,6 +126,12 @@ Ext.define("CollapsibleWindow", {
         window._kar_position.collapsed = false;
         this.repositionOtherDockedWindows(statics);
     },
+    
+    resize: function(){
+        var statics = this.statics();
+        this.repositionOtherDockedWindows(statics);
+    },
+    
     repositionOtherDockedWindows: function(statics) {
         for(var i = 0; i < statics.dockedWindows.length; i++) {
             this.dockWindow(statics.dockedWindows[i], i + 1);
