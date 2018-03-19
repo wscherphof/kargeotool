@@ -250,7 +250,9 @@ Ext.define("nl.b3p.kar.Overview",{
     },
     updateOverview : function (rseq, changed){
         this.updateLayerLabel();
+        var scrollY = 0;
         if (this.tree){
+            scrollY = this.tree.getScrollY();
             this.tree.destroy();
         }
         if(!rseq) {
@@ -445,7 +447,8 @@ Ext.define("nl.b3p.kar.Overview",{
             overzicht.add(this.tree);
             Ext.ComponentQuery.query('#rseqInfoWindow')[0].updateLayout();
         }
-        Ext.getCmp( "reorderPoints").setChecked( false);
+        Ext.getCmp("reorderPoints").setChecked(false);
+        this.tree.scrollTo(0,scrollY);
         this.editor.helpPanel.updateHelpPanel();
     },
     updateLayerLabel: function() {
