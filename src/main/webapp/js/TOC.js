@@ -260,10 +260,33 @@ Ext.define("TOC", {
                                 }
                             }
 
-
                         },
                         {
                             id: 'Openbasiskaart_slider',
+                            xtype: "slider",
+                            increment: 5,
+                            value: 10,
+                            width: 200,
+                            minValue: 0,
+                            maxValue: 100,
+                            listeners: {
+                                change: this.sliderChanged
+                            }
+                        }, 
+                        {
+                            xtype: "checkbox",
+                            boxLabel: "Topografie (BRT)",
+                            id: "brtachtergrondkaart_visible",
+                            listeners: {
+                                scope: this,
+                                change: function (obj, value) {
+                                    this.toggleLayer("brtachtergrondkaart", value);
+                                }
+                            }
+
+                        },
+                        {
+                            id: 'brtachtergrondkaart_slider',
                             xtype: "slider",
                             increment: 5,
                             value: 10,
@@ -295,7 +318,7 @@ Ext.define("TOC", {
     },
 
     restoreProfile: function () {
-        var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart', 'gemeentes', 'provincies'];
+        var checkboxes = ['buslijnen', 'bushaltes', 'Luchtfoto', 'Openbasiskaart', 'brtachtergrondkaart','gemeentes', 'provincies'];
         Ext.Array.each(checkboxes, function (checkbox) {
             Ext.getCmp(checkbox + "_visible").setValue(editor.getLayerVisibility(checkbox));
         });
@@ -308,6 +331,7 @@ Ext.define("TOC", {
         
         Ext.getCmp("Openbasiskaart_slider").setValue(editor.getLayerOpacity("Openbasiskaart") * 100);
         Ext.getCmp("Luchtfoto_slider").setValue(editor.getLayerOpacity("Luchtfoto") * 100);
+        Ext.getCmp("brtachtergrondkaart_slider").setValue(editor.getLayerOpacity("brtachtergrondkaart") * 100);
     },
     setFilter: function (checked, prefix, type) {
         editor.updateFilteredRseqs();
