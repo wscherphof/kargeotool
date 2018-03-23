@@ -282,7 +282,8 @@ Ext.define("nl.b3p.kar.SearchGeocoder", {
         var location = bounds.getCenterLonLat();
         link.on('click', function() {
             var result = Ext.create(nl.b3p.kar.SearchResult,{
-                bounds:bounds,
+                x: location.lon,
+                y: location.lat,
                 location: location,
                 addMarker:true
             });
