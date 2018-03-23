@@ -254,8 +254,12 @@ public class ActivationPoint implements Comparable {
     }
     //</editor-fold>
 
+    @Override
     public int compareTo(Object t) {
         ActivationPoint rhs = (ActivationPoint)t;
+        if(rhs.getId() != null && this.getId() != null && rhs.getId().equals(this.getId())){
+            return 0;
+        }
         if(nummer == null) {
             return rhs.nummer == null ? 0 : -1;
         }
@@ -288,8 +292,8 @@ public class ActivationPoint implements Comparable {
     public ActivationPoint deepCopy(RoadsideEquipment rseq) throws Exception{
         ActivationPoint copy = (ActivationPoint)BeanUtils.cloneBean(this);
         copy.setId(null);
+        copy.setNummer(rseq.getPoints().size() +2 );
         rseq.getPoints().add(copy);
-        copy.setNummer(rseq.getPoints().size() +1 );
         copy.setRoadsideEquipment(rseq);
         return copy;
     }

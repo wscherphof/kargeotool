@@ -545,6 +545,7 @@ Ext.define('RSEQ', {
             return rseq;
         }
         var points = new Array();
+        var filteredPointsById = {};
         var pointsLookup = {};
         if (this.getPoints()) {
             for (var i = 0; i < this.getPoints().length; i++) {
@@ -561,9 +562,16 @@ Ext.define('RSEQ', {
                     for(var j = 0 ; j < maps.length;j++){
                         var map = maps[j];
                         var point = pointsLookup[map.getPointId()];
-			points.push(point);
+                        if(point){
+                            filteredPointsById[point.properties.id] = point;
+                        }
                     }
                 }
+            }
+        }
+        for(var key in filteredPointsById){
+            if(filteredPointsById.hasOwnProperty(key)){
+                points.push(filteredPointsById[key]);
             }
         }
         if(!noRseq){

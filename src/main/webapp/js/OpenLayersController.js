@@ -1,4 +1,4 @@
-/* global style, selectstyle, tempstyle, surroundStyle, Ext, Measure */
+/* global style, selectstyle, tempstyle, surroundStyle, Ext, Measure, Proj4js, editor */
 
 /**
 * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
@@ -324,13 +324,13 @@ Ext.define("ol", {
                 var y = evt.clientY;
                 if(f && f.cluster ){
 
-                }else if(f && f.layer.name == "RseqSelect"){
+                }else if(f && f.layer.name === "RseqSelect"){
                     editor.loadRseqInfo({
                         rseq: f.data.id
                     },function(){
                         editor.contextMenu.show(x,y);
                     });
-                }else if(f && f.layer.name == "Points"){
+                }else if(f && f.layer.name === "Points"){
                     editor.contextMenu.show(x,y);
                 }else{
                     editor.contextMenu.show(x,y,true);
@@ -435,14 +435,14 @@ Ext.define("ol", {
      */
     selectFeature : function(id,className){
         var olFeature = null;
-        if(className=="RSEQ"){
+        if(className==="RSEQ"){
             olFeature = this.vectorLayer.getFeaturesByAttribute("className",className)[0];
         }else{
             // Haal alle features op voor het id: dit kunnen punten en een rseq zijn
             var all =this.vectorLayer.getFeaturesByAttribute("id",id);
             for(var i = 0 ; i < all.length ;i++){
                 var f = all[i];
-                if(f.data.className == "Point"){
+                if(f.data.className === "Point"){
                     // Eerste zal altijd de goede zijn vanwege serial id in db
                     olFeature = f;
                     break;
@@ -450,7 +450,7 @@ Ext.define("ol", {
             }
         }
 
-        if(olFeature && (this.vectorLayer.selectedFeatures.length==0||this.vectorLayer.selectedFeatures[0].data.id != id)){
+        if(olFeature && (this.vectorLayer.selectedFeatures.length===0||this.vectorLayer.selectedFeatures[0].data.id !== id)){
             this.selectCtrl.unselectAll();
             this.selectCtrl.select(olFeature);
         }
@@ -491,7 +491,7 @@ Ext.define("ol", {
      */
     addLayer : function (type,name, url, layers,visible,extension,opacity,maxResolution,maxExtent,noSingleTile){
         var layer;
-        if(type == 'WMS'){
+        if(type === 'WMS'){
             layer = new OpenLayers.Layer.WMS(name,url,{
                 'layers':layers,
                 'transparent': true
@@ -504,7 +504,7 @@ Ext.define("ol", {
                 maxResolution: maxResolution,
                 maxExtent: maxExtent
             });
-        }else if (type == "TMS" ){
+        }else if (type === "TMS" ){
             if(!extension){
                 extension = 'png';
             }
@@ -986,7 +986,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
     cluster: function(event) {
         if((!event || event.zoomChanged) && this.features) {
             var resolution = this.layer.map.getResolution();
-            if(resolution != this.resolution || !this.clustersExist()) {
+            if(resolution !== this.resolution || !this.clustersExist()) {
                 this.resolution = resolution;
                 var clusters = [];
                 var feature, clustered, cluster;
@@ -1044,10 +1044,10 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
     clustersExist: function() {
         var exist = false;
         if(this.clusters && this.clusters.length > 0 &&
-           this.clusters.length == this.layer.features.length) {
+           this.clusters.length === this.layer.features.length) {
             exist = true;
             for(var i=0; i<this.clusters.length; ++i) {
-                if(this.clusters[i] != this.layer.features[i]) {
+                if(this.clusters[i] !== this.layer.features[i]) {
                     exist = false;
                     break;
                 }
@@ -1087,8 +1087,8 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * Add a feature to a cluster.
      *
      * Parameters:
-     * cluster - {<OpenLayers.Feature.Vector>} A cluster.
-     * feature - {<OpenLayers.Feature.Vector>} A feature.
+     * @param cluster - {<OpenLayers.Feature.Vector>} A cluster.
+     * @param feature - {<OpenLayers.Feature.Vector>} A feature.
      */
     addToCluster: function(cluster, feature) {
        cluster.cluster.push(feature);
@@ -1103,7 +1103,7 @@ OpenLayers.Strategy.ResolutionCluster = OpenLayers.Class(OpenLayers.Strategy, {
      * feature - {<OpenLayers.Feature.Vector>}
      *
      * Returns:
-     * {<OpenLayers.Feature.Vector>} A cluster.
+     * @param  feature {<OpenLayers.Feature.Vector>} A cluster.
      */
     createCluster: function(feature) {
         var center = feature.geometry.getBounds().getCenterLonLat();

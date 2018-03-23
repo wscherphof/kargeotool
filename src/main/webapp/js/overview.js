@@ -645,6 +645,9 @@ Ext.define("nl.b3p.kar.Overview",{
         for (var i = 0;i < mvmnt.getMaps().length;i++){
             var map = mvmnt.getMaps()[i];
             var point = this.editor.activeRseq.getPointById(map.getPointId());
+            if(!point){
+                continue;
+            }
             if (point.getType() === "END"){
                 eind = point.getLabel();
             }

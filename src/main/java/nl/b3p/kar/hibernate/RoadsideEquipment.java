@@ -700,6 +700,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
                 out.print(point.getPoint().getLabel() + " ");
                 if (point.getSignal() != null) {
                     switch(point.getSignal().getKarCommandType()){case 1: out.print("Inmeldpunt");break; case 2: out.print("Uitmeldpunt"); break; case 3: out.println("voorinmeldpunt");break;}
+                    out.print(" (" + point.getSignal().getSignalGroupNumber() + ")");
                     out.print(" : ");
                     out.print( point.getSignal().getSignalGroupNumber() + " :");
                     for (VehicleType vh : point.getSignal().getVehicleTypes()) {

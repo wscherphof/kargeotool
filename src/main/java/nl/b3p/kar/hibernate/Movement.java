@@ -288,6 +288,9 @@ public class Movement implements Comparable<Movement> {
     @Override
     public int compareTo(Movement t) {
         Movement rhs = t;
+        if(rhs.getId() != null && this.getId() != null && rhs.getId().equals(this.getId())){
+            return 0;
+        }
         if(vehicleType != null && !vehicleType.equals(t.getVehicleType())){
             return -1 * vehicleType.compareTo(t.getVehicleType());
         }
@@ -348,8 +351,7 @@ public class Movement implements Comparable<Movement> {
             em.persist(copyMap);
         }
         copy.setPoints(copiedPoints);
-        rseq.getMovements().add(copy);
-        copy.setNummer(rseq.getMovements().size()+1);
+        copy.setNummer(rseq.getMovements().size()+2);
         em.persist(copy);
         rseq.getMovements().add(copy);
         return copy;

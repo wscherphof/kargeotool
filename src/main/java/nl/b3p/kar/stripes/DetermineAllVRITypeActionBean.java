@@ -144,6 +144,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                     out.println("******************************");
                     rseq.print(out);
                     out.println("RSEQ: " + rseq.getDescription());
+                    out.println("------------------------------");
                     String type = rseq.determineType();
                     if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
                         try {
@@ -180,12 +181,16 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
   
                 Movement hd = movement.deepCopy(rseq, em);
                 // maak van origineel OV
-                changeVehicleType(movement, em, VehicleType.VEHICLE_TYPE_HULPDIENSTEN, defaultOVTypes);
-                movement.setVehicleType(VehicleType.VEHICLE_TYPE_OV);
+                boolean removed = changeVehicleType(movement, em, VehicleType.VEHICLE_TYPE_HULPDIENSTEN, VehicleType.VEHICLE_TYPE_OV, defaultOVTypes);
+                if(!removed){
+                    movement.setVehicleType(VehicleType.VEHICLE_TYPE_OV);
+                }
                 
                 // maak van copy HD
-                changeVehicleType(hd, em, VehicleType.VEHICLE_TYPE_OV, defaultHDTypes);
-                hd.setVehicleType(VehicleType.VEHICLE_TYPE_HULPDIENSTEN);
+                removed = changeVehicleType(hd, em, VehicleType.VEHICLE_TYPE_OV,VehicleType.VEHICLE_TYPE_HULPDIENSTEN, defaultHDTypes);
+                if(!removed){
+                    hd.setVehicleType(VehicleType.VEHICLE_TYPE_HULPDIENSTEN);
+                }
                 
             }else{
                 movement.setVehicleType(type);
@@ -209,8 +214,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         em.persist(rseq);
     }
 
-    private void changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove, List<VehicleType> defaultVehicleTypes) {
-        
+    private boolean changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove,String vehicleTypeToKeep, List<VehicleType> defaultVehicleTypes) {
         List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
         for (MovementActivationPoint map : movement.getPoints()) {
             String t = map.determineVehicleType();
@@ -231,8 +235,52 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         }
         
         movement.getPoints().removeAll(mapsToRemove);
-        // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
-        processLabelsAPs(movement, vehicleTypeToRemove.equals(VehicleType.VEHICLE_TYPE_OV) ? "H" : "");
+        mapsToRemove.clear();
+        
+        if(!isMovementValid(movement, vehicleTypeToKeep)){
+            RoadsideEquipment r = movement.getRoadsideEquipment();
+            for (MovementActivationPoint map : movement.getPoints()) {
+                em.remove(map);
+                mapsToRemove.add(map);
+            }
+            movement.getPoints().removeAll(mapsToRemove);
+            em.remove(movement);
+            r.getMovements().remove(movement);
+            return true;
+        }else{
+            // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
+            processLabelsAPs(movement, vehicleTypeToRemove.equals(VehicleType.VEHICLE_TYPE_OV) ? "H" : "");
+            return false;
+        }
+    }
+    
+    private boolean isMovementValid(Movement m, String vehicleType){
+       
+        // Een beweging bevat minimaal een beginpunt of een voorinmeldpunt of een inmeldpunt.
+        // heeft uitmeldpunt
+        // Heeft eindpunt als OV is
+        boolean beginOrCheckin = false, checkout = false, endpoint = false;
+        
+        for (MovementActivationPoint p : m.getPoints()) {
+            if(p.getBeginEndOrActivation().equals(MovementActivationPoint.BEGIN)){
+                beginOrCheckin = true;
+            }
+            if(p.getBeginEndOrActivation().equals(MovementActivationPoint.END)){
+                endpoint = true;
+            }
+            if(p.getBeginEndOrActivation().equals(MovementActivationPoint.ACTIVATION)){
+                if(p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_INMELDPUNT || p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_VOORINMELDPUNT ){
+                    beginOrCheckin = true;
+                }
+                if(p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_UITMELDPUNT){
+                    checkout = true;
+                }
+            }
+        }
+        if(vehicleType.equals(VehicleType.VEHICLE_TYPE_HULPDIENSTEN)){
+            endpoint = true;
+        }
+        return endpoint && checkout && beginOrCheckin;
     }
 
     private void processLabelsAPs(Movement m, String prefix){
