@@ -694,6 +694,7 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
     }
   
     public void print(PrintWriter out){
+        out.println("RSEQ: " + this.getDescription() + " (" + this.getKarAddress() +")");
         for (Movement movement : movements) {
             out.println("Beweging: " + movement.getNummer() + ": " + movement.determineVehicleType());
             for (MovementActivationPoint point : movement.getPoints()) {

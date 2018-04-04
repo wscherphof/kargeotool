@@ -120,7 +120,7 @@ public class MovementActivationPoint {
         copy.setPoint(ap);
         return copy;
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     /**
      *

@@ -292,9 +292,17 @@ public class ActivationPoint implements Comparable {
     public ActivationPoint deepCopy(RoadsideEquipment rseq) throws Exception{
         ActivationPoint copy = (ActivationPoint)BeanUtils.cloneBean(this);
         copy.setId(null);
-        copy.setNummer(rseq.getPoints().size() +2 );
+        copy.setNummer(getNummer(rseq));
         rseq.getPoints().add(copy);
         copy.setRoadsideEquipment(rseq);
         return copy;
+    }
+    
+    private int getNummer(RoadsideEquipment rseq) {
+        int max = -1;
+        for (ActivationPoint ap : rseq.getPoints()) {
+            max = Math.max(max, ap.getNummer());
+        }
+        return (max + 1);
     }
 }

@@ -102,4 +102,14 @@ CREATE INDEX gemeente_geom_simplified_idx
   (geom_simplified);
 
 
-   update deelgebied set geom = st_multi(geom)
+update deelgebied set geom = st_multi(geom)
+
+update movement set nummer = 6 where id = 140999;
+update movement set nummer = 7 where id = 138019;
+update movement set nummer = 8 where id = 138020;
+
+update movement set nummer = 7 where id = 137990;
+update movement set nummer = 8 where id = 140836;
+update movement set nummer = 9 where id = 7609;
+
+update movement set nummer = 3 where id = 138007;

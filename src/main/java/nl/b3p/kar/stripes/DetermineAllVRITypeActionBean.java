@@ -149,7 +149,6 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                     RoadsideEquipment rseq = em.find(RoadsideEquipment.class, id);
                     
                     out.println("******************************");
-                    out.println("RSEQ: " + rseq.getDescription());
                     rseq.print(out);
                     out.println("------------------------------");
                     String type = rseq.determineType();
@@ -185,10 +184,15 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
     }
 
     private void processRseq(RoadsideEquipment rseq, EntityManager em,PrintWriter out ) throws Exception {
+        
+        //em.refresh(rseq);
+        
         List<Long> mids = new ArrayList<>();
         for (Movement m : rseq.getMovements()) {
             mids.add(m.getId());
         }
+        
+        // maak movements en filter maps eruit
         for (Long mid : mids) {
             Movement movement = em.find(Movement.class, mid);
             String type = movement.determineVehicleType();
@@ -208,34 +212,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
             }
         }
         
-        Set<ActivationPoint> usedAps = new HashSet<>();
-        for (Movement movement : rseq.getMovements()) {
-            for (MovementActivationPoint point : movement.getPoints()) {
-                usedAps.add(point.getPoint());
-            }
-        }
-        Set<ActivationPoint> apsToRemove = new HashSet<>(rseq.getPoints());
-        
-        apsToRemove.removeAll(usedAps);
-        out.println("Removing activationpoints: ");
-        out.println("xxxxxxxxxxxxx");
-        for (ActivationPoint activationPoint : apsToRemove) {
-            out.println(activationPoint.getId() + ", ");
-            List<MovementActivationPoint> ms = em.createQuery("From MovementActivationPoint where point = :p").setParameter("p", activationPoint).getResultList();
-            for (MovementActivationPoint m : ms) {
-                out.println("Removing map: " + m.getId());
-                em.remove(m);
-                m.getMovement().getPoints().remove(m);
-                // verwijder map uit movement
-            }
-            em.remove(activationPoint);
-            rseq.getPoints().remove(activationPoint);
-            
-        }
-        out.println("xxxxxxxxxxxxx");
-        em.persist(rseq);
-        //em.getTransaction().commit();
-
+        // check of er invalid movements ontstaan zijn, zo ja: verwijder ze
         List<Movement> movementsToRemove= new ArrayList<>();
         for (Movement movement : rseq.getMovements()) {
 
@@ -252,6 +229,36 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
             }
         }
         rseq.getMovements().removeAll(movementsToRemove);
+        
+        // Kijk of er APs bestaan die niet meer gebruikt worden
+        
+        Set<ActivationPoint> usedAps = new HashSet<>();
+        for (Movement movement : rseq.getMovements()) {
+            for (MovementActivationPoint point : movement.getPoints()) {
+                usedAps.add(point.getPoint());
+            }
+        }
+        Set<ActivationPoint> apsToRemove = new HashSet<>(rseq.getPoints());
+        
+        apsToRemove.removeAll(usedAps);
+        out.println("Removing activationpoints: ");
+        out.println("xxxxxxxxxxxxx");
+        for (ActivationPoint activationPoint : apsToRemove) {
+            out.println(activationPoint.getId() + ", ");
+           /* List<MovementActivationPoint> ms = em.createQuery("From MovementActivationPoint where point = :p").setParameter("p", activationPoint).getResultList();
+            for (MovementActivationPoint m : ms) {
+                out.println("Removing map: " + m.getId());
+                em.remove(m);
+                m.getMovement().getPoints().remove(m);
+                // verwijder map uit movement
+            }*/
+            em.remove(activationPoint);
+            rseq.getPoints().remove(activationPoint);
+            
+        }
+        out.println("xxxxxxxxxxxxx");
+        em.persist(rseq);
+        //em.getTransaction().commit();
     }
 
     private void changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove,String vehicleTypeToKeep, List<VehicleType> defaultVehicleTypes,PrintWriter out) {
@@ -277,13 +284,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         }
         
         movement.getPoints().removeAll(mapsToRemove);
-        for (MovementActivationPoint map : mapsToRemove) {
-            out.println("remove map: " + map.getId());
-            em.remove(map);
-        }
-        mapsToRemove.clear();
         
-
         // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
         processLabelsAPs(movement, vehicleTypeToRemove.equals(VEHICLE_TYPE_OV) ? "H" : "");
     }
@@ -293,28 +294,20 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         // Een beweging bevat minimaal een beginpunt of een voorinmeldpunt of een inmeldpunt.
         // heeft uitmeldpunt
         // Heeft eindpunt als OV is
-        boolean beginOrCheckin = false, checkout = false, endpoint = false;
+        
+        // nu alleen checken op uitcheckpunt
+        boolean checkout = false;
         
         for (MovementActivationPoint p : m.getPoints()) {
-            if(p.getBeginEndOrActivation().equals(MovementActivationPoint.BEGIN)){
-                beginOrCheckin = true;
-            }
-            if(p.getBeginEndOrActivation().equals(MovementActivationPoint.END)){
-                endpoint = true;
-            }
+           
             if(p.getBeginEndOrActivation().equals(MovementActivationPoint.ACTIVATION)){
-                if(p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_INMELDPUNT || p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_VOORINMELDPUNT ){
-                    beginOrCheckin = true;
-                }
+                
                 if(p.getSignal().getKarCommandType() == ActivationPointSignal.COMMAND_UITMELDPUNT){
                     checkout = true;
                 }
             }
         }
-        if(m.getVehicleType(true).equals(VEHICLE_TYPE_HULPDIENSTEN)){
-            endpoint = true;
-        }
-        return endpoint && checkout && beginOrCheckin;
+        return checkout;
     }
 
     private void processLabelsAPs(Movement m, String prefix){

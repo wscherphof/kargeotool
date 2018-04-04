@@ -351,10 +351,17 @@ public class Movement implements Comparable<Movement> {
             em.persist(copyMap);
         }
         copy.setPoints(copiedPoints);
-        copy.setNummer(rseq.getMovements().size()+2);
+        copy.setNummer(getNummer(rseq));
         em.persist(copy);
         rseq.getMovements().add(copy);
         return copy;
-        
+    }
+    
+    private int getNummer(RoadsideEquipment rseq){
+        int max = -1;
+        for (Movement m : rseq.getMovements()) {
+            max = Math.max(max, m.getNummer());
+        }
+        return (max+1);
     }
 }
