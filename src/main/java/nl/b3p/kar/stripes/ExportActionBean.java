@@ -648,7 +648,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                     continue;
                 }
                 
-                if(vehicleType == null || vehicleType.equals(VehicleType.VEHICLE_TYPE_GEMIXT) || rseqObj.getVehicleType().equalsIgnoreCase(vehicleType)){
+                if(vehicleType == null || vehicleType.equalsIgnoreCase(VehicleType.VEHICLE_TYPE_GEMIXT) || rseqObj.getVehicleType().equalsIgnoreCase(vehicleType) ||  rseqObj.getVehicleType().equalsIgnoreCase(VehicleType.VEHICLE_TYPE_GEMIXT)){
                 
                 JSONObject jRseq = new JSONObject();
                     jRseq.put("id", rseqObj.getId());
