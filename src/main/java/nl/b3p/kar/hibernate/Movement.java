@@ -291,9 +291,9 @@ public class Movement implements Comparable<Movement> {
         if(rhs.getId() != null && this.getId() != null && rhs.getId().equals(this.getId())){
             return 0;
         }
-        if(vehicleType != null && !vehicleType.equals(t.getVehicleType())){
+    /*    if(vehicleType != null && !vehicleType.equals(t.getVehicleType())){
             return -1 * vehicleType.compareTo(t.getVehicleType());
-        }
+        }*/
         if(nummer == null) {
             return rhs.nummer == null ? 0 : -1;
         }

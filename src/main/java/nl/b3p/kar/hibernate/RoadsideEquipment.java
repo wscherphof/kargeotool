@@ -695,12 +695,12 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
   
     public void print(PrintWriter out){
         for (Movement movement : movements) {
-            out.println("Beweging: " + movement.getNummer() + ": " + movement.getVehicleType());
+            out.println("Beweging: " + movement.getNummer() + ": " + movement.determineVehicleType());
             for (MovementActivationPoint point : movement.getPoints()) {
                 out.print(point.getPoint().getLabel() + " ");
                 if (point.getSignal() != null) {
                     switch(point.getSignal().getKarCommandType()){case 1: out.print("Inmeldpunt");break; case 2: out.print("Uitmeldpunt"); break; case 3: out.println("voorinmeldpunt");break;}
-                    out.print(" (" + point.getSignal().getSignalGroupNumber() + ")");
+                    out.print(" (" + point.getId() + ")");
                     out.print(" : ");
                     out.print( point.getSignal().getSignalGroupNumber() + " :");
                     for (VehicleType vh : point.getSignal().getVehicleTypes()) {

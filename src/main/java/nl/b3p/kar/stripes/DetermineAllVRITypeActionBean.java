@@ -7,6 +7,7 @@ package nl.b3p.kar.stripes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,6 +30,9 @@ import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.hibernate.VehicleType;
+import static nl.b3p.kar.hibernate.VehicleType.VEHICLE_TYPE_GEMIXT;
+import static nl.b3p.kar.hibernate.VehicleType.VEHICLE_TYPE_HULPDIENSTEN;
+import static nl.b3p.kar.hibernate.VehicleType.VEHICLE_TYPE_OV;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.stripesstuff.stripersist.Stripersist;
@@ -139,28 +143,39 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                     rseqs = (List<Long>) em.createQuery("Select id from RoadsideEquipment").getResultList();
                 }
                 for (Long id : rseqs) {
+                    if(!em.getTransaction().isActive()){
+                        em.getTransaction().begin();
+                    }
                     RoadsideEquipment rseq = em.find(RoadsideEquipment.class, id);
                     
                     out.println("******************************");
-                    rseq.print(out);
                     out.println("RSEQ: " + rseq.getDescription());
+                    rseq.print(out);
                     out.println("------------------------------");
                     String type = rseq.determineType();
                     if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
                         try {
-                            processRseq(rseq,em);
+                            processRseq(rseq,em, out);
                         } catch (Exception ex) {
                             log.error("cannot process", ex);
                             out.print(ex.getLocalizedMessage());
                         }
                     }
-                    out.println("\t " + type);
-                    rseq.setVehicleType(type);
-                    em.persist(rseq);
-                    rseq.print(out);
-                }
-                if (commit) {
-                    em.getTransaction().commit();
+                    try {
+                        out.println("\t " + type);
+                        rseq.setVehicleType(type);
+                        
+                        out.println("After Split:");
+
+                        rseq.print(out);
+                        em.persist(rseq);
+                        if (commit) {
+                            em.getTransaction().commit();
+                        }
+                    } catch (Exception e) {
+                        log.error("Error committing:",e);
+                        out.println(e.getLocalizedMessage());
+                    }
                 }
 
                 out.println("Correct handler");
@@ -169,7 +184,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         };
     }
 
-    private void processRseq(RoadsideEquipment rseq, EntityManager em) throws Exception {
+    private void processRseq(RoadsideEquipment rseq, EntityManager em,PrintWriter out ) throws Exception {
         List<Long> mids = new ArrayList<>();
         for (Movement m : rseq.getMovements()) {
             mids.add(m.getId());
@@ -177,21 +192,17 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         for (Long mid : mids) {
             Movement movement = em.find(Movement.class, mid);
             String type = movement.determineVehicleType();
-            if (type != null && type.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+            if (type != null && type.equals(VEHICLE_TYPE_GEMIXT)) {
   
                 Movement hd = movement.deepCopy(rseq, em);
                 // maak van origineel OV
-                boolean removed = changeVehicleType(movement, em, VehicleType.VEHICLE_TYPE_HULPDIENSTEN, VehicleType.VEHICLE_TYPE_OV, defaultOVTypes);
-                if(!removed){
-                    movement.setVehicleType(VehicleType.VEHICLE_TYPE_OV);
-                }
-                
+                changeVehicleType(movement, em, VEHICLE_TYPE_HULPDIENSTEN, VEHICLE_TYPE_OV, defaultOVTypes, out);
+                movement.setVehicleType(VEHICLE_TYPE_OV);
+
                 // maak van copy HD
-                removed = changeVehicleType(hd, em, VehicleType.VEHICLE_TYPE_OV,VehicleType.VEHICLE_TYPE_HULPDIENSTEN, defaultHDTypes);
-                if(!removed){
-                    hd.setVehicleType(VehicleType.VEHICLE_TYPE_HULPDIENSTEN);
-                }
-                
+                changeVehicleType(hd, em, VEHICLE_TYPE_OV, VEHICLE_TYPE_HULPDIENSTEN, defaultHDTypes, out);
+                hd.setVehicleType(VEHICLE_TYPE_HULPDIENSTEN);
+
             }else{
                 movement.setVehicleType(type);
             }
@@ -206,27 +217,58 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         Set<ActivationPoint> apsToRemove = new HashSet<>(rseq.getPoints());
         
         apsToRemove.removeAll(usedAps);
+        out.println("Removing activationpoints: ");
+        out.println("xxxxxxxxxxxxx");
         for (ActivationPoint activationPoint : apsToRemove) {
+            out.println(activationPoint.getId() + ", ");
+            List<MovementActivationPoint> ms = em.createQuery("From MovementActivationPoint where point = :p").setParameter("p", activationPoint).getResultList();
+            for (MovementActivationPoint m : ms) {
+                out.println("Removing map: " + m.getId());
+                em.remove(m);
+                m.getMovement().getPoints().remove(m);
+                // verwijder map uit movement
+            }
             em.remove(activationPoint);
             rseq.getPoints().remove(activationPoint);
             
         }
+        out.println("xxxxxxxxxxxxx");
         em.persist(rseq);
+        //em.getTransaction().commit();
+
+        List<Movement> movementsToRemove= new ArrayList<>();
+        for (Movement movement : rseq.getMovements()) {
+
+            if (!isMovementValid(movement)) {
+                out.println("Movement invalid: " + movement.getNummer() + " (" + movement.getId() + ")");
+                List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
+                for (MovementActivationPoint map : movement.getPoints()) {
+                    em.remove(map);
+                    mapsToRemove.add(map);
+                }
+                movement.getPoints().removeAll(mapsToRemove);
+                movementsToRemove.add(movement);
+                em.remove(movement);
+            }
+        }
+        rseq.getMovements().removeAll(movementsToRemove);
     }
 
-    private boolean changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove,String vehicleTypeToKeep, List<VehicleType> defaultVehicleTypes) {
+    private void changeVehicleType(Movement movement, EntityManager em, String vehicleTypeToRemove,String vehicleTypeToKeep, List<VehicleType> defaultVehicleTypes,PrintWriter out) {
         List<MovementActivationPoint> mapsToRemove = new ArrayList<>();
         for (MovementActivationPoint map : movement.getPoints()) {
             String t = map.determineVehicleType();
             if (t != null && t.equals(vehicleTypeToRemove)) {
+                out.println("remove map: " + map.getId());
                 em.remove(map);
                 
                 mapsToRemove.add(map);
             } else {
-                if (t != null && t.equals(VehicleType.VEHICLE_TYPE_GEMIXT)) {
+                if (t != null && t.equals(VEHICLE_TYPE_GEMIXT)) {
                     filterVehicleTypes(defaultVehicleTypes, map.getSignal());
                     // check of er nog voertuigtypes zijn. zo nee, verwijderen
                     if(map.getSignal().getVehicleTypes().isEmpty()){
+                        out.println("remove map: " + map.getId());
                         em.remove(map);
                         mapsToRemove.add(map);
                     }
@@ -235,26 +277,18 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         }
         
         movement.getPoints().removeAll(mapsToRemove);
+        for (MovementActivationPoint map : mapsToRemove) {
+            out.println("remove map: " + map.getId());
+            em.remove(map);
+        }
         mapsToRemove.clear();
         
-        if(!isMovementValid(movement, vehicleTypeToKeep)){
-            RoadsideEquipment r = movement.getRoadsideEquipment();
-            for (MovementActivationPoint map : movement.getPoints()) {
-                em.remove(map);
-                mapsToRemove.add(map);
-            }
-            movement.getPoints().removeAll(mapsToRemove);
-            em.remove(movement);
-            r.getMovements().remove(movement);
-            return true;
-        }else{
-            // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
-            processLabelsAPs(movement, vehicleTypeToRemove.equals(VehicleType.VEHICLE_TYPE_OV) ? "H" : "");
-            return false;
-        }
+
+        // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
+        processLabelsAPs(movement, vehicleTypeToRemove.equals(VEHICLE_TYPE_OV) ? "H" : "");
     }
     
-    private boolean isMovementValid(Movement m, String vehicleType){
+    private boolean isMovementValid(Movement m){
        
         // Een beweging bevat minimaal een beginpunt of een voorinmeldpunt of een inmeldpunt.
         // heeft uitmeldpunt
@@ -277,7 +311,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
                 }
             }
         }
-        if(vehicleType.equals(VehicleType.VEHICLE_TYPE_HULPDIENSTEN)){
+        if(m.getVehicleType(true).equals(VEHICLE_TYPE_HULPDIENSTEN)){
             endpoint = true;
         }
         return endpoint && checkout && beginOrCheckin;

@@ -90,9 +90,9 @@ ALTER TABLE dxf_features
 
 
 
-select addgeometrycolumn('data','gemeente', 'geom_simplified', 28992, 'MULTIPOLYGON',2)
+select addgeometrycolumn('data','gemeente', 'geom_simplified', 28992, 'MULTIPOLYGON',2);
 
-select addgeometrycolumn('data','dxf_features', 'the_geom', 28992, 'GEOMETRY',2)
+select addgeometrycolumn('data','dxf_features', 'the_geom', 28992, 'GEOMETRY',2);
 
 update gemeente set geom_simplified = st_multi(ST_SimplifyPreserveTopology(geom, 100));
 
