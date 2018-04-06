@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
@@ -40,6 +41,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.validation.SimpleError;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geotools.data.dxf.DXFDataStore;
 import nl.b3p.kar.hibernate.DataOwner;
@@ -89,34 +91,14 @@ public class UploadDXFActionBean implements ActionBean {
     @Validate
     private String description;
     
-    @Validate
-    private DataOwner dataowner;
-    
     private Gebruiker gebruiker = null;
     
-    private List<DataOwner> dataowners;
     private List<Upload> uploads;
     
     @Validate
     private Upload uploadFile;
     
     // <editor-fold desc="Getters and setters" defaultstate="collapsed">
-    public void setDataowners(List<DataOwner> dataowners) {
-        this.dataowners = dataowners;
-    }
-
-    public List<DataOwner> getDataowners() {
-        return dataowners;
-    }
-
-    public DataOwner getDataowner() {
-        return dataowner;
-    }
-
-    public void setDataowner(DataOwner dataowner) {
-        this.dataowner = dataowner;
-    }
-    
     public FileBean getBestand() {
         return bestand;
     }
@@ -189,6 +171,11 @@ public class UploadDXFActionBean implements ActionBean {
     }
     
     public Resolution remove() {
+        Gebruiker g = getGebruiker();
+        if(!g.getEditableDataOwners().contains(uploadFile.getDataOwner())){
+            context.getValidationErrors().add("",new SimpleError("Gebruiker niet gerechtigd om upload te verwijderen"));
+            return view();
+        }
         EntityManager em = Stripersist.getEntityManager();
         int numdeleted = em.createNativeQuery("DELETE FROM dxf_features WHERE upload = :upload").setParameter("upload", uploadFile.getId()).executeUpdate();
         em.remove(uploadFile);
@@ -199,9 +186,9 @@ public class UploadDXFActionBean implements ActionBean {
 
     public Resolution upload() {
         try {
-            gebruiker = (Gebruiker) context.getRequest().getUserPrincipal();
+            gebruiker = getGebruiker();
             Upload upload = new Upload();
-            upload.setDataOwner(dataowner);
+            upload.setDataOwner(rseq.getDataOwner());
             upload.setUser_(gebruiker);
             upload.setRseq(rseq);
             upload.setFilename(bestand.getFileName());
@@ -223,9 +210,15 @@ public class UploadDXFActionBean implements ActionBean {
     @After
     private void createLists(){
         EntityManager em = Stripersist.getEntityManager();
-        
-        dataowners = em.createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
-        uploads = em.createQuery("from Upload order by filename,uploaddate").getResultList();
+        List<Upload> uls = em.createQuery("from Upload order by filename,uploaddate").getResultList();
+        Gebruiker g = getGebruiker();
+        Set<DataOwner> daos = g.getEditableDataOwners();
+        uploads = new ArrayList<>();
+        for (Upload ul : uls) {
+            if(daos.contains(ul.getDataOwner()) || g.isBeheerder()){
+                uploads.add(ul);
+            }
+        }
     }
 
     private void processFile(File file, DataStore dataStore2Write, Integer uploadId) {
@@ -307,6 +300,17 @@ public class UploadDXFActionBean implements ActionBean {
         DataStore store = DataStoreFinder.getDataStore(map);
         return store;
     }
-
+    
+    public Gebruiker getGebruiker() {
+        final String attribute = this.getClass().getName() + "_GEBRUIKER";
+        Gebruiker g = (Gebruiker)getContext().getRequest().getAttribute(attribute);
+        if(g != null) {
+            return g;
+        }
+        Gebruiker principal = (Gebruiker) context.getRequest().getUserPrincipal();
+        g = Stripersist.getEntityManager().find(Gebruiker.class, principal.getId());
+        getContext().getRequest().setAttribute(attribute, g);
+        return g;
+    }
     
 }

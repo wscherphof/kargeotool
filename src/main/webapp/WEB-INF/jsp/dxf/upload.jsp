@@ -40,12 +40,6 @@
                 <tr><td>Bestand</td><td><stripes:file name="bestand"/></td></tr>
                 <tr><td>Omschrijving</td><td><stripes:text name="description"/></td></tr>
                 <tr><td>VRI omschrijving</td><td><stripes:text name="rseq.description"/></td></tr>
-
-                <tr><td>Wegbeheerder</td><td><stripes:select name="dataowner">
-                    <stripes:option label="- Kies wegbeheerder -"/>
-                    <stripes:options-collection collection="${actionBean.dataowners}" label="omschrijving" value="id"/>
-                </stripes:select></td></tr>
-
                 <tr><td><stripes:submit name="upload" value="Upload" /></td></tr>
             </table>
         </stripes:form>
