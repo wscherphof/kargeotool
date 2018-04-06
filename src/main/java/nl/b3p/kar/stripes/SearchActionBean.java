@@ -132,9 +132,13 @@ public class SearchActionBean implements ActionBean {
                         con.add(dis);
                     }
                     
-                    Disjunction unsplitDisjunction = getRseqDisjunction(term, true);
+                    Disjunction unsplitDisjunctionExact = getRseqDisjunction(term, true);
                     
-                    LogicalExpression or = Restrictions.or(unsplitDisjunction, con);
+                    String wholeTerm = term.replaceAll("\\"+WILDCARD, ""); // remove all the wildcards (possible between words)
+                    wholeTerm = WILDCARD + wholeTerm + WILDCARD;    // add wildcards to beginning and end
+                    Disjunction unsplitDisjunctionWildcard = getRseqDisjunction(wholeTerm, false);
+                    
+                    Disjunction or = Restrictions.or(unsplitDisjunctionExact, con,unsplitDisjunctionWildcard);
 
                     criteria.add(or);
                 }
