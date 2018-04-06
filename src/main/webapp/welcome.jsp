@@ -3,7 +3,7 @@
 
 <div class="welcome">
     
-    <h1>Welkom bij het KAR Geo Tool platform</h1>
+    <h1>Welkom bij het KAR Geo Tool</h1>
     <h1>Werkwijze</h1>
     <p>
     U kunt verkeerssystemen zoeken via het KAR-adres door het adres in de 'Zoeken'
