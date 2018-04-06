@@ -7,7 +7,6 @@ package nl.b3p.kar.stripes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -192,25 +191,35 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
             mids.add(m.getId());
         }
         
-        // maak movements en filter maps eruit
+        // maak movements
+        List<Movement> movementsToProcess = new ArrayList<>();
         for (Long mid : mids) {
             Movement movement = em.find(Movement.class, mid);
             String type = movement.determineVehicleType();
-            if (type != null && type.equals(VEHICLE_TYPE_GEMIXT)) {
-  
+          //  if (type != null && type.equals(VEHICLE_TYPE_GEMIXT)) {
                 Movement hd = movement.deepCopy(rseq, em);
-                // maak van origineel OV
-                changeVehicleType(movement, em, VEHICLE_TYPE_HULPDIENSTEN, VEHICLE_TYPE_OV, defaultOVTypes, out);
-                movement.setVehicleType(VEHICLE_TYPE_OV);
-
-                // maak van copy HD
-                changeVehicleType(hd, em, VEHICLE_TYPE_OV, VEHICLE_TYPE_HULPDIENSTEN, defaultHDTypes, out);
                 hd.setVehicleType(VEHICLE_TYPE_HULPDIENSTEN);
-
-            }else{
+                movementsToProcess.add(hd);
+                
+                // maak van origineel OV
+                movement.setVehicleType(VEHICLE_TYPE_OV);
+                movementsToProcess.add(movement);
+           /* }else{
                 movement.setVehicleType(type);
+                movementsToProcess.add(movement);
+            }*/
+        }
+        
+        // filter maps eruit
+        for (Movement movement : movementsToProcess) {
+            String type = movement.getVehicleType();
+            if(type.equals(VEHICLE_TYPE_OV)){
+                changeVehicleType(movement, em, VEHICLE_TYPE_HULPDIENSTEN, VEHICLE_TYPE_OV, defaultOVTypes, out);
+            }else{
+                changeVehicleType(movement, em, VEHICLE_TYPE_OV, VEHICLE_TYPE_HULPDIENSTEN, defaultHDTypes, out);
             }
         }
+        
         
         // check of er invalid movements ontstaan zijn, zo ja: verwijder ze
         List<Movement> movementsToRemove= new ArrayList<>();
@@ -245,13 +254,13 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         out.println("xxxxxxxxxxxxx");
         for (ActivationPoint activationPoint : apsToRemove) {
             out.println(activationPoint.getId() + ", ");
-           /* List<MovementActivationPoint> ms = em.createQuery("From MovementActivationPoint where point = :p").setParameter("p", activationPoint).getResultList();
+            List<MovementActivationPoint> ms = em.createQuery("From MovementActivationPoint where point = :p").setParameter("p", activationPoint).getResultList();
             for (MovementActivationPoint m : ms) {
                 out.println("Removing map: " + m.getId());
                 em.remove(m);
                 m.getMovement().getPoints().remove(m);
                 // verwijder map uit movement
-            }*/
+            }
             em.remove(activationPoint);
             rseq.getPoints().remove(activationPoint);
             
@@ -286,7 +295,7 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         movement.getPoints().removeAll(mapsToRemove);
         
         // check of map wijst naar activationpoint dat nergens meer wordt gebruikt.
-        processLabelsAPs(movement, vehicleTypeToRemove.equals(VEHICLE_TYPE_OV) ? "H" : "");
+        processLabelsAPs(movement, vehicleTypeToKeep);
     }
     
     private boolean isMovementValid(Movement m){
@@ -310,9 +319,13 @@ public class DetermineAllVRITypeActionBean implements ActionBean {
         return checkout;
     }
 
-    private void processLabelsAPs(Movement m, String prefix){
+    private void processLabelsAPs(Movement m, String vehicleType){
+        String prefix = vehicleType.equals(VEHICLE_TYPE_OV) ? "" : "H";
         for (MovementActivationPoint point : m.getPoints()) {
             ActivationPoint ap = point.getPoint();
+            if(ap.getLabel() == null || ap.getLabel().isEmpty()){
+                continue;
+            }
             String label = ap.getLabel().toLowerCase();
             if(label.startsWith("va") || label.startsWith("ia") || label.startsWith("ua")){
                 ap.setLabel(ap.getLabel().substring(0,1) + prefix + ap.getLabel().substring(2));
