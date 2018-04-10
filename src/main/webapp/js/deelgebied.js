@@ -125,16 +125,15 @@ function loadMap (){
 
 var features = {};
 function drawArea (){
-    resetArea();
     draw.activate();
 }
 
 function resetArea (){
     vector.removeAllFeatures();
+    features = {};
 }
 
 function featureAdded (feature){
-  //  var geom = feature.geometry.toString();
     var id = feature.id;
     features[id] = feature;
     var col = new OpenLayers.Geometry.Collection();
