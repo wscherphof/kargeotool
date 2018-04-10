@@ -21,6 +21,7 @@
 
 var store = null;
 var grid = null;
+var unselectedVRIs = [];
 Ext.onReady(function (){
     store = Ext.create('Ext.data.Store',{
         storeId : 'rseqStore',
@@ -250,7 +251,18 @@ Ext.onReady(function (){
                         draggable: false,
                         resizable: false,
                         menuDisabled: true,
-                        hideable: false
+                        hideable: false,
+                        listeners: {
+                            'checkchange': function(cell, rowindex, checked, record, event, opts){ 
+                                var id = record.data.id;
+                                var index = indexInUnselectedArray(id);
+                                if(index !== -1){
+                                    unselectedVRIs.splice(index,1);
+                                }else{
+                                    unselectedVRIs.push(id);
+                                }
+                            }
+                        }
                     },
                     {
                         text : 'Omschrijving',
@@ -386,7 +398,9 @@ Ext.onReady(function (){
         buttons: [{
                 text: 'Reset',
                 handler: function () {
+                    unselectedVRIs = [];
                     this.up('form').getForm().reset();
+                    reloadVRIs ();
                 }
             }, {
                 text: 'Exporteer',
@@ -515,9 +529,20 @@ function addRseqIds() {
 
 function rseqsReceived(rseqs,naam) {
     for (var i = 0;i < rseqs.length;i++){
-        rseqs[i].selected = true;
+        rseqs[i].selected = indexInUnselectedArray(rseqs[i].id) === -1;
         store.add(rseqs[i]);
     }
     grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
 
+}
+
+function indexInUnselectedArray(id) {
+    var index = -1;
+    for (var i = 0; i < unselectedVRIs.length; i++) {
+        if (unselectedVRIs[i] === id) {
+            index = i;
+            break;
+        }
+    }
+    return index;
 }
