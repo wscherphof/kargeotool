@@ -204,6 +204,7 @@ Ext.onReady(function (){
                     select: {
                         fn: function (combo, record, index) {
                            reloadVRIs();
+                           combo.inputEl.dom.value = '';
                         }
                     }
                 }
