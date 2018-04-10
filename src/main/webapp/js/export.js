@@ -352,6 +352,7 @@ Ext.onReady(function (){
                     }
                 },
                 name : 'exportType',
+                id: 'exportType',
                 emptyText : "Selecteer"
             },{
                 xtype : "checkbox",
@@ -490,6 +491,10 @@ function reloadVRIs (){
     var onlyReady = Ext.getCmp("onlyReady").getValue();
     params["onlyReady"] = onlyReady;
 
+
+    var exportType = Ext.getCmp("exportType").getValue();
+    params["exportType"] = exportType;
+    
     if(filter){
         doRseqRequest(params,text);
     }else{

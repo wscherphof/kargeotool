@@ -108,7 +108,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     @Validate
     private Integer karAddress;
 
-    @Validate(on = "export")
+    @Validate(on = {"export", "allRseqs"})
     private String exportType;
 
     @Validate
@@ -629,10 +629,18 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment where validation_errors = 0";
+            String query = "from RoadsideEquipment";
+            if(exportType == null || !exportType.equals("csvsimple")){
+                query += " where validation_errors = 0";
+            }
             if (onlyReady) {
-                query += " and readyForExport = true";
-
+                if(exportType != null && exportType.equals("csvsimple")){
+                    query += " where ";
+                }else{
+                    query += " and ";
+                }
+                
+                query += "readyForExport = true";
             }
             List<RoadsideEquipment> rseqList = em.createQuery(query, RoadsideEquipment.class).getResultList();
 
