@@ -64,12 +64,12 @@
                     Definieer een gebied:
                 </div>
                 <div id="map-buttons" class="add-padding">
-                    <button onclick="drawArea();return false;">Teken deelgebied</button>
-                    <button onclick="resetArea();return false;">Reset</button> <br/>
-                    <stripes:submit name="saveDeelgebied">Opslaan</stripes:submit>
+                    <stripes:button name="draw" onclick="drawArea();return false;">Teken deelgebied</stripes:button>
+                    <stripes:reset name="reset" onclick="resetArea();return false;">Reset</stripes:reset>
+                    <stripes:submit name="saveDeelgebied">Opslaan</stripes:submit><br/>
                 </div>
                 <div id="kaart" class="flex">
-                    <div id="map" style="width: 100%; height: 100%;border:1px solid #000;"></div>
+                    <div id="map" style="width: 100%; height: 80%;border:1px solid #000;"></div>
                 </div>
             </stripes:form>
         </div>
