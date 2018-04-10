@@ -108,7 +108,7 @@ var styleContext = {
         
         var stroke = 'stroke-width="1" stroke="black"';
         if(feature.renderIntent === "select"){
-            stroke = 'stroke-width="2" stroke="blue"';
+            stroke = 'stroke-width="1" stroke="blue"';
         }
         var type = feature.attributes.type;
         var svg;
