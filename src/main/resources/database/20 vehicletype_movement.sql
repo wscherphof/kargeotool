@@ -11,26 +11,27 @@ CREATE INDEX roadside_equipment_geom_idx
 set session authorization geo_ov;
 
 CREATE OR REPLACE VIEW v_provincie AS 
- SELECT p.gid,
-    p.id,
-    p.gml_id,
-    p.provincien,
-    p.geom,
-    (select r.id as aao from roadside_equipment r where p.geom && r.location and st_intersects(p.geom, r.location) limit 1) is not null as hasrseqs
+ SELECT p.gid, p.id, p.gml_id, p.provincien, p.geom, (( SELECT r.id AS aao
+           FROM roadside_equipment r
+      JOIN data_owner dao ON dao.id = r.data_owner
+     WHERE ('CBSPV00'::text || p.id::text) = dao.code::text
+    LIMIT 1)) IS NOT NULL AS hasrseqs
    FROM provincie p;
 
+ALTER TABLE v_provincie
+  OWNER TO geo_ov;
+
 CREATE OR REPLACE VIEW v_gemeente AS 
- SELECT g.gid,
-    g.id,
-    g.gml_id,
-    g.code,
-    g.gemeentena,
-    g.geom,
-    (select r.id as aao from roadside_equipment r where g.geom && r.location and st_intersects(g.geom, r.location) limit 1) is not null as hasrseqs
-   FROM gemeente as g;
+ SELECT g.gid, g.id, g.gml_id, g.code, g.gemeentena, g.geom_simplified AS geom, (( SELECT r.id AS aao
+           FROM roadside_equipment r
+      JOIN data_owner dao ON dao.id = r.data_owner
+     WHERE ('CBSGM'::text || g.code::text) = dao.code::text
+    LIMIT 1)) IS NOT NULL AS hasrseqs
+   FROM gemeente g;
 
 ALTER TABLE v_gemeente
   OWNER TO geo_ov;
+
 
 
 -- Table: dxf
