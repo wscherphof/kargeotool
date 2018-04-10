@@ -396,7 +396,7 @@ Ext.define("Editor", {
     /**
      * Voert de Ajax call uit om de huidige Rseq op te slaan in de database.
      */
-    saveOrUpdate: function(onSaved) {
+    saveOrUpdate: function(onSaved, dontDoChecks) {
         var rseq = this.activeRseq;
         if (rseq !== null) {
             var me = this;
@@ -458,7 +458,7 @@ Ext.define("Editor", {
                                             fn: function (button) {
                                                 if (button === 'yes') {
                                                     this.activeRseq.setReadyForExport(true);
-                                                    this.saveOrUpdate();
+                                                    this.saveOrUpdate(null, true);
                                                 }
                                             },
                                             scope: this,
@@ -485,9 +485,9 @@ Ext.define("Editor", {
             
             
             var mixedMovements = function(okFunction){
-                var hasMixedVehicletypesInMovement = rseq.areVehicletypesConsistent();
+                var vehicleTypeAreConsistentInMovement = rseq.areVehicletypesConsistent();
                 var me = this;
-                if (!hasMixedVehicletypesInMovement) {
+                if (!vehicleTypeAreConsistentInMovement) {
                     Ext.Msg.show({
                         title: "Gemengde beweging(en)",
                         msg: "Binnen een beweging zijn er in- en uitmeldpunten met verschillende voertuigtypes. Was dit de bedoeling? Klik op 'ja' als dit de bedoeling was en om op te slaan, klik op 'nee' om niet op te slaan.",
@@ -540,8 +540,11 @@ Ext.define("Editor", {
                     saveFunction();
                 }
             };
-            
-            mixedMovements(endPointCheck);
+            if(dontDoChecks){
+                saveFunction();
+            }else{
+                mixedMovements(endPointCheck);
+            }
         }
     },
 
