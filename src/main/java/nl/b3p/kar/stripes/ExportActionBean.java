@@ -71,7 +71,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.type.Type;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -308,7 +307,20 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 }
                 SortedSet<Movement> mset = r.getMovements();
                 List<Movement> ms = new ArrayList<>(mset);
-                Collections.sort(ms);
+                Collections.sort(ms, (o1, o2) -> {
+                    if(o1.getId() == o2.getId()){
+                        return 0;
+                    }else{
+                        Integer s1 = o1.getSignalGroupNumberOfCheckoutpoint();
+                        Integer s2 = o2.getSignalGroupNumberOfCheckoutpoint();
+                        if(s1 != null && s2 != null){
+                            return s1.compareTo(s2);
+                        }else{
+                            return o1.getNummer().compareTo(o2.getNummer());
+                        }
+                        
+                    }
+                });
                 for (Movement m : ms) {
                     List<MovementActivationPoint> maps = m.getPoints();
                     String movementLabel = getLabel(m);

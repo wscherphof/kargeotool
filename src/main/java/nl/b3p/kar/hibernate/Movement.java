@@ -364,4 +364,15 @@ public class Movement implements Comparable<Movement> {
         }
         return (max+1);
     }
+    
+    public Integer getSignalGroupNumberOfCheckoutpoint(){
+        for (MovementActivationPoint point : points) {
+            if(point.getBeginEndOrActivation().endsWith(ACTIVATION)){
+                if(point.getSignal().getKarCommandType().equals(ActivationPointSignal.COMMAND_UITMELDPUNT)){
+                    return point.getSignal().getSignalGroupNumber();
+                }
+            }
+        }
+        return null;
+    }
 }
