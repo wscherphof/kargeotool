@@ -22,6 +22,7 @@
 var store = null;
 var grid = null;
 var unselectedVRIs = [];
+var menuState = true;
 Ext.onReady(function (){
     store = Ext.create('Ext.data.Store',{
         storeId : 'rseqStore',
@@ -284,7 +285,26 @@ Ext.onReady(function (){
                     }
                 ],
                 height : 200,
-                width : 800
+                width : 800,
+                listeners:{
+                    scope:this,
+                    headerclick: function(header,column,c,d,e){
+                        if(column.dataIndex === "selected"){
+                            menuState = !menuState;
+                            store.each(function(record){
+                                var id = record.data.id;
+                                if(menuState){
+                                    var index = indexInUnselectedArray(id);
+                                    unselectedVRIs.splice(index,1);
+                                }else{
+                                    unselectedVRIs.push(id);
+                                }
+                                record.data.selected = menuState;
+                            });
+                        }
+                    }
+                }
+                
             },
             {
                 xtype : "combo",
