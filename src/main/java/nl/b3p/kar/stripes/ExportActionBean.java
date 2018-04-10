@@ -259,7 +259,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                     }
                     Object[] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
                         r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "",
-                        r.getKarAddress(), r.getLocation().getCoordinate().x, r.getLocation().getCoordinate().y, hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
+                        r.getKarAddress(), 
+                        (int) Math.round(r.getLocation().getCoordinate().x),
+                        (int) Math.round(r.getLocation().getCoordinate().y),
+                        hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
                         r.isReadyForExport() ? "Ja" : "Nee"};
                     csv.printRecord(values);
                 }
@@ -341,9 +344,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                             map.getPoint().getLabel(),
                             map.getBeginEndOrActivation().equals("END") ? "eind" :  map.getBeginEndOrActivation().equals("BEGIN") ? "begin": map.getSignal().getKarCommandType() == 1 ? "in" :  map.getSignal().getKarCommandType() == 2 ? "uit" : "voor",
                             triggerType,
-                            map.getPoint().getLocation().getX(),
-                            map.getPoint().getLocation().getY(),
-                            map.getSignal() != null ?  map.getSignal().getDistanceTillStopLine(): "", 
+                            (int) Math.round(map.getPoint().getLocation().getX()),
+                            (int) Math.round(map.getPoint().getLocation().getY()),
+                            map.getSignal() != null ? map.getSignal().getDistanceTillStopLine() : "",
                             vhts.getOrDefault("Bus", ""),
                             vhts.getOrDefault("Tram", ""),
                             vhts.getOrDefault("CVV", ""),
