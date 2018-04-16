@@ -536,38 +536,6 @@ Ext.define("EditForms", {
         
         var ov = [];
         var hulpdienst = [];
-        var children = [];
-        if(this.editor.getCurrentVehicleType() === "OV") {
-            children.push({
-                id: 'ov-node',
-                text: 'OV',
-                checked: false,
-                iconCls: "noTreeIcon",
-                expanded:true,
-                leaf: false,
-                children: ov
-            });
-        } else {
-            children.push({
-                id: 'hulpdienst-node',
-                text: 'Hulpdiensten',
-                checked: false,
-                iconCls: "noTreeIcon",
-                expanded:true,
-                leaf: false,
-                children: hulpdienst
-            });
-        }
-        var vehicles = {
-            root: {
-                text: 'Alle',
-                id: 'root',
-                iconCls: "noTreeIcon",
-                expanded: true,
-                checked: false,
-                children: children
-            }
-        };
         var selectedVehicleTypes = [];
         if(!map.getVehicleTypes()){
             map.setVehicleTypes(new Array());
@@ -578,7 +546,7 @@ Ext.define("EditForms", {
                 var leaf = {
                         id: vt.nummer,
                         text: vt.omschrijving,
-                        checked: false,
+                        checked: selected ? "checked" : "",
                         iconCls: "noTreeIcon",
                         leaf: true};
                 if(vt.groep === "OV") {
@@ -594,7 +562,18 @@ Ext.define("EditForms", {
                 }
             }
         }, this);
-
+        
+        var vehicles = {
+            root: {
+                text: 'Alle',
+                id: 'root',
+                iconCls: "noTreeIcon",
+                expanded: true,
+                checked: false,
+                children: this.editor.getCurrentVehicleType() === "OV" ? ov : hulpdienst
+            }
+        };
+     
         var vehicleTypesStore = Ext.create('Ext.data.TreeStore', vehicles);
 
         var editingUitmeldpunt = map.config.commandType === 2;
@@ -618,17 +597,33 @@ Ext.define("EditForms", {
             name: 'virtualLocalLoopNumber',
             value: map.getVirtualLocalLoopNumber()
         },{
-            xtype: 'treecombo',
-            valueField: 'id',
-            editable:false,
-            rootVisible: false,
-            allowBlank: false,
-            value:  selectedVehicleTypes.join(","),
+            xtype: 'combobox',
             fieldLabel: 'Voertuigtypes',
-            treeWidth:290,
-            treeHeight: 300,
+            displayField: 'text',
             name: 'vehicleTypes',
-            store: vehicleTypesStore
+            valueField: 'id',
+            multiSelect: true,
+            value: selectedVehicleTypes,
+            tpl: new Ext.XTemplate('<tpl for=".">', '<div class="x-boundlist-item">', '<input {checked} type="checkbox" />', '{text}', '</div>', '</tpl>'),
+            store: vehicleTypesStore,
+            queryMode: 'local',
+            listeners: {
+                select: function (combo, records) {
+                    var node;
+                    
+                    Ext.each(records, function (rec) {
+                        node = combo.getPicker().getNode(rec);
+                        rec.data.checked = "checked";
+                        Ext.get(node).down('input').dom.checked = true;
+                    });
+                    var a = 0;
+                },
+                beforedeselect: function (combo, rec) {
+                    var node = combo.getPicker().getNode(rec);
+                    rec.data.checked = "";
+                    Ext.get(node).down('input').dom.checked = "";
+                }
+            }
         },
         {
             xtype: 'combo',
