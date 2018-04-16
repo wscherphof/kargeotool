@@ -110,6 +110,7 @@ Ext.define("Editor", {
                 this.loadRoads();
             }
             this.handleSurroundingPoints();
+            this.olc.updateOtherVehicleType();
         }, this);
 
         this.olc.map.events.register('moveend',this, function(){
