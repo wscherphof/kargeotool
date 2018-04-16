@@ -10,6 +10,8 @@ CREATE INDEX roadside_equipment_geom_idx
 
 set session authorization geo_ov;
 
+select addgeometrycolumn('data','gemeente', 'geom_simplified', 28992, 'MULTIPOLYGON',2);
+
 CREATE OR REPLACE VIEW v_provincie AS 
  SELECT p.gid, p.id, p.gml_id, p.provincien, p.geom, (( SELECT r.id AS aao
            FROM roadside_equipment r
@@ -91,8 +93,6 @@ ALTER TABLE dxf_features
 
 
 
-select addgeometrycolumn('data','gemeente', 'geom_simplified', 28992, 'MULTIPOLYGON',2);
-
 select addgeometrycolumn('data','dxf_features', 'the_geom', 28992, 'GEOMETRY',2);
 
 update gemeente set geom_simplified = st_multi(ST_SimplifyPreserveTopology(geom, 100));
@@ -103,7 +103,7 @@ CREATE INDEX gemeente_geom_simplified_idx
   (geom_simplified);
 
 
-update deelgebied set geom = st_multi(geom)
+update deelgebied set geom = st_multi(geom);
 
 update movement set nummer = 6 where id = 140999;
 update movement set nummer = 7 where id = 138019;
