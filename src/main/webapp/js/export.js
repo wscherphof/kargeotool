@@ -310,24 +310,24 @@ Ext.onReady(function (){
                 xtype : "combo",
                 fieldLabel : 'Type export',
                 allowBlank : false,
+                value:"kv9",
                 store : Ext.create('Ext.data.Store',{
                     fields : ['type','label'],
                     data : [
-                        {
+                         {
+                            "type" : "kv9",
+                            "label" : "KV9 XML"
+                        },{
                             "type" : "incaa",
                             "label" : "INCAA .ptx"
                         },
                         {
-                            "type" : "kv9",
-                            "label" : "KV9 XML"
+                            "type" : "csvextended",
+                            "label" : "CSV - uitgebreid"
                         },
                         {
                             "type" : "csvsimple",
                             "label" : "CSV - simpel"
-                        },
-                        {
-                            "type" : "csvextended",
-                            "label" : "CSV - uitgebreid"
                         }
                     ]
                 }),

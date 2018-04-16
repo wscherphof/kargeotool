@@ -235,7 +235,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             File f = File.createTempFile("tmp", "csvsimple.csv");
             FileWriter fw = new FileWriter(f);
             PrintWriter out = new PrintWriter(fw);
-            try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT)) {
+            try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'))) {
                 csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
                     "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
                 for (RoadsideEquipment r : roadsideEquipmentList) {
@@ -282,7 +282,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             File f = File.createTempFile("tmp", "csvsimple.csv");
             FileWriter fw = new FileWriter(f);
             PrintWriter out = new PrintWriter(fw);
-            CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
+            CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'));
 
             Collections.sort(roadsideEquipmentList);
             csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot",
@@ -539,7 +539,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         File f = File.createTempFile("tmp", "adminExport");
         FileWriter fw = new FileWriter(f);
         PrintWriter out = new PrintWriter(fw);
-        CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT);
+        CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'));
         csv.printRecord(new Object[]{"Beheerder", "Totaal VRI\'s", "VRI's zonder KV9-fouten", "VRI's zonder KV9-fouten en gereed voor export"});
         csv.printRecords(values);
         csv.flush();
