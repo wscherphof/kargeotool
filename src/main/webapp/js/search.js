@@ -62,7 +62,7 @@ Ext.define("SearchManager", {
             {
                 xtype: 'textfield',
                 id: 'searchField' ,
-                fieldLabel: 'Zoekwoord',
+                fieldLabel: 'Zoekterm',
                 flex:1,
                 enableKeyEvents:true,
                 listeners:{
