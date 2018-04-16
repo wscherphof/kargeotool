@@ -57,11 +57,11 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.StringType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,10 +135,9 @@ public class SearchActionBean implements ActionBean {
                     Disjunction unsplitDisjunctionExact = getRseqDisjunction(term, true);
                     
                     String wholeTerm = term.replaceAll("\\"+WILDCARD, ""); // remove all the wildcards (possible between words)
-                    wholeTerm = WILDCARD + wholeTerm + WILDCARD;    // add wildcards to beginning and end
-                    Disjunction unsplitDisjunctionWildcard = getRseqDisjunction(wholeTerm, false);
+                    Criterion descriptionIlike = Restrictions.ilike("description", wholeTerm, MatchMode.ANYWHERE);
                     
-                    Disjunction or = Restrictions.or(unsplitDisjunctionExact, con,unsplitDisjunctionWildcard);
+                    Disjunction or = Restrictions.or(unsplitDisjunctionExact, con,descriptionIlike);
 
                     criteria.add(or);
                 }
@@ -192,13 +191,8 @@ public class SearchActionBean implements ActionBean {
         dis.add(Restrictions.ilike("town", t, mm));
 
         try {
-            if (exact) {
-                int karAddress = Integer.parseInt(t);
-                dis.add(Restrictions.eq("karAddress", karAddress));
-            } else {
-                String r = oldTerm.replaceAll("\\*", "%");
-                dis.add(Restrictions.sqlRestriction("kar_address::text like ?", r, StringType.INSTANCE));
-            }
+            int karAddress = Integer.parseInt(t);
+            dis.add(Restrictions.eq("karAddress", karAddress));
         } catch (NumberFormatException e) {
         }
 
