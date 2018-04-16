@@ -201,6 +201,7 @@ public class UploadDXFActionBean implements ActionBean {
             File f = File.createTempFile("dxfupload", "" + System.currentTimeMillis());
             FileUtils.copyInputStreamToFile(bestand.getInputStream(), f);
             processFile(f, createDbDatastore(), upload.getId());
+            context.getMessages().add(new SimpleMessage("Uploaden gelukt"));
         } catch (IOException ex) {
             log.error("Error reading dxf", ex);
         }
@@ -232,6 +233,7 @@ public class UploadDXFActionBean implements ActionBean {
             }
         } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
+            context.getValidationErrors().add("Error", new SimpleError("Fout tijdens importeren: " + ex.getLocalizedMessage()));
         }
     }
 
