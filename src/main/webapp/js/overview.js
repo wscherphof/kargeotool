@@ -666,7 +666,7 @@ Ext.define("nl.b3p.kar.Overview",{
         if(label === 'Van  naar '){
             label = '';
         }
-        label += " (" + mvmnt.getVehicleType() + ")";
+        label += " (" + (mvmnt.getVehicleType() === "Hulpdiensten" ? "HD" : "OV") + ")";
 
         return label;
     },
