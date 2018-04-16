@@ -341,13 +341,17 @@ Ext.onReady(function (){
                     scope: this,
                     select: function(combo, record) {
                         var vehicleTypeCombo = Ext.ComponentQuery.query('#vehicleType')[0];
-                        if(record.get('type') === 'incaa') {
+                        var disableVT = false;
+                        var type = record.get('type');
+                        if(type === 'incaa') {
                             vehicleTypeCombo.setValue('Hulpdiensten');
-                            vehicleTypeCombo.setDisabled(true);
+                            disableVT = true;
                         } else {
                             vehicleTypeCombo.setValue('gemixt');
-                            vehicleTypeCombo.setDisabled(false);
+                            disableVT = type === "csvextended";
                         }
+                        
+                        vehicleTypeCombo.setDisabled(disableVT);
                         reloadVRIs();
                     }
                 },
