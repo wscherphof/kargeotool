@@ -77,7 +77,8 @@
         <script type="text/javascript" src="${contextPath}/js/contextmenu.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/changemanager.js" ></script>
         <script type="text/javascript" src="${contextPath}/js/collapsibleWindow.js" ></script>
-        <link rel="stylesheet" href="${contextPath}/js/ext/resources/css/crisp/theme-crisp-all.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="${contextPath}/js/ext/resources/css/triton/theme-triton-all.css" type="text/css" media="screen" />
+        <!--link rel="stylesheet" href="${contextPath}/js/ext/resources/css/crisp/theme-crisp-all.css" type="text/css" media="screen" /-->
         <link rel="stylesheet" href="${contextPath}/styles/geo-ov.css" type="text/css" media="screen" />
         <stripes:layout-component name="head"/>        
     </head>

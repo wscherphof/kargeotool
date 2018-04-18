@@ -160,7 +160,7 @@ Ext.define("Editor", {
     },
 
     createOvInfoLayers: function (mapfilePath, ovInfo) {
-        mapfilePath += "&schema={0}";
+        //mapfilePath += "&schema={0}";
         this.olc.addLayer("WMS", "buslijnen_" + ovInfo.schema, Ext.String.format(mapfilePath, ovInfo.schema), 'buslijnen', this.getLayerVisibility('buslijnen'), null, 1, 13, null);
         this.olc.addLayer("WMS","bushaltes_" + ovInfo.schema,Ext.String.format(mapfilePath,ovInfo.schema),'bushaltes', this.getLayerVisibility('bushaltes'),null, 1, 13, null);
     },
