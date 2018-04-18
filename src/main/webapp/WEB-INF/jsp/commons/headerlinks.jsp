@@ -28,14 +28,14 @@
         <div class="headerlink">
             <a href="<stripes:url beanclass="nl.b3p.kar.stripes.RightsActionBean"/>">VRI-authorisatie</a>
         </div>
-        <div class="headerlink">
-            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean"/>">DXF</a>
-        </div>
         <c:if test="${f:isUserInRole(pageContext.request, 'beheerder')}">
             <div class="headerlink">
                 <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean"> Gebruikers</stripes:link>
             </div>
         </c:if>
+        <div class="headerlink">
+            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.UploadDXFActionBean"/>">DXF</a>
+        </div>
         <div class="headerlink">
            <a href="<stripes:url beanclass="nl.b3p.kar.stripes.ExportActionBean"/>">Exporteer</a>
         </div>
