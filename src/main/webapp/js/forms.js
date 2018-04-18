@@ -1052,7 +1052,7 @@ Ext.define("EditForms", {
            // height: 200,
             width: 720,
             items: [{
-                    fieldLabel: 'Selecteer de vervoerder(s)',
+                    fieldLabel: 'Selecteer de vervoerder(s) in het drop-down menu:',
                     labelWidth: 150,
                     width: 700,
                     store: carrierStore,
