@@ -31,16 +31,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.persistence.EntityManager;
-import net.sourceforge.stripes.action.ActionBean;
-import net.sourceforge.stripes.action.ActionBeanContext;
-import net.sourceforge.stripes.action.After;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.SimpleMessage;
-import net.sourceforge.stripes.action.StrictBinding;
-import net.sourceforge.stripes.action.UrlBinding;
+
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.SimpleError;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.geotools.data.dxf.DXFDataStore;
@@ -172,8 +164,8 @@ public class UploadDXFActionBean implements ActionBean {
     
     public Resolution remove() {
         Gebruiker g = getGebruiker();
-        if(!g.getEditableDataOwners().contains(uploadFile.getDataOwner())){
-            context.getValidationErrors().add("",new SimpleError("Gebruiker niet gerechtigd om upload te verwijderen"));
+        if(!g.isBeheerder() && !g.getEditableDataOwners().contains(uploadFile.getDataOwner())){
+            context.getValidationErrors().add("user",new SimpleError("Gebruiker niet gerechtigd om upload te verwijderen"));
             return view();
         }
         EntityManager em = Stripersist.getEntityManager();
@@ -202,10 +194,13 @@ public class UploadDXFActionBean implements ActionBean {
             FileUtils.copyInputStreamToFile(bestand.getInputStream(), f);
             processFile(f, createDbDatastore(), upload.getId());
             context.getMessages().add(new SimpleMessage("Uploaden gelukt"));
+            String anchor = "x=" + rseq.getLocation().getX() + "&y=" + rseq.getLocation().getY() + "&zoom= "+13;
+            return new RedirectResolution(EditorActionBean.class).setAnchor(anchor);
         } catch (IOException ex) {
             log.error("Error reading dxf", ex);
+            return new ForwardResolution(JSP_UPLOAD);
         }
-        return new ForwardResolution(JSP_UPLOAD);
+
     }
     
     @After
