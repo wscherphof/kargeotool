@@ -49,6 +49,12 @@ Ext.define("SearchManager", {
 
         var bus = Ext.create(nl.b3p.kar.SearchBusline,{editor:this.editor});
         this.addSearchEntity(bus);
+        this.searchPanel.on("afterrender", function () {
+            Ext.create('Ext.tip.ToolTip', {
+                target: Ext.getCmp("searchField"),
+                html: 'Met : voor het getal wordt alleen op KAR-adres gezocht, bijv. :25'
+            });
+        }, {single:true});
 
         //this.addEvents('searchResultClicked');
 
@@ -131,10 +137,6 @@ Ext.define("SearchManager", {
             }]
         });
         searchFormPanel.add(this.searchPanel);
-        Ext.create('Ext.tip.ToolTip', {
-            target: Ext.getCmp("searchField"),
-            html: 'Met : voor het getal wordt alleen op KAR-adres gezocht, bijv. :25'
-        });
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){
