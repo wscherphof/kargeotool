@@ -1135,6 +1135,11 @@ Ext.define("EditForms", {
                             scope:this,
                             change: function(){
                                 Ext.getCmp("makeExport").setDisabled(false);
+                            },
+                            select: {
+                                fn: function (combo, record, index) {
+                                    combo.inputEl.dom.value = '';
+                                }
                             }
                         }
                     }, {

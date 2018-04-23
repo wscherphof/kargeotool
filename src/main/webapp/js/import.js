@@ -6,53 +6,6 @@ function createForms (){
         height : 400,
         renderTo : 'body',
         items : [{
-                title : 'CSV (uitgebreid)',
-                items : [
-                    {
-                        xtype : "form",
-                        bodyPadding : 5,
-                        // The form will submit an AJAX request to this URL when submitted
-                        url : importActionBeanUrl + '?importCsv=true',
-                        standardSubmit : true,
-                        // Fields will be arranged vertically, stretched to full width
-                        layout : 'anchor',
-                        defaults : {
-                            anchor : '100%',
-                            labelWidth : '120px'
-                        },
-                        // The fields
-                        defaultType : 'textfield',
-                        items : [
-                            {
-                                xtype : "filefield",
-                                fieldLabel : 'CSV bestand',
-                                name : 'bestand',
-                                allowBlank : false,
-                                msgTarget : 'side',
-                                anchor : '100%',
-                                buttonText : 'Bladeren'
-                            }
-                        ],
-                        // Reset and Submit buttons
-                        buttons : [{
-                                text : 'Reset',
-                                handler : function (){
-                                    this.up('form').getForm().reset();
-                                }
-                            },{
-                                text : 'Importeer',
-                                formBind : true,//only enabled once the form is valid
-                                disabled : true,
-                                handler : function (){
-                                    var form = this.up('form').getForm();
-                                    form.submit();
-
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },{
                 title : 'BISON KV9 .xml',
                 id: 'kv9tab',
                 items : [
@@ -151,7 +104,54 @@ function createForms (){
                         ]
                     }
                 ]
-            }]
+            },{
+            title : 'CSV - bewegingen',
+            items : [
+                {
+                    xtype : "form",
+                    bodyPadding : 5,
+                    // The form will submit an AJAX request to this URL when submitted
+                    url : importActionBeanUrl + '?importCsv=true',
+                    standardSubmit : true,
+                    // Fields will be arranged vertically, stretched to full width
+                    layout : 'anchor',
+                    defaults : {
+                        anchor : '100%',
+                        labelWidth : '120px'
+                    },
+                    // The fields
+                    defaultType : 'textfield',
+                    items : [
+                        {
+                            xtype : "filefield",
+                            fieldLabel : 'CSV bestand',
+                            name : 'bestand',
+                            allowBlank : false,
+                            msgTarget : 'side',
+                            anchor : '100%',
+                            buttonText : 'Bladeren'
+                        }
+                    ],
+                    // Reset and Submit buttons
+                    buttons : [{
+                        text : 'Reset',
+                        handler : function (){
+                            this.up('form').getForm().reset();
+                        }
+                    },{
+                        text : 'Importeer',
+                        formBind : true,//only enabled once the form is valid
+                        disabled : true,
+                        handler : function (){
+                            var form = this.up('form').getForm();
+                            form.submit();
+
+                        }
+                    }
+                    ]
+                }
+            ]
+        }]
     });
 }
 

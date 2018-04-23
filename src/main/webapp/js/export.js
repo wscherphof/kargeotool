@@ -323,11 +323,11 @@ Ext.onReady(function (){
                         },
                         {
                             "type" : "csvextended",
-                            "label" : "CSV - uitgebreid"
+                            "label" : "CSV - bewegingen"
                         },
                         {
                             "type" : "csvsimple",
-                            "label" : "CSV - simpel"
+                            "label" : "CSV - VRI-informatie"
                         }
                     ]
                 }),
@@ -348,7 +348,7 @@ Ext.onReady(function (){
                             disableVT = true;
                         } else {
                             vehicleTypeCombo.setValue('gemixt');
-                            disableVT = type === "csvextended";
+                            disableVT = type.indexOf("csv") !== -1;
                         }
                         
                         vehicleTypeCombo.setDisabled(disableVT);
