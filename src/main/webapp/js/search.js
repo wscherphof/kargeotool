@@ -131,6 +131,10 @@ Ext.define("SearchManager", {
             }]
         });
         searchFormPanel.add(this.searchPanel);
+        Ext.create('Ext.tip.ToolTip', {
+            target: Ext.getCmp("searchField"),
+            html: 'Met : voor het getal wordt alleen op KAR-adres gezocht, bijv. :25'
+        });
     },
     search : function (term){
         Ext.each(this.searchEntities,function(searchEntity, index){

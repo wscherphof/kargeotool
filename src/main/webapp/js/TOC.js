@@ -36,11 +36,13 @@ Ext.define("TOC", {
         Ext.create('CollapsibleWindow', {
             title: 'Filters en kaartlagen',
             y: 710,
-            layout: 'fit',
+            scrollable:true,
             id: 'tocWindow',
             items: [
                 {
                     xtype: "container",
+                    margin: "5 5 5 5",
+                    width: "90%",
                     items: [
                         {
                             xtype: "label",
@@ -76,6 +78,13 @@ Ext.define("TOC", {
                             ]
                         },
                         {
+                            xtype: "label",
+                            text: "Voertuiglagen",
+                            style: {
+                                fontWeight: "bold"
+                            }
+                        },
+                        {
                             xtype: "radio",
                             boxLabel: "OV",
                             value: false,
@@ -109,7 +118,7 @@ Ext.define("TOC", {
                         },
                         {
                             xtype: "checkbox",
-                            boxLabel: "Laat ander voertuigtype zien",
+                            boxLabel: "Laat ander voertuigtype zien op kaart",
                             id: "showOtherVehicleType",
                             listeners: [
                                 {
@@ -242,7 +251,7 @@ Ext.define("TOC", {
                             value: 10,
                             id: 'Luchtfoto_slider',
                             increment: 5,
-                            width: 200,
+                            width: "100%",
                             minValue: 0,
                             maxValue: 100,
                             listeners: {
@@ -266,7 +275,7 @@ Ext.define("TOC", {
                             xtype: "slider",
                             increment: 5,
                             value: 10,
-                            width: 200,
+                            width: "100%",
                             minValue: 0,
                             maxValue: 100,
                             listeners: {
@@ -290,7 +299,7 @@ Ext.define("TOC", {
                             xtype: "slider",
                             increment: 5,
                             value: 10,
-                            width: 200,
+                            width: "100%",
                             minValue: 0,
                             maxValue: 100,
                             listeners: {
