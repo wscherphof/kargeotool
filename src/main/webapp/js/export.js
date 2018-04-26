@@ -96,6 +96,12 @@ Ext.onReady(function (){
                             if(checked) {
                                 field.focus();
                             }
+                            var rd = Ext.getCmp('removeDeelgebied');
+                            rd.setDisabled(!checked);
+
+                            var ed = Ext.getCmp('editDeelgebied');
+                            ed.setDisabled(!checked);
+
                         }
                     },
                     {
@@ -163,6 +169,8 @@ Ext.onReady(function (){
                     {
                         xtype : "button",
                         text : 'Bewerk',
+                        disabled : true,
+                        id: "editDeelgebied",
                         handler : function (){
                             var dgId = Ext.getCmp("deelgebied").getValue();
                             if(dgId){
@@ -176,6 +184,8 @@ Ext.onReady(function (){
                     {
                         xtype : "button",
                         text : 'Verwijder',
+                        id: "removeDeelgebied",
+                        disabled : true,
                         handler: function () {
                             var dgId = Ext.getCmp("deelgebied").getValue();
                             if (dgId) {
