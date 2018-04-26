@@ -335,3 +335,6 @@ body.editor {
 #editorBody {
     overflow: hidden;
 }
+.x-accordion-hd .x-panel-header-title{
+    color: #000; !important;
+}
