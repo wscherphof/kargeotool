@@ -582,7 +582,7 @@ Ext.define("ol", {
         var buslijnen = this.map.getLayersByName(name)[0];
         buslijnen.maxResolution =4000;
         buslijnen.mergeNewParams({
-            filtering:publiclinenumber
+            cql_filter : "linepublicnumber = " + publiclinenumber
         });
     },
     /**
@@ -594,7 +594,7 @@ Ext.define("ol", {
 
         buslijnen.maxResolution =13;
         buslijnen.mergeNewParams({
-            filtering:null
+            cql_filter:null
         });
 
     },
