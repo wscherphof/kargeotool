@@ -417,7 +417,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 }
                 
             }
-            label = label.substring(0, label.length() - 1);
+            if(label.length() > 0){
+                label = label.substring(0, label.length() - 1);
+            }
         }
         return label;
     }
@@ -559,10 +561,15 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             GeometryCollection deelgebiedPoly = filter.getGeom();
 
-            String query = "from RoadsideEquipment where validation_errors = 0 AND intersects(location, ?) = true";
+            String query = "from RoadsideEquipment where intersects(location, ?) = true";
+            if(exportType == null || !exportType.equals("csvsimple")){
+                query += " and validation_errors = 0";
+            }
             if (onlyReady) {
                 query += " and readyForExport = true";
             }
+
+
             Query q = sess.createQuery(query);
             q.setParameter(0, deelgebiedPoly);
             List<RoadsideEquipment> rseqList = (List<RoadsideEquipment>) q.list();
@@ -584,10 +591,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment where validation_errors = 0 AND karAddress = :karAddress";
+            String query = "from RoadsideEquipment where karAddress = :karAddress";
+            if(exportType == null || !exportType.equals("csvsimple")){
+                query += " and validation_errors = 0";
+            }
             if (onlyReady) {
                 query += " and readyForExport = true";
             }
+
             List<RoadsideEquipment> r = em.createQuery(query).setParameter("karAddress", karAddress).getResultList();
 
             JSONArray rseqArray = makeRseqArray(r);
@@ -606,7 +617,11 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         JSONObject info = new JSONObject();
         info.put("success", Boolean.FALSE);
         try {
-            String query = "from RoadsideEquipment where validation_errors = 0 AND dataOwner in :dataowner";
+            String query = "from RoadsideEquipment where dataOwner in :dataowner";
+            if(exportType == null || !exportType.equals("csvsimple")){
+                query += " and validation_errors = 0";
+            }
+
             if (onlyReady) {
                 query += " and readyForExport = true";
             }
