@@ -115,12 +115,6 @@ public class EditorActionBean implements ActionBean {
      */
     @DefaultHandler
     public Resolution view() throws Exception {
-
-        if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_view"))) {
-            log.info("view() start, setting root log level to DEBUG");
-            LogManager.getRootLogger().setLevel(Level.DEBUG);
-        }
-
         EntityManager em = Stripersist.getEntityManager();
 
         log.debug("view(): vehicleTypesJSON");
@@ -166,7 +160,6 @@ public class EditorActionBean implements ActionBean {
         ovInfoJSON = makeOvInfoJSON();
 
         log.debug("view forwarding to JSP, setting root log level to INFO");
-        LogManager.getRootLogger().setLevel(Level.INFO);
 
         return new ForwardResolution(JSP);
     }
