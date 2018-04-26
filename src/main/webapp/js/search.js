@@ -339,6 +339,7 @@ Ext.define("nl.b3p.kar.SearchRSEQ", {
                         editor.olc.map.zoomToExtent(bounds.toArray());
                     }
                     this.searchFinished(rseqs.length);
+                    this.panel.expand();
                 }else{
                     this.searchFinished(0,"Ophalen resultaten mislukt.");
                 }
