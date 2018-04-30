@@ -1,18 +1,18 @@
 /**
  * KAR Geo Tool - applicatie voor het registreren van KAR meldpunten
- *
+ * <p>
  * Copyright (C) 2009-2013 B3Partners B.V.
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,27 +20,17 @@ package nl.b3p.kar.stripes;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.validation.*;
 import nl.b3p.incaa.IncaaImport;
-import nl.b3p.kar.hibernate.ActivationPoint;
-import nl.b3p.kar.hibernate.DataOwner;
-import nl.b3p.kar.hibernate.Gebruiker;
-import nl.b3p.kar.hibernate.Movement;
-import nl.b3p.kar.hibernate.MovementActivationPoint;
-import nl.b3p.kar.hibernate.RoadsideEquipment;
-import nl.b3p.kar.hibernate.VehicleType;
+import nl.b3p.kar.hibernate.*;
 import nl.b3p.kar.imp.CSVImporter;
 import nl.b3p.kar.imp.KV9ValidationError;
 import nl.b3p.kar.jaxb.Kv9Def;
@@ -145,7 +135,7 @@ public class ImportActionBean implements ActionBean {
             try {
                 d = db.parse(bestand.getInputStream());
                 context.getRequest().getSession().setAttribute("kv9file", bestand.getFileName());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 this.context.getValidationErrors().addGlobalError(new SimpleError("Fout bij het parsen van het XML bestand: " + ExceptionUtils.getMessage(e)));
                 return new ForwardResolution(OVERVIEW);
             } finally {
@@ -157,7 +147,7 @@ public class ImportActionBean implements ActionBean {
                 JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
                 Unmarshaller u = ctx.createUnmarshaller();
                 push = (TmiPush) u.unmarshal(d);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 this.context.getValidationErrors().addGlobalError(new SimpleError("Fout opgetreden bij het unmarshallen van het XML bestand: \n" + ExceptionUtils.getMessage(e)));
                 return new ForwardResolution(OVERVIEW);
             }
@@ -165,22 +155,21 @@ public class ImportActionBean implements ActionBean {
             int num = 0;
             List<Kv9Def> defs = push.getRseqs();
 
-            int rseqDefsPosition = 0, rseqDefPosition = 0;;
-
+            int rseqDefsPosition = 0, rseqDefPosition = 0;
             // Algemene errors
 
             // TODO check F100, F101, F102
 
-            for (Kv9Def kv9Def: defs) {
+            for (Kv9Def kv9Def : defs) {
                 List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
-                for (RseqDefs rseqDef: rseqs) {
+                for (RseqDefs rseqDef : rseqs) {
                     rseqDefsPosition++;
                     // Multiple RSEQDEF per RSEQDEFS are supported although not allowed in schema
-                    if(rseqDef.getRseqs().size() > 1) {
+                    if (rseqDef.getRseqs().size() > 1) {
                         globalErrors.put(new KV9ValidationError(false, "F103", "RSEQDEFS #" + rseqDefsPosition, null, null, "Per RSEQDEFS is slechts één RSEQDEF toegestaan").toJSONObject());
                     }
 
-                    for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                    for (RoadsideEquipment roadsideEquipment : rseqDef.getRseqs()) {
                         rseqDefPosition++;
 
                         JSONObject rseqErrors = new JSONObject();
@@ -195,9 +184,9 @@ public class ImportActionBean implements ActionBean {
                         roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
                         int validationErrors = roadsideEquipment.validateKV9(kvErrors);
                         boolean importFatal = false;
-                        for(KV9ValidationError kvError: kvErrors) {
+                        for (KV9ValidationError kvError : kvErrors) {
                             e.put(kvError.toJSONObject());
-                            if(kvError.isFatal()) {
+                            if (kvError.isFatal()) {
                                 importFatal = true;
                             }
                         }
@@ -205,11 +194,11 @@ public class ImportActionBean implements ActionBean {
 
                         rseqErrors.put("fatal", importFatal);
                         rseqErrors.put("checked", Boolean.FALSE);
-                        if(importFatal) {
+                        if (importFatal) {
                             continue;
                         }
 
-                        if(!getGebruiker().canEdit(roadsideEquipment)) {
+                        if (!getGebruiker().canEdit(roadsideEquipment)) {
                             e.put(new KV9ValidationError(true, null, "dataownercode", "Beheerder", roadsideEquipment.getDataOwner().getCode(), "U heeft geen rechten om verkeerssystemen voor deze beheerder te importeren"));
                             rseqErrors.put("fatal", Boolean.TRUE);
                             continue;
@@ -223,14 +212,14 @@ public class ImportActionBean implements ActionBean {
                 }
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
             log.error("Import exception", e);
         } finally {
-            if(bestand != null) {
+            if (bestand != null) {
                 try {
                     bestand.delete();
-                } catch(IOException ioe) {
+                } catch (IOException ioe) {
                 }
             }
         }
@@ -238,32 +227,33 @@ public class ImportActionBean implements ActionBean {
     }
 
     public Resolution importXmlSelectedRseqs() {
-        TmiPush push = (TmiPush)getContext().getRequest().getSession().getAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
+        TmiPush push = (TmiPush) getContext().getRequest().getSession().getAttribute(SESSION_KEY_KV9_UNMARSHALLED_OBJ);
 
-        if(push == null) {
+        if (push == null) {
             this.context.getValidationErrors().addGlobalError(new SimpleError("Kan de geuploade KV9 XML gegevens niet vinden, probeer opnieuw"));
             return new ForwardResolution(OVERVIEW);
         }
 
         String[] psplit = selectedRseqPositions.split(",");
         int[] selectedIndexes = new int[psplit.length];
-        for(int i = 0; i < psplit.length; i++) {
+        for (int i = 0; i < psplit.length; i++) {
             selectedIndexes[i] = Integer.parseInt(psplit[i]);
         }
 
         String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
 
-        int rseqDefsPosition = 0, rseqDefPosition = 0;;
+        int rseqDefsPosition = 0, rseqDefPosition = 0;
+        
         EntityManager em = Stripersist.getEntityManager();
-        for (Kv9Def kv9Def: push.getRseqs()) {
+        for (Kv9Def kv9Def : push.getRseqs()) {
             List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
-            for (RseqDefs rseqDef: rseqs) {
+            for (RseqDefs rseqDef : rseqs) {
                 rseqDefsPosition++;
 
-                for(RoadsideEquipment roadsideEquipment: rseqDef.getRseqs()) {
+                for (RoadsideEquipment roadsideEquipment : rseqDef.getRseqs()) {
                     rseqDefPosition++;
 
-                    if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) < 0) {
+                    if (Arrays.binarySearch(selectedIndexes, rseqDefPosition) < 0) {
                         continue;
                     }
 
@@ -274,26 +264,26 @@ public class ImportActionBean implements ActionBean {
                     int validationErrors = roadsideEquipment.validateKV9(kvErrors);
                     roadsideEquipment.setValidationErrors(validationErrors);
                     boolean importFatal = false;
-                    for(KV9ValidationError kvError: kvErrors) {
-                        if(kvError.isFatal()) {
+                    for (KV9ValidationError kvError : kvErrors) {
+                        if (kvError.isFatal()) {
                             importFatal = true;
                             break;
                         }
                     }
 
-                    if(importFatal || !getGebruiker().canEdit(roadsideEquipment)) {
+                    if (importFatal || !getGebruiker().canEdit(roadsideEquipment)) {
                         this.context.getValidationErrors().addGlobalError(new SimpleError("Kan VRI op positie " + rseqDefPosition + " niet importeren!"));
                         continue;
                     }
                     roadsideEquipment.setMemo(String.format("Geimporteerd uit KV9 XML bestand \"%s\" op %s door %s",
-                            (String)getContext().getRequest().getSession().getAttribute("kv9file"),
+                            (String) getContext().getRequest().getSession().getAttribute("kv9file"),
                             date,
                             getGebruiker().getFullname()
                     ));
-                    
+
                     saveRseq(roadsideEquipment, em);
-                    
-                    if(Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
+
+                    if (Arrays.binarySearch(selectedIndexes, rseqDefPosition) >= 0) {
                         this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + roadsideEquipment.getKarAddress() + ", " + roadsideEquipment.getDescription()));
                     }
                 }
@@ -306,8 +296,8 @@ public class ImportActionBean implements ActionBean {
 
         return new ForwardResolution(OVERVIEW);
     }
-    
-    private void saveRseq(RoadsideEquipment roadsideEquipment, EntityManager em){
+
+    private void saveRseq(RoadsideEquipment roadsideEquipment, EntityManager em) {
         roadsideEquipment.setVehicleType(roadsideEquipment.determineType());
 
         SortedSet<Movement> movements = roadsideEquipment.getMovements();
@@ -352,10 +342,10 @@ public class ImportActionBean implements ActionBean {
         final FileBean zipFile = bestand;
         IncaaImport importer = new IncaaImport();
         try {
-            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker(),this.context);
+            List<RoadsideEquipment> rseqs = importer.importPtx(zipFile.getReader(), getGebruiker(), this.context);
 
         } catch (Exception e) {
-            log.error("Fout importeren PTX",e);
+            log.error("Fout importeren PTX", e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
         } finally {
             try {
@@ -369,30 +359,36 @@ public class ImportActionBean implements ActionBean {
 
     public Resolution importCsv() {
         final FileBean zipFile = bestand;
-        
+
         try {
             EntityManager em = Stripersist.getEntityManager();
-            List<DataOwner> dataowners =  em.createQuery("from DataOwner order by omschrijving").getResultList();
-            List<VehicleType> vhts =  em.createQuery("from VehicleType order by nummer").getResultList();
+            JSONObject profile = new JSONObject(getGebruiker().getProfile());
+            JSONObject defaultKarAttributes = profile.getJSONObject("defaultKarAttributes");
+
+            List<DataOwner> dataowners = em.createQuery("from DataOwner order by omschrijving").getResultList();
+            List<VehicleType> vhts = em.createQuery("from VehicleType order by nummer").getResultList();
             CSVImporter importer = new CSVImporter(zipFile.getReader(), dataowners, vhts);
             List<RoadsideEquipment> rseqs;
-            try{
+            try {
                 rseqs = importer.process();//, getGebruiker(),this.context);
                 for (RoadsideEquipment rseq : rseqs) {
-                List<KV9ValidationError> errors = new ArrayList<>();
-                int num = rseq.validateKV9(errors);
-                rseq.setValidationErrors(num);
-                saveRseq(rseq, em);
-                this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + rseq.getKarAddress() + ", " + rseq.getDescription()));
-            }
-            em.getTransaction().commit();
-            }catch(IllegalArgumentException e){
+                    List<KV9ValidationError> errors = new ArrayList<>();
+                    saveRseq(rseq, em);
+                    em.refresh(rseq);
+                    getKarAttributes(defaultKarAttributes,rseq);
+                    int num = rseq.validateKV9(errors);
+                    rseq.setValidationErrors(num);
+                    em.persist(rseq);
+                    this.context.getMessages().add(new SimpleMessage("VRI geimporteerd: adres " + rseq.getKarAddress() + ", " + rseq.getDescription()));
+                }
+                em.getTransaction().commit();
+            } catch (IllegalArgumentException e) {
                 this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van de csv: \n" + ExceptionUtils.getMessage(e)));
                 em.getTransaction().rollback();
             }
-            
+
         } catch (Exception e) {
-            log.error("Fout importeren CSV",e);
+            log.error("Fout importeren CSV", e);
             this.context.getValidationErrors().addGlobalError(new SimpleError("Er zijn fouten opgetreden bij het importeren van verkeerssystemen: \n" + ExceptionUtils.getMessage(e)));
         } finally {
             try {
@@ -402,6 +398,37 @@ public class ImportActionBean implements ActionBean {
             }
         }
         return new ForwardResolution(OVERVIEW);
+    }
+
+
+    private void getKarAttributes(JSONObject attributes, RoadsideEquipment rseq) throws JSONException{
+
+        for (Iterator it = attributes.keys(); it.hasNext();) {
+            String serviceType = (String) it.next();
+            JSONArray perCommandType = attributes.getJSONArray(serviceType);
+
+            KarAttributes ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_INMELDPUNT,
+                    perCommandType.getJSONArray(0));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+            ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_UITMELDPUNT,
+                    perCommandType.getJSONArray(1));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+            ka = new KarAttributes(
+                    serviceType,
+                    ActivationPointSignal.COMMAND_VOORINMELDPUNT,
+                    perCommandType.getJSONArray(2));
+            if (ka.getUsedAttributesMask() != 0) {
+                rseq.getKarAttributes().add(ka);
+            }
+        }
     }
 
     public Gebruiker getGebruiker() {
