@@ -87,10 +87,10 @@ public class AdminExportJob implements Job {
     
     private String getBody() {
         String body = "";
-        body += "Beste, <br/>";
-        body += "<br/>";
-        body += "Hierbij het beheerdersoverzicht van alle beheerders. <br/>";
-        body += "Met vriendelijke groet <br/>";
+        body += "Beste, \n";
+        body += "\n";
+        body += "Hierbij het beheerdersoverzicht van alle beheerders. \n";
+        body += "Met vriendelijke groet";
         
         return body;
     }
