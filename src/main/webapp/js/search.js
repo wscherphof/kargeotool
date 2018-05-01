@@ -453,6 +453,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
     extend: "nl.b3p.kar.Search",
     category: "OV-lijnen",
     beheerder:null,
+    resetButton:null,
     constructor: function(config) {
         this.callParent(arguments);
         var me = this;
@@ -461,7 +462,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             id:Ext.id(),
             name: 'dataOwner',
             allowBlank: true,
-            blankText: 'Selecteer een optie',
+            emptyText: 'Selecteer een optie',
             displayField: 'omschrijving',
             editable:false,
             valueField: 'code',
@@ -471,7 +472,7 @@ Ext.define("nl.b3p.kar.SearchBusline", {
             }),
             listeners: {
                 buffer: 50,
-                change: function() {
+                change: function(evt, value) {
                     if(this.isValid()){
                         var f = function(numResults, entity){
                             me.panel.expand();
@@ -483,11 +484,28 @@ Ext.define("nl.b3p.kar.SearchBusline", {
                         var term = editor.search.getTerm();
                         me.panel.setLoading("Zoeken..");
                         me.search(term);
+                        if(value){
+                            me.resetButton.setHidden(false);
+                        }
                     }
                 }
             }
         });
+        this.resetButton = Ext.create(Ext.button.Button, {
+            text: "Reset",
+            hidden:true,
+            listeners: {
+                scope: this,
+                click: function () {
+                    this.beheerder.setValue(null);
+                    this.resetButton.setHidden(true);
+                }
+            }
+        });
         this.panel.addDocked([this.beheerder]);
+        this.panel.add([this.resetButton]);
+
+
     },
     search: function(term){
         var me = this;
