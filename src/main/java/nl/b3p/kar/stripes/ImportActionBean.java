@@ -243,7 +243,7 @@ public class ImportActionBean implements ActionBean {
         String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
 
         int rseqDefsPosition = 0, rseqDefPosition = 0;
-        
+
         EntityManager em = Stripersist.getEntityManager();
         for (Kv9Def kv9Def : push.getRseqs()) {
             List<RseqDefs> rseqs = kv9Def.getRoadsideEquipments();
