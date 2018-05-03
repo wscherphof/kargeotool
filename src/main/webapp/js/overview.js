@@ -160,7 +160,7 @@ Ext.define("nl.b3p.kar.Overview",{
                         {
                             id: 'addBeginpuntOvCoordinates',
                             text: 'Voeg nieuw beginpunt toe op basis van coördinaten',
-                            icon: karTheme.eindPunt,
+                            icon: karTheme.startPunt,
                             iconCls : 'overviewTree'
                         },
                         {
