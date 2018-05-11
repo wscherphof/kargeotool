@@ -1,5 +1,10 @@
+0. prod uitzetten
 1. import shapes
-2. database script
-3. determine vehicletypes
-4. mapfiles updaten
-5. nieuwe lagen testen
+2. backup
+3. database script
+3.5. war deployen
+
+4. determine vehicletypes
+5. geoserver
+6. nieuwe lagen testen
+7. proxypass naar nieuwe prod goed zetten

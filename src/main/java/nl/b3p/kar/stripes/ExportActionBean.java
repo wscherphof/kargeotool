@@ -239,8 +239,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
                     "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
                 for (RoadsideEquipment r : roadsideEquipmentList) {
-                    String hasHD = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
-                    String hasOV = r.getVehicleType().equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
+                    String vt = r.getVehicleType();
+                    String hasHD = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
+                    String hasOV = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
                     String type;
                     switch (r.getType()) {
                         case RoadsideEquipment.TYPE_BAR:

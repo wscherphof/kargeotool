@@ -114,3 +114,10 @@ update movement set nummer = 8 where id = 140836;
 update movement set nummer = 9 where id = 7609;
 
 update movement set nummer = 3 where id = 138007;
+
+  CREATE OR REPLACE VIEW dxf_features_view AS 
+ SELECT dxf_features.id, dxf_features.layer, dxf_features.name, dxf_features.text, dxf_features.textposhorizontal, dxf_features.textposvertical, dxf_features.textheight, dxf_features.textrotation, dxf_features.color, dxf_features.linetype, dxf_features.thickness, dxf_features.visible, dxf_features.linenumber, dxf_features.error, dxf_features.upload, dxf_features.the_geom, (('#'::text || to_hex(split_part(dxf_features.color::text, ' '::text, 1)::integer)) || to_hex(split_part(dxf_features.color::text, ' '::text, 2)::integer)) || to_hex(split_part(dxf_features.color::text, ' '::text, 3)::integer) AS hexcolor
+   FROM dxf_features;
+
+ALTER TABLE dxf_features_view
+  OWNER TO geo_ov;
