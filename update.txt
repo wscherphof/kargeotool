@@ -1,0 +1,5 @@
+1. import shapes
+2. database script
+3. determine vehicletypes
+4. mapfiles updaten
+5. nieuwe lagen testen
