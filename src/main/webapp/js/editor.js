@@ -522,7 +522,7 @@ Ext.define("Editor", {
                     pts += "</ul>"
                     Ext.Msg.show({
                         title: "Eindpunten dichtbij uitmeldpunten",
-                        msg: "Er bevinden zich eindpunten op minder dan " + threshold + "meter van uitmeldpunten. " +
+                        msg: "Er bevinden zich in de OV-laag en/of de HD-laag eindpunten op minder dan " + threshold + "meter van uitmeldpunten. " +
                                 "Het gaat om de punten: <br/>" + pts + "Aanbevolen wordt om het eindpunt ten minste 50 meter voorbij het midden van het kruispunt te leggen.Toch opslaan?",
                         fn: function (button) {
                             if (button === 'yes') {

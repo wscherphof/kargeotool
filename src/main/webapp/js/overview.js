@@ -463,7 +463,7 @@ Ext.define("nl.b3p.kar.Overview",{
         this.layerLabel.innerHTML = 'Voertuigtype: ' + this.editor.getCurrentVehicleType();
     },
     updateSelection : function (point){
-        if (this.tree !== null){
+        if (this.tree !== null&& !Ext.getCmp("reorderPoints").checked){
             var sm = this.tree.getSelectionModel();
             if (point !== null && point instanceof Point){
                 this.unhighlight(point.getId());
@@ -477,7 +477,7 @@ Ext.define("nl.b3p.kar.Overview",{
         }
     },
     highlight : function (id){
-        if (this.tree !== null){
+        if (this.tree !== null && !Ext.getCmp("reorderPoints").checked){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
@@ -489,7 +489,7 @@ Ext.define("nl.b3p.kar.Overview",{
         }
     },
     unhighlight : function (id){
-        if (this.tree !== null){
+        if (this.tree !== null && !Ext.getCmp("reorderPoints").checked){
             var view = this.tree.getView();
             var root = this.tree.getRootNode();
             var nodes = new Array();
