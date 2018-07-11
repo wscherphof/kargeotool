@@ -87,6 +87,7 @@ import org.stripesstuff.stripersist.Stripersist;
 @CustomPopulationStrategy(BeanFirstPopulationStrategy.class)
 public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
+    private final int EXPORT_THRESHOLD = 125;
     private static final Log log = LogFactory.getLog(ExportActionBean.class);
     private static final String OVERVIEW = "/WEB-INF/jsp/export/overview.jsp";
     private ActionBeanContext context;
@@ -159,7 +160,10 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             message = message.substring(0, message.length() - 2);
             this.context.getValidationErrors().add("export", new SimpleError((message)));
             return new ForwardResolution(OVERVIEW);
-        } else if (exportType == null) {
+        } else if(roadsideEquipmentList.size() > EXPORT_THRESHOLD){
+            this.context.getValidationErrors().add("Aantal", new SimpleError(("Kan maximaal " + EXPORT_THRESHOLD + " VRI's exporteren. Het huidige aantal is " + roadsideEquipmentList.size() + ".")));
+            return new ForwardResolution(OVERVIEW);
+        }else if (exportType == null) {
             this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
         } else if (exportType.equals("incaa")) {

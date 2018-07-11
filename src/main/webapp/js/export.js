@@ -248,8 +248,8 @@ Ext.onReady(function (){
             {
                 title : 'Geselecteerde verkeerssystemen',
                 xtype : "grid",
-                id : "grid",
-                store : store,
+                id: "grid",
+                store: store,
                 columns : [
                     {
                         xtype: 'checkcolumn',
@@ -571,7 +571,7 @@ function rseqsReceived(rseqs,naam) {
         rseqs[i].selected = indexInUnselectedArray(rseqs[i].id) === -1;
         store.add(rseqs[i]);
     }
-    grid.setTitle('Geselecteerde verkeerssystemen voor ' + naam);
+    grid.setTitle(rseqs.length +' geselecteerde verkeerssystemen voor ' + naam);
 
 }
 
