@@ -56,7 +56,7 @@ public class Mailer {
         }
         msg.setSubject(subject);
         msg.setSentDate(new Date());
-        msg.setContent(mailContent, "text/plain");
+        msg.setContent(mailContent,  "text/html; charset=utf-8");
 
         Transport.send(msg);
     }       
