@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.*;
 import nl.b3p.kar.hibernate.ActivationPointSignal;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.VehicleType;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Class voor kv9 XML omdat de JPA entity niet handig is om met JAXB te 
@@ -45,6 +46,8 @@ public class XmlActivationPointSignal {
     private Integer activationpointnumber, karvehicletype, karcommandtype;
     private Integer distancetillstopline, signalgroupnumber, virtuallocalloopnumber;
     private String triggertype;
+    @XmlTransient
+    private final String[] CORRECT_TRIGGERTYPES = {"MANUAL", "STANDARD", "FORCED"};
 
     public XmlActivationPointSignal() {
     }
@@ -55,6 +58,32 @@ public class XmlActivationPointSignal {
         ActivationPointSignal s = map.getSignal();
         karcommandtype = s.getKarCommandType();
         triggertype = s.getTriggerType();
+        if(!ArrayUtils.contains(CORRECT_TRIGGERTYPES, triggertype)){
+            switch(triggertype){
+                case "0":
+                case "6":
+                case "8":
+                case "9":
+                case "10":
+                case "11":
+                    triggertype = "STANDARD";
+                    break;
+                case "1":
+                    triggertype = "FORCED";
+                    break;
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "7":
+                    triggertype = "FORCED";
+                    break;
+                default:
+                    triggertype = "";
+                    break;
+                    
+            }
+        }
         distancetillstopline = s.getDistanceTillStopLine();
         signalgroupnumber = s.getSignalGroupNumber();
         virtuallocalloopnumber = s.getVirtualLocalLoopNumber();
