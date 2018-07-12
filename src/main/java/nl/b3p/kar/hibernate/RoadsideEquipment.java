@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.*;
@@ -1207,13 +1208,18 @@ public class RoadsideEquipment implements Comparable<RoadsideEquipment> {
         if(this.getId().equals(o.getId())){
             return 0;
         }
-        if( (this.getDataOwner().getId().equals(o.getDataOwner().getId()) && this.getKarAddress().equals(o.getKarAddress()))){
+        if( Objects.equals(this.getDataOwner().getId(),o.getDataOwner().getId()) && Objects.equals(this.getKarAddress(),o.getKarAddress())){
             return 0;
         }
         
         if( this.getDataOwner().getId().equals(o.getDataOwner().getId())){
-            
-            return this.getKarAddress().compareTo(o.getKarAddress());
+            if(this.getKarAddress() == null && o.getKarAddress() == null){
+                return 0;
+            }else if(this.getKarAddress() == null || o.getKarAddress() == null){
+                return -1;
+            }else{
+                return this.getKarAddress().compareTo(o.getKarAddress());
+            }
         }else{
             return this.getDataOwner().getOmschrijving().compareTo(o.getDataOwner().getOmschrijving());
         }

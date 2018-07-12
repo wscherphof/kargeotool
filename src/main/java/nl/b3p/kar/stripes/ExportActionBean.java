@@ -160,16 +160,18 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             message = message.substring(0, message.length() - 2);
             this.context.getValidationErrors().add("export", new SimpleError((message)));
             return new ForwardResolution(OVERVIEW);
-        } else if(roadsideEquipmentList.size() > EXPORT_THRESHOLD){
-            this.context.getValidationErrors().add("Aantal", new SimpleError(("Kan maximaal " + EXPORT_THRESHOLD + " VRI's exporteren. Het huidige aantal is " + roadsideEquipmentList.size() + ".")));
-            return new ForwardResolution(OVERVIEW);
-        }else if (exportType == null) {
+        } else if (exportType == null) {
             this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
         } else if (exportType.equals("incaa")) {
             return exportPtx();
         } else if (exportType.equals("kv9")) {
-            return exportXml();
+            if (roadsideEquipmentList.size() > EXPORT_THRESHOLD) {
+                this.context.getValidationErrors().add("Aantal", new SimpleError(("Kan maximaal " + EXPORT_THRESHOLD + " VRI's exporteren. Het huidige aantal is " + roadsideEquipmentList.size() + ".")));
+                return new ForwardResolution(OVERVIEW);
+            } else {
+                return exportXml();
+            }
         } else if (exportType.equals("csvsimple")) {
             return exportCSVSimple();
         } else if (exportType.equals("csvextended")) {
