@@ -177,7 +177,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 if (exportType.equals("incaa") || exportType.equals("csvsimple") || exportType.equals("kv9") || exportType.equals("csvextended")) {
                     String fromAddress = context.getServletContext().getInitParameter("inform.kv7checker.fromAddress");
                     String appURL = context.getServletContext().getInitParameter("application-url");
-                    ExportCreatorThread ect = new ExportCreatorThread(exportType, roadsideEquipmentList, g, fromAddress, appURL);
+                    String downloadLocation = context.getServletContext().getInitParameter("download.location");
+                    ExportCreatorThread ect = new ExportCreatorThread(exportType, roadsideEquipmentList, g, fromAddress, appURL, downloadLocation);
                     ect.start();
                     this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail met de export als bijlage."));
                     return new ForwardResolution(OVERVIEW);

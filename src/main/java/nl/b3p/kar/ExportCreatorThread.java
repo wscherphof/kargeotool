@@ -24,6 +24,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +51,8 @@ import org.stripesstuff.stripersist.Stripersist;
 public class ExportCreatorThread extends Thread {
 
     private static final Log log = LogFactory.getLog(ExportCreatorThread.class);
+    
+    private final long MAX_DOWNLOAD_RETENTION_TIME = 1000 * 60 * 60 * 24 * 7;
     private final String exportType;
     private List<RoadsideEquipment> roadsideEquipmentList;
     private final List<RoadsideEquipment> oldList;
@@ -54,14 +60,15 @@ public class ExportCreatorThread extends Thread {
     private final String fromAddress;
     private final String appURL;
 
-    private final String downloadLocation = "/home/meine/kardownloads/";
+    private final String downloadLocation;
 
-    public ExportCreatorThread(String exportType, List<RoadsideEquipment> roadsideEquipmentList, Gebruiker gebruiker, String fromAddress, String appURL) {
+    public ExportCreatorThread(String exportType, List<RoadsideEquipment> roadsideEquipmentList, Gebruiker gebruiker, String fromAddress, String appURL, String downloadLocation) {
         this.exportType = exportType;
         this.oldList = roadsideEquipmentList;
         this.gebruiker = gebruiker;
         this.fromAddress = fromAddress;
         this.appURL = appURL;
+        this.downloadLocation = downloadLocation;
     }
 
     @Override
@@ -128,7 +135,7 @@ public class ExportCreatorThread extends Thread {
             String body = "";
             body += "Beste, <br/>";
             body += "<br/>";
-            body += "Uw download is gereed. U kunt hem hier downloaden: <a href=\"" + appURL + "/action/download?filename=" + destination.getName() + "\">link</a>.<br/>";
+            body += "Uw download is gereed. U kunt hem hier downloaden: <a href=\"" + appURL + "/action/download?filename=" + destination.getName() + "\">link</a>. Deze link is 7 dagen geldig.<br/>";
             body += "<br/>Met vriendelijke groet <br/>";
             sendMail(body);
         } else {
@@ -137,8 +144,8 @@ public class ExportCreatorThread extends Thread {
             body += "<br/>";
             body += "Uw export kon helaas niet gemaakt worden. Neem contact op met CROW-NDOV.";
             sendMail(body);
-            //mail error
         }
+        deleteOldExports();        
     }
     
     private void sendMail(String body){
@@ -156,5 +163,25 @@ public class ExportCreatorThread extends Thread {
             roadsideEquipmentList.add(em.find(RoadsideEquipment.class, roadsideEquipment.getId()));
         }
         gebruiker = em.find(Gebruiker.class, gebruiker.getId());
+    }
+    
+    private void deleteOldExports(){
+        File loc = new File (downloadLocation);
+        File[] fs = loc.listFiles();
+        long now = System.currentTimeMillis();
+        for (File f : fs) {
+            Path p = f.toPath();
+            BasicFileAttributes attr;
+            try {
+                attr = Files.readAttributes(p, BasicFileAttributes.class);
+                FileTime ft = attr.creationTime();
+                long fileage = ft.toMillis();
+                if((now - fileage) > MAX_DOWNLOAD_RETENTION_TIME){
+                    f.delete();
+                }
+            } catch (IOException ex) {
+                log.error("Cannot delete file: " + f.getAbsolutePath(),ex);
+            }
+        }
     }
 }
