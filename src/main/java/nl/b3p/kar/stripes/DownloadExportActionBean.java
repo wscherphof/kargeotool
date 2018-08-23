@@ -48,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
 public class DownloadExportActionBean implements ActionBean {
 
     private static final Log log = LogFactory.getLog(DownloadExportActionBean.class);
-    private final String downloadLocation = "/home/meine/kardownloads/";
     private ActionBeanContext context;
 
     @Validate
@@ -67,6 +66,7 @@ public class DownloadExportActionBean implements ActionBean {
     @DefaultHandler
     public Resolution download() {
         try {
+            String downloadLocation = context.getServletContext().getInitParameter("download.location");
             File f = new File(downloadLocation, filename);
             FileInputStream fis = new FileInputStream(f);
             return new StreamingResolution("text/plain") {
