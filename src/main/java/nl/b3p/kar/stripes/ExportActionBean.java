@@ -18,6 +18,7 @@
  */
 package nl.b3p.kar.stripes;
 
+import nl.b3p.kar.ExportCreatorThread;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,6 +62,7 @@ import nl.b3p.kar.hibernate.Movement;
 import nl.b3p.kar.hibernate.MovementActivationPoint;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.hibernate.VehicleType;
+import nl.b3p.kar.inform.CarrierInformerListener;
 import nl.b3p.kar.jaxb.KarNamespacePrefixMapper;
 import nl.b3p.kar.jaxb.TmiPush;
 import org.apache.commons.csv.CSVFormat;
@@ -124,6 +126,9 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     @Validate
     private boolean onlyReady = true;
 
+    @Validate
+    private boolean doAsync = false;
+
     private List<DataOwner> dataowners = new ArrayList<>();
 
     @Validate(converter = OneToManyTypeConverter.class, on = "adminExport")
@@ -163,39 +168,48 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         } else if (exportType == null) {
             this.context.getValidationErrors().add("exportType", new SimpleError(("Selecteer een exporttype")));
             return new ForwardResolution(OVERVIEW);
-        } else if (exportType.equals("incaa")) {
-            return exportPtx();
-        } else if (exportType.equals("kv9")) {
-            if (roadsideEquipmentList.size() > EXPORT_THRESHOLD) {
-                this.context.getValidationErrors().add("Aantal", new SimpleError(("Kan maximaal " + EXPORT_THRESHOLD + " VRI's exporteren. Het huidige aantal is " + roadsideEquipmentList.size() + ".")));
+        } else if (doAsync) {
+            Gebruiker g = getGebruiker();
+            if (g.getEmail().isEmpty()) {
+                this.context.getMessages().add(new SimpleError("E-mailadres is leeg. Kan export niet maken. Neem contact op met het meldpunt van CROW-NDOV."));
                 return new ForwardResolution(OVERVIEW);
             } else {
-                return exportXml();
+                if (exportType.equals("incaa") || exportType.equals("csvsimple") || exportType.equals("kv9") || exportType.equals("csvextended")) {
+                    String fromAddress = context.getServletContext().getInitParameter("inform.kv7checker.fromAddress");
+                    String appURL = context.getServletContext().getInitParameter("application-url");
+                    ExportCreatorThread ect = new ExportCreatorThread(exportType, roadsideEquipmentList, g, fromAddress, appURL);
+                    ect.start();
+                    this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail met de export als bijlage."));
+                    return new ForwardResolution(OVERVIEW);
+                } else {
+                    this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
+                    return new ForwardResolution(OVERVIEW);
+                }
             }
-        } else if (exportType.equals("csvsimple")) {
-            return exportCSVSimple();
-        } else if (exportType.equals("csvextended")) {
-            return exportCSVExtended();
-        }else{
-            this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
-            return new ForwardResolution(OVERVIEW);
+        } else {
+            switch (exportType) {
+                case "incaa":
+                    return exportPtx();
+                case "kv9":
+                    if (roadsideEquipmentList.size() > EXPORT_THRESHOLD) {
+                        this.context.getValidationErrors().add("Aantal", new SimpleError(("Kan maximaal " + EXPORT_THRESHOLD + " VRI's exporteren. Het huidige aantal is " + roadsideEquipmentList.size() + ".")));
+                        return new ForwardResolution(OVERVIEW);
+                    } else {
+                        return exportXml();
+                    }
+                case "csvsimple":
+                    return exportCSVSimple();
+                case "csvextended":
+                    return exportCSVExtended();
+                default:
+                    this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
+                    return new ForwardResolution(OVERVIEW);
+            }
         }
     }
 
     public Resolution exportXml() throws Exception {
-        JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
-        Marshaller m = ctx.createMarshaller();
-        m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new KarNamespacePrefixMapper());
-        m.setProperty("jaxb.formatted.output", Boolean.TRUE);
-
-        /* TODO subscriberId per dataOwner of in gebruikersprofiel instellen/vragen oid */
-        if (rseq != null) {
-            roadsideEquipmentList = Arrays.asList(new RoadsideEquipment[]{rseq});
-        }
-        TmiPush push = new TmiPush("B3P", roadsideEquipmentList);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        m.marshal(push, bos);
-
+        ByteArrayOutputStream bos = exportXml(rseq, roadsideEquipmentList);
         Date now = new Date();
         DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String prefix = "geo-ov_";
@@ -208,16 +222,25 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 .setFilename(filename + ".xml")
                 .setLength(bos.size());
     }
+    
+    public static ByteArrayOutputStream exportXml(RoadsideEquipment rseq, List<RoadsideEquipment> roadsideEquipmentList) throws Exception{
+         JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
+        Marshaller m = ctx.createMarshaller();
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new KarNamespacePrefixMapper());
+        m.setProperty("jaxb.formatted.output", Boolean.TRUE);
+
+        /* TODO subscriberId per dataOwner of in gebruikersprofiel instellen/vragen oid */
+        if (rseq != null) {
+            roadsideEquipmentList = Arrays.asList(new RoadsideEquipment[]{rseq});
+        }
+        TmiPush push = new TmiPush("B3P", roadsideEquipmentList);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        m.marshal(push, bos);
+        return bos;
+    }
 
     public Resolution exportPtx() throws Exception {
-        IncaaExport exporter = new IncaaExport();
-
-        File f = null;
-        if (rseq != null) {
-            f = exporter.convert(rseq);
-        } else if (roadsideEquipmentList != null) {
-            f = exporter.convert(roadsideEquipmentList);
-        }
+        File f = exportPtx(rseq, roadsideEquipmentList);
         if (f != null) {
             FileInputStream fis = new FileInputStream(f);
 
@@ -233,70 +256,41 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
             throw new Exception("Could not find roadsideequipments");
         }
     }
+    
+    public static File exportPtx(RoadsideEquipment rseq, List<RoadsideEquipment> roadsideEquipmentList){
+        IncaaExport exporter = new IncaaExport();
+        File f = null;
+        if (rseq != null) {
+            f = exporter.convert(rseq);
+        } else if (roadsideEquipmentList != null) {
+            f = exporter.convert(roadsideEquipmentList);
+        }
+        return f;
+    }
 
     public Resolution exportCSVSimple() {
         try {
-            Collections.sort(roadsideEquipmentList);
-            DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
-            File f = File.createTempFile("tmp", "csvsimple.csv");
-            FileWriter fw = new FileWriter(f);
-            PrintWriter out = new PrintWriter(fw);
-            try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'))) {
-                csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
-                    "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
-                for (RoadsideEquipment r : roadsideEquipmentList) {
-                    String vt = r.getVehicleType();
-                    String hasHD = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
-                    String hasOV = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
-                    String type;
-                    switch (r.getType()) {
-                        case RoadsideEquipment.TYPE_BAR:
-                            type = "Afsluitsysteem";
-                            break;
-                        case RoadsideEquipment.TYPE_CROSSING:
-                            type = "VRI";
-                            break;
-                        case RoadsideEquipment.TYPE_GUARD:
-                            type = "Bewakingssysteem";
-                            break;
-                        default:
-                            type = "VRI";
-                            break;
-                    }
-                    Object[] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
-                        r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "",
-                        r.getKarAddress(), 
-                        (int) Math.round(r.getLocation().getCoordinate().x),
-                        (int) Math.round(r.getLocation().getCoordinate().y),
-                        hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
-                        r.isReadyForExport() ? "Ja" : "Nee"};
-                    csv.printRecord(values);
-                }
-
-                csv.flush();
-            }
-
+            File f = exportCSVSimple(roadsideEquipmentList);
             return fileResolution(f);
         } catch (IOException ex) {
             log.error("Cannot read/write csv file", ex);
             return new ErrorResolution(500, "Exporteerproblemen. Raadpleeg CROW-NDOV.");
         }
     }
-
-    public Resolution exportCSVExtended() {
-        try {
-            DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
-            File f = File.createTempFile("tmp", "csvsimple.csv");
-            FileWriter fw = new FileWriter(f);
-            PrintWriter out = new PrintWriter(fw);
-            CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'));
-
-            Collections.sort(roadsideEquipmentList);
-            csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot",
-                "KAR-adres", "Signaalgroep", "Richtingen", "Beweging", "Volgnummer beweging", "KAR-punt", "Type melding", "Triggertype", "RD-X", "RD-Y",
-                "Afstand", "Bus", "Tram", "CVV", "Taxi", "HOV", "Politie", "Brandweer", "Ambulance", "Politie niet in uniform", "Marechaussee",
-                "Virtual local loop-number",});
+    
+    public static File exportCSVSimple(List<RoadsideEquipment> roadsideEquipmentList) throws IOException {
+        Collections.sort(roadsideEquipmentList);
+        DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
+        File f = File.createTempFile("tmp", "csvsimple.csv");
+        FileWriter fw = new FileWriter(f);
+        PrintWriter out = new PrintWriter(fw);
+        try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'))) {
+            csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot", "KAR-adres",
+                "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
             for (RoadsideEquipment r : roadsideEquipmentList) {
+                String vt = r.getVehicleType();
+                String hasHD = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
+                String hasOV = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
                 String type;
                 switch (r.getType()) {
                     case RoadsideEquipment.TYPE_BAR:
@@ -312,78 +306,24 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                         type = "VRI";
                         break;
                 }
-                SortedSet<Movement> mset = r.getMovements();
-                List<Movement> ms = new ArrayList<>(mset);
-                Collections.sort(ms, (o1, o2) -> {
-                    if(o1.getId() == o2.getId()){
-                        return 0;
-                    }else{
-                        Integer s1 = o1.getSignalGroupNumberOfCheckoutpoint();
-                        Integer s2 = o2.getSignalGroupNumberOfCheckoutpoint();
-                        if(s1 != null && s2 != null){
-                            return s1.compareTo(s2);
-                        }else{
-                            return o1.getNummer().compareTo(o2.getNummer());
-                        }
-                        
-                    }
-                });
-                for (Movement m : ms) {
-                    List<MovementActivationPoint> maps = m.getPoints();
-                    String movementLabel = getLabel(m);
-                    for (MovementActivationPoint map : maps) {
-                        String triggerType = "";
-                        if (map.getSignal() != null) {
-                            String tt = map.getSignal().getTriggerType();
-                            switch (tt) {
-                                case ActivationPointSignal.TRIGGER_FORCED:
-                                    triggerType = "automatisch";
-                                    break;
-                                case ActivationPointSignal.TRIGGER_MANUAL:
-                                    triggerType = "handmatig";
-                                    break;
-                                case ActivationPointSignal.TRIGGER_STANDARD:
-                                    triggerType = "standaard";
-                                    break;
-                                default:
-                                    triggerType = "";
-                                    break;
-                            }
-                        }
-                        
-                        Map<String, String> vhts = getVehicleTypes(map);
-                        Object[] values = {
-                            type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(), 
-                            r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "",
-                            r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "", r.getKarAddress(), 
-                            map.getSignal() != null ? map.getSignal().getSignalGroupNumber() : "", 
-                            getDirectionLabel(map), 
-                            movementLabel, 
-                            m.getNummer(),
-                            map.getPoint().getLabel(),
-                            map.getBeginEndOrActivation().equals("END") ? "eind" :  map.getBeginEndOrActivation().equals("BEGIN") ? "begin": map.getSignal().getKarCommandType() == 1 ? "in" :  map.getSignal().getKarCommandType() == 2 ? "uit" : "voor",
-                            triggerType,
-                            (int) Math.round(map.getPoint().getLocation().getX()),
-                            (int) Math.round(map.getPoint().getLocation().getY()),
-                            map.getSignal() != null ? map.getSignal().getDistanceTillStopLine() : "",
-                            vhts.getOrDefault("Bus", ""),
-                            vhts.getOrDefault("Tram", ""),
-                            vhts.getOrDefault("CVV", ""),
-                            vhts.getOrDefault("Taxi", ""),
-                            vhts.getOrDefault("Hoogwaardig Openbaar Vervoer (HOV) bus", ""),
-                            vhts.getOrDefault("Politie", ""),
-                            vhts.getOrDefault("Brandweer", ""),
-                            vhts.getOrDefault("Ambulance", ""),
-                            vhts.getOrDefault("Politie niet in uniform", ""),
-                            vhts.getOrDefault("Marechaussee", ""),
-                            map.getSignal() != null ? map.getSignal().getVirtualLocalLoopNumber() : ""};
-                        csv.printRecord(values);
-                    }
-                }
+                Object[] values = {type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
+                    r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "", r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "",
+                    r.getKarAddress(),
+                    (int) Math.round(r.getLocation().getCoordinate().x),
+                    (int) Math.round(r.getLocation().getCoordinate().y),
+                    hasOV, hasHD, r.getValidationErrors() > 0 ? "Bevat fouten" : "OK",
+                    r.isReadyForExport() ? "Ja" : "Nee"};
+                csv.printRecord(values);
             }
 
             csv.flush();
-            csv.close();
+        }
+        return f;
+    }
+
+    public Resolution exportCSVExtended() {
+        try {
+            File f = exportCSVExtended(roadsideEquipmentList);
             return fileResolution(f);
         } catch (IOException ex) {
             log.error("Cannot read/write csv file", ex);
@@ -391,7 +331,110 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         }
     }
     
-    private Map<String, String> getVehicleTypes(MovementActivationPoint map){
+    public static File exportCSVExtended(List<RoadsideEquipment> roadsideEquipmentList) throws IOException {
+        DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
+        File f = File.createTempFile("tmp", "csvsimple.csv");
+        FileWriter fw = new FileWriter(f);
+        PrintWriter out = new PrintWriter(fw);
+        CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'));
+
+        Collections.sort(roadsideEquipmentList);
+        csv.printRecord(new Object[]{"Soort verkeerssysteem", "Beheerder", "Beheerdersaanduiding", "Plaats", "Locatie", "Geldig vanaf", "Geldig tot",
+            "KAR-adres", "Signaalgroep", "Richtingen", "Beweging", "Volgnummer beweging", "KAR-punt", "Type melding", "Triggertype", "RD-X", "RD-Y",
+            "Afstand", "Bus", "Tram", "CVV", "Taxi", "HOV", "Politie", "Brandweer", "Ambulance", "Politie niet in uniform", "Marechaussee",
+            "Virtual local loop-number",});
+        for (RoadsideEquipment r : roadsideEquipmentList) {
+            String type;
+            switch (r.getType()) {
+                case RoadsideEquipment.TYPE_BAR:
+                    type = "Afsluitsysteem";
+                    break;
+                case RoadsideEquipment.TYPE_CROSSING:
+                    type = "VRI";
+                    break;
+                case RoadsideEquipment.TYPE_GUARD:
+                    type = "Bewakingssysteem";
+                    break;
+                default:
+                    type = "VRI";
+                    break;
+            }
+            SortedSet<Movement> mset = r.getMovements();
+            List<Movement> ms = new ArrayList<>(mset);
+            Collections.sort(ms, (o1, o2) -> {
+                if (o1.getId() == o2.getId()) {
+                    return 0;
+                } else {
+                    Integer s1 = o1.getSignalGroupNumberOfCheckoutpoint();
+                    Integer s2 = o2.getSignalGroupNumberOfCheckoutpoint();
+                    if (s1 != null && s2 != null) {
+                        return s1.compareTo(s2);
+                    } else {
+                        return o1.getNummer().compareTo(o2.getNummer());
+                    }
+
+                }
+            });
+            for (Movement m : ms) {
+                List<MovementActivationPoint> maps = m.getPoints();
+                String movementLabel = getLabel(m);
+                for (MovementActivationPoint map : maps) {
+                    String triggerType = "";
+                    if (map.getSignal() != null) {
+                        String tt = map.getSignal().getTriggerType();
+                        switch (tt) {
+                            case ActivationPointSignal.TRIGGER_FORCED:
+                                triggerType = "automatisch";
+                                break;
+                            case ActivationPointSignal.TRIGGER_MANUAL:
+                                triggerType = "handmatig";
+                                break;
+                            case ActivationPointSignal.TRIGGER_STANDARD:
+                                triggerType = "standaard";
+                                break;
+                            default:
+                                triggerType = "";
+                                break;
+                        }
+                    }
+
+                    Map<String, String> vhts = getVehicleTypes(map);
+                    Object[] values = {
+                        type, r.getDataOwner().getOmschrijving(), r.getCrossingCode(), r.getTown(), r.getDescription(),
+                        r.getValidFrom() != null ? stomdateformat.format(r.getValidFrom()) : "",
+                        r.getValidUntil() != null ? stomdateformat.format(r.getValidUntil()) : "", r.getKarAddress(),
+                        map.getSignal() != null ? map.getSignal().getSignalGroupNumber() : "",
+                        getDirectionLabel(map),
+                        movementLabel,
+                        m.getNummer(),
+                        map.getPoint().getLabel(),
+                        map.getBeginEndOrActivation().equals("END") ? "eind" : map.getBeginEndOrActivation().equals("BEGIN") ? "begin" : map.getSignal().getKarCommandType() == 1 ? "in" : map.getSignal().getKarCommandType() == 2 ? "uit" : "voor",
+                        triggerType,
+                        (int) Math.round(map.getPoint().getLocation().getX()),
+                        (int) Math.round(map.getPoint().getLocation().getY()),
+                        map.getSignal() != null ? map.getSignal().getDistanceTillStopLine() : "",
+                        vhts.getOrDefault("Bus", ""),
+                        vhts.getOrDefault("Tram", ""),
+                        vhts.getOrDefault("CVV", ""),
+                        vhts.getOrDefault("Taxi", ""),
+                        vhts.getOrDefault("Hoogwaardig Openbaar Vervoer (HOV) bus", ""),
+                        vhts.getOrDefault("Politie", ""),
+                        vhts.getOrDefault("Brandweer", ""),
+                        vhts.getOrDefault("Ambulance", ""),
+                        vhts.getOrDefault("Politie niet in uniform", ""),
+                        vhts.getOrDefault("Marechaussee", ""),
+                        map.getSignal() != null ? map.getSignal().getVirtualLocalLoopNumber() : ""};
+                    csv.printRecord(values);
+                }
+            }
+        }
+
+        csv.flush();
+        csv.close();
+        return f;
+    }
+    
+    private static Map<String, String> getVehicleTypes(MovementActivationPoint map){
         Map<String, String> mapVhs = new HashMap<>();
         if (map.getSignal() != null) {
             List<VehicleType> vts = map.getSignal().getVehicleTypes();
@@ -402,7 +445,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return mapVhs;
     }
     
-    private String getDirectionLabel(MovementActivationPoint map){
+    private static String getDirectionLabel(MovementActivationPoint map){
         String label = "";
         if(map.getSignal() != null){
             String direction = map.getSignal().getDirection();
@@ -431,7 +474,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
         return label;
     }
     
-    private String getLabel(Movement m){
+    private static String getLabel(Movement m){
         List<MovementActivationPoint> maps = m.getPoints();
         String l ="";
         if(maps.size() > 0){
@@ -845,6 +888,14 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
     public void setKarAddress(Integer karAddress) {
         this.karAddress = karAddress;
+    }
+    
+    public boolean isDoAsync() {
+        return doAsync;
+    }
+
+    public void setDoAsync(boolean doAsync) {
+        this.doAsync = doAsync;
     }
     // </editor-fold>
 }
