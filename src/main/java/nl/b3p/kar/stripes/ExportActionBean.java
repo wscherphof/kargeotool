@@ -180,7 +180,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                     String downloadLocation = context.getServletContext().getInitParameter("download.location");
                     ExportCreatorThread ect = new ExportCreatorThread(exportType, roadsideEquipmentList, g, fromAddress, appURL, downloadLocation);
                     ect.start();
-                    this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail met de export als bijlage."));
+                    this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail met de export als link."));
                     return new ForwardResolution(OVERVIEW);
                 } else {
                     this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
