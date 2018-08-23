@@ -68,6 +68,12 @@ Ext.onReady(function (){
                 id : "rseqs"
             },
             {
+                xtype : "hidden",
+                name : "doAsync",
+                id : "doAsync",
+                value:true
+            },
+            {
                 xtype : 'radiogroup',
                 fieldLabel : 'Filter type',
                 // Arrange radio buttons into two columns, distributed vertically
@@ -446,7 +452,7 @@ Ext.onReady(function (){
                     addRseqIds();
                     if (form.isValid()) {
                         form.submit({
-                            target: '_blank',
+                            target: '_self',
                             success: function (form, action) {
                                 Ext.Msg.alert('Success', action.result.msg);
                             },
