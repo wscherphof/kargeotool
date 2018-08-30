@@ -180,7 +180,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                     String downloadLocation = context.getServletContext().getInitParameter("download.location");
                     ExportCreatorThread ect = new ExportCreatorThread(exportType, roadsideEquipmentList, g, fromAddress, appURL, downloadLocation);
                     ect.start();
-                    this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail met de export als link."));
+                    this.context.getMessages().add(new SimpleMessage("Export wordt op de achtergrond gemaakt. U ontvangt een mail op adres " + g.getEmail() + " met de export als link."));
                     return new ForwardResolution(OVERVIEW);
                 } else {
                     this.context.getMessages().add(new SimpleError("Export Type is niet bekend", exportType));
@@ -334,7 +334,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     
     public static File exportCSVExtended(List<RoadsideEquipment> roadsideEquipmentList) throws IOException {
         DateFormat stomdateformat = new SimpleDateFormat("dd-MM-yyyy");
-        File f = File.createTempFile("tmp", "csvsimple.csv");
+        File f = File.createTempFile("tmp", "csvextended.csv");
         FileWriter fw = new FileWriter(f);
         PrintWriter out = new PrintWriter(fw);
         CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.withDelimiter(';'));
