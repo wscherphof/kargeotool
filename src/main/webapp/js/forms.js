@@ -742,7 +742,15 @@ Ext.define("EditForms", {
                     map.setConfig(allSignalValues);
                 }
             } else {
-
+   
+                // Alleen bij inmeldpunt moet het triggertyp naar de bijbehorende uitmeldpunten gekopieerd worden
+                if(edittingInmeldpunt){
+                    Ext.Array.each(movements[0].movement.getMaps(), function(map) {
+                       if(map.getBeginEndOrActivation() === "ACTIVATION" && map.getCommandType() !== 1){
+                           map.setTriggerType(pointSignalValues.triggerType);
+                       }
+                    });
+                }
                 // merge naar alle movements
 
                 Ext.Array.each(movements, function(mvmtAndMap) {
