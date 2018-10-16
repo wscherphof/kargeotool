@@ -22,20 +22,157 @@
 Ext.define("EditUsers", {
     defaultConfig: {
         dataOwners: [],
-        addDataOwner: function(id, code, name) {}
+        gebruikers: [],
+        addUrl:null,
+        removeUrl:null,
+        addDataOwner: function (id, code, name) {},
+        isEditting: false
     },
-    constructor: function(conf) {
+    constructor: function (conf) {
         this.initConfig(conf);
-        this.createCombobox();
+        this.createGrid();
+        if (this.isEditting) {
+            this.createCombobox();
+        }
     },
-    createCombobox: function() {
+    createGrid: function () {
+        Ext.define('User', {
+            extend: 'Ext.data.Model',
+            fields: ['id', 'username', 'fullname', 'mail', 'phone']
+        });
+        var userStore = Ext.create('Ext.data.Store', {
+            model: 'User',
+            data: this.gebruikers
+        });
+        Ext.create('Ext.grid.Panel', {
+            renderTo: Ext.get("usergrid"),
+            store: userStore,
+            height: 500,
+            title: 'Gebruikers (' + this.gebruikers.length + ")",
+            listeners: {
+                cellclick: {
+                    fn: function (grid, td, cellIndex, record, tr, rowIndex, e) {
+                        var target = e.getTarget();
+                        if (!target || !target.className) {
+                            return;
+                        }
+                        if (target.className.indexOf("removeobject") !== -1) {
+                            e.preventDefault();
+                            Ext.Msg.show({
+                                title: "Weet u het zeker?",
+                                msg: "Wilt u deze gebruiker verwijderen?",
+                                fn: function (button) {
+                                    if (button === 'yes') {
+                                        document.location.href = this.deleteUrl +"&gebruiker=" + record.data.id;
+                                    }
+                                },
+                                scope: this,
+                                buttons: Ext.Msg.YESNO,
+                                buttonText: {
+                                    no: "Nee",
+                                    yes: "Ja"
+                                },
+                                icon: Ext.Msg.WARNING
+
+                            });
+                        }
+                        if (target.className.indexOf("editobject") !== -1) {
+                            e.preventDefault();
+                            document.location.href = this.editUrl +"&gebruiker=" + record.data.id;
+                        }
+                    },
+                    scope: this
+                }
+            },
+            columns: [
+                {
+                    text: 'Gebruikersnaam',
+                    flex: 1,
+                    dataIndex: 'username',
+                    hideable: false,
+                    menuDisabled: true,
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                },
+                {
+                    text: 'Naam',
+                    flex: 1,
+                    hideable: false,
+                    menuDisabled: true,
+                    dataIndex: 'fullname',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                },
+                {
+                    text: 'E-mail',
+                    flex: 1,
+                    menuDisabled: true,
+                    hideable: false,
+                    dataIndex: 'mail',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                },
+                {
+                    text: 'Telefoonnummer',
+                    flex: 1,
+                    hideable: false,
+                    menuDisabled: true,
+                    dataIndex: 'phone',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    id: 'edit',
+                    header: 'Verwijder',
+                    dataIndex: 'id',
+                    width: 375,
+                    sortable: false,
+                    hideable: false,
+                    menuDisabled: true,
+                    renderer: (function (value, metadata, record) {
+                        var links = [Ext.String.format('<a href="#" class="editobject">Bewerken</a>', value)];
+                        if(record.data.id !== this.currentUser){
+                            links.push(Ext.String.format('<a href="#" class="removeobject">Verwijderen</a>', value));
+                        }
+                        return links.join(" | ");
+                    }).bind(this)
+                }
+            ],
+            bbar:{
+                items:[
+                    {
+                        xtype:'button', 
+                        text: "Nieuw account toevoegen",
+                        disabled: this.isEditting,
+                        listeners: {
+                            click: function () {
+                                document.location.href = this.addUrl;
+                            },
+                            scope: this
+                        }
+                    }]
+            },
+            plugins: [
+                Ext.create('Ext.ux.grid.GridHeaderFilters', {
+                    enableTooltip: false,
+                    reloadOnChange: true
+                })
+            ]
+        });
+    },
+    createCombobox: function () {
         this.readUsedDataOwners();
         this.dataOwnerStore = Ext.create('Ext.data.Store', {
             fields: [
-                { name: 'id', type: 'string' },
-                { name: 'code', type: 'string' },
-                { name: 'name', type: 'string' },
-                { name: 'label', calculate: function(data) { return data.code + ' - ' + data.name; }}
+                {name: 'id', type: 'string'},
+                {name: 'code', type: 'string'},
+                {name: 'name', type: 'string'},
+                {name: 'label', calculate: function (data) {
+                        return data.code + ' - ' + data.name;
+                    }}
             ],
             data: this.getData()
         });
@@ -55,29 +192,29 @@ Ext.define("EditUsers", {
             renderTo: 'availableDataOwnersContainer',
             listeners: {
                 scope: this,
-                select: function(combo, record) {
+                select: function (combo, record) {
                     this.dataOwnerSelected(record);
                 }
             }
         });
     },
-    readUsedDataOwners: function() {
+    readUsedDataOwners: function () {
         this.config.usedDataOwners = {};
         var usedOwnersChecks = document.querySelectorAll('.used-data-owner');
-        if(usedOwnersChecks.length > 0) {
-            for(var i = 0; i < usedOwnersChecks.length; i++) {
+        if (usedOwnersChecks.length > 0) {
+            for (var i = 0; i < usedOwnersChecks.length; i++) {
                 var value = usedOwnersChecks[i].value;
-                if(usedOwnersChecks[i].checked) {
+                if (usedOwnersChecks[i].checked) {
                     this.config.usedDataOwners[value] = true;
                 }
             }
         }
     },
-    getData: function() {
+    getData: function () {
         var dataOwners = [];
-        for(var i = 0; i < this.config.dataOwners.length; i++) {
+        for (var i = 0; i < this.config.dataOwners.length; i++) {
             var dao = this.config.dataOwners[i];
-            if(this.config.usedDataOwners.hasOwnProperty("" + dao.id)) {
+            if (this.config.usedDataOwners.hasOwnProperty("" + dao.id)) {
                 continue;
             }
             dataOwners.push({
@@ -88,18 +225,18 @@ Ext.define("EditUsers", {
         }
         return dataOwners;
     },
-    insertDataOwner: function(id, code, name) {
+    insertDataOwner: function (id, code, name) {
         this.dataOwnerStore.add({
             code: code,
             name: name,
             id: id
         });
     },
-    dataOwnerSelected: function(dataOwner) {
-        if(!dataOwner) {
+    dataOwnerSelected: function (dataOwner) {
+        if (!dataOwner) {
             return;
         }
-        if(this.config.addDataOwner) {
+        if (this.config.addDataOwner) {
             this.config.addDataOwner(dataOwner.get('id'), dataOwner.get('code'), dataOwner.get('name'));
         }
         this.combo.clearValue();

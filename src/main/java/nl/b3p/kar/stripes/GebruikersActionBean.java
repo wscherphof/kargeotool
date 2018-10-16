@@ -21,6 +21,7 @@ package nl.b3p.kar.stripes;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -63,6 +64,8 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
 
     private String dataOwnersJson;
 
+    private String gebruikersJson;
+    
     @Validate(required=true, on="save")
     private Integer role;
 
@@ -245,6 +248,14 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     public void setRole(Integer role) {
         this.role = role;
     }
+
+    public String getGebruikersJson() {
+        return gebruikersJson;
+    }
+
+    public void setGebruikersJson(String gebruikersJson) {
+        this.gebruikersJson = gebruikersJson;
+    }
     //</editor-fold>
 
     /**
@@ -253,9 +264,10 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
      */
     @Before(stages = LifecycleStage.BindingAndValidation)
     public void loadLists() {
-        gebruikers = Stripersist.getEntityManager().createQuery("from Gebruiker order by id").getResultList();
-        allRoles = Stripersist.getEntityManager().createQuery("from Role order by role").getResultList();
-        dataOwners = Stripersist.getEntityManager().createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
+        EntityManager em = Stripersist.getEntityManager();
+        gebruikers = em.createQuery("from Gebruiker order by username").getResultList();
+        allRoles = em.createQuery("from Role order by role").getResultList();
+        dataOwners = em.createQuery("from DataOwner order by classificatie, omschrijving").getResultList();
 
         JSONArray ja = new JSONArray();
         for(DataOwner dao: dataOwners) {
@@ -269,6 +281,12 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
             }
         }
         dataOwnersJson = ja.toString();
+        
+        JSONArray geb = new JSONArray();
+        for (Gebruiker g : gebruikers) {
+            geb.put(g.toJSON());
+        }
+        gebruikersJson = geb.toString();
     }
 
     /**

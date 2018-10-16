@@ -24,6 +24,7 @@
 
     <stripes:layout-component name="headerlinks" >
         <%@include file="/WEB-INF/jsp/commons/headerlinks.jsp" %>
+        <script type="text/javascript" src="<c:url value="/js/ux/GridHeaderFilters.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/js/gebruikers.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/js/utils.js"/>"></script>
     </stripes:layout-component>
@@ -34,93 +35,11 @@
 <stripes:form beanclass="nl.b3p.kar.stripes.GebruikersActionBean">
     <stripes:hidden name="gebruiker"/>
 
-    <c:if test="${!empty actionBean.gebruikers}">
-        <script type="text/javascript">
-            function loadScroll() {
-                var scroll = getCookie("gebruikersScroll");
-                if(scroll != undefined) {
-                    scroll = parseInt(scroll);
-                    if(!isNaN(scroll)) {
-                        document.getElementById("gebruikerScroller").scrollTop = scroll;
-                    }
-                }
-            }
-
-            function saveScroll() {
-                setCookie("gebruikersScroll", document.getElementById("gebruikerScroller").scrollTop);
-            }
-
-            function scrollToBottom() {
-                var div = document.getElementById("gebruikerScroller");
-                div.scrollTop = div.scrollHeight;
-                saveScroll();
-            }
-
-            if(document.addEventListener) {
-                    document.addEventListener("mouseup", saveScroll, false);
-                    window.addEventListener("load", loadScroll, false);
-            } else if(document.attachEvent) {
-                    document.attachEvent("onmouseup", saveScroll);
-                    window.attachEvent("onload", loadScroll);
-            }
-        </script>
-        <div class="description">
-        Aantal gebruikers: <b>${fn:length(actionBean.gebruikers)}</b>
-        </div>
-        <table class="tableheader">
-            <tr>
-                <th style="width: 150px">Gebruikersnaam</th>
-                <th style="width: 200px">Naam</th>
-                <th style="width: 200px">E-mail</th>
-                <th style="width: 100px">Telefoonnummer</th>
-                <th></th>
-            </tr>
-        </table>
-        <div id="gebruikerScroller">
-            <table style="width: 100%;">
-                <tbody>
-                    <c:forEach var="g" varStatus="status" items="${actionBean.gebruikers}">
-                        <c:set var="col" value=""/>
-                        <c:if test="${g.id == actionBean.gebruiker.id}">
-                            <c:set var="col" value=" style=\"background-color: #cccccc\""/>
-                        </c:if>
-                        <tr${col}>
-                            <td style="width: 150px">
-                                <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="edit">
-                                    <stripes:param name="gebruiker" value="${g.id}"/>
-                                    <c:out value="${g.username}"/>
-                                </stripes:link>
-                                <c:if test="${g.beheerder}">
-                                    <img src="${contextPath}/images/star.png">
-                                </c:if>
-                            </td>
-                            <td style="width: 200px"><c:out value="${g.fullname}"/></td>
-                            <td style="width: 200px"><c:out value="${g.email}"/></td>
-                            <td style="width: 100px"><c:out value="${g.phone}"/></td>
-                            <td>
-                                <%-- niet gebruiker zichzelf laten verwijderen --%>
-                                <c:if test="${g.username != pageContext.request.userPrincipal.username}">
-                                    <c:set var="delaccount" value="${g.username}"/>
-                                    <stripes:link beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="delete" onclick="return confirm('Weet u zeker dat u het account ${delaccount} wilt verwijderen?');">
-                                        <stripes:param name="gebruiker" value="${g.id}"/>
-                                        <img src="${contextPath}/images/delete.gif" border="0">
-                                    </stripes:link>
-                                </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </c:if>
-
+    <div id="usergrid"></div>
+  
     <div class="formedit">
         <stripes:errors/>
         <stripes:messages/>
-        <c:if test="${empty actionBean.gebruiker}">
-            <stripes:submit name="add" onclick="scrollToBottom();">Nieuw account toevoegen</stripes:submit>
-        </c:if>
-
         <c:if test="${!empty actionBean.gebruiker}">
             <stripes:submit name="save">Opslaan</stripes:submit>
             <c:if test="${actionBean.gebruiker.id != null}">
@@ -167,14 +86,6 @@
                                 <tr>
                                     <td style="vertical-align: top"><fmt:message key="gebruiker.role"/></td>
                                     <td>
-                                        <script type="text/javascript">
-                                            function checkRole() {
-                                                var beheerder = document.getElementById("role_beheerder").checked || document.getElementById("role_vervoerder").checked  ;
-                                                document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
-                                                document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
-                                                document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
-                                            }
-                                        </script>
                                         <c:forEach var="r" items="${actionBean.allRoles}">
                                             <label><stripes:radio name="role" value="${r.id}" id="role_${r.role}" onclick="blur();" onchange="checkRole(event);"/><c:out value="${r.role}"/></label><br>
                                         </c:forEach>
@@ -220,12 +131,21 @@
                     </tr>
                 </table>
             </div>
-            <script type="text/javascript">
+            <script>
                 setOnload(checkRole);
-
+            </script>
+        </c:if>
+    </div>
+   <script type="text/javascript">
                 var editUsers = Ext.create('EditUsers', {
                     dataOwners: ${actionBean.dataOwnersJson},
-                    addDataOwner: addDataOwner
+                    addDataOwner: addDataOwner,
+                    isEditting: ${!empty actionBean.gebruiker},
+                    gebruikers: ${actionBean.gebruikersJson},
+                    addUrl : "<stripes:url beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="add"/>",
+                    deleteUrl : "<stripes:url beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="delete"/>",
+                    editUrl : "<stripes:url beanclass="nl.b3p.kar.stripes.GebruikersActionBean" event="edit"/>",
+                    currentUser: ${pageContext.request.userPrincipal.id}
                 });
 
                 function checkDORemove(e) {
@@ -285,7 +205,7 @@
                     input.value = id + "";
                     input.checked = true;
                     input.onchange = checkDORemove;
-                    input.onclick = function() { this.blur() };
+                    input.onclick = function() { this.blur(); };
                     cell.appendChild(input);
                     cell = row.insertCell(3);
                     cell.style.textAlign = "center";
@@ -295,7 +215,7 @@
                     input.value = id + "";
                     input.checked = false;
                     input.onchange = checkDORemove;
-                    input.onclick = function() { this.blur() };
+                    input.onclick = function() { this.blur(); };
                     cell.appendChild(input);
                 }
 
@@ -314,10 +234,13 @@
                     editUsers.insertDataOwner(id, code, name);
                 }
 
+                function checkRole() {
+                    var beheerder = document.getElementById("role_beheerder").checked || document.getElementById("role_vervoerder").checked  ;
+                    document.getElementById("beheerder").style.display = beheerder ? "block" : "none";
+                    document.getElementById("nietBeheerder").style.display = !beheerder ? "block" : "none";
+                    document.getElementById("daoedit").style.display = !beheerder ? "block" : "none";
+                }
             </script>
-        </c:if>
-    </div>
-
 </stripes:form>
 
 </stripes:layout-component>

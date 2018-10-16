@@ -40,7 +40,7 @@
 
     <login-config>
         <!-- Zet op BASIC en commentarieer <form-login-config> voor debuggen met veel reloads -->
-        <auth-method>FORM</auth-method>
+        <auth-method>BASIC</auth-method>
         <form-login-config>
             <form-login-page>/login.jsp</form-login-page>
             <form-error-page>/loginerror.jsp</form-error-page>

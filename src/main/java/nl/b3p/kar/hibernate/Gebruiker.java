@@ -489,6 +489,7 @@ public class Gebruiker implements Principal {
         obj.put("username", username);
         obj.put("fullname", fullname);
         obj.put("mail", email);
+        obj.put("phone", phone);
         return obj;
     }
 
