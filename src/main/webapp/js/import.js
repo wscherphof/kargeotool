@@ -332,7 +332,7 @@ function createValidationResultsGrid() {
                     if(rseqDetails.errorCount === 0) {
                         detailsPanel.update("Geen meldingen over dit verkeerssysteem");
                     } else {
-                        detailsPanel.update("Aantal meldingen: " + rseqDetails.errorCount);
+                        var errorHtml = "<div>Aantal meldingen: " + rseqDetails.errorCount + "</div>";
                         
                         var t = new Ext.Template([
                             "<div class=\"kv9error\"><table>",
@@ -345,9 +345,10 @@ function createValidationResultsGrid() {
                             "</table></div>"]).compile();
                         
                         Ext.Array.each(rseqDetails.errors, function(error) {
-                            t.append(detailsPanel.body, error);                        
+                            errorHtml += t.apply(error);                        
                         });
                         
+                        detailsPanel.update(errorHtml);
                     }
                     panel.updateLayout();                    
                 }
