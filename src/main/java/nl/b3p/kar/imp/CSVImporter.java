@@ -108,7 +108,8 @@ public class CSVImporter {
     }
 
     void init() throws IOException {
-        p = new CSVParser(fr, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+        p = new CSVParser(fr, CSVFormat.DEFAULT.withFirstRecordAsHeader().withDelimiter(';'));
+       
         Map<String, Integer> header = p.getHeaderMap();
 
         if (!validateHeader(header)) {
@@ -251,7 +252,7 @@ public class CSVImporter {
         r.setKarAddress(Integer.parseInt(karaddress));
         r.setDescription(description);
         r.setType(t);
-        r.setValidFrom(validfrom != null ? stomdateformat.parse(validfrom) : new Date());
+        r.setValidFrom(validfrom != null && !validfrom.isEmpty() ? stomdateformat.parse(validfrom) : new Date());
         r.setValidUntil(validuntil != null && !validuntil.isEmpty() ? stomdateformat.parse(validuntil) : null);
         r.setDataOwner(findDataOwner(dataowner));
         return r;
