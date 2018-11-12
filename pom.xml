@@ -5,13 +5,13 @@
     <groupId>nl.b3p</groupId>
     <artifactId>kargeotool</artifactId>
     <packaging>war</packaging>
-    <version>3.0.8</version>
+    <version>3.0.9-SNAPSHOT</version>
     <name>kargeotool</name>
     <scm>
         <connection>scm:git:git@github.com:B3Partners/kargeotool.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/kargeotool.git</developerConnection>
         <url>https://github.com/B3Partners/kargeotool.git</url>
-        <tag>v3.0.8</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
