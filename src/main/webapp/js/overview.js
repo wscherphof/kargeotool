@@ -538,6 +538,7 @@ Ext.define("nl.b3p.kar.Overview",{
     getSignalgroupLabel : function(signalgroup){
         var label = "Signaalgroep ";
         var nums = {};
+        var currentVehicleType = this.editor.getCurrentVehicleType();
         for (var bKey in signalgroup){
             var movement = signalgroup[bKey];
 
@@ -552,7 +553,7 @@ Ext.define("nl.b3p.kar.Overview",{
                     var mvmnt = mvmnts[j];
                     if(mvmnt.movement.config.id === movement.id){
                         var map = mvmnt.map;
-                        if(map.config.signalGroupNumber){
+                        if(map.config.signalGroupNumber && mvmnt.movement.getVehicleType() === currentVehicleType){
                             nums[map.config.signalGroupNumber] = true;
                         }
                     }
