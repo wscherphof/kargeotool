@@ -46,9 +46,10 @@ Ext.define("MeasureTooltip", {
             y = lastComponent.y;
         }
         var px = this.measure.map.getViewPortPxFromLonLat(new OpenLayers.LonLat(x, y));
-        measureValueDiv.style.top = px.y + "px";
+        measureValueDiv.style.top = px.y + 0+ "px";
         measureValueDiv.style.left = px.x + 10 + 'px';
         measureValueDiv.style.display = "block";
+        measureValueDiv.style["pointer-events"] = "none";
         measureValueText.innerHTML= measure + " " + unit;
     },
     hideMouseTooltip: function() {
