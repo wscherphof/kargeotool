@@ -1377,7 +1377,8 @@ Ext.define("Editor", {
                                 beginEndOrActivation: "ACTIVATION",
                                 commandType: 1,
                                 pointId: inmeldpunt.getId(),
-                                distanceTillStopLine: inmeldMap.getDistanceTillStopLine()
+                                distanceTillStopLine: inmeldMap.getDistanceTillStopLine(),
+                                triggerType: inmeldMap.getTriggerType()
                             });
                             me.activeRseq.addInmeldpunt(uitmeldpunt, inmeldpunt,map, true,false, this.activeMovement);
                             me.fireEvent("activeRseqUpdated", me.activeRseq);
