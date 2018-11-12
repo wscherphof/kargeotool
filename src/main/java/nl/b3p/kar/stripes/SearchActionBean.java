@@ -48,7 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -59,7 +59,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
@@ -364,8 +363,10 @@ public class SearchActionBean implements ActionBean {
      * @throws Exception De fout
      */
     public Resolution geocode() throws Exception {
-        HttpSolrServer server = new HttpSolrServer("http://geodata.nationaalgeoregister.nl/locatieserver");
-      
+        HttpSolrClient client = new HttpSolrClient.Builder("http://geodata.nationaalgeoregister.nl/locatieserver")
+                .withConnectionTimeout(10000)
+                .withSocketTimeout(60000)
+                .build();
         JSONObject result = new JSONObject();
         try {
             JSONArray respDocs = new JSONArray();
@@ -375,7 +376,7 @@ public class SearchActionBean implements ActionBean {
     
             query.setQuery(term);
             query.setRequestHandler("/free");
-            QueryResponse rsp = server.query(query);
+            QueryResponse rsp = client.query(query);
             SolrDocumentList list = rsp.getResults();
             
             for (SolrDocument solrDocument : list) {
