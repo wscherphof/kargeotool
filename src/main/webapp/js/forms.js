@@ -71,7 +71,7 @@ Ext.define("EditForms", {
             }
 
             rseq.setConfig(form.getValues());
-            if(rseq == me.editor.activeRseq) {
+            if(rseq === me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
             me.rseqEditWindow.destroy();
@@ -345,7 +345,7 @@ Ext.define("EditForms", {
             }
 
             point.setConfig(form.getValues());
-            if(rseq == me.editor.activeRseq) {
+            if(rseq === me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
             me.pointEditWindow.destroy();
@@ -357,13 +357,13 @@ Ext.define("EditForms", {
             me.editor.activeMovement = null;
         };
         var me = this;
-        var label = point.getLabel() == null ? "" : point.getLabel();
+        var label = point.getLabel() === null ? "" : point.getLabel();
         me.pointEditWindow = Ext.create('Ext.window.Window', {
             title: 'Bewerken ' + (point.getType() === null ? "ongebruikt punt " : (point.getType() === "BEGIN" ? "beginpunt " : "eindpunt ")) + label,
             height: 120,
             width: 360,
             modal: true,
-            icon: point.getType() == null ? karTheme.punt : (point.getType() == 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
+            icon: point.getType() === null ? karTheme.punt : (point.getType() === 'BEGIN' ? karTheme.beginPunt :karTheme.eindPunt),
             iconCls : "overviewTree",
             layout: 'fit',
             listeners: {
@@ -457,7 +457,7 @@ Ext.define("EditForms", {
         var me = this;
         var apType = point.getType().split("_")[1];
         var apName = (apType === "1" ? "inmeld" : (apType === "2" ? "uitmeld" : "voorinmeld")) + "Punt";
-        var label = point.getLabel() == null ? "" : point.getLabel();
+        var label = point.getLabel() === null ? "" : point.getLabel();
 
         var map = newMap;
         var movements = null;
@@ -744,7 +744,7 @@ Ext.define("EditForms", {
             } else {
    
                 // Alleen bij inmeldpunt moet het triggertyp naar de bijbehorende uitmeldpunten gekopieerd worden
-                if(edittingInmeldpunt){
+                if(edittingInmeldpunt && me.editor.getCurrentVehicleType() === "Hulpdiensten"){
                     Ext.Array.each(movements[0].movement.getMaps(), function(map) {
                        if(map.getBeginEndOrActivation() === "ACTIVATION" && map.getCommandType() !== 1){
                            map.setTriggerType(pointSignalValues.triggerType);
@@ -781,7 +781,7 @@ Ext.define("EditForms", {
                 });
             }
 
-            if(rseq == me.editor.activeRseq) {
+            if(rseq === me.editor.activeRseq) {
                 me.editor.fireEvent("activeRseqUpdated", rseq);
             }
             me.activationPointEditWindow.destroy();
@@ -913,8 +913,8 @@ Ext.define("EditForms", {
             }
 
             var formValues= form.getValues();
-            if(rdX == formValues.rdX && rdY == formValues.rdY) {
-                if(wgsX != formValues.wgsX || wgsY != formValues.wgsY){
+            if(rdX === formValues.rdX && rdY === formValues.rdY) {
+                if(wgsX !== formValues.wgsX || wgsY !== formValues.wgsY){
                     // converteer nieuwe wgs naar rd en sla ze op
                     var point = new Proj4js.Point(formValues.wgsX, formValues.wgsY);
                     Proj4js.transform(wgs, rd, point);
