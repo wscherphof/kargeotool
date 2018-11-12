@@ -360,7 +360,7 @@ public class CSVImporter {
                 triggertype = ActivationPointSignal.TRIGGER_STANDARD;
                 break;
             case "automatisch":
-                triggertype = ActivationPointSignal.TRIGGER_MANUAL;
+                triggertype = ActivationPointSignal.TRIGGER_FORCED;
                 break;
             case "handmatig":
                 triggertype = ActivationPointSignal.TRIGGER_MANUAL;
