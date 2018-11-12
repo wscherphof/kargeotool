@@ -428,7 +428,8 @@ Ext.define("nl.b3p.kar.Overview",{
                             this.editor.contextMenu.show(event.clientX,event.clientY,false,true);
                         }
                         if(point && point.getType() === "ACTIVATION_2"){
-                            var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject);
+                            var vehicleType = this.editor.getCurrentVehicleType();
+                            var heeftEindpunt = this.editor.activeRseq.heeftUitmeldpuntEindpunt(this.editor.selectedObject) || vehicleType === "Hulpdiensten";
                             Ext.getCmp("addInmeldpuntOv").setDisabled(!heeftEindpunt);
                             Ext.getCmp("addInmeldpuntOvCoordinates").setDisabled(!heeftEindpunt);
                             Ext.getCmp("selectInmeldpuntOv").setDisabled(!heeftEindpunt);
