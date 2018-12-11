@@ -378,7 +378,15 @@ Ext.onReady(function (){
                 xtype : "checkbox",
                 name : 'onlyValid',
                 id : 'onlyValid',
-                fieldLabel : 'Alleen geldige verkeerssystemen'
+                fieldLabel : 'Alleen geldige verkeerssystemen',
+                listeners:{
+                    change:{
+                        fn:function(){
+                            reloadVRIs();
+                        },
+                        scope:this
+                    }
+                }
             },
             {
                 xtype : "checkbox",
