@@ -76,7 +76,7 @@ public class XmlActivationPointSignal {
                 case "4":
                 case "5":
                 case "7":
-                    triggertype = "FORCED";
+                    triggertype = "MANUAL";
                     break;
                 default:
                     triggertype = "";
