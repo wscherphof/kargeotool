@@ -65,7 +65,7 @@ public class CarrierInformer implements Job {
     private void createMessage(InformMessage inform, String appUrl, String host, String fromAddress) {
 
         if (inform.getVervoerder().getEmail() != null) {
-                String to = inform.getAfzender().getEmail();
+                String to = inform.getVervoerder().getEmail();
                 String subject = "[Kar Geo Tool] Nieuwe KAR-gegevens";
                 String body = getBody(inform, appUrl);
                 String informerMail = inform.getAfzender().getEmail() != null ? inform.getAfzender().getEmail() : null;
