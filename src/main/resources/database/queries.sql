@@ -53,3 +53,24 @@ join movement_activation_point map on map.movement = m .id
 where 
 m.vehicle_type = 'OV' and kar_command_type = 2 )
 */
+
+/*
+
+
+select * from activation_point ap
+inner join
+movement_activation_point map on ap.id = map.point
+
+where map.signal not in (select activation_point_signal from activation_point_signal_vehicle_types)
+limit 10
+
+
+delete from activation_point_signal where id in ('39229','39233','39235','426722','426723','426725','426724')
+delete from movement_points where point  in ('52134','52139','52142','604525','604526','604528','604527');
+
+delete from movement_activation_point where id  in ('52134','52139','52142','604525','604526','604528','604527');
+delete from activation_point where id in ('15228','15228','15228','93282','93283','93285','93286');
+
+delete from movement where id not in (select movement from movement_activation_point );
+
+*/

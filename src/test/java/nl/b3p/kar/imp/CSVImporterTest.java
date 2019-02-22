@@ -14,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import nl.b3p.kar.hibernate.ActivationPoint;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.RoadsideEquipment;
 import nl.b3p.kar.hibernate.VehicleType;
@@ -67,12 +69,12 @@ public class CSVImporterTest {
     public CSVImporterTest() {
     }
 
-  //  @Test
+  //  //@Test
     public void testProcess() throws Exception {
         
     }
 
-    @Test
+    //@Test
     public void testProcessRseq() throws Exception {
         List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         for (List<CSVRecord> r : recordsPerRseq) {
@@ -82,11 +84,11 @@ public class CSVImporterTest {
         }
     }
 
-   // @Test
+   // //@Test
     public void testProcessMovement() {
     }
     
-    @Test
+    //@Test
     public void testCreateRseq() throws IOException, ParseException{
         List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         List<CSVRecord> rseqRecord = recordsPerRseq.get(0);
@@ -103,7 +105,7 @@ public class CSVImporterTest {
         assertEquals(null,r.getValidUntil());
     }
 
-    @Test
+    //@Test
     public void testPointsByMovement() throws Exception {
         List<List<CSVRecord>> recordsPerRseq = instance.groupByRoadsideEquipment();
         for (List<CSVRecord> list : recordsPerRseq) {
@@ -115,10 +117,40 @@ public class CSVImporterTest {
         }
     }
 
-    @Test
+    //@Test
     public void testPointsPerRseq() throws Exception {
         List<List<CSVRecord>> rs = instance.groupByRoadsideEquipment();
         assertEquals(1, rs.size());
+    }
+    
+    @Test
+    public void testAdam() throws Exception{
+        InputStream is =this.getClass().getResourceAsStream("25_adam.csv");
+        Reader reader = new InputStreamReader(is);
+        List<DataOwner> das = new ArrayList<>();
+        DataOwner da = new DataOwner();
+        da.setOmschrijving("Gemeente Amstelveen");
+        da.setId(25);
+        das.add(da);
+        List<VehicleType> vts = new ArrayList<>();
+
+        vts.add(new VehicleType(1, "Bus", "OV"));
+        vts.add(new VehicleType(2, "Tram", "OV"));
+        vts.add(new VehicleType(7, "Taxi", "OV"));
+        vts.add(new VehicleType(6, "CVV", "OV"));
+        vts.add(new VehicleType(71, "Hoogwaardig Openbaar Vervoer (HOV) bus", "OV"));
+        vts.add(new VehicleType(4, "Brandweer", "Hulpdiensten"));
+        vts.add(new VehicleType(5, "Ambulance", "Hulpdiensten"));
+        vts.add(new VehicleType(3, "Politie", "Hulpdiensten"));
+        vts.add(new VehicleType(69, "Politie niet in uniform", "Hulpdiensten"));
+        vts.add(new VehicleType(70, "Marechaussee", "Hulpdiensten"));
+
+        instance = new CSVImporter(reader, das, vts);
+       // instance.init();
+        List<RoadsideEquipment> rseqs = instance.process();
+        SortedSet<ActivationPoint> aps = rseqs.get(0).getPoints();
+        assertEquals(14,aps.size());
+        int a= 0;
     }
 
 }

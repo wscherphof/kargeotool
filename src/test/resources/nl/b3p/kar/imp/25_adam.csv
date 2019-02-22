@@ -1,0 +1,22 @@
+Soort verkeerssysteem;Beheerder;Beheerdersaanduiding;Plaats;Locatie;Geldig vanaf;Geldig tot;KAR-adres;Signaalgroep;Richtingen;Beweging;Volgnummer beweging;KAR-punt;Type melding;Triggertype;RD-X;RD-Y;Afstand;Bus;Tram;CVV;Taxi;HOV;Politie;Brandweer;Ambulance;Politie niet in uniform;Marechaussee;Virtual local loop-number
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;2;rd-la;IH02 - E02;1;IH02;in;standaard;118931;479238;200;;;;;;x;x;x;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;2;rd-la;IH02 - E02;1;UH02;uit;standaard;118722;479226;-25;;;;;;x;x;x;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;2;rd-la;IH02 - E02;1;E02;eind;;118655;479241;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;V05;voor;automatisch;118693;478997;200;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;I05;in;automatisch;118707;479067;130;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;U05;uit;automatisch;118711;479194;0;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;I65;in;automatisch;118734;479245;100;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;U65;uit;automatisch;118774;479336;0;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;V05 - E05;2;E05;eind;;118807;479398;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;3;B05;begin;;118586;479081;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;3;I05;in;handmatig;118691;479143;55;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;3;U05;uit;automatisch;118711;479194;0;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;3;E05;eind;;118807;479398;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;4;B05;begin;;118588;479151;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;4;I05;in;handmatig;118691;479143;55;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;4;U05;uit;automatisch;118711;479194;0;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;5;rd;B05 - E05;4;E05;eind;;118807;479398;;;;;;;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;6;la;V05 - E02;5;V05;voor;automatisch;118693;478997;200;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;6;la;V05 - E02;5;I05;in;automatisch;118707;479067;130;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;6;la;V05 - E02;5;U06;uit;automatisch;118706;479196;0;x;;;;x;;;;;;
+VRI;Gemeente Amstelveen;25;Amstelveen;Keizer Karelweg - Ouderkerkerlaan;08-07-2013;;25;6;la;V05 - E02;5;E02;eind;;118655;479241;;;;;;;;;;;;

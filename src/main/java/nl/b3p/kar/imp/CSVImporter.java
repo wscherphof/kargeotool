@@ -508,7 +508,7 @@ public class CSVImporter {
         String movementnumber = c.get(CSV_COL_MOVEMENTNUMBER);
         String vehicleType = movementWithVehicleType.get(movementnumber);
 
-        return vehicleType + signaalgroep + kartype + rdx + rdy;
+        return vehicleType + kartype + rdx + rdy;
     }
 
     List<VehicleType> getVehicleTypes(CSVRecord r) {
