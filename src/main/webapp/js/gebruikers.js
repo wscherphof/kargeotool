@@ -23,8 +23,8 @@ Ext.define("EditUsers", {
     defaultConfig: {
         dataOwners: [],
         gebruikers: [],
-        addUrl:null,
-        removeUrl:null,
+        addUrl: null,
+        removeUrl: null,
         addDataOwner: function (id, code, name) {},
         isEditting: false
     },
@@ -63,7 +63,7 @@ Ext.define("EditUsers", {
                                 msg: "Wilt u deze gebruiker verwijderen?",
                                 fn: function (button) {
                                     if (button === 'yes') {
-                                        document.location.href = this.deleteUrl +"&gebruiker=" + record.data.id;
+                                        document.location.href = this.deleteUrl + "&gebruiker=" + record.data.id;
                                     }
                                 },
                                 scope: this,
@@ -78,7 +78,7 @@ Ext.define("EditUsers", {
                         }
                         if (target.className.indexOf("editobject") !== -1) {
                             e.preventDefault();
-                            document.location.href = this.editUrl +"&gebruiker=" + record.data.id;
+                            document.location.href = this.editUrl + "&gebruiker=" + record.data.id;
                         }
                     },
                     scope: this
@@ -91,9 +91,14 @@ Ext.define("EditUsers", {
                     dataIndex: 'username',
                     hideable: false,
                     menuDisabled: true,
-                    filter: {
-                        xtype: 'textfield'
-                    }
+                    items: [
+                        {
+                            xtype: 'searchtrigger',
+                            flex: 1,
+                            anyMatch:true,
+                            autoSearch: true
+                        }
+                    ]
                 },
                 {
                     text: 'Naam',
@@ -101,9 +106,14 @@ Ext.define("EditUsers", {
                     hideable: false,
                     menuDisabled: true,
                     dataIndex: 'fullname',
-                    filter: {
-                        xtype: 'textfield'
-                    }
+                    items: [
+                        {
+                            xtype: 'searchtrigger',
+                            flex: 1,
+                            anyMatch:true,
+                            autoSearch: true
+                        }
+                    ]
                 },
                 {
                     text: 'E-mail',
@@ -111,9 +121,14 @@ Ext.define("EditUsers", {
                     menuDisabled: true,
                     hideable: false,
                     dataIndex: 'mail',
-                    filter: {
-                        xtype: 'textfield'
-                    }
+                    items: [
+                        {
+                            xtype: 'searchtrigger',
+                            flex: 1,
+                            anyMatch:true,
+                            autoSearch: true
+                        }
+                    ]
                 },
                 {
                     text: 'Telefoonnummer',
@@ -121,9 +136,14 @@ Ext.define("EditUsers", {
                     hideable: false,
                     menuDisabled: true,
                     dataIndex: 'phone',
-                    filter: {
-                        xtype: 'textfield'
-                    }
+                    items: [
+                        {
+                            xtype: 'searchtrigger',
+                            flex: 1,
+                            anyMatch:true,
+                            autoSearch: true
+                        }
+                    ]
                 }, {
                     id: 'edit',
                     header: 'Verwijder',
@@ -134,17 +154,17 @@ Ext.define("EditUsers", {
                     menuDisabled: true,
                     renderer: (function (value, metadata, record) {
                         var links = [Ext.String.format('<a href="#" class="editobject">Bewerken</a>', value)];
-                        if(record.data.id !== this.currentUser){
+                        if (record.data.id !== this.currentUser) {
                             links.push(Ext.String.format('<a href="#" class="removeobject">Verwijderen</a>', value));
                         }
                         return links.join(" | ");
                     }).bind(this)
                 }
             ],
-            bbar:{
-                items:[
+            bbar: {
+                items: [
                     {
-                        xtype:'button', 
+                        xtype: 'button',
                         text: "Nieuw account toevoegen",
                         disabled: this.isEditting,
                         listeners: {
@@ -154,13 +174,7 @@ Ext.define("EditUsers", {
                             scope: this
                         }
                     }]
-            },
-            plugins: [
-                Ext.create('Ext.ux.grid.GridHeaderFilters', {
-                    enableTooltip: false,
-                    reloadOnChange: true
-                })
-            ]
+            }
         });
     },
     createCombobox: function () {
@@ -241,5 +255,56 @@ Ext.define("EditUsers", {
         }
         this.combo.clearValue();
         this.dataOwnerStore.remove(dataOwner);
+    }
+});
+Ext.define('Sandbox.view.SearchTrigger', {
+    extend: 'Ext.form.field.Text',
+    alias: 'widget.searchtrigger',
+    triggers: {
+        search: {
+            cls: 'x-form-search-trigger',
+            handler: function () {
+                this.setFilter(this.up().dataIndex, this.getValue());
+            }
+        },
+        clear: {
+            cls: 'x-form-clear-trigger',
+            handler: function () {
+                this.setValue('');
+                if (!this.autoSearch)
+                    this.setFilter(this.up().dataIndex, '');
+            }
+        }
+    },
+    setFilter: function (filterId, value) {
+        var store = this.up('grid').getStore();
+        if (value) {
+            store.removeFilter(filterId, false);
+            var filter = {id: filterId, property: filterId, value: value};
+            if (this.anyMatch)
+                filter.anyMatch = this.anyMatch;
+            if (this.caseSensitive)
+                filter.caseSensitive = this.caseSensitive;
+            if (this.exactMatch)
+                filter.exactMatch = this.exactMatch;
+            if (this.operator)
+                filter.operator = this.operator;
+            store.addFilter(filter);
+        } else {
+            store.filters.removeAtKey(filterId);
+            store.reload();
+        }
+    },
+    listeners: {
+        render: function () {
+            var me = this;
+            me.ownerCt.on('resize', function () {
+                me.setWidth(this.getEl().getWidth());
+            });
+        },
+        change: function () {
+            if (this.autoSearch)
+                this.setFilter(this.up().dataIndex, this.getValue());
+        }
     }
 });
