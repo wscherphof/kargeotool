@@ -334,7 +334,7 @@ Ext.define("ContextMenu", {
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
                             break;
                         case 'showMessages':
-                            Ext.create("MessagesOverview").show(this.editor.selectedObject.id);
+                            Ext.create("MessagesOverview").show(this.editor.selectedObject.getId());
                             break;
                         case 'informCarrier':
                             this.editor.showCarriers();
