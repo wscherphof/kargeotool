@@ -90,7 +90,7 @@ public class CarrierInformer implements Job {
         String body = "";
         body += "Beste " + name + ", <br/>";
         body += "<br/>";
-        body += "De KAR gegevens van het kruispunt " + rseq.getDescription() + " | " + rseq.getCrossingCode() + "met KAR-adres " + rseq.getKarAddress() + ", van "+ rseq.getDataOwner().getOmschrijving() +" zijn gewijzigd.<br/>";
+        body += "De KAR gegevens van het kruispunt " + rseq.getDescription() + " | " + rseq.getCrossingCode() + " met KAR-adres " + rseq.getKarAddress() + ", van "+ rseq.getDataOwner().getOmschrijving() +" zijn gewijzigd.<br/>";
         
         if(inform.getVervoerder().getUsername().equalsIgnoreCase("INCAA Priodeck")){
             body += "Een INCAA export kunt u, als u bent ingelogd, downloaden via <a href=\"" + appUrl + "/action/export?exportPtx=true&rseq=" + rseq.getId() + "\">deze link.</a><br/>";
