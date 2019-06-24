@@ -433,6 +433,13 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         em.createQuery("delete from GebruikerVRIRights where gebruiker = :g")
                 .setParameter("g", gebruiker)
                 .executeUpdate();
+        em.createQuery("delete from InformMessage where vervoerder = :g")
+                .setParameter("g", gebruiker)
+                .executeUpdate();
+        em.createQuery("update InformMessage set afzender = null where afzender = :g")
+                .setParameter("g", gebruiker)
+                .executeUpdate();
+        
         em.remove(gebruiker);
         em.getTransaction().commit();
         getContext().getMessages().add(new SimpleMessage("Gebruiker is verwijderd"));
