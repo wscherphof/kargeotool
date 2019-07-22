@@ -21,12 +21,15 @@ package nl.b3p.kar.stripes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
@@ -64,10 +67,14 @@ public class DownloadExportActionBean implements ActionBean {
     }
 
     @DefaultHandler
-    public Resolution download() {
+    public Resolution download() throws IOException {
         try {
-            String downloadLocation = context.getServletContext().getInitParameter("download.location");
-            File f = new File(downloadLocation, filename);
+            String base = context.getServletContext().getInitParameter("download.location");
+            File f = new File(base, filename);
+            if (!f.getCanonicalPath().startsWith(base)) {
+                log.error("Path traversal found: " + filename);
+                return new ErrorResolution(403, "Path traversal not allowed.");
+            }
             FileInputStream fis = new FileInputStream(f);
             return new StreamingResolution("text/plain") {
 
