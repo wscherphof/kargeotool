@@ -689,7 +689,7 @@ Ext.define("ContextMenu", {
                             editor.editSelectedObject();
                             break;
                         case 'removeNAPoint':
-                            this.editor.removeOtherPoint();
+                            this.editor.removeOtherPoint(this.editor.activeMovement);
                             break;
                         case 'setCoordsNon':
                             this.editor.editForms.editCoordinates(this.editor.selectedObject);
