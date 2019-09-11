@@ -436,7 +436,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
         em.createQuery("delete from InformMessage where vervoerder = :g")
                 .setParameter("g", gebruiker)
                 .executeUpdate();
-        em.createQuery("update InformMessage set afzender = null where afzender = :g")
+        em.createQuery("delete from InformMessage where afzender = :g")
                 .setParameter("g", gebruiker)
                 .executeUpdate();
         
