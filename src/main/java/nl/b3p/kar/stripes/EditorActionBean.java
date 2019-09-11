@@ -52,11 +52,8 @@ import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.type.Type;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -502,12 +499,6 @@ public class EditorActionBean implements ActionBean {
      * @throws java.lang.Exception Wordt gegooid als er iets mis gaat.
      */
     public Resolution saveOrUpdateRseq() throws Exception {
-         if("true".equals(getContext().getServletContext().getInitParameter("debug_editoractionbean_saveorupdate"))) {
-            log.info("saveOrUpdateRseq() start, setting root log level to DEBUG");
-            LogManager.getRootLogger().setLevel(Level.DEBUG);
-        }
-        log.debug("saveOrUpdateRseq: original json: " + json);
-
         EntityManager em = Stripersist.getEntityManager();
 
         JSONObject info = new JSONObject();

@@ -80,7 +80,7 @@ public class CronInitialiser implements ServletContextListener {
 
             scheduler.startDelayed(60);
 
-            log.info("Scheduling indexing job for expression " + informinterval + " minutes");
+            log.info("Scheduling inform job for expression " + informinterval );
 
             if (!informinterval.equals("-1")) {
                 JobDetail job = JobBuilder.newJob(AdminExportJob.class)
@@ -98,10 +98,12 @@ public class CronInitialiser implements ServletContextListener {
 
                 scheduler.scheduleJob(job, trigger);
             }
-            
+            log.info("Scheduling kv7checker job for expression " + kv7checkerinterval);
+
+          
             if (!kv7checkerinterval.equals("-1")) {
                 
-                JobDetail job = JobBuilder.newJob(AdminExportJob.class)
+                JobDetail job = JobBuilder.newJob(KV7Checker.class)
                         .withIdentity("kv7checkerJob", "kv7checkergroup")
                         .build();
 
