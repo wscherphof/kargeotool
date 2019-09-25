@@ -38,7 +38,27 @@ Ext.define("EditUsers", {
     createGrid: function () {
         Ext.define('User', {
             extend: 'Ext.data.Model',
-            fields: ['id', 'username', 'fullname', 'mail', 'phone']
+            fields: [
+                { 
+                    name: 'id',
+                    sortType: "asUCString"
+                }, 
+                { 
+                    name: 'username', 
+                    sortType: "asUCString"
+                },
+                { 
+                    name: 'fullname', 
+                    sortType: "asUCString"
+                },
+                { 
+                    name: 'mail', 
+                    sortType: "asUCString"
+                },  
+                { 
+                    name: 'phone'
+                }
+            ]
         });
         var userStore = Ext.create('Ext.data.Store', {
             model: 'User',
@@ -135,6 +155,7 @@ Ext.define("EditUsers", {
                     flex: 1,
                     hideable: false,
                     menuDisabled: true,
+                    sortable: false,
                     dataIndex: 'phone',
                     items: [
                         {

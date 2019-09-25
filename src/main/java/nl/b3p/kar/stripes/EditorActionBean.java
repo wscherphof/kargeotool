@@ -442,6 +442,13 @@ public class EditorActionBean implements ActionBean {
             em.createQuery("delete from InformMessage where rseq = :rseq")
                     .setParameter("rseq", rseq)
                     .executeUpdate();
+            
+            List<Upload> uploads = em.createQuery("FROM Upload where rseq = :rseq").setParameter("rseq", rseq).getResultList();
+            for (Upload upload : uploads) {
+                em.createNativeQuery("DELETE FROM dxf_features WHERE upload = :upload").setParameter("upload", upload.getId()).executeUpdate();
+                em.remove(upload);
+            }
+            
             em.flush();
             em.remove(rseq);
             em.flush();
