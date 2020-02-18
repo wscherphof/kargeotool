@@ -331,7 +331,16 @@ public class Movement implements Comparable<Movement> {
                 jmap.put("vehicleTypes", jvt);
 
                 String direction = signal.getDirection();
-                jmap.put("direction", direction);
+                Integer[] dirs = null;
+                if(direction != null){
+                    String[] dirStrings = direction.split(",");
+                    dirs = new Integer[dirStrings.length];
+                    for (int i = 0; i < dirStrings.length; i++) {
+                        String dirString = dirStrings[i];
+                        dirs[i] = Integer.parseInt(dirString);
+                    }
+                }
+                jmap.put("direction", dirs);
             }
         }
         return jm;
