@@ -252,7 +252,9 @@ Ext.define("nl.b3p.kar.Overview",{
         this.updateLayerLabel();
         var scrollY = 0;
         if (this.tree){
-            scrollY = this.tree.getScrollY();
+            if(this.tree.view){
+                scrollY = this.tree.getScrollY();
+            }
             this.tree.destroy();
         }
         if(!rseq) {
@@ -465,15 +467,17 @@ Ext.define("nl.b3p.kar.Overview",{
     },
     updateSelection : function (point){
         if (this.tree !== null&& !Ext.getCmp("reorderPoints").checked){
-            var sm = this.tree.getSelectionModel();
-            if (point !== null && point instanceof Point){
-                this.unhighlight(point.getId());
-                var root = this.tree.getRootNode();
-                var nodes = new Array();
-                this.findChildrenByPointId(root,point.getId(),nodes);
-                sm.select(nodes,false,true);
-            } else{
-                sm.deselectAll();
+            if(this.tree.view){
+                var sm = this.tree.getSelectionModel();
+                if (point !== null && point instanceof Point){
+                    this.unhighlight(point.getId());
+                    var root = this.tree.getRootNode();
+                    var nodes = new Array();
+                    this.findChildrenByPointId(root,point.getId(),nodes);
+                    sm.select(nodes,false,true);
+                } else{
+                    sm.deselectAll();
+                }
             }
         }
     },

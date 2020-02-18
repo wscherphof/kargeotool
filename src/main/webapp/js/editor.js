@@ -640,6 +640,7 @@ Ext.define("Editor", {
                                         Ext.Msg.alert('Verwijderd', 'Het verkeerssysteem is verwijderd.');
 
                                         editor.olc.removeAllFeatures();
+                                        this.selectedObject = null;
                                         this.setActiveRseq(null);
 
                                     } else {
