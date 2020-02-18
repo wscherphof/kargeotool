@@ -297,8 +297,13 @@ Ext.define("ContextMenu", {
                                     this.editor.selectExistingUitmeldpunt(this.selectedMovement);
                                     break;
                                 case 'uploadDxf':
-                                    var url = dxfActionBeanUrl + "&rseq=" + this.editor.activeRseq.getId();
-                                    document.location.href = url;
+                                    var id = this.editor.activeRseq.getId();
+                                    if(typeof id ==='number'){
+                                        var url = dxfActionBeanUrl + "&rseq=" + id;
+                                        document.location.href = url;
+                                    }else{
+                                        alert("Het kruispunt moet eerst opgeslagen zijn voordat er een dxf aan gekoppeld kan worden");
+                                    }
                                     break;
                                 case 'addUitmeldpuntCoordinates':
                                     this.editor.addByCoordinates('uitmeldpunt');
