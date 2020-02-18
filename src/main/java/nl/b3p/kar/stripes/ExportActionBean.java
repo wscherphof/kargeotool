@@ -384,15 +384,28 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                     if (map.getSignal() != null) {
                         String tt = map.getSignal().getTriggerType();
                         switch (tt) {
+                            case "1":
                             case ActivationPointSignal.TRIGGER_FORCED:
                                 triggerType = "automatisch";
                                 break;
+                            case "2":
+                            case "3":
+                            case "4":
+                            case "5":
+                            case "7":
                             case ActivationPointSignal.TRIGGER_MANUAL:
                                 triggerType = "handmatig";
                                 break;
+                            case "0":
+                            case "6":
+                            case "8":
+                            case "9":
+                            case "10":
+                            case "11":
                             case ActivationPointSignal.TRIGGER_STANDARD:
                                 triggerType = "standaard";
                                 break;
+                                
                             default:
                                 triggerType = "";
                                 break;
