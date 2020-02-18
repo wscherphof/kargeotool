@@ -466,7 +466,7 @@ Ext.define('RSEQ', {
         for(var i= 0 ; i < mvmnts.length ;i++){
             var movement = mvmnts[i].movement;
             if(movementId){
-                if( parseInt(movementId) === movement.getId()){
+                if( movementId == movement.getId()){
                     movement.removeMapForPoint(point);
                 }
             }else{
