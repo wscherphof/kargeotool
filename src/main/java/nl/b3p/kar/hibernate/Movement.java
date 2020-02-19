@@ -160,7 +160,7 @@ public class Movement implements Comparable<Movement> {
                 // vehicleType toe (negeer overige velden)
                 MovementActivationPoint same = null;
                 for(MovementActivationPoint map: points) {
-                    if(map.getPoint() != null && map.getSignal() != null && map.getPoint().getNummer() == xmlSignal.getActivationpointnumber()) {
+                    if(map.getPoint() != null && map.getSignal() != null && map.getPoint().getNummer().equals(xmlSignal.getActivationpointnumber())) {
                         if(vt != null && !map.getSignal().getVehicleTypes().contains(vt)) {
                             map.getSignal().getVehicleTypes().add(vt);
                         }
