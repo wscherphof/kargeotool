@@ -615,15 +615,16 @@ Ext.define("Editor", {
         var rseq = this.activeRseq;
         var isNewRseq = typeof this.activeRseq.getId() !== "number";
 
-        if(rseq !== null && !isNewRseq) {
+        if(rseq !== null) {
              Ext.Msg.show({
                 title:"Weet u het zeker?",
                 msg: "Weet u zeker dat u dit verkeerssysteem wilt weggooien?",
                 fn: function (button){
                     if (button === 'yes'){
                         if(isNewRseq){
-                                editor.olc.removeAllFeatures();
+                            editor.olc.removeAllFeatures();
                             this.setActiveRseq(null);
+                            this.changeManager.rseqSaved();
                         }else{
                             Ext.Ajax.request({
                                 url: editorActionBeanUrl,
