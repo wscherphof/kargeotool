@@ -19,21 +19,9 @@
 
 package nl.b3p.kar.stripes;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.controller.LifecycleStage;
-import net.sourceforge.stripes.validation.EmailTypeConverter;
-import net.sourceforge.stripes.validation.SimpleError;
-import net.sourceforge.stripes.validation.Validate;
-import net.sourceforge.stripes.validation.ValidateNestedProperties;
-import net.sourceforge.stripes.validation.ValidationErrorHandler;
-import net.sourceforge.stripes.validation.ValidationErrors;
+import net.sourceforge.stripes.validation.*;
 import nl.b3p.kar.hibernate.DataOwner;
 import nl.b3p.kar.hibernate.Gebruiker;
 import nl.b3p.kar.hibernate.GebruikerDataOwnerRights;
@@ -43,6 +31,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.stripesstuff.stripersist.EntityTypeConverter;
 import org.stripesstuff.stripersist.Stripersist;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Stripes klasse waarmee gebruikers kunnen worden getoond en bewerkt.
@@ -76,7 +69,7 @@ public class GebruikersActionBean implements ActionBean, ValidationErrorHandler 
     @ValidateNestedProperties({
         @Validate(field="username", required=true, maxlength=30, on="save"),
         @Validate(field="fullname", maxlength=50),
-        @Validate(field="email", required=true, converter=EmailTypeConverter.class, maxlength=50, on="save"),
+        @Validate(field="email", required=true, converter= EmailTypeConverter.class, maxlength=50, on="save"),
         @Validate(field="phone", maxlength=15)
     })
     private Gebruiker gebruiker;

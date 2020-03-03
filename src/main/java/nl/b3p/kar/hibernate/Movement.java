@@ -332,12 +332,14 @@ public class Movement implements Comparable<Movement> {
 
                 String direction = signal.getDirection();
                 Integer[] dirs = null;
-                if(direction != null){
+                if(direction != null && !direction.isEmpty()){
                     String[] dirStrings = direction.split(",");
                     dirs = new Integer[dirStrings.length];
                     for (int i = 0; i < dirStrings.length; i++) {
                         String dirString = dirStrings[i];
-                        dirs[i] = Integer.parseInt(dirString);
+                        try{
+                            dirs[i] = Integer.parseInt(dirString);
+                        }catch (NumberFormatException e){}
                     }
                 }
                 jmap.put("direction", dirs);
