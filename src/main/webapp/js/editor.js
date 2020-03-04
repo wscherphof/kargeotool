@@ -624,6 +624,7 @@ Ext.define("Editor", {
                         if(isNewRseq){
                             editor.olc.removeAllFeatures();
                             this.setActiveRseq(null);
+                            this.selectedObject = null;
                             this.changeManager.rseqSaved();
                         }else{
                             Ext.Ajax.request({
