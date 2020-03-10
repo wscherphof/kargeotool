@@ -19,7 +19,7 @@
 package nl.b3p.kar.stripes;
 
 import nl.b3p.kar.ExportCreatorThread;
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

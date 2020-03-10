@@ -18,8 +18,8 @@
  */
 package nl.b3p.kar.stripes;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

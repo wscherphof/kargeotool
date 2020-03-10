@@ -18,7 +18,7 @@
  */
 package nl.b3p.kar.hibernate;
 
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 import javax.persistence.*;
 import nl.b3p.geojson.GeoJSON;
 import org.json.JSONException;
