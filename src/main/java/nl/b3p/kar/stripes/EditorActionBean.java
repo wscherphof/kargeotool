@@ -330,7 +330,7 @@ public class EditorActionBean implements ActionBean {
             if(getGebruiker().isBeheerder() || getGebruiker().isVervoerder()) {
                 points = session.createQuery(
                         "from ActivationPoint "
-                      + "where intersects(location, ?) = true "
+                      + "where intersects(location, ?0) = true "
                       + "and roadsideEquipment <> :this")
                         .setParameter(0, p)
                         .setParameter("this", rseq)
