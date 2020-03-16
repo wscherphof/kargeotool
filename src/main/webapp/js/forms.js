@@ -601,12 +601,16 @@ Ext.define("EditForms", {
             fieldLabel: 'Voertuigtypes',
             displayField: 'text',
             name: 'vehicleTypes',
+            allowBlank: false,
             valueField: 'id',
             multiSelect: true,
             value: selectedVehicleTypes,
             tpl: new Ext.XTemplate('<tpl for=".">', '<div class="x-boundlist-item">', '<input {checked} type="checkbox" />', '{text}', '</div>', '</tpl>'),
             store: vehicleTypesStore,
             queryMode: 'local',
+            validate: function(){
+                return this.getStore().findExact(this.valueField, this.getValue()[0]) >=0;
+            },
             listeners: {
                 select: function (combo, records) {
                     var node;
