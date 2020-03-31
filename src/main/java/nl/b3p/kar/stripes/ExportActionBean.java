@@ -625,7 +625,7 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
 
             GeometryCollection deelgebiedPoly = filter.getGeom();
 
-            String query = "from RoadsideEquipment where intersects(location, ?) = true";
+            String query = "from RoadsideEquipment where intersects(location, ?0) = true";
             if(exportType == null || !exportType.equals("csvsimple")){
                 query += " and validation_errors = 0";
             }

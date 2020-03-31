@@ -492,7 +492,7 @@ function reloadVRIs (){
     var filter = null;
     if(filtertype === "deelgebied") {
         filter = Ext.getCmp("deelgebied").getValue();
-        var deelgebiedText = Ext.getCmp("deelgebied").getValue();
+        var deelgebiedText =  Ext.getCmp("deelgebied").getRawValue();
         params ['rseqByDeelgebied'] = true;
         params['filter'] = filter;
         text = deelgebiedText;

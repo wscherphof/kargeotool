@@ -291,7 +291,7 @@ public class EditorActionBean implements ActionBean {
             buffer.setSRID(RIJKSDRIEHOEKSTELSEL);
             Session session = (Session) em.getDelegate();
 
-            Query q = session.createQuery("from Road where intersects(geometry, ?) = true");
+            Query q = session.createQuery("from Road where intersects(geometry, ?0) = true");
             q.setMaxResults(100);
         //    Type geometryType = GeometryUserType.TYPE;
             q.setParameter(0, buffer);
