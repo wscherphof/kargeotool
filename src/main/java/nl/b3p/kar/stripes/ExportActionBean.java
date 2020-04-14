@@ -290,8 +290,8 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 "RD-X", "RD-Y", "Bevat OV-punten", "Bevat HD-punten", "KV9-validatie", "Gereed voor export"});
             for (RoadsideEquipment r : roadsideEquipmentList) {
                 String vt = r.getVehicleType();
-                String hasHD = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("Hulpdiensten") ? "Ja" : "Nee";
-                String hasOV = vt == null || vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV") ? "Ja" : "Nee";
+                String hasHD = vt != null && (vt.equalsIgnoreCase("Gemixt") ||r.getVehicleType().equalsIgnoreCase("Hulpdiensten")) ? "Ja" : "Nee";
+                String hasOV = vt != null && (vt.equalsIgnoreCase("Gemixt") || r.getVehicleType().equalsIgnoreCase("OV")) ? "Ja" : "Nee";
                 String type;
                 switch (r.getType()) {
                     case RoadsideEquipment.TYPE_BAR:
