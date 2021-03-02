@@ -67,9 +67,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
 });
 
 function loadMap (){
-    var brt = new OpenLayers.Layer.TMS('BRT','https://geodata.nationaalgeoregister.nl/tiles/service/tms/',{
-        layername : 'brtachtergrondkaart',
-        type : 'png8',
+    var brt = new OpenLayers.Layer.TMS('BRT','https://mapproxy.b3p.nl/tms/',{
+        layername : 'brtachtergrondkaart/EPSG28992',
+        type : 'png',
         maxExtent : new OpenLayers.Bounds(-285401.920000,22598.080000,595401.920000,903401.920000),
         projection : new OpenLayers.Projection("epsg:28992".toUpperCase()),
         isBaseLayer : true,

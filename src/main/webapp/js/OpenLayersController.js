@@ -295,9 +295,9 @@ Ext.define("ol", {
         this.map.addControl(this.line);
         this.map.addControl(this.dragFeature);
         //maak en voeg achtergrond kaartlaag toe.
-        var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'http://geodata.nationaalgeoregister.nl/tiles/service/tms/',{
-            layername:'brtachtergrondkaart',
-            type: 'png8',
+        var ovmLayer = new OpenLayers.Layer.TMS('BRTOverviewLayer', 'https://mapproxy.b3p.nl/tms/',{
+            layername:'brtachtergrondkaart/EPSG28992',
+            type: 'png',
             isBaseLayer:true,
             serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76],
             tileOrigin:new OpenLayers.LonLat(-285401.920000,22598.080000)
