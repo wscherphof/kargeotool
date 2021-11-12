@@ -69,9 +69,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control,{
 function loadMap (){
     const brt = new OpenLayers.Layer.WMTS({
         name: 'BRT',
-        url: 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts/',
+        url: 'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0',
         matrixSet: 'EPSG:28992',
-        layer: 'brtachtergrondkaart',
+        layer: 'standaard',
         format: 'image/png',
         style: 'default',
         serverResolutions: [3440.64,1720.32,860.16,430.08,215.04,107.52,53.76,26.88,13.44,6.72,3.36,1.68,0.84,0.42,0.21],

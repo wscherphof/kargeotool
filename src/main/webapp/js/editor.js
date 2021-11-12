@@ -144,7 +144,7 @@ Ext.define("Editor", {
 
         this.olc.addLayer("WMTS","Luchtfoto",'https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0', 'EPSG:28992/Actueel_ortho25', this.getLayerVisibility("Luchtfoto"), 'image/jpeg', this.getLayerOpacity("Luchtfoto"));
         this.olc.addLayer("TMS","Openbasiskaart",'https://openbasiskaart.nl/mapcache/tms/','osm-nb', this.getLayerVisibility("Openbasiskaart"), 'png', this.getLayerOpacity("Openbasiskaart"));
-        this.olc.addLayer("WMTS","brtachtergrondkaart",'https://geodata.nationaalgeoregister.nl/tiles/service/wmts/','EPSG:28992/brtachtergrondkaart', this.getLayerVisibility("brtachtergrondkaart"), 'image/png', this.getLayerOpacity("brtachtergrondkaart"));
+        this.olc.addLayer("WMTS","brtachtergrondkaart",'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0','EPSG:28992/standaard', this.getLayerVisibility("brtachtergrondkaart"), 'image/png', this.getLayerOpacity("brtachtergrondkaart"));
 
         this.olc.map.events.register("moveend", this, this.updateCenterInLocationHash);
     },
