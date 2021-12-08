@@ -210,7 +210,12 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
     }
 
     public Resolution exportXml() throws Exception {
-        ByteArrayOutputStream bos = exportXml(rseq, roadsideEquipmentList);
+        // This event handler can be called directly with rseq parameter, or from export() when the roadsideEquipment
+        // list has been created
+        if (roadsideEquipmentList == null) {
+            roadsideEquipmentList = Arrays.asList(new RoadsideEquipment[]{rseq});
+        }
+        ByteArrayOutputStream bos = exportXml(roadsideEquipmentList);
         Date now = new Date();
         DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String prefix = "geo-ov_";
@@ -224,16 +229,12 @@ public class ExportActionBean implements ActionBean, ValidationErrorHandler {
                 .setLength(bos.size());
     }
     
-    public static ByteArrayOutputStream exportXml(RoadsideEquipment rseq, List<RoadsideEquipment> roadsideEquipmentList) throws Exception{
+    public static ByteArrayOutputStream exportXml(List<RoadsideEquipment> roadsideEquipmentList) throws Exception{
          JAXBContext ctx = JAXBContext.newInstance(TmiPush.class);
         Marshaller m = ctx.createMarshaller();
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new KarNamespacePrefixMapper());
         m.setProperty("jaxb.formatted.output", Boolean.TRUE);
 
-        /* TODO subscriberId per dataOwner of in gebruikersprofiel instellen/vragen oid */
-        if (rseq != null) {
-            roadsideEquipmentList = Arrays.asList(new RoadsideEquipment[]{rseq});
-        }
         TmiPush push = new TmiPush("B3P", roadsideEquipmentList);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         m.marshal(push, bos);

@@ -99,7 +99,7 @@ public class ExportCreatorThread extends Thread {
                     }
                     filename = prefix + "_kv9_" + sdf.format(now) + ".xml";
                     destination = new File(downloadLocation, filename);
-                    ByteArrayOutputStream bos = ExportActionBean.exportXml(null, roadsideEquipmentList);
+                    ByteArrayOutputStream bos = ExportActionBean.exportXml(roadsideEquipmentList);
                     try (OutputStream outputStream = new FileOutputStream(destination)) {
                         bos.writeTo(outputStream);
                     } catch (Exception e) {
