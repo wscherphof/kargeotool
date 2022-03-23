@@ -23,5 +23,4 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: '3.0.26-SNAPSHOT.war'
-    publishLocation: 'Container'
+    ArtifactName: 'dovaKARgeoTool'
