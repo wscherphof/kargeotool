@@ -22,5 +22,5 @@ steps:
     goals: 'package'
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    TargetPath: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dovaKARgeoTool'
