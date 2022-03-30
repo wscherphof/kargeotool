@@ -1,8 +1,21 @@
-version: '3'
+version: '3.9'
+
+
+
 services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "15432:5432"
+    volumes:
+      - db_files:/var/lib/postgresql/data
   web:
     build: .
     ports:
       - "8080:8080"
-      - "13131:8181"
-      - "14848:4848"
+volumes:
+  db_files:
+    external: true
