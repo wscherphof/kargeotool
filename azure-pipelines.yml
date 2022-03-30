@@ -27,6 +27,6 @@ steps:
   inputs:
     containerregistrytype: 'Container Registry'
     dockerComposeFile: '**/docker-compose.yml'
-    action: 'Build services'
+    action: Run a Docker Compose command
     dockerComposeCommand: 'rm --all'
 
