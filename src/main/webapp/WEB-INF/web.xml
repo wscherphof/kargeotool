@@ -58,7 +58,6 @@
             <param-name>ActionResolver.Packages</param-name>
             <param-value>nl.b3p.kar.stripes</param-value>
         </init-param>
-
         <init-param>
             <param-name>Extension.Packages</param-name>
             <param-value>org.stripesstuff.stripersist,org.stripesstuff.plugin.session,org.stripesstuff.plugin.security</param-value>
@@ -94,6 +93,10 @@
         <init-param>
             <param-name>SecurityManager.Class</param-name>
             <param-value>org.stripesstuff.plugin.security.J2EESecurityManager</param-value>
+        </init-param>
+        <init-param>
+            <param-name>blockContentTypeSniffingEnabled</param-name>
+            <param-value>false</param-value>
         </init-param>
     </filter>
     <filter-mapping>
