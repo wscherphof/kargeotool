@@ -23,6 +23,17 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+
+- task: RegexReplace@3
+  inputs:
+    InputSearchPattern: |
+      **/context.xml
+      **/docker-compose.yml
+    FindRegex: '<@prod_pass@>'
+    ReplaceRegex: '$(postgresPassword)'
+    UseUTF8: true
+    UseRAW: true
+
 - task: DockerCompose@0
   inputs:
     containerregistrytype: 'Container Registry'
