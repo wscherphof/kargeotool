@@ -10,6 +10,16 @@ pool:
   vmImage: windows-2019
 
 steps:
+
+- task: RegexReplace@3
+  inputs:
+    InputSearchPattern: |
+      **/context.xml
+      **/docker-compose.yml
+    FindRegex: '<@prod_pass@>'
+    ReplaceRegex: '$(postgresPassword)'
+    UseUTF8: true
+    UseRAW: true
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -21,15 +31,14 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
-- task: RegexReplace@3
+
+- task: ArchiveFiles@2
   inputs:
-    InputSearchPattern: |
-      **/context.xml
-      **/docker-compose.yml
-    FindRegex: '<@prod_pass@>'
-    ReplaceRegex: '$(postgresPassword)'
-    UseUTF8: true
-    UseRAW: true
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
 
 - task: DockerCompose@0
   inputs:
