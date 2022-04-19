@@ -29,7 +29,7 @@ services:
     container_name: web_dova
     build:
         context: .
-        dockerfile: /dockerfiles/web.Dockerfile
+        dockerfile: web.Dockerfile
     ports:
       - "8080:8080"
     networks:
@@ -43,7 +43,7 @@ services:
       - "80:80"
     build:
         context: .
-        dockerfile: /dockerfiles/proxy.Dockerfile  
+        dockerfile: proxy.Dockerfile  
     volumes:
       - proxy_files:/etc/nginx/
 
