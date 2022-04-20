@@ -7,7 +7,7 @@
   <Parameter name="mapserver-url" override="false" value="https://kargeotool.nl/geoserver/kar/wms"/>
   <Parameter name="debug_editoractionbean_saveorupdate" override="false" value="false"/>
   <Parameter name="debug_editoractionbean_view" override="false" value="false"/>
-  <Parameter name="application-url" override="false" value="http://test.kargeotool.nl:8080/kargeotool"/>
+  <Parameter name="application-url" override="false" value="http://test.kargeotool.nl"/>
   <Parameter name="download.location" override="false" value="/usr/local/tomcat"/>
   <!--Configure at which interval in minutes the carriers informer job should be run.
             Comment out this parameter or set to -1 to disable.-->
