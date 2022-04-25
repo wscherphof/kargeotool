@@ -18,6 +18,7 @@ FROM tomcat:9.0-alpine
 LABEL maintainer='Tjidde.Nieuwenhuizen@merkator.com'
 COPY --from=builder $HOME/kar/target/* /usr/local/tomcat/webapps/
 ADD ../EXT_Files/jar/* lib/
+ADD ../EXT_Files/war/* /usr/local/tomcat/webapps/
 ADD ../EXT_Files/context/* conf/
 EXPOSE 8080
 
