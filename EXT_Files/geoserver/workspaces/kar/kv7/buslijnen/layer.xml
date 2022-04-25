@@ -1,0 +1,15 @@
+<layer>
+  <name>buslijnen</name>
+  <id>LayerInfoImpl-3d4175c1:1634e199f86:-7ff7</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-3d4175c1:1634e199f86:-7ff4</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-3d4175c1:1634e199f86:-7ff8</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

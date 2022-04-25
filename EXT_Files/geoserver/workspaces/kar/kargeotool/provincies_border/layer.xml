@@ -1,0 +1,15 @@
+<layer>
+  <name>provincies_border</name>
+  <id>LayerInfoImpl-3d4175c1:1634e199f86:-7fe0</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-3d4175c1:1634e199f86:-7ff0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-3d4175c1:1634e199f86:-7fe1</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

@@ -1,0 +1,44 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-3d4175c1:1634e199f86:-7fd7</id>
+  <name>dxf</name>
+  <nativeName>dxf_features_view</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-3d4175c1:1634e199f86:-7ffb</id>
+  </namespace>
+  <title>dxf_features_view</title>
+  <keywords>
+    <string>features</string>
+    <string>dxf_features_view</string>
+  </keywords>
+  <srs>EPSG:28992</srs>
+  <nativeBoundingBox>
+    <minx>3150.0</minx>
+    <maxx>275966.0</maxx>
+    <miny>340968.0</miny>
+    <maxy>611840.0</maxy>
+    <crs class="projected">EPSG:28992</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>3.101</minx>
+    <maxx>7.21</maxx>
+    <miny>51.03</miny>
+    <maxy>53.5</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-3d4175c1:1634e199f86:-7ffa</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>
