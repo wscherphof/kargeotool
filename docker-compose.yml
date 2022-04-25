@@ -34,6 +34,15 @@ services:
       - "8080:8080"
     networks:
         - kargeo-network
+  geoserver:
+    container_name: geoserver_dova
+    build:
+        context: .
+        dockerfile: ./dockerfiles/geoserver.Dockerfile
+    ports:
+      - "8080:8080"
+    # networks:
+    #     - kargeo-network
   proxy:
     restart: always
     container_name: proxy_dova
